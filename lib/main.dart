@@ -1,0 +1,1035 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:html/parser.dart';
+import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
+import 'package:mini_vtop/student_profile_all_view.dart';
+import 'basicFunctions/dismiss_keyboard.dart';
+import 'basicFunctions/print_wrapped.dart';
+import 'coreFunctions/choose_correct_initial_body.dart';
+import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
+import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
+import 'navigation/page_routes_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isAndroid) {
+    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return DismissKeyboard(
+      child: MaterialApp(
+        title: 'Mini VTOP',
+        theme: ThemeData.light(),
+        // darkTheme: ThemeData.dark(),
+        debugShowCheckedModeBanner: false,
+        home: const Home(),
+        routes: {
+          PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as StudentProfileAllViewArguments?,
+              ),
+        },
+      ),
+    );
+  }
+}
+
+class Home extends StatefulWidget with PreferredSizeWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _HomeState extends State<Home> {
+  InAppWebViewController? webViewController;
+
+  HeadlessInAppWebView? headlessWebView;
+  String currentFullUrl = "";
+  String serializedDocument = "";
+  Image? image;
+
+  String userEnteredUname = "";
+  String userEnteredPasswd = "";
+
+  String? loggedUserStatus;
+
+  String? currentStatus = "launchLoadingScreen";
+
+  bool processingSomething = false;
+  bool refreshingCaptcha = true;
+
+  String? vtopStatusType;
+
+  String vtopLoginErrorType = "None";
+
+  late Widget body;
+
+  late Widget appbar;
+
+  int noOfHomePageBuilds = 0;
+
+  int noOfLoginAjaxRequests = 0;
+
+  String requestType = "Empty";
+
+  String? studentName;
+
+  bool credentialsFound = false;
+
+  var studentPortalDocument;
+
+  var studentProfileAllViewDocument;
+
+  getStudentName({required String forXAction}) async {
+    await headlessWebView?.webViewController.evaluateJavascript(source: '''
+                               document.getElementById("STA002").click();
+                                ''');
+    requestType = forXAction;
+  }
+
+  Future<void> _credentialsFound() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userEnteredPasswd') &&
+        !prefs.containsKey('userEnteredUname')) {
+      credentialsFound = false;
+      return;
+    }
+    setState(() {
+      credentialsFound = true;
+    });
+  }
+
+  Future<void> _retrieveUnamePasswd() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('userEnteredPasswd') &&
+        !prefs.containsKey('userEnteredUname')) {
+      return;
+    }
+
+    setState(() {
+      userEnteredUname = prefs.getString('userEnteredUname')!;
+      userEnteredPasswd = prefs.getString('userEnteredPasswd')!;
+    });
+  }
+
+  Future<void> _saveUnamePasswd() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('userEnteredUname', userEnteredUname);
+    prefs.setString('userEnteredPasswd', userEnteredPasswd);
+  }
+
+  Future<void> _clearUnamePasswd() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('userEnteredUname') &&
+        !prefs.containsKey('userEnteredPasswd')) {
+      return;
+    }
+
+    await prefs.remove('userEnteredUname');
+    await prefs.remove('userEnteredPasswd');
+    setState(() {
+      userEnteredUname = '';
+      userEnteredPasswd = "";
+
+      credentialsFound = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveUnamePasswd();
+    _credentialsFound();
+    headlessWebView = HeadlessInAppWebView(
+      initialUrlRequest:
+          URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop")),
+      initialOptions: options,
+      onReceivedServerTrustAuthRequest: (controller, challenge) async {
+        if (kDebugMode) {
+          print(challenge);
+        }
+        return ServerTrustAuthResponse(
+            action: ServerTrustAuthResponseAction.PROCEED);
+      },
+      onWebViewCreated: (controller) {
+        Future.delayed(const Duration(seconds: 5), () async {
+          if (vtopStatusType == null) {
+            setState(() {
+              vtopStatusType = "Connecting";
+            });
+          }
+        });
+        vtopStatusType = null;
+        vtopLoginErrorType = "None";
+        const snackBar = SnackBar(
+          content: Text('HeadlessInAppWebView created!'),
+          duration: Duration(seconds: 1),
+        );
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      },
+      onConsoleMessage: (controller, consoleMessage) {
+        final snackBar = SnackBar(
+          content: Text('Console Message: ${consoleMessage.message}'),
+          duration: const Duration(seconds: 1),
+        );
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        if (kDebugMode) {
+          print('Console Message: ${consoleMessage.message}');
+        }
+      },
+      shouldInterceptAjaxRequest:
+          (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
+// print("ajaxRequest: ${ajaxRequest}");
+// ajaxRequest.headers?.setRequestHeader("Cookie", authState.setCookie);
+        return ajaxRequest;
+      },
+      onAjaxReadyStateChange:
+          (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
+// print("ajaxRequest: ${ajaxRequest}");
+// print(ajaxRequest.status);
+        return AjaxRequestAction.PROCEED;
+      },
+      onAjaxProgress:
+          (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
+// printWrapped("ajaxRequest: ${ajaxRequest}");
+// await controller
+//     .evaluateJavascript(
+//         source:
+//             "new XMLSerializer().serializeToString(document);")
+//     .then((value) {
+//   printWrapped("Element: $value");
+// });
+        if (ajaxRequest.event?.type == AjaxRequestEventType.LOADEND) {
+          // printWrapped("ajaxRequest: ${ajaxRequest}");
+          if (ajaxRequest.url.toString() == "vtopLogin") {
+            // if (ajaxRequest.status == 200) {
+            //   noOfLoginAjaxRequests++;
+            // } else {
+            //   noOfHomePageBuilds--;
+            // }
+            debugPrint(noOfHomePageBuilds.toString());
+            debugPrint(noOfLoginAjaxRequests.toString());
+            debugPrint(ajaxRequest.status.toString());
+            // if (noOfLoginAjaxRequests == noOfHomePageBuilds) {
+            if (ajaxRequest.status == 200) {
+              // await controller.evaluateJavascript(
+              //     source:
+              //         '''document.querySelector('img[alt="vtopCaptcha"]').src;''').then(
+              //     (value) {
+              var document = parse('${ajaxRequest.responseText}');
+              String? imageSrc = document
+                  .querySelector('img[alt="vtopCaptcha"]')
+                  ?.attributes["src"];
+              // print(imageSrc!);
+              String uri = imageSrc!;
+              String base64String = uri.split(', ').last;
+              Uint8List _bytes = base64.decode(base64String);
+              // printWrapped("vtopCaptcha _bytes: $base64String");
+              // Map<String, dynamic> vtopLoginAjaxRequestMap = {
+              //   "webViewController": controller,
+              //   "image": Image.memory(_bytes),
+              //   "currentStatus": "runHeadlessInAppWebView",
+              // };
+              // onVtopLoginAjaxRequest.call(vtopLoginAjaxRequestMap);
+
+              setState(() {
+                vtopStatusType = "Connected";
+              });
+
+              Future.delayed(const Duration(milliseconds: 2480), () async {
+                setState(() {
+                  // webViewController = controller;
+                  image = Image.memory(_bytes);
+                  currentStatus = "signInScreen";
+                  processingSomething = false;
+                  refreshingCaptcha = false;
+                });
+              });
+            } else {
+              debugPrint(
+                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
+              runHeadlessInAppWebView(
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  currentFullUrl = value;
+                },
+              );
+            }
+            // print("vtopCaptcha _bytes: ${_bytes}");
+            // });
+            // });
+            // }
+          } else if (ajaxRequest.url.toString() == "doLogin") {
+            // print("ajaxRequest: ${ajaxRequest}");
+            if (ajaxRequest.status == 200) {
+              await controller
+                  .evaluateJavascript(
+                      source:
+                          "new XMLSerializer().serializeToString(document);")
+                  .then((value) async {
+                if (value.contains(userEnteredUname + "(STUDENT)")) {
+                  printWrapped("User $userEnteredUname successfully signed in");
+                  // onCurrentStatus.call("userLoggedIn");
+                  // Navigator.of(context)
+                  //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
+                  _saveUnamePasswd();
+                  getStudentName(forXAction: 'New login');
+
+                  setState(() {
+                    // currentStatus = "userLoggedIn";
+                    // loggedUserStatus = "studentPortalScreen";
+                    // processingSomething = false;
+                    studentPortalDocument =
+                        parse('${ajaxRequest.responseText}');
+                  });
+
+                  // manageUserSession(
+                  //     context: context,
+                  //     headlessWebView: headlessWebView,
+                  //     onCurrentFullUrl: (String value) {
+                  //       setState(() {
+                  //         currentFullUrl = value;
+                  //       });
+                  //     });
+                } else if (value.contains("User Id Not available")) {
+                  printWrapped("User Id Not available");
+                  //User Id Not available WHEN ENTERING WRONG USER ID
+                  // processingSomething = false; // we put this inside the onloadstop // the processing is already validated but we still want to show the dialog until user sees the updated login page
+                  vtopLoginErrorType = "User Id Not available";
+                  runHeadlessInAppWebView(
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
+                } else if (value.contains("Invalid User Id / Password")) {
+                  printWrapped("Most probably invalid password");
+                  //Invalid User Id / Password WHEN ENTERING CORRECT ID BUT WRONG PASSWORD
+                  vtopLoginErrorType = "Most probably invalid password";
+                  runHeadlessInAppWebView(
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
+                } else if (value.contains("Invalid Captcha")) {
+                  printWrapped("Invalid Captcha");
+                  //Invalid Captcha WHEN ENTERING WRONG CAPTCHA
+                  vtopLoginErrorType = "Invalid Captcha";
+                  runHeadlessInAppWebView(
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
+                  // print(
+                  //     "called Action https://vtop.vitbhopal.ac.in/vtop for Invalid Captcha");
+                  // await controller.evaluateJavascript(
+                  //     source:
+                  //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+                } else {
+                  printWrapped(
+                      "Can't find why something got wrong enable print ajaxRequest for doLogin and see the logs");
+                  // printWrapped("ajaxRequest: ${ajaxRequest}");
+                }
+              });
+            } else {
+              debugPrint(
+                  "restarting headlessInAppWebView as doLogin ajaxRequest.status != 200");
+              runHeadlessInAppWebView(
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  currentFullUrl = value;
+                },
+              );
+            }
+          } else if (ajaxRequest.url.toString() == "doRefreshCaptcha") {
+            // printWrapped("ajaxRequest: ${ajaxRequest}");
+            // print("ajaxRequest: ${ajaxRequest}");
+            if (ajaxRequest.responseText != null) {
+              if (ajaxRequest.responseText!.contains(
+                  "You are logged out due to inactivity for more than 15 minutes")) {
+                // onRestartHeadlessInAppWebView.call(true);
+                // runHeadlessInAppWebView(
+                //   headlessWebView: headlessWebView,
+                //   onCurrentFullUrl: (String value) {
+                //     setState(() {
+                //       currentFullUrl = value;
+                //     });
+                //   },
+                // );
+                print(
+                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for doRefreshCaptcha");
+                await controller.evaluateJavascript(
+                    source:
+                        '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+              } else {
+                // await controller.evaluateJavascript(source: '''
+                //   document.querySelector('img[alt="vtopCaptcha"]').src;
+                //   ''').then((value) {
+                var document = parse('${ajaxRequest.responseText}');
+                String? imageSrc = document
+                    .querySelector('img[alt="vtopCaptcha"]')
+                    ?.attributes["src"];
+                String uri = imageSrc!;
+                String base64String = uri.split(', ').last;
+                Uint8List _bytes = base64.decode(base64String);
+                // printWrapped("vtopCaptcha _bytes: $base64String");
+                // onImage.call(Image.memory(_bytes));
+                setState(() {
+                  refreshingCaptcha = false;
+                  image = Image.memory(_bytes);
+                  // loaded(uri, image!);
+                });
+                // print("vtopCaptcha _bytes: ${_bytes}");
+                // });
+              }
+            }
+          } else if (ajaxRequest.url.toString() ==
+              "studentsRecord/StudentProfileAllView") {
+            // var document = parse('${ajaxRequest.responseText}');
+            if (requestType == "New login") {
+              _credentialsFound();
+              setState(() {
+                vtopStatusType = "Connected";
+              });
+
+              await headlessWebView?.webViewController
+                  .evaluateJavascript(
+                      source:
+                          "new XMLSerializer().serializeToString(document);")
+                  .then((value) {
+                var document = parse('$value');
+                setState(() {
+                  studentProfileAllViewDocument = document;
+                  studentName = studentProfileAllViewDocument
+                      .getElementById('exTab1')
+                      .children[1]
+                      .children[0]
+                      .children[0]
+                      .children[0]
+                      .children[0]
+                      .children[0]
+                      .children[2]
+                      .children[1]
+                      .innerHtml;
+                  currentStatus = "userLoggedIn";
+                  loggedUserStatus = "studentPortalScreen";
+                  Navigator.of(context)
+                      .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
+                  processingSomething = false;
+                });
+              });
+            } else if (requestType == "Logged in") {
+              _credentialsFound();
+              setState(() {
+                vtopStatusType = "Connected";
+              });
+
+              Future.delayed(const Duration(milliseconds: 2480), () async {
+                await headlessWebView?.webViewController
+                    .evaluateJavascript(
+                        source:
+                            "new XMLSerializer().serializeToString(document);")
+                    .then((value) {
+                  var document = parse('$value');
+                  setState(() {
+                    studentProfileAllViewDocument = document;
+                    studentName = studentProfileAllViewDocument
+                        .getElementById('exTab1')
+                        .children[1]
+                        .children[0]
+                        .children[0]
+                        .children[0]
+                        .children[0]
+                        .children[0]
+                        .children[2]
+                        .children[1]
+                        .innerHtml;
+                    currentStatus = "userLoggedIn";
+                    loggedUserStatus = "studentPortalScreen";
+                  });
+                });
+              });
+            } else if (requestType == "Real") {
+              if (ajaxRequest.status == 200) {
+                requestType = "Empty";
+                Navigator.pushNamed(
+                  context,
+                  PageRoutes.studentProfileAllView,
+                  arguments: StudentProfileAllViewArguments(
+                    currentStatus: currentStatus,
+                    onShowStudentProfileAllViewDispose: (bool value) {
+                      debugPrint("studentProfileAllView disposed");
+                      WidgetsBinding.instance
+                          ?.addPostFrameCallback((_) => setState(() {
+                                loggedUserStatus = "studentPortalScreen";
+                              }));
+                    },
+                  ),
+                ).whenComplete(() {
+                  setState(() {
+                    loggedUserStatus = "studentProfileAllView";
+                  });
+                });
+              } else if (ajaxRequest.status == 232) {
+                debugPrint(
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                );
+              }
+            }
+            // print(document.outerHtml);
+            //document.querySelectorAll('table')[1];
+            // print("ajaxRequest: ${ajaxRequest}");
+          } else if (ajaxRequest.url.toString() == "processLogout") {
+            // print("ajaxRequest: ${ajaxRequest}");
+            if (ajaxRequest.responseText != null) {
+              if (ajaxRequest.responseText!.contains(
+                  "You are logged out due to inactivity for more than 15 minutes")) {
+                // onRestartHeadlessInAppWebView.call(true);
+                currentStatus = "launchLoadingScreen";
+                // runHeadlessInAppWebView(
+                //   headlessWebView: headlessWebView,
+                //   onCurrentFullUrl: (String value) {
+                //     setState(() {
+                //       currentFullUrl = value;
+                //     });
+                //   },
+                // );
+                print(
+                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                );
+              } else if (ajaxRequest.responseText!
+                  .contains("You have been successfully logged out")) {
+                debugPrint("You have been successfully logged out");
+                //--------------Temporary-----------------//
+                currentStatus = "launchLoadingScreen";
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  },
+                );
+                print(
+                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
+                // await controller.evaluateJavascript(
+                //     source:
+                //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+                //--------------Temporary-----------------//
+              }
+            }
+          } else {
+            print("ajaxRequest: ${ajaxRequest}");
+            //"You are logged out due to inactivity for more than 15 minutes"
+            // print("response: 232");
+            // await headlessWebView?.dispose();
+            // await headlessWebView?.run();
+          }
+        }
+// print(ajaxRequest.status);
+        return AjaxRequestAction.PROCEED;
+      },
+      onLoadStart: (controller, url) async {
+        noOfHomePageBuilds = 0;
+        noOfLoginAjaxRequests = 0;
+
+        debugPrint("noOfHomePageBuilds onLoadStart: $noOfHomePageBuilds");
+        final snackBar = SnackBar(
+          content: Text('onLoadStart $url'),
+          duration: const Duration(seconds: 1),
+        );
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // onCurrentFullUrl.call(url?.toString() ?? '');
+        setState(() {
+          currentFullUrl = url?.toString() ?? '';
+        });
+      },
+      onLoadStop: (controller, url) async {
+        // Future.delayed(const Duration(seconds: 2), () async {
+        // print(await headlessWebView?.webViewController.getProgress());
+
+        if (url.toString() ==
+                "https://vtop.vitbhopal.ac.in/vtop/initialProcess" &&
+            await headlessWebView?.webViewController.getProgress() == 100) {
+          await headlessWebView?.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then(
+            (value) async {
+              var document = parse('$value');
+              String initialHtml =
+                  '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>';
+              String? inactivityResponse = document
+                  .getElementById('closedHTML')
+                  ?.children[0]
+                  .children[0]
+                  .children[0]
+                  .children[1]
+                  .children[0]
+                  .children[0]
+                  .children[0]
+                  .children[0]
+                  .innerHtml;
+
+              if (inactivityResponse ==
+                  "You are logged out due to inactivity for more than 15 minutes") {
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  },
+                );
+                // await headlessWebView?.webViewController.evaluateJavascript(
+                //     source:
+                //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+              } else if (value != initialHtml &&
+                  document.getElementsByTagName('button').isNotEmpty) {
+                // printWrapped("value: $value");
+                String? loginButtonText =
+                    document.getElementsByTagName('button')[0].text;
+                debugPrint("loginButtonText: $loginButtonText");
+
+                if (loginButtonText == 'Login to V-TOP') {
+                  noOfHomePageBuilds++;
+                  debugPrint(
+                      "noOfHomePageBuilds: ${noOfHomePageBuilds.toString()}");
+                  if (noOfHomePageBuilds == 1) {
+                    await headlessWebView?.webViewController.evaluateJavascript(
+                        source:
+                            "document.getElementsByTagName('button')[0].click();");
+                  }
+                }
+              }
+            },
+          );
+        } else if (url.toString() == "https://vtop.vitbhopal.ac.in/vtop/" &&
+            await headlessWebView?.webViewController.getProgress() == 100) {
+          await headlessWebView?.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then((value) {
+            var document = parse('$value');
+            String? studentId = document
+                .getElementById('page-holder')
+                ?.children[0]
+                .children[0]
+                .children[0]
+                .children[1]
+                .children[0]
+                .children[0]
+                .children[0]
+                .children[0]
+                .children[1]
+                .innerHtml;
+            if (studentId != null) {
+              if (studentId.contains("(STUDENT)")) {
+                getStudentName(forXAction: 'Logged in');
+
+                studentPortalDocument = document;
+
+                // print(url.toString());
+              }
+            }
+          });
+        }
+        // });
+        // await controller
+        //     .evaluateJavascript(
+        //         source: "new XMLSerializer().serializeToString(document);")
+        //     .then((response) async {
+        //   var document = parse('$response');
+        //
+        //   String? inactivityResponse = document
+        //       .getElementById('closedHTML')
+        //       ?.children[0]
+        //       .children[0]
+        //       .children[0]
+        //       .children[1]
+        //       .children[0]
+        //       .children[0]
+        //       .children[0]
+        //       .children[0]
+        //       .innerHtml;
+        //
+        //   // print(response);
+        //   if (inactivityResponse ==
+        //       "You are logged out due to inactivity for more than 15 minutes") {
+        //     debugPrint("response: 232");
+        //     // onRestartHeadlessInAppWebView.call(true);
+        //
+        //     print(
+        //         "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for onLoadStop");
+        //     await controller.evaluateJavascript(
+        //         source:
+        //             '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+        //     // runHeadlessInAppWebView(
+        //     //   headlessWebView: headlessWebView,
+        //     //   onCurrentFullUrl: (String value) {
+        //     //     setState(() {
+        //     //       currentFullUrl = value;
+        //     //     });
+        //     //   },
+        //     // );
+        //   } else if (response.contains("(STUDENT)")) {
+        //     // onCurrentStatus.call("userLoggedIn");
+        //     currentStatus = "userLoggedIn";
+        //     loggedUserStatus = "studentPortalScreen";
+        //   } else {
+        //     // log(url.toString());
+        //     // printWrapped(response);
+        //     if (url.toString() ==
+        //         "https://vtop.vitbhopal.ac.in/vtop/initialProcess") {
+        //       printWrapped(await headlessWebView?.webViewController
+        //           .evaluateJavascript(
+        //               source:
+        //                   "new XMLSerializer().serializeToString(document);"));
+        //       if (response.contains("openPage()")) {
+        //         debugPrint("response: 200");
+        //         await headlessWebView?.webViewController.evaluateJavascript(
+        //             source:
+        //                 '''ajaxCall("vtopLogin",null,"page_outline");''').then(
+        //             (value) async {
+        //           // await webViewController
+        //           //     ?.evaluateJavascript(
+        //           //         source:
+        //           //             "new XMLSerializer().serializeToString(document);")
+        //           //     .then((response) {
+        //           //   printWrapped(response.toString());
+        //           // });
+        //         });
+        //       } else {
+        //         debugPrint("response: Empty response");
+        //         //print("response: $response");
+        //         //empty response <html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>
+        //       }
+        //     } else if (url.toString() == "https://vtop.vitbhopal.ac.in/vtop/") {
+        //       debugPrint("response: 302");
+        //     }
+        //   }
+        // });
+        final snackBar = SnackBar(
+          content: Text('onLoadStop $url'),
+          duration: const Duration(seconds: 1),
+        );
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // onCurrentFullUrl.call(url?.toString() ?? '');
+        setState(() {
+          currentFullUrl = url?.toString() ?? '';
+        });
+        // log("status: ${url!.}");
+      },
+      onLoadError: (InAppWebViewController controller, Uri? url, int code,
+          String message) async {
+        print("error $url: $code, $message");
+        setState(() {
+          vtopStatusType = message;
+        });
+
+//         var tRexHtml = await controller.getTRexRunnerHtml();
+//         var tRexCss = await controller.getTRexRunnerCss();
+//
+//         controller.loadData(data: """
+// <html>
+//   <head>
+//     <meta charset="utf-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+//     <style>$tRexCss</style>
+//   </head>
+//   <body>
+//     $tRexHtml
+//     <p>
+//       URL $url failed to load.
+//     </p>
+//     <p>
+//       Error: $code, $message
+//     </p>
+//   </body>
+// </html>
+//                   """);
+      },
+      onLoadHttpError: (InAppWebViewController controller, Uri? url,
+          int statusCode, String description) async {
+        print("HTTP error $url: $statusCode, $description");
+      },
+    );
+    //     headlessInAppWebView(
+    //   context: context,
+    //   userEnteredUname: userEnteredUname,
+    //   headlessWebView: headlessWebView,
+    //   onCurrentFullUrl: (String value) {
+    //     setState(() {
+    //       currentFullUrl = value;
+    //     });
+    //   },
+    //   onWebViewController: (InAppWebViewController value) {
+    //     setState(() {
+    //       webViewController = value;
+    //     });
+    //   },
+    //   onImage: (Image value) {
+    //     setState(() {
+    //       image = value;
+    //     });
+    //   },
+    //   onCurrentStatus: (String value) {
+    //     setState(() {
+    //       currentStatus = value;
+    //     });
+    //   },
+    //   onVtopLoginAjaxRequest: (Map<String, dynamic> value) {
+    //     setState(() {
+    //       currentStatus = value["currentStatus"];
+    //       webViewController = value["webViewController"];
+    //       image = value["image"];
+    //     });
+    //   },
+    //   onRestartHeadlessInAppWebView: (bool value) {
+    //     runHeadlessInAppWebView(
+    //         onCurrentFullUrl: (String value) {
+    //           setState(() {
+    //             currentFullUrl = value;
+    //           });
+    //         },
+    //         headlessWebView: headlessWebView);
+    //   },
+    // );
+
+    runHeadlessInAppWebView(
+        onCurrentFullUrl: (String value) {
+          setState(() {
+            currentFullUrl = value;
+          });
+        },
+        headlessWebView: headlessWebView);
+
+    Future.delayed(const Duration(seconds: 4), () async {
+      // setState(() {
+      //   vtopStatusType = "Connecting";
+      // });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    headlessWebView?.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // currentStatus = "launchLoadingScreen";
+    // currentStatus = "signInScreen";
+    debugPrint("loggedUserStatus: $loggedUserStatus");
+    debugPrint("currentStatus: $currentStatus");
+    debugPrint("processingSomething: $processingSomething");
+
+    chooseCorrectBody(
+      onBody: (Widget value) {
+        // setState(() {
+        body = value;
+        // });
+      },
+      credentialsFound: credentialsFound,
+      studentProfileAllViewDocument: studentProfileAllViewDocument,
+      studentPortalDocument: studentPortalDocument,
+      vtopLoginErrorType: vtopLoginErrorType,
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          setState(() {
+            refreshingCaptcha = value;
+          });
+        });
+      },
+      currentFullUrl: currentFullUrl,
+      vtopStatusType: vtopStatusType,
+      onVtopLoginErrorType: (String value) {
+        setState(() {
+          vtopLoginErrorType = value;
+        });
+      },
+      onRequestType: (String value) {
+        setState(() {
+          requestType = "Real";
+        });
+      },
+      studentName: studentName,
+      onClearUnamePasswd: (bool value) {
+        _clearUnamePasswd();
+      },
+      onRetryOnError: (bool value) {
+        setState(() {
+          debugPrint(
+              "restarting headlessInAppWebView manually as vtopStatusType has error");
+          runHeadlessInAppWebView(
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              currentFullUrl = value;
+            },
+          );
+        });
+      },
+    );
+
+    chooseCorrectAppbar(
+      onAppbar: (Widget value) {
+        appbar = value;
+      },
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          refreshingCaptcha = value;
+        });
+      },
+      currentFullUrl: currentFullUrl,
+    );
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: widget.preferredSize,
+        child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (child, animation) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                        begin: const Offset(1.0, 0), end: const Offset(0, 0))
+                    .animate(animation),
+                child: child,
+              );
+            },
+            child: appbar),
+      ),
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          // transitionBuilder: (child, animation) {
+          //   const begin = Offset(0.0, 1.0);
+          //   const end = Offset.zero;
+          //   const curve = Curves.ease;
+          //
+          //   final tween = Tween(begin: begin, end: end);
+          //   final curvedAnimation = CurvedAnimation(
+          //     parent: animation,
+          //     curve: curve,
+          //   );
+          //
+          //   return SlideTransition(
+          //     position: tween.animate(curvedAnimation),
+          //     child: child,
+          //   );
+          // },
+          transitionBuilder: (child, animation) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                      begin: const Offset(1.0, 0), end: const Offset(0, 0))
+                  .animate(animation),
+              child: child,
+            );
+          },
+          child: body),
+    );
+  }
+}
