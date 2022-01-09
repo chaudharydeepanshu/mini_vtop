@@ -18,6 +18,7 @@ class LoginSection extends StatefulWidget {
     this.onRefreshCaptcha,
     required this.onVtopLoginErrorType,
     required this.onClearUnamePasswd,
+    required this.onTryAutoLoginStatus,
   }) : super(key: key);
 
   final LoginSectionArguments arguments;
@@ -27,6 +28,7 @@ class LoginSection extends StatefulWidget {
   final ValueChanged<Map<String, dynamic>>? onRefreshCaptcha;
   final ValueChanged<String> onVtopLoginErrorType;
   final ValueChanged<bool> onClearUnamePasswd;
+  final ValueChanged<bool> onTryAutoLoginStatus;
 
   @override
   _LoginSectionState createState() => _LoginSectionState();
@@ -89,6 +91,49 @@ class _LoginSectionState extends State<LoginSection> {
     //headlessWebView = widget.arguments?.headlessWebView;
     image = widget.arguments.image;
     currentStatus = widget.arguments.currentStatus;
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (widget.arguments.userEnteredUname.isNotEmpty &&
+          widget.arguments.userEnteredPasswd.isNotEmpty &&
+          widget.arguments.autoCaptcha.isNotEmpty &&
+          widget.arguments.tryAutoLoginStatus == true) {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+        if (_formKey.currentState!.validate()) {
+          processingDialog(
+            isDialogShowing: isFirstDialogShowing,
+            context: context,
+            onIsDialogShowing: (bool value) {
+              setState(() {
+                isFirstDialogShowing = value;
+              });
+            },
+            dialogTitle: const Text('Sending login request'),
+            dialogChildren: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(),
+                Text('Please wait...'),
+              ],
+            ),
+            barrierDismissible: false,
+          ).then((_) => isFirstDialogShowing = false);
+          debugPrint("dialogBox initiated");
+          signInCredentialsMap = {
+            "uname": '${_controller?.value.text.toUpperCase()}',
+            "passwd": '${_controller2?.value.text}',
+            "captchaCheck": '${_controller3?.value.text.toUpperCase()}',
+            "refreshingCaptcha": true,
+            "processingSomething": true,
+          };
+          widget.onPerformSignIn?.call(signInCredentialsMap);
+        }
+      }
+    });
 
     // InAppWebViewController? controller =
     //     widget.arguments?.headlessWebView.webViewController;
@@ -660,6 +705,17 @@ class _LoginSectionState extends State<LoginSection> {
                               });
                             },
                           ),
+                          CheckboxListTile(
+                            title: const Text(
+                              'Enable auto sign in.\nNote:- It tries only one time as it could fail and can be disabled through manual logout',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            value: widget.arguments.tryAutoLoginStatus,
+                            onChanged: (bool? value) {
+                              widget.onTryAutoLoginStatus
+                                  .call(!widget.arguments.tryAutoLoginStatus);
+                            },
+                          ),
                           ElevatedButton(
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(
@@ -767,6 +823,7 @@ class LoginSectionArguments {
   String vtopLoginErrorType;
   bool credentialsFound;
   String autoCaptcha;
+  bool tryAutoLoginStatus;
 
   LoginSectionArguments({
     required this.currentStatus,
@@ -780,5 +837,6 @@ class LoginSectionArguments {
     required this.vtopLoginErrorType,
     required this.credentialsFound,
     required this.autoCaptcha,
+    required this.tryAutoLoginStatus,
   });
 }

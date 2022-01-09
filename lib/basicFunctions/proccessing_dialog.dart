@@ -24,7 +24,7 @@ Future<void> processingDialog(
               : directPop();
         },
         child: SimpleDialog(
-          title: dialogTitle,
+          title: Center(child: dialogTitle),
           children: <Widget>[
             dialogChildren,
           ],

@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mini_vtop/basicFunctions/print_wrapped.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:ntp/ntp.dart';
 
 import 'basicFunctions/proccessing_dialog.dart';
 
@@ -38,8 +39,8 @@ class _StudentPortalState extends State<StudentPortal> {
           {
             "name": "Profile",
             "action": () {
-              timer.cancel();
-              startTimeout();
+              // timer.cancel();
+              // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
             },
           },
@@ -52,7 +53,7 @@ class _StudentPortalState extends State<StudentPortal> {
 
   final interval = const Duration(seconds: 1);
 
-  final int timerMaxSeconds = 900;
+  int timerMaxSeconds = 0;
 
   int currentSeconds = 0;
 
@@ -61,11 +62,20 @@ class _StudentPortalState extends State<StudentPortal> {
   String get timerText =>
       '${((timerMaxSeconds - currentSeconds) ~/ 60).toString().padLeft(2, '0')}: ${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
 
-  startTimeout() {
+  startTimeout() async {
+    DateTime? sessionDateTime = widget.arguments.sessionDateTime;
+    DateTime dateTimeNow = await NTP.now();
+    int differenceInSeconds =
+        dateTimeNow.difference(sessionDateTime!).inSeconds;
+
+    int secondsRemainingInSession = 3600 - differenceInSeconds;
+
+    timerMaxSeconds = secondsRemainingInSession;
+
     var duration = interval;
     timer = Timer.periodic(duration, (timer) {
       setState(() {
-        print(timer.tick);
+        // print(timer.tick);
         currentSeconds = timer.tick;
         if (timer.tick >= timerMaxSeconds) timer.cancel();
       });
@@ -168,7 +178,7 @@ class _StudentPortalState extends State<StudentPortal> {
               shrinkWrap: true,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 200,
-                  childAspectRatio: 3 / 2,
+                  childAspectRatio: 3 / 2.5,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20),
               itemCount: studentPortalOptions.length,
@@ -201,31 +211,18 @@ class _StudentPortalState extends State<StudentPortal> {
                                       ["internalOptionsMapList"]
                                   .length,
                               (i) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        const Color(0xff04294f)),
-                                    padding: MaterialStateProperty.all(
-                                        const EdgeInsets.only(
-                                            top: 17,
-                                            bottom: 17,
-                                            left: 30,
-                                            right: 30)),
-                                    textStyle: MaterialStateProperty.all(
-                                        const TextStyle(fontSize: 20)),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: studentPortalOptions[index]
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: ListTile(
+                                  tileColor: const Color(0xff04294f),
+                                  textColor: Colors.white,
+                                  onTap: studentPortalOptions[index]
                                       ["internalOptionsMapList"][i]["action"],
-                                  child: Text(studentPortalOptions[index]
+                                  // leading: FlutterLogo(size: 72.0),
+                                  title: Text(studentPortalOptions[index]
                                       ["internalOptionsMapList"][i]["name"]),
+                                  // subtitle: Text('Profile'),
+                                  // trailing: Icon(Icons.more_vert),
+                                  // isThreeLine: true,
                                 ),
                               ),
                             ),
@@ -244,14 +241,26 @@ class _StudentPortalState extends State<StudentPortal> {
                           barrierDismissible: true);
                       print("tapped");
                     },
-                    child: Text(
-                      studentPortalOptions[index]["name"],
-                      style: GoogleFonts.lato(
-                        color: Colors.white,
-                        // textStyle: Theme.of(context).textTheme.headline1,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        fontStyle: FontStyle.normal,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.work),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            studentPortalOptions[index]["name"],
+                            style: GoogleFonts.lato(
+                              color: Colors.white,
+                              // textStyle: Theme.of(context).textTheme.headline1,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.normal,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -289,11 +298,13 @@ class StudentPortalArguments {
   var studentProfileAllViewDocument;
   String? studentName;
   HeadlessInAppWebView? headlessWebView;
+  DateTime? sessionDateTime;
 
   StudentPortalArguments({
     required this.studentPortalDocument,
     required this.studentProfileAllViewDocument,
     required this.studentName,
     required this.headlessWebView,
+    required this.sessionDateTime,
   });
 }

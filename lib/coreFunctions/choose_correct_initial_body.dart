@@ -27,10 +27,13 @@ chooseCorrectBody(
     required String vtopLoginErrorType,
     required String? studentName,
     required String autoCaptcha,
+    required DateTime? sessionDateTime,
     required var studentPortalDocument,
     required var studentProfileAllViewDocument,
+    required bool tryAutoLoginStatus,
     required ValueChanged<bool> onRetryOnError,
     required ValueChanged<bool> onClearUnamePasswd,
+    required ValueChanged<bool> onTryAutoLoginStatus,
     required ValueChanged<String> onRequestType,
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<bool> onProcessingSomething,
@@ -129,6 +132,7 @@ chooseCorrectBody(
       },
       arguments: LoginSectionArguments(
         // headlessWebView: headlessWebView!,
+        tryAutoLoginStatus: tryAutoLoginStatus,
         currentFullUrl: currentFullUrl,
         processingSomething: processingSomething,
         image: image,
@@ -145,6 +149,9 @@ chooseCorrectBody(
       },
       onClearUnamePasswd: (bool value) {
         onClearUnamePasswd.call(value);
+      },
+      onTryAutoLoginStatus: (bool value) {
+        onTryAutoLoginStatus.call(value);
       },
     ));
   } else if (currentStatus == "userLoggedIn") {
@@ -170,7 +177,8 @@ chooseCorrectBody(
             studentPortalDocument: studentPortalDocument,
             studentProfileAllViewDocument: studentProfileAllViewDocument,
             headlessWebView: headlessWebView,
-            studentName: studentName),
+            studentName: studentName,
+            sessionDateTime: sessionDateTime),
       ),
     );
     // if (currentStatus == "userLoggedIn" &&

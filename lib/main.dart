@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
+import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/student_profile_all_view.dart';
+import 'package:ntp/ntp.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
 import 'coreFunctions/auto_captcha.dart';
@@ -78,6 +80,8 @@ class _HomeState extends State<Home> {
   bool processingSomething = false;
   bool refreshingCaptcha = true;
 
+  DateTime? sessionDateTime;
+
   String? vtopStatusType;
 
   String vtopLoginErrorType = "None";
@@ -99,6 +103,8 @@ class _HomeState extends State<Home> {
   var studentPortalDocument;
 
   var studentProfileAllViewDocument;
+
+  bool tryAutoLoginStatus = false;
 
   getStudentName({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
@@ -134,6 +140,42 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<void> _retrieveSessionDateTime() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('sessionDateTime')) {
+      return;
+    }
+
+    setState(() {
+      sessionDateTime = DateTime.parse(prefs.getString('sessionDateTime')!);
+    });
+  }
+
+  Future<void> _retrieveTryAutoLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('tryAutoLoginStatus')) {
+      return;
+    }
+
+    setState(() {
+      tryAutoLoginStatus = prefs.getBool('tryAutoLoginStatus')!;
+    });
+  }
+
+  Future<void> _saveSessionDateTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('sessionDateTime', sessionDateTime.toString());
+  }
+
+  Future<void> _saveTryAutoLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('tryAutoLoginStatus', tryAutoLoginStatus);
+  }
+
   Future<void> _saveUnamePasswd() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('userEnteredUname', userEnteredUname);
@@ -158,11 +200,26 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<void> _clearTryAutoLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('tryAutoLoginStatus')) {
+      return;
+    }
+
+    await prefs.remove('tryAutoLoginStatus');
+    setState(() {
+      tryAutoLoginStatus = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _retrieveUnamePasswd();
     _credentialsFound();
+    _retrieveSessionDateTime();
+    _retrieveTryAutoLoginStatus();
     headlessWebView = HeadlessInAppWebView(
       initialUrlRequest:
           URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop")),
@@ -312,6 +369,19 @@ class _HomeState extends State<Home> {
                   // Navigator.of(context)
                   //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
                   _saveUnamePasswd();
+                  sessionDateTime = await NTP.now();
+                  _saveSessionDateTime();
+                  print(
+                      'NTP DateTime: ${sessionDateTime}, DateTime: ${DateTime.now().toString()}');
+                  manageUserSession(
+                    context: context,
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
                   getStudentName(forXAction: 'New login');
 
                   setState(() {
@@ -477,6 +547,15 @@ class _HomeState extends State<Home> {
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
+              manageUserSession(
+                context: context,
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  setState(() {
+                    currentFullUrl = value;
+                  });
+                },
+              );
               setState(() {
                 vtopStatusType = "Connected";
               });
@@ -509,22 +588,36 @@ class _HomeState extends State<Home> {
             } else if (requestType == "Real") {
               if (ajaxRequest.status == 200) {
                 requestType = "Empty";
-                Navigator.pushNamed(
-                  context,
-                  PageRoutes.studentProfileAllView,
-                  arguments: StudentProfileAllViewArguments(
-                    currentStatus: currentStatus,
-                    onShowStudentProfileAllViewDispose: (bool value) {
-                      debugPrint("studentProfileAllView disposed");
-                      WidgetsBinding.instance
-                          ?.addPostFrameCallback((_) => setState(() {
-                                loggedUserStatus = "studentPortalScreen";
-                              }));
-                    },
-                  ),
-                ).whenComplete(() {
+
+                await headlessWebView?.webViewController
+                    .evaluateJavascript(
+                        source:
+                            "new XMLSerializer().serializeToString(document);")
+                    .then((value) {
+                  var document = parse('$value');
                   setState(() {
-                    loggedUserStatus = "studentProfileAllView";
+                    studentProfileAllViewDocument = document;
+                  });
+
+                  Navigator.pushNamed(
+                    context,
+                    PageRoutes.studentProfileAllView,
+                    arguments: StudentProfileAllViewArguments(
+                      currentStatus: currentStatus,
+                      onShowStudentProfileAllViewDispose: (bool value) {
+                        debugPrint("studentProfileAllView disposed");
+                        WidgetsBinding.instance
+                            ?.addPostFrameCallback((_) => setState(() {
+                                  loggedUserStatus = "studentPortalScreen";
+                                }));
+                      },
+                      studentProfileAllViewDocument:
+                          studentProfileAllViewDocument,
+                    ),
+                  ).whenComplete(() {
+                    setState(() {
+                      loggedUserStatus = "studentProfileAllView";
+                    });
                   });
                 });
               } else if (ajaxRequest.status == 232) {
@@ -536,12 +629,15 @@ class _HomeState extends State<Home> {
                     currentFullUrl = value;
                   },
                 );
+                // Navigator.of(context).pop();
+                // debugPrint("dialogBox popped");
               }
             }
             // print(document.outerHtml);
             //document.querySelectorAll('table')[1];
             // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
+            _clearTryAutoLoginStatus();
             // print("ajaxRequest: ${ajaxRequest}");
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
@@ -905,6 +1001,8 @@ class _HomeState extends State<Home> {
         body = value;
         // });
       },
+      tryAutoLoginStatus: tryAutoLoginStatus,
+      sessionDateTime: sessionDateTime,
       autoCaptcha: autoCaptcha,
       credentialsFound: credentialsFound,
       studentProfileAllViewDocument: studentProfileAllViewDocument,
@@ -974,6 +1072,12 @@ class _HomeState extends State<Home> {
               currentFullUrl = value;
             },
           );
+        });
+      },
+      onTryAutoLoginStatus: (bool value) {
+        setState(() {
+          tryAutoLoginStatus = value;
+          _saveTryAutoLoginStatus();
         });
       },
     );
