@@ -50,6 +50,9 @@ class _LoginSectionState extends State<LoginSection> {
     if (oldWidget.arguments.image != widget.arguments.image) {
       image = widget.arguments.image;
     }
+    if (oldWidget.arguments.autoCaptcha != widget.arguments.autoCaptcha) {
+      _controller3 = TextEditingController(text: widget.arguments.autoCaptcha);
+    }
 
     super.didUpdateWidget(oldWidget);
   }
@@ -81,7 +84,7 @@ class _LoginSectionState extends State<LoginSection> {
         TextEditingController(text: widget.arguments.userEnteredUname);
     _controller2 =
         TextEditingController(text: widget.arguments.userEnteredPasswd);
-    _controller3 = TextEditingController();
+    _controller3 = TextEditingController(text: widget.arguments.autoCaptcha);
 
     //headlessWebView = widget.arguments?.headlessWebView;
     image = widget.arguments.image;
@@ -170,7 +173,7 @@ class _LoginSectionState extends State<LoginSection> {
     debugPrint("isDialogShowing: $isFirstDialogShowing");
     if (widget.arguments.processingSomething == false &&
         isSecondDialogShowing == true) {
-      _controller3 = TextEditingController(text: "");
+      // _controller3 = TextEditingController(text: "");
       Future.delayed(const Duration(milliseconds: 500), () async {
         Navigator.of(context).pop();
         debugPrint("dialogBox popped");
@@ -589,8 +592,8 @@ class _LoginSectionState extends State<LoginSection> {
                                     message: "Refresh Captcha",
                                     child: InkWell(
                                       onTap: () {
-                                        _controller3 =
-                                            TextEditingController(text: "");
+                                        // _controller3 =
+                                        //     TextEditingController(text: "");
                                         signInCredentialsMap = {
                                           "uname":
                                               '${_controller?.value.text.toUpperCase()}',
@@ -763,6 +766,7 @@ class LoginSectionArguments {
   String currentFullUrl;
   String vtopLoginErrorType;
   bool credentialsFound;
+  String autoCaptcha;
 
   LoginSectionArguments({
     required this.currentStatus,
@@ -775,5 +779,6 @@ class LoginSectionArguments {
     required this.currentFullUrl,
     required this.vtopLoginErrorType,
     required this.credentialsFound,
+    required this.autoCaptcha,
   });
 }

@@ -10,6 +10,7 @@ import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/student_profile_all_view.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
+import 'coreFunctions/auto_captcha.dart';
 import 'coreFunctions/choose_correct_initial_body.dart';
 import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
 import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
@@ -68,6 +69,7 @@ class _HomeState extends State<Home> {
 
   String userEnteredUname = "";
   String userEnteredPasswd = "";
+  String autoCaptcha = '';
 
   String? loggedUserStatus;
 
@@ -181,7 +183,7 @@ class _HomeState extends State<Home> {
           }
         });
         vtopStatusType = null;
-        vtopLoginErrorType = "None";
+
         const snackBar = SnackBar(
           content: Text('HeadlessInAppWebView created!'),
           duration: Duration(seconds: 1),
@@ -197,6 +199,12 @@ class _HomeState extends State<Home> {
 
         if (kDebugMode) {
           print('Console Message: ${consoleMessage.message}');
+        }
+
+        if (consoleMessage.message.contains("solvedCaptcha:")) {
+          setState(() {
+            autoCaptcha = consoleMessage.message.split(' ').sublist(1)[0];
+          });
         }
       },
       shouldInterceptAjaxRequest:
@@ -253,6 +261,15 @@ class _HomeState extends State<Home> {
               //   "currentStatus": "runHeadlessInAppWebView",
               // };
               // onVtopLoginAjaxRequest.call(vtopLoginAjaxRequestMap);
+
+              autoFillCaptcha(
+                  context: context,
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  });
 
               setState(() {
                 vtopStatusType = "Connected";
@@ -404,6 +421,16 @@ class _HomeState extends State<Home> {
                 Uint8List _bytes = base64.decode(base64String);
                 // printWrapped("vtopCaptcha _bytes: $base64String");
                 // onImage.call(Image.memory(_bytes));
+
+                autoFillCaptcha(
+                    context: context,
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    });
+
                 setState(() {
                   refreshingCaptcha = false;
                   image = Image.memory(_bytes);
@@ -633,9 +660,16 @@ class _HomeState extends State<Home> {
 
                 if (loginButtonText == 'Login to V-TOP') {
                   noOfHomePageBuilds++;
+
                   debugPrint(
                       "noOfHomePageBuilds: ${noOfHomePageBuilds.toString()}");
                   if (noOfHomePageBuilds == 1) {
+                    declareAutoFillCaptchaConstants(
+                        onCurrentFullUrl: (String value) {
+                          currentFullUrl = value;
+                        },
+                        headlessWebView: headlessWebView,
+                        context: context);
                     await headlessWebView?.webViewController.evaluateJavascript(
                         source:
                             "document.getElementsByTagName('button')[0].click();");
@@ -871,6 +905,7 @@ class _HomeState extends State<Home> {
         body = value;
         // });
       },
+      autoCaptcha: autoCaptcha,
       credentialsFound: credentialsFound,
       studentProfileAllViewDocument: studentProfileAllViewDocument,
       studentPortalDocument: studentPortalDocument,
@@ -930,6 +965,7 @@ class _HomeState extends State<Home> {
       },
       onRetryOnError: (bool value) {
         setState(() {
+          vtopLoginErrorType = "None";
           debugPrint(
               "restarting headlessInAppWebView manually as vtopStatusType has error");
           runHeadlessInAppWebView(
