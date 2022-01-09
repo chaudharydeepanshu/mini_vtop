@@ -38,6 +38,7 @@ class _StudentPortalState extends State<StudentPortal> {
           {
             "name": "Profile",
             "action": () {
+              timer.cancel();
               startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
             },
