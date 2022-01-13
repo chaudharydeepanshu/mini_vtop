@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -24,7 +23,7 @@ declareAutoFillCaptchaConstants(
         //     onCurrentFullUrl: (String value) {
         //       onCurrentFullUrl.call(value);
         //     });
-        print(
+        debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
         runHeadlessInAppWebView(
           headlessWebView: headlessWebView,
@@ -4621,7 +4620,7 @@ autoFillCaptcha(
         //     onCurrentFullUrl: (String value) {
         //       onCurrentFullUrl.call(value);
         //     });
-        print(
+        debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
         runHeadlessInAppWebView(
           headlessWebView: headlessWebView,

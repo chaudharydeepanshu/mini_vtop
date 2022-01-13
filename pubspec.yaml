@@ -31,13 +31,13 @@ dependencies:
     sdk: flutter
   flutter_inappwebview: ^5.3.2
   flutter_html: ^2.2.1
-  url_launcher: ^6.0.17
+  url_launcher: ^6.0.18
   html: ^0.15.0
   google_fonts: ^2.2.0
   shimmer_animation: ^2.1.0+1
   universal_html: ^2.0.8
   intl: ^0.17.0
-  shared_preferences: ^2.0.11
+  shared_preferences: ^2.0.12
   ntp: ^2.0.0
 
 

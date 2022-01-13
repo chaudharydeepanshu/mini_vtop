@@ -25,7 +25,7 @@ performCaptchaRefresh(
         //     onCurrentFullUrl: (String value) {
         //       onCurrentFullUrl.call(value);
         //     });
-        print(
+        debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for performCaptchaRefresh");
         runHeadlessInAppWebView(
           headlessWebView: headlessWebView,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import 'package:html/parser.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/student_profile_all_view.dart';
+import 'package:mini_vtop/time_table.dart';
 import 'package:ntp/ntp.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
@@ -44,6 +46,10 @@ class MyApp extends StatelessWidget {
           PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
                 arguments: ModalRoute.of(context)!.settings.arguments
                     as StudentProfileAllViewArguments?,
+              ),
+          PageRoutes.timeTable: (context) => TimeTable(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as TimeTableArguments?,
               ),
         },
       ),
@@ -100,9 +106,11 @@ class _HomeState extends State<Home> {
 
   bool credentialsFound = false;
 
-  var studentPortalDocument;
+  dom.Document? studentPortalDocument;
 
-  var studentProfileAllViewDocument;
+  dom.Document? studentProfileAllViewDocument;
+
+  dom.Document? timeTableDocument;
 
   bool tryAutoLoginStatus = false;
 
@@ -241,17 +249,17 @@ class _HomeState extends State<Home> {
         });
         vtopStatusType = null;
 
-        const snackBar = SnackBar(
-          content: Text('HeadlessInAppWebView created!'),
-          duration: Duration(seconds: 1),
-        );
+        // const snackBar = SnackBar(
+        //   content: Text('HeadlessInAppWebView created!'),
+        //   duration: Duration(seconds: 1),
+        // );
         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       onConsoleMessage: (controller, consoleMessage) {
-        final snackBar = SnackBar(
-          content: Text('Console Message: ${consoleMessage.message}'),
-          duration: const Duration(seconds: 1),
-        );
+        // final snackBar = SnackBar(
+        //   content: Text('Console Message: ${consoleMessage.message}'),
+        //   duration: const Duration(seconds: 1),
+        // );
         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
         if (kDebugMode) {
@@ -371,8 +379,14 @@ class _HomeState extends State<Home> {
                   _saveUnamePasswd();
                   sessionDateTime = await NTP.now();
                   _saveSessionDateTime();
-                  print(
-                      'NTP DateTime: ${sessionDateTime}, DateTime: ${DateTime.now().toString()}');
+                  debugPrint(
+                      'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
+                  declareManageUserSessionConstants(
+                      onCurrentFullUrl: (String value) {
+                        currentFullUrl = value;
+                      },
+                      headlessWebView: headlessWebView,
+                      context: context);
                   manageUserSession(
                     context: context,
                     headlessWebView: headlessWebView,
@@ -473,7 +487,7 @@ class _HomeState extends State<Home> {
                 //     });
                 //   },
                 // );
-                print(
+                debugPrint(
                     "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for doRefreshCaptcha");
                 await controller.evaluateJavascript(
                     source:
@@ -528,8 +542,8 @@ class _HomeState extends State<Home> {
                 setState(() {
                   studentProfileAllViewDocument = document;
                   studentName = studentProfileAllViewDocument
-                      .getElementById('exTab1')
-                      .children[1]
+                      ?.getElementById('exTab1')
+                      ?.children[1]
                       .children[0]
                       .children[0]
                       .children[0]
@@ -547,6 +561,12 @@ class _HomeState extends State<Home> {
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
+              declareManageUserSessionConstants(
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                  headlessWebView: headlessWebView,
+                  context: context);
               manageUserSession(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -570,8 +590,8 @@ class _HomeState extends State<Home> {
                   setState(() {
                     studentProfileAllViewDocument = document;
                     studentName = studentProfileAllViewDocument
-                        .getElementById('exTab1')
-                        .children[1]
+                        ?.getElementById('exTab1')
+                        ?.children[1]
                         .children[0]
                         .children[0]
                         .children[0]
@@ -599,6 +619,12 @@ class _HomeState extends State<Home> {
                     studentProfileAllViewDocument = document;
                   });
 
+                  setState(() {
+                    processingSomething = false;
+                  });
+
+                  Navigator.of(context).pop();
+
                   Navigator.pushNamed(
                     context,
                     PageRoutes.studentProfileAllView,
@@ -620,9 +646,16 @@ class _HomeState extends State<Home> {
                     });
                   });
                 });
-              } else if (ajaxRequest.status == 232) {
+              } else {
                 debugPrint(
                     "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
+                setState(() {
+                  processingSomething = false;
+                });
+
+                Navigator.of(context).pop();
+
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
                   onCurrentFullUrl: (String value) {
@@ -652,7 +685,7 @@ class _HomeState extends State<Home> {
                 //     });
                 //   },
                 // );
-                print(
+                debugPrint(
                     "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -673,7 +706,7 @@ class _HomeState extends State<Home> {
                     });
                   },
                 );
-                print(
+                debugPrint(
                     "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
                 // await controller.evaluateJavascript(
                 //     source:
@@ -681,8 +714,102 @@ class _HomeState extends State<Home> {
                 //--------------Temporary-----------------//
               }
             }
+          } else if (ajaxRequest.url.toString() ==
+              "academics/common/StudentTimeTable") {
+            // debugPrint("ajaxRequest: $ajaxRequest");
+
+            if (ajaxRequest.status == 200) {
+              bool waitStatus = true;
+              while (waitStatus == true) {
+                await headlessWebView?.webViewController
+                    .evaluateJavascript(
+                        source:
+                            "new XMLSerializer().serializeToString(document);")
+                    .then((value) async {
+                  if (value.contains("Please wait")) {
+                    // waitStatus = true;
+                  } else {
+                    waitStatus = false;
+                    await headlessWebView?.webViewController
+                        .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "BL2021221";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                  }
+                });
+              }
+            } else {
+              setState(() {
+                processingSomething = false;
+              });
+
+              Navigator.of(context).pop();
+
+              debugPrint(
+                  "restarting headlessInAppWebView as academics/common/StudentTimeTable ajaxRequest.status != 200");
+              runHeadlessInAppWebView(
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  currentFullUrl = value;
+                },
+              );
+            }
+          } else if (ajaxRequest.url.toString() == "processViewTimeTable") {
+            // debugPrint("ajaxRequest: $ajaxRequest");
+
+            if (ajaxRequest.status == 200) {
+              await headlessWebView?.webViewController
+                  .evaluateJavascript(
+                      source:
+                          "new XMLSerializer().serializeToString(document);")
+                  .then((value) {
+                var document = parse('$value');
+                setState(() {
+                  timeTableDocument = document;
+                });
+                setState(() {
+                  processingSomething = false;
+                });
+
+                Navigator.of(context).pop();
+                Navigator.pushNamed(
+                  context,
+                  PageRoutes.timeTable,
+                  arguments: TimeTableArguments(
+                    currentStatus: currentStatus,
+                    onTimeTableDocumentDispose: (bool value) {
+                      debugPrint("timeTable disposed");
+                      WidgetsBinding.instance
+                          ?.addPostFrameCallback((_) => setState(() {
+                                loggedUserStatus = "studentPortalScreen";
+                              }));
+                    },
+                    timeTableDocument: timeTableDocument,
+                  ),
+                ).whenComplete(() {
+                  setState(() {
+                    loggedUserStatus = "timeTable";
+                  });
+                });
+              });
+            } else {
+              setState(() {
+                processingSomething = false;
+              });
+
+              Navigator.of(context).pop();
+
+              debugPrint(
+                  "restarting headlessInAppWebView as processViewTimeTable ajaxRequest.status != 200");
+              runHeadlessInAppWebView(
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  currentFullUrl = value;
+                },
+              );
+            }
           } else {
-            print("ajaxRequest: ${ajaxRequest}");
+            printWrapped("ajaxRequest: $ajaxRequest");
             //"You are logged out due to inactivity for more than 15 minutes"
             // print("response: 232");
             // await headlessWebView?.dispose();
@@ -697,10 +824,10 @@ class _HomeState extends State<Home> {
         noOfLoginAjaxRequests = 0;
 
         debugPrint("noOfHomePageBuilds onLoadStart: $noOfHomePageBuilds");
-        final snackBar = SnackBar(
-          content: Text('onLoadStart $url'),
-          duration: const Duration(seconds: 1),
-        );
+        // final snackBar = SnackBar(
+        //   content: Text('onLoadStart $url'),
+        //   duration: const Duration(seconds: 1),
+        // );
         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
         // onCurrentFullUrl.call(url?.toString() ?? '');
         setState(() {
@@ -766,6 +893,7 @@ class _HomeState extends State<Home> {
                         },
                         headlessWebView: headlessWebView,
                         context: context);
+
                     await headlessWebView?.webViewController.evaluateJavascript(
                         source:
                             "document.getElementsByTagName('button')[0].click();");
@@ -798,7 +926,6 @@ class _HomeState extends State<Home> {
                 getStudentName(forXAction: 'Logged in');
 
                 studentPortalDocument = document;
-
                 // print(url.toString());
               }
             }
@@ -879,10 +1006,10 @@ class _HomeState extends State<Home> {
         //     }
         //   }
         // });
-        final snackBar = SnackBar(
-          content: Text('onLoadStop $url'),
-          duration: const Duration(seconds: 1),
-        );
+        // final snackBar = SnackBar(
+        //   content: Text('onLoadStop $url'),
+        //   duration: const Duration(seconds: 1),
+        // );
         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
         // onCurrentFullUrl.call(url?.toString() ?? '');
         setState(() {
@@ -892,7 +1019,7 @@ class _HomeState extends State<Home> {
       },
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
-        print("error $url: $code, $message");
+        debugPrint("error $url: $code, $message");
         setState(() {
           vtopStatusType = message;
         });
@@ -921,7 +1048,7 @@ class _HomeState extends State<Home> {
       },
       onLoadHttpError: (InAppWebViewController controller, Uri? url,
           int statusCode, String description) async {
-        print("HTTP error $url: $statusCode, $description");
+        debugPrint("HTTP error $url: $statusCode, $description");
       },
     );
     //     headlessInAppWebView(

@@ -5,7 +5,10 @@ import 'forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 callStudentProfileAllView(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
+    required bool processingSomething,
+    required ValueChanged<bool> onProcessingSomething,
     required ValueChanged<String> onCurrentFullUrl}) async {
+  onProcessingSomething.call(processingSomething);
   if (headlessWebView?.isRunning() ?? false) {
     await headlessWebView?.webViewController
         .evaluateJavascript(
@@ -22,7 +25,7 @@ callStudentProfileAllView(
         //     onCurrentFullUrl: (String value) {
         //       onCurrentFullUrl.call(value);
         //     });
-        print(
+        debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
         runHeadlessInAppWebView(
           headlessWebView: headlessWebView,

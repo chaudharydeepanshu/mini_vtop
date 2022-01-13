@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 
-manageUserSession(
+declareManageUserSessionConstants(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required ValueChanged<String> onCurrentFullUrl}) async {
@@ -24,7 +23,7 @@ manageUserSession(
         //     onCurrentFullUrl: (String value) {
         //       onCurrentFullUrl.call(value);
         //     });
-        print(
+        debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
         runHeadlessInAppWebView(
           headlessWebView: headlessWebView,
@@ -34,7 +33,6 @@ manageUserSession(
         );
       } else {
         await headlessWebView.webViewController.evaluateJavascript(source: '''
-console.log("vtop15+ extension active");
 const initialTime = Date.now();
 const menuToggle = document.querySelector("#menu-toggle");
 if (menuToggle !== null) {
@@ -71,6 +69,56 @@ if (menuToggle !== null) {
         doSomething();
     }, 10 * 60 * 1000);
 }
+              ''');
+        debugPrint("called manageUserSession");
+      }
+    });
+  } else {
+    const snackBar = SnackBar(
+      content: Text(
+          'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
+      duration: Duration(milliseconds: 1500),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+}
+
+manageUserSession(
+    {required BuildContext context,
+    required HeadlessInAppWebView? headlessWebView,
+    required ValueChanged<String> onCurrentFullUrl}) async {
+  if (headlessWebView?.isRunning() ?? false) {
+    await headlessWebView?.webViewController
+        .evaluateJavascript(
+            source: "new XMLSerializer().serializeToString(document);")
+        .then((value) async {
+      // printWrapped(value);
+      if (value.contains(
+              "You are logged out due to inactivity for more than 15 minutes") ||
+          value.contains("You have been successfully logged out")) {
+        debugPrint(
+            "You are logged out due to inactivity for more than 15 minutes");
+        // runHeadlessInAppWebView(
+        //     headlessWebView: headlessWebView,
+        //     onCurrentFullUrl: (String value) {
+        //       onCurrentFullUrl.call(value);
+        //     });
+        debugPrint(
+            "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
+        runHeadlessInAppWebView(
+          headlessWebView: headlessWebView,
+          onCurrentFullUrl: (String value) {
+            onCurrentFullUrl(value);
+          },
+        );
+      } else {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+
+    doSomething();
+    setInterval(() => {
+        doSomething();
+    }, 10 * 60 * 1000);
+
               ''');
         debugPrint("called manageUserSession");
       }

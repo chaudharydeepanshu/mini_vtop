@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:mini_vtop/coreFunctions/call_time_table.dart';
 import 'package:mini_vtop/coreFunctions/sign_in.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:mini_vtop/ui/launch_loading_screen.dart';
@@ -167,13 +168,33 @@ chooseCorrectBody(
         onShowStudentProfileAllView: (bool value) {
           onRequestType.call("Real");
           callStudentProfileAllView(
-              context: context,
-              headlessWebView: headlessWebView,
-              onCurrentFullUrl: (String value) {
-                onCurrentFullUrl.call(value);
-              });
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
+        },
+        onTimeTable: (bool value) {
+          onRequestType.call("Real");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
         },
         arguments: StudentPortalArguments(
+            processingSomething: processingSomething,
             studentPortalDocument: studentPortalDocument,
             studentProfileAllViewDocument: studentProfileAllViewDocument,
             headlessWebView: headlessWebView,

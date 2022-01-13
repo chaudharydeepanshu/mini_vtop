@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mini_vtop/basicFunctions/print_wrapped.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:ntp/ntp.dart';
 
@@ -15,10 +15,12 @@ class StudentPortal extends StatefulWidget {
     this.onShowStudentProfileAllView,
     this.loggedUserStatus,
     required this.arguments,
+    this.onTimeTable,
   }) : super(key: key);
 
   final String? loggedUserStatus;
   final ValueChanged<bool>? onShowStudentProfileAllView;
+  final ValueChanged<bool>? onTimeTable;
   final StudentPortalArguments arguments;
 
   @override
@@ -35,6 +37,7 @@ class _StudentPortalState extends State<StudentPortal> {
     studentPortalOptions = [
       {
         "name": "Your Info",
+        "icon": Icons.work,
         "internalOptionsMapList": [
           {
             "name": "Profile",
@@ -42,6 +45,64 @@ class _StudentPortalState extends State<StudentPortal> {
               // timer.cancel();
               // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
+              Navigator.of(context).pop();
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                processingDialog(
+                  isDialogShowing: isDialogShowing,
+                  context: context,
+                  onIsDialogShowing: (bool value) {
+                    setState(() {
+                      isDialogShowing = value;
+                    });
+                  },
+                  dialogTitle: const Text('Requesting Data'),
+                  dialogChildren: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      Text('Please wait...'),
+                    ],
+                  ),
+                  barrierDismissible: false,
+                ).then((_) => isDialogShowing = false);
+              });
+            },
+          },
+        ],
+      },
+      {
+        "name": "Academics",
+        "icon": Icons.school,
+        "internalOptionsMapList": [
+          {
+            "name": "Time Table",
+            "action": () {
+              // timer.cancel();
+              // startTimeout();
+              widget.onTimeTable?.call(true);
+              Navigator.of(context).pop();
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                processingDialog(
+                  isDialogShowing: isDialogShowing,
+                  context: context,
+                  onIsDialogShowing: (bool value) {
+                    setState(() {
+                      isDialogShowing = value;
+                    });
+                  },
+                  dialogTitle: const Text('Requesting Data'),
+                  dialogChildren: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      Text('Please wait...'),
+                    ],
+                  ),
+                  barrierDismissible: true,
+                ).then((_) => isDialogShowing = false);
+              });
             },
           },
         ],
@@ -90,6 +151,16 @@ class _StudentPortalState extends State<StudentPortal> {
 
   @override
   Widget build(BuildContext context) {
+    // debugPrint("isDialogShowing: $isDialogShowing");
+    // if (widget.arguments.processingSomething == false &&
+    //     isDialogShowing == true) {
+    //   // _controller3 = TextEditingController(text: "");
+    //   // Future.delayed(const Duration(milliseconds: 500), () async {
+    //   Navigator.of(context).pop();
+    //   debugPrint("dialogBox popped");
+    //   // });
+    // }
+
     // print(widget.arguments.studentPortalDocument.outerHtml);
     return SingleChildScrollView(
       controller: controller,
@@ -221,7 +292,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                   title: Text(studentPortalOptions[index]
                                       ["internalOptionsMapList"][i]["name"]),
                                   // subtitle: Text('Profile'),
-                                  // trailing: Icon(Icons.more_vert),
+                                  // trailing: const CircularProgressIndicator(),
                                   // isThreeLine: true,
                                 ),
                               ),
@@ -239,14 +310,13 @@ class _StudentPortalState extends State<StudentPortal> {
                             ),
                           ),
                           barrierDismissible: true);
-                      print("tapped");
                     },
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.work),
+                          Icon(studentPortalOptions[index]["icon"]),
                           const SizedBox(
                             height: 10,
                           ),
@@ -294,11 +364,12 @@ class _StudentPortalState extends State<StudentPortal> {
 }
 
 class StudentPortalArguments {
-  var studentPortalDocument;
-  var studentProfileAllViewDocument;
+  dom.Document? studentPortalDocument;
+  dom.Document? studentProfileAllViewDocument;
   String? studentName;
   HeadlessInAppWebView? headlessWebView;
   DateTime? sessionDateTime;
+  bool processingSomething;
 
   StudentPortalArguments({
     required this.studentPortalDocument,
@@ -306,5 +377,6 @@ class StudentPortalArguments {
     required this.studentName,
     required this.headlessWebView,
     required this.sessionDateTime,
+    required this.processingSomething,
   });
 }

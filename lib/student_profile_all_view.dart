@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:html/dom.dart' as dom;
 
 class StudentProfileAllView extends StatefulWidget {
   static const String routeName = '/studentProfileAllView';
@@ -26,8 +26,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
     super.initState();
 
     var table = widget.arguments?.studentProfileAllViewDocument
-        .getElementById("page-wrapper")
-        .children[0]
+        ?.getElementById("page-wrapper")
+        ?.children[0]
         .children[0]
         .children[3]
         .children[1]
@@ -35,8 +35,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         .children[0]
         .children[0]
         .children[0]; //document.getElementById("table");
-    var trs = table.getElementsByTagName("tr");
-    int tdsInTr1 = trs[1].getElementsByTagName("td").length;
+    List trs = table?.getElementsByTagName("tr") ?? [];
+    // int tdsInTr1 = trs[1].getElementsByTagName("td").length;
 
     int noOfMiniTablesToCreate = 0;
 
@@ -78,11 +78,11 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       tempList = [];
     }
 
-    print("listOfLists: ${listOfHeaders.length}");
+    debugPrint("listOfLists: ${listOfHeaders.length}");
 
     listOfCustomTables =
         List<Widget>.generate(noOfMiniTablesToCreate, (int index) {
-      print("listOfLists[$index].length: ${listOfLists[index].length}");
+      debugPrint("listOfLists[$index].length: ${listOfLists[index].length}");
       // int tdLength = trs[index].getElementsByTagName("td").length;
       // List<Widget> listOfColumnsForRowWithIndex = [];
 
@@ -242,7 +242,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
 class StudentProfileAllViewArguments {
   String? currentStatus;
   ValueChanged<bool>? onShowStudentProfileAllViewDispose;
-  var studentProfileAllViewDocument;
+  dom.Document? studentProfileAllViewDocument;
   // String userEnteredUname;
   // String userEnteredPasswd;
   // HeadlessInAppWebView headlessWebView;
