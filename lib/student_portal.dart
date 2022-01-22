@@ -64,7 +64,7 @@ class _StudentPortalState extends State<StudentPortal> {
                       Text('Please wait...'),
                     ],
                   ),
-                  barrierDismissible: false,
+                  barrierDismissible: true,
                 ).then((_) => isDialogShowing = false);
               });
             },
@@ -76,7 +76,7 @@ class _StudentPortalState extends State<StudentPortal> {
         "icon": Icons.school,
         "internalOptionsMapList": [
           {
-            "name": "Time Table",
+            "name": "Time Table & Subjects Details",
             "action": () {
               // timer.cancel();
               // startTimeout();

@@ -17,74 +17,46 @@ class StudentProfileAllView extends StatefulWidget {
 }
 
 class _StudentProfileAllViewState extends State<StudentProfileAllView> {
-  late List<Widget> listOfTableRows;
-
-  late List<Widget> listOfCustomTables;
-
-  @override
-  void initState() {
-    super.initState();
-
-    var table = widget.arguments?.studentProfileAllViewDocument
-        ?.getElementById("page-wrapper")
-        ?.children[0]
-        .children[0]
-        .children[3]
-        .children[1]
-        .children[0]
-        .children[0]
-        .children[0]
-        .children[0]; //document.getElementById("table");
-    List trs = table?.getElementsByTagName("tr") ?? [];
-    // int tdsInTr1 = trs[1].getElementsByTagName("td").length;
-
-    int noOfMiniTablesToCreate = 0;
-
+  // late List<Widget> listOfTableRows;
+  Map<String, dynamic> createTablesListAndHeadersList(
+      {required List listOfTrs}) {
     List<List> listOfHeaders = [];
     List<List> listOfLists = [];
-
+    int noOfMiniTablesToCreate = 0;
+    Map<String, dynamic> mapOfListOfHeadersAndLists = {};
     List tempList = [];
-
-    for (int i = 0; i < trs.length; i++) {
-      if (trs[i].getElementsByTagName("td").length == 1) {
-        listOfHeaders.add([trs[i]]);
+    for (int i = 0; i < listOfTrs.length; i++) {
+      if (listOfTrs[i].getElementsByTagName("td").length == 1) {
+        listOfHeaders.add([listOfTrs[i]]);
         noOfMiniTablesToCreate++;
         if (tempList.isNotEmpty) {
           listOfLists.add(tempList);
           tempList = [];
         }
       } else {
-        // print(i);
-        tempList.add(trs[i]);
-        // if (listOfLists.length == noOfMiniTablesToCreate - 1) {
-        //   List tempList = [];
-
-        // for (i = i - 1;
-        //     i < trs.length && trs[i].getElementsByTagName("td").length != 1;
-        //     i++) {
-        //   print(trs[i]
-        //       .getElementsByTagName("td")[0]
-        //       .innerHtml
-        //       .replaceAll(RegExp('\\s+'), ' '));
-        //   tempList.add(trs[i]);
-        // }
-        //   listOfLists.add(tempList);
-        // }
+        tempList.add(listOfTrs[i]);
       }
     }
-
     if (tempList.isNotEmpty) {
       listOfLists.add(tempList);
       tempList = [];
     }
 
-    debugPrint("listOfLists: ${listOfHeaders.length}");
+    mapOfListOfHeadersAndLists = {
+      "listOfHeaders": listOfHeaders,
+      "listOfLists": listOfLists,
+      "noOfMiniTablesToCreate": noOfMiniTablesToCreate,
+    };
 
-    listOfCustomTables =
-        List<Widget>.generate(noOfMiniTablesToCreate, (int index) {
+    return mapOfListOfHeadersAndLists;
+  }
+
+  List<Widget> listOfCustomTablesCreator(
+      {required int noOfMiniTablesToCreate,
+      required List listOfLists,
+      required List listOfHeaders}) {
+    return List<Widget>.generate(noOfMiniTablesToCreate, (int index) {
       debugPrint("listOfLists[$index].length: ${listOfLists[index].length}");
-      // int tdLength = trs[index].getElementsByTagName("td").length;
-      // List<Widget> listOfColumnsForRowWithIndex = [];
 
       Widget tableHeader = Container(
         decoration: const BoxDecoration(
@@ -92,19 +64,26 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           // border: Border.all(color: Colors.white, width: 1),
           // borderRadius: const BorderRadius.all(Radius.circular(40));
         ),
-        height: 64,
-        width: 500,
-        child: Center(
-          child: Text(
-            "${listOfHeaders[index][0].getElementsByTagName("td")[0].innerHtml.replaceAll(RegExp('\\s+'), ' ')}",
-            style: GoogleFonts.lato(
-              color: Colors.white,
-              // textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.normal,
+        // height: 64,
+        // width: 500,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15, right: 15, top: 15, bottom: 15),
+              child: Text(
+                "${listOfHeaders[index][0].getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
+                style: GoogleFonts.lato(
+                  color: Colors.white,
+                  // textStyle: Theme.of(context).textTheme.headline1,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       );
 
@@ -113,19 +92,20 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         List<Widget> listOfColumnsForRowWithIndex =
             List<Widget>.generate(2, (int j) {
           Container tableRowColumnContainer = Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.black, width: 1),
+              // border: Border.all(color: Colors.black, width: 1),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
-            height: 75,
-            width: 250,
+            // height: 75,
+            // width: 250,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 15),
+                padding: const EdgeInsets.only(
+                    left: 15, right: 15, top: 15, bottom: 15),
                 child: Text(
-                  "${listOfLists[index][i].getElementsByTagName("td")[j].innerHtml.replaceAll(RegExp('\\s+'), ' ')}",
+                  "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
@@ -149,15 +129,18 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       });
 
       Widget table = Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           tableHeader,
           Table(
             border: TableBorder.all(),
-            columnWidths: const <int, TableColumnWidth>{
-              // 0: IntrinsicColumnWidth(),
-              // 1: FlexColumnWidth(),
-              // 2: FixedColumnWidth(64),
-            },
+            // columnWidths: const <int, TableColumnWidth>{
+            // 0: IntrinsicColumnWidth(),
+            // 1: FlexColumnWidth(),
+            // 2: FixedColumnWidth(64),
+            // },
+            defaultColumnWidth: const FlexColumnWidth(),
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: listOfRows,
           ),
@@ -168,6 +151,143 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
     });
   }
 
+  late List<Widget> listOfPersonalDetailCustomTables;
+
+  late List<Widget> listOfEducationalDetailCustomTables;
+
+  late List<Widget> listOfFamilyDetailCustomTables;
+
+  late List<Widget> listOfProctorDetailCustomTables;
+
+  @override
+  void initState() {
+    super.initState();
+
+    var htmlPersonalDetailTable = widget
+        .arguments?.studentProfileAllViewDocument
+        ?.getElementById("page-wrapper")
+        ?.children[0]
+        .children[0]
+        .children[3]
+        .children[1]
+        .children[0]
+        .children[0]
+        .children[0]
+        .children[0];
+    // ?.getElementById("1a")
+    // ?.children[0]
+    // .children[0]
+    // .children[0]; //document.getElementById("htmlPersonalDetailTable");
+    List htmlPersonalDetailTrs =
+        htmlPersonalDetailTable?.getElementsByTagName("tr") ?? [];
+    // int tdsInTr1 = htmlPersonalDetailTrs[1].getElementsByTagName("td").length;
+
+    Map<String, dynamic> mapOfListOfHeadersAndListsForPersonalDetail =
+        createTablesListAndHeadersList(listOfTrs: htmlPersonalDetailTrs);
+    List<List> listOfPersonalDetailHeaders =
+        mapOfListOfHeadersAndListsForPersonalDetail["listOfHeaders"] ?? [];
+    List<List> listOfPersonalDetailLists =
+        mapOfListOfHeadersAndListsForPersonalDetail["listOfLists"] ?? [];
+    int noOfPersonalDetailMiniTablesToCreate =
+        mapOfListOfHeadersAndListsForPersonalDetail["noOfMiniTablesToCreate"] ??
+            0;
+
+    listOfPersonalDetailCustomTables = listOfCustomTablesCreator(
+      listOfLists: listOfPersonalDetailLists,
+      listOfHeaders: listOfPersonalDetailHeaders,
+      noOfMiniTablesToCreate: noOfPersonalDetailMiniTablesToCreate,
+    );
+
+    var htmlEducationalDetailTable = widget
+        .arguments?.studentProfileAllViewDocument
+        ?.getElementById("page-wrapper")
+        ?.children[0]
+        .children[0]
+        .children[3]
+        .children[1]
+        .children[1]
+        .children[0]
+        .children[0]
+        .children[0];
+    List htmlEducationalDetailTrs =
+        htmlEducationalDetailTable?.getElementsByTagName("tr") ?? [];
+
+    Map<String, dynamic> mapOfListOfHeadersAndListsForEducationalDetail =
+        createTablesListAndHeadersList(listOfTrs: htmlEducationalDetailTrs);
+    List<List> listOfEducationalDetailHeaders =
+        mapOfListOfHeadersAndListsForEducationalDetail["listOfHeaders"] ?? [];
+    List<List> listOfEducationalDetailLists =
+        mapOfListOfHeadersAndListsForEducationalDetail["listOfLists"] ?? [];
+    int noOfEducationalDetailMiniTablesToCreate =
+        mapOfListOfHeadersAndListsForEducationalDetail[
+                "noOfMiniTablesToCreate"] ??
+            0;
+
+    listOfEducationalDetailCustomTables = listOfCustomTablesCreator(
+      listOfLists: listOfEducationalDetailLists,
+      listOfHeaders: listOfEducationalDetailHeaders,
+      noOfMiniTablesToCreate: noOfEducationalDetailMiniTablesToCreate,
+    );
+
+    var htmlFamilyDetailTable = widget.arguments?.studentProfileAllViewDocument
+        ?.getElementById("page-wrapper")
+        ?.children[0]
+        .children[0]
+        .children[3]
+        .children[1]
+        .children[2]
+        .children[0]
+        .children[0]
+        .children[0];
+    List htmlFamilyDetailTrs =
+        htmlFamilyDetailTable?.getElementsByTagName("tr") ?? [];
+
+    Map<String, dynamic> mapOfListOfHeadersAndListsForFamilyDetail =
+        createTablesListAndHeadersList(listOfTrs: htmlFamilyDetailTrs);
+    List<List> listOfFamilyDetailHeaders =
+        mapOfListOfHeadersAndListsForFamilyDetail["listOfHeaders"] ?? [];
+    List<List> listOfFamilyDetailLists =
+        mapOfListOfHeadersAndListsForFamilyDetail["listOfLists"] ?? [];
+    int noOfFamilyDetailMiniTablesToCreate =
+        mapOfListOfHeadersAndListsForFamilyDetail["noOfMiniTablesToCreate"] ??
+            0;
+
+    listOfFamilyDetailCustomTables = listOfCustomTablesCreator(
+      listOfLists: listOfFamilyDetailLists,
+      listOfHeaders: listOfFamilyDetailHeaders,
+      noOfMiniTablesToCreate: noOfFamilyDetailMiniTablesToCreate,
+    );
+
+    var htmlProctorDetailTable = widget.arguments?.studentProfileAllViewDocument
+        ?.getElementById("page-wrapper")
+        ?.children[0]
+        .children[0]
+        .children[3]
+        .children[1]
+        .children[3]
+        .children[0]
+        .children[0]
+        .children[0];
+    List htmlProctorDetailTrs =
+        htmlProctorDetailTable?.getElementsByTagName("tr") ?? [];
+
+    Map<String, dynamic> mapOfListOfHeadersAndListsForProctorDetail =
+        createTablesListAndHeadersList(listOfTrs: htmlProctorDetailTrs);
+    List<List> listOfProctorDetailHeaders =
+        mapOfListOfHeadersAndListsForProctorDetail["listOfHeaders"] ?? [];
+    List<List> listOfProctorDetailLists =
+        mapOfListOfHeadersAndListsForProctorDetail["listOfLists"] ?? [];
+    int noOfProctorDetailMiniTablesToCreate =
+        mapOfListOfHeadersAndListsForProctorDetail["noOfMiniTablesToCreate"] ??
+            0;
+
+    listOfProctorDetailCustomTables = listOfCustomTablesCreator(
+      listOfLists: listOfProctorDetailLists,
+      listOfHeaders: listOfProctorDetailHeaders,
+      noOfMiniTablesToCreate: noOfProctorDetailMiniTablesToCreate,
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -176,63 +296,63 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          "Student Profile All View",
-          style: GoogleFonts.nunito(
-            color: Colors.white,
-            textStyle: Theme.of(context).textTheme.headline1,
-            fontSize: 25,
-            fontWeight: FontWeight.w600,
-            fontStyle: FontStyle.normal,
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            "Student Profile",
+            style: GoogleFonts.nunito(
+              color: Colors.white,
+              textStyle: Theme.of(context).textTheme.headline1,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.normal,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
+          backgroundColor: const Color(0xff04294f),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: "Personal"),
+              Tab(text: "Educational"),
+              Tab(text: "Family"),
+              Tab(text: "Proctor"),
+            ],
+          ),
         ),
-        backgroundColor: const Color(0xff04294f),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: listOfCustomTables,
-          // [
-          //   Html(
-          //       shrinkWrap: true,
-          //       data: widget.arguments?.studentProfileAllViewDocument
-          //           .getElementById("page-wrapper")
-          //           .children[0]
-          //           .children[0]
-          //           .children[3]
-          //           .children[1]
-          //           .children[0]
-          //           .children[0]
-          //           .children[0]
-          //           .children[0]
-          //           .outerHtml,
-          //       style: {
-          //         // tables will have the below background color
-          //         "table": Style(
-          //           backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-          //         ),
-          //         // some other granular customizations are also possible
-          //         "tr": Style(
-          //             border: Border(bottom: BorderSide(color: Colors.grey)),
-          //             fontSize: FontSize.xLarge),
-          //         "th": Style(
-          //           padding: EdgeInsets.all(6),
-          //           backgroundColor: Colors.grey,
-          //         ),
-          //         "td": Style(
-          //           padding: EdgeInsets.all(6),
-          //           alignment: Alignment.topLeft,
-          //         ),
-          //         // text that renders h1 elements will be red
-          //         "h1": Style(color: Colors.red),
-          //       }
-          //       //other params
-          //       ),
-          //
-          // ],
+        body: TabBarView(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: listOfPersonalDetailCustomTables,
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: listOfEducationalDetailCustomTables,
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: listOfFamilyDetailCustomTables,
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: listOfProctorDetailCustomTables,
+              ),
+            ),
+          ],
         ),
       ),
     );

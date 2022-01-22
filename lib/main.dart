@@ -732,7 +732,7 @@ class _HomeState extends State<Home> {
                     waitStatus = false;
                     await headlessWebView?.webViewController
                         .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "BL2021221";
+             document.getElementById('semesterSubId').value = "BL20212210";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                   }
@@ -1101,11 +1101,11 @@ class _HomeState extends State<Home> {
         },
         headlessWebView: headlessWebView);
 
-    Future.delayed(const Duration(seconds: 4), () async {
-      // setState(() {
-      //   vtopStatusType = "Connecting";
-      // });
-    });
+    // Future.delayed(const Duration(seconds: 4), () async {
+    // setState(() {
+    //   vtopStatusType = "Connecting";
+    // });
+    // });
   }
 
   @override
@@ -1249,6 +1249,11 @@ class _HomeState extends State<Home> {
         });
       },
       currentFullUrl: currentFullUrl,
+      onCurrentStatus: (String value) {
+        setState(() {
+          currentStatus = value;
+        });
+      },
     );
 
     return Scaffold(

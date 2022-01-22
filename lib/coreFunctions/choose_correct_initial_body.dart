@@ -5,6 +5,7 @@ import 'package:mini_vtop/coreFunctions/sign_in.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:mini_vtop/ui/launch_loading_screen.dart';
 import '../first_body.dart';
+import '../full_webview.dart';
 import '../login_body.dart';
 import '../student_portal.dart';
 import 'call_student_profile_all_view.dart';
@@ -156,12 +157,6 @@ chooseCorrectBody(
       },
     ));
   } else if (currentStatus == "userLoggedIn") {
-    // await headlessWebView?.webViewController
-    //     .evaluateJavascript(
-    //         source: "new XMLSerializer().serializeToString(document);")
-    //     .then((value) {
-    //   printWrapped(value);
-    // });
     onBody.call(
       StudentPortal(
         loggedUserStatus: loggedUserStatus,
@@ -202,15 +197,46 @@ chooseCorrectBody(
             sessionDateTime: sessionDateTime),
       ),
     );
-    // if (currentStatus == "userLoggedIn" &&
-    //     loggedUserStatus == "StudentProfileAllView") {
-    //   Navigator.pushNamed(
-    //     context,
-    //     PageRoutes.studentProfileAllView,
-    //     arguments: StudentProfileAllViewArguments(
-    //       currentStatus: currentStatus,
-    //     ),
-    //   );
-    // }
+  } else if (currentStatus == "originalVTOP") {
+    onBody.call(
+      FullWebView(
+        loggedUserStatus: loggedUserStatus,
+        onShowStudentProfileAllView: (bool value) {
+          onRequestType.call("Real");
+          callStudentProfileAllView(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
+        },
+        onTimeTable: (bool value) {
+          onRequestType.call("Real");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
+        },
+        arguments: FullWebViewArguments(
+            processingSomething: processingSomething,
+            studentPortalDocument: studentPortalDocument,
+            studentProfileAllViewDocument: studentProfileAllViewDocument,
+            headlessWebView: headlessWebView,
+            studentName: studentName,
+            sessionDateTime: sessionDateTime),
+      ),
+    );
   }
 }

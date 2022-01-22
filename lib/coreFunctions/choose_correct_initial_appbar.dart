@@ -17,6 +17,7 @@ chooseCorrectAppbar(
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<bool> onProcessingSomething,
     required ValueChanged<String> onCurrentFullUrl,
+    required ValueChanged<String> onCurrentStatus,
     required ValueChanged<String> onUserEnteredUname,
     required ValueChanged<String> onUserEnteredPasswd,
     required ValueChanged<Widget> onAppbar}) async {
@@ -99,6 +100,118 @@ chooseCorrectAppbar(
           textAlign: TextAlign.center,
         ),
         backgroundColor: const Color(0xff04294f),
+        leading: Padding(
+          padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+          child: SizedBox(
+            width: 51,
+            height: 40,
+            child: Material(
+              color: Colors.transparent,
+              shape: const StadiumBorder(),
+              child: Tooltip(
+                message: "Switch to full VTOP",
+                child: InkWell(
+                  onTap: () {
+                    onCurrentStatus.call("originalVTOP");
+                  },
+                  customBorder: const StadiumBorder(),
+                  focusColor: Colors.white.withOpacity(0.1),
+                  highlightColor: Colors.white.withOpacity(0.1),
+                  splashColor: Colors.white.withOpacity(0.1),
+                  hoverColor: Colors.white.withOpacity(0.1),
+                  child: const Icon(
+                    Icons.whatshot,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+            child: SizedBox(
+              width: 51,
+              height: 40,
+              child: Material(
+                color: Colors.transparent,
+                shape: const StadiumBorder(),
+                child: Tooltip(
+                  message: "Logout",
+                  child: InkWell(
+                    onTap: () {
+                      performSignOut(
+                          context: context,
+                          headlessWebView: headlessWebView,
+                          onCurrentFullUrl: (String value) {
+                            onCurrentFullUrl.call(value);
+                          });
+                    },
+                    customBorder: const StadiumBorder(),
+                    focusColor: Colors.white.withOpacity(0.1),
+                    highlightColor: Colors.white.withOpacity(0.1),
+                    splashColor: Colors.white.withOpacity(0.1),
+                    hoverColor: Colors.white.withOpacity(0.1),
+                    child: const Icon(
+                      Icons.logout,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  } else if (currentStatus == "originalVTOP") {
+    onAppbar.call(
+      AppBar(
+        centerTitle: true,
+        title: Text(
+          "Original VTOP",
+          style: GoogleFonts.nunito(
+            color: Colors.white,
+            textStyle: Theme.of(context).textTheme.headline1,
+            fontSize: 25,
+            fontWeight: FontWeight.w600,
+            fontStyle: FontStyle.normal,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: const Color(0xff04294f),
+        leading: Padding(
+          padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+          child: SizedBox(
+            width: 51,
+            height: 40,
+            child: Material(
+              color: Colors.transparent,
+              shape: const StadiumBorder(),
+              child: Tooltip(
+                message: "Switch to full VTOP",
+                child: InkWell(
+                  onTap: () {
+                    onCurrentStatus.call("userLoggedIn");
+                  },
+                  customBorder: const StadiumBorder(),
+                  focusColor: Colors.white.withOpacity(0.1),
+                  highlightColor: Colors.white.withOpacity(0.1),
+                  splashColor: Colors.white.withOpacity(0.1),
+                  hoverColor: Colors.white.withOpacity(0.1),
+                  child: const Icon(
+                    Icons.whatshot,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),

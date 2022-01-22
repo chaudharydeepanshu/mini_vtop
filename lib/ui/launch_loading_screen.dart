@@ -158,7 +158,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         textDialogOfLoginScreenColor = const Color(0xfffdb813);
       });
     } else if (widget.arguments.vtopStatusType ==
-        "net::ERR_CONNECTION_TIMED_OUT") {
+            "net::ERR_CONNECTION_TIMED_OUT" ||
+        widget.arguments.vtopStatusType == "net::ERR_NAME_NOT_RESOLVED") {
       setState(() {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
