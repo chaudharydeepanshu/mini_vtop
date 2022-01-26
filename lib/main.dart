@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'dart:typed_data';
@@ -9,12 +11,13 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
-import 'package:mini_vtop/student_profile_all_view.dart';
-import 'package:mini_vtop/time_table.dart';
+import 'package:mini_vtop/ui/student_profile_all_view.dart';
+import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
 import 'coreFunctions/auto_captcha.dart';
+import 'coreFunctions/choose_correct_drawer.dart';
 import 'coreFunctions/choose_correct_initial_body.dart';
 import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
 import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
@@ -23,42 +26,99 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  runApp(const MyApp());
+  runApp(MyApp(savedThemeMode: savedThemeMode));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, this.savedThemeMode}) : super(key: key);
+
+  final AdaptiveThemeMode? savedThemeMode;
+  final AdaptiveThemeMode firstRunAfterInstallThemeMode =
+      AdaptiveThemeMode.system;
+
   @override
   Widget build(BuildContext context) {
-    return DismissKeyboard(
-      child: MaterialApp(
-        title: 'Mini VTOP',
-        theme: ThemeData.light(),
-        // darkTheme: ThemeData.dark(),
-        debugShowCheckedModeBanner: false,
-        home: const Home(),
-        routes: {
-          PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
-                arguments: ModalRoute.of(context)!.settings.arguments
-                    as StudentProfileAllViewArguments?,
-              ),
-          PageRoutes.timeTable: (context) => TimeTable(
-                arguments: ModalRoute.of(context)!.settings.arguments
-                    as TimeTableArguments?,
-              ),
-        },
+    return AdaptiveTheme(
+      light: ThemeData(
+        primarySwatch: Colors.blue,
+        platform: TargetPlatform.android,
+        scaffoldBackgroundColor: Colors.white,
+        primaryTextTheme: const TextTheme(
+          headline6: TextStyle(color: Colors.black),
+        ),
+        //iconTheme: IconThemeData(color: Colors.black),
+        cardTheme: CardTheme(
+          color: Colors.grey.shade400,
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.grey.shade300,
+          iconTheme: const IconThemeData(
+            color: Colors.black,
+          ),
+        ),
+        bottomAppBarTheme: BottomAppBarTheme(
+          color: Colors.grey.shade300,
+        ),
+      ),
+      dark: ThemeData.dark().copyWith(
+        // iconTheme: IconThemeData(color: Colors.black),
+        // scaffoldBackgroundColor: Color(0xFF121212),
+        // canvasColor: Color(0xFF121212),
+        checkboxTheme: CheckboxThemeData(
+          checkColor: MaterialStateProperty.all(Colors.white),
+          fillColor: MaterialStateProperty.all(Colors.lightBlueAccent),
+        ),
+        cardTheme: const CardTheme(
+          color: Color(0xff424242),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF222222),
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+        ),
+        bottomAppBarTheme: const BottomAppBarTheme(
+          color: Color(0xFF222222),
+        ),
+      ),
+      initial: savedThemeMode ?? firstRunAfterInstallThemeMode,
+      builder: (theme, darkTheme) => DismissKeyboard(
+        child: MaterialApp(
+          title: 'Mini VTOP',
+          darkTheme: darkTheme,
+          theme: theme,
+          themeMode: ThemeMode.system,
+          // darkTheme: ThemeData.dark(),
+          debugShowCheckedModeBanner: false,
+          home: Home(
+            savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
+          ),
+          routes: {
+            PageRoutes.studentProfileAllView: (context) =>
+                StudentProfileAllView(
+                  arguments: ModalRoute.of(context)!.settings.arguments
+                      as StudentProfileAllViewArguments?,
+                ),
+            PageRoutes.timeTable: (context) => TimeTable(
+                  arguments: ModalRoute.of(context)!.settings.arguments
+                      as TimeTableArguments?,
+                ),
+          },
+        ),
       ),
     );
   }
 }
 
 class Home extends StatefulWidget with PreferredSizeWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({Key? key, this.savedThemeMode}) : super(key: key);
+
+  final AdaptiveThemeMode? savedThemeMode;
 
   @override
   _HomeState createState() => _HomeState();
@@ -67,7 +127,39 @@ class Home extends StatefulWidget with PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  bool? darkModeOn;
+  String? theme;
+
+  themeCalc() async {
+    if (AdaptiveTheme.of(context).mode.isLight) {
+      setState(() {
+        theme = 'Light';
+      });
+    } else if (AdaptiveTheme.of(context).mode.isDark) {
+      setState(() {
+        theme = 'Dark';
+      });
+    } else if (AdaptiveTheme.of(context).mode.isSystem) {
+      setState(() {
+        theme = 'System';
+      });
+    }
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    var brightness = WidgetsBinding.instance!.window.platformBrightness;
+    debugPrint(brightness.name);
+    // > should print light / dark when you switch
+    themeCalc();
+    setState(() {
+      darkModeOn = (theme == 'Dark') ||
+          (brightness == Brightness.dark && theme == 'System');
+    });
+    super.didChangePlatformBrightness();
+  }
+
   InAppWebViewController? webViewController;
 
   HeadlessInAppWebView? headlessWebView;
@@ -95,6 +187,8 @@ class _HomeState extends State<Home> {
   late Widget body;
 
   late Widget appbar;
+
+  late Widget? drawer;
 
   int noOfHomePageBuilds = 0;
 
@@ -221,16 +315,40 @@ class _HomeState extends State<Home> {
     });
   }
 
+  bool isStopped = false;
+
   @override
   void initState() {
     super.initState();
+
+    AdaptiveTheme.of(context).modeChangeNotifier.addListener(() {
+      WidgetsBinding.instance!.addObserver(this); //most important
+      var brightness = WidgetsBinding.instance!.window.platformBrightness;
+      debugPrint(brightness.name);
+      // > should print Brightness.light / Brightness.dark when you switch
+      themeCalc();
+      setState(() {
+        darkModeOn = (theme == 'Dark') ||
+            (brightness == Brightness.dark && theme == 'System');
+      });
+    });
+    WidgetsBinding.instance!.addObserver(this); //most important
+    var brightness = WidgetsBinding.instance!.window.platformBrightness;
+    debugPrint(brightness.name);
+    // > should print Brightness.light / Brightness.dark when you switch
+    themeCalc();
+    setState(() {
+      darkModeOn = (theme == 'Dark') ||
+          (brightness == Brightness.dark && theme == 'System');
+    });
+
     _retrieveUnamePasswd();
     _credentialsFound();
     _retrieveSessionDateTime();
     _retrieveTryAutoLoginStatus();
     headlessWebView = HeadlessInAppWebView(
       initialUrlRequest:
-          URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop")),
+          URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop/")),
       initialOptions: options,
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
         if (kDebugMode) {
@@ -239,7 +357,7 @@ class _HomeState extends State<Home> {
         return ServerTrustAuthResponse(
             action: ServerTrustAuthResponseAction.PROCEED);
       },
-      onWebViewCreated: (controller) {
+      onWebViewCreated: (controller) async {
         Future.delayed(const Duration(seconds: 5), () async {
           if (vtopStatusType == null) {
             setState(() {
@@ -254,6 +372,10 @@ class _HomeState extends State<Home> {
         //   duration: Duration(seconds: 1),
         // );
         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      },
+      androidShouldInterceptRequest: (controller, webResourceRequest) {
+        debugPrint('Console Message: $webResourceRequest');
+        return null!;
       },
       onConsoleMessage: (controller, consoleMessage) {
         // final snackBar = SnackBar(
@@ -1111,11 +1233,16 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
     headlessWebView?.dispose();
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    debugPrint(
+        '$darkModeOn, $theme, ${AdaptiveTheme.of(context).mode.isLight}');
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "signInScreen";
     debugPrint("loggedUserStatus: $loggedUserStatus");
@@ -1254,15 +1381,110 @@ class _HomeState extends State<Home> {
           currentStatus = value;
         });
       },
+      scaffoldKey: _scaffoldKey,
     );
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: widget.preferredSize,
-        child: AnimatedSwitcher(
+    chooseCorrectDrawer(
+      onDrawer: (Widget? value) {
+        drawer = value;
+      },
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          refreshingCaptcha = value;
+        });
+      },
+      currentFullUrl: currentFullUrl,
+      onCurrentStatus: (String value) {
+        setState(() {
+          currentStatus = value;
+        });
+      },
+      savedThemeMode: widget.savedThemeMode,
+    );
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        // statusBarColor:
+        //     darkModeOn! ? Colors.black : Colors.white, //Colors.transparent,
+        // statusBarIconBrightness:
+        //     darkModeOn! ? Brightness.light : Brightness.dark,
+        // statusBarBrightness: !kIsWeb && Platform.isAndroid && darkModeOn!
+        //     ? Brightness.dark
+        //     : Brightness.light,
+        systemNavigationBarColor: darkModeOn! ? Colors.black : Colors.white,
+        // systemNavigationBarDividerColor:
+        //     darkModeOn! ? Colors.white10 : Colors.grey,
+        systemNavigationBarIconBrightness:
+            darkModeOn! ? Brightness.light : Brightness.dark,
+      ),
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: PreferredSize(
+          preferredSize: widget.preferredSize,
+          child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              transitionBuilder: (child, animation) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                          begin: const Offset(1.0, 0), end: const Offset(0, 0))
+                      .animate(animation),
+                  child: child,
+                );
+              },
+              child: appbar),
+        ),
+        body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
             switchInCurve: Curves.easeIn,
             switchOutCurve: Curves.easeOut,
+            // transitionBuilder: (child, animation) {
+            //   const begin = Offset(0.0, 1.0);
+            //   const end = Offset.zero;
+            //   const curve = Curves.ease;
+            //
+            //   final tween = Tween(begin: begin, end: end);
+            //   final curvedAnimation = CurvedAnimation(
+            //     parent: animation,
+            //     curve: curve,
+            //   );
+            //
+            //   return SlideTransition(
+            //     position: tween.animate(curvedAnimation),
+            //     child: child,
+            //   );
+            // },
             transitionBuilder: (child, animation) {
               return SlideTransition(
                 position: Tween<Offset>(
@@ -1271,37 +1493,9 @@ class _HomeState extends State<Home> {
                 child: child,
               );
             },
-            child: appbar),
+            child: body),
+        drawer: drawer,
       ),
-      body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          // transitionBuilder: (child, animation) {
-          //   const begin = Offset(0.0, 1.0);
-          //   const end = Offset.zero;
-          //   const curve = Curves.ease;
-          //
-          //   final tween = Tween(begin: begin, end: end);
-          //   final curvedAnimation = CurvedAnimation(
-          //     parent: animation,
-          //     curve: curve,
-          //   );
-          //
-          //   return SlideTransition(
-          //     position: tween.animate(curvedAnimation),
-          //     child: child,
-          //   );
-          // },
-          transitionBuilder: (child, animation) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                      begin: const Offset(1.0, 0), end: const Offset(0, 0))
-                  .animate(animation),
-              child: child,
-            );
-          },
-          child: body),
     );
   }
 }

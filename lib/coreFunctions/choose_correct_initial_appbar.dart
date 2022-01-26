@@ -14,6 +14,7 @@ chooseCorrectAppbar(
     required Image? image,
     required bool refreshingCaptcha,
     required String currentFullUrl,
+    required var scaffoldKey,
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<bool> onProcessingSomething,
     required ValueChanged<String> onCurrentFullUrl,
@@ -112,6 +113,7 @@ chooseCorrectAppbar(
                 message: "Switch to full VTOP",
                 child: InkWell(
                   onTap: () {
+                    // Scaffold.of(context).openDrawer();
                     onCurrentStatus.call("originalVTOP");
                   },
                   customBorder: const StadiumBorder(),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 
-import 'basicFunctions/measure_size_of_widget.dart';
+import '../basicFunctions/measure_size_of_widget.dart';
 
 class TimeTable extends StatefulWidget {
   static const String routeName = '/timeTable';

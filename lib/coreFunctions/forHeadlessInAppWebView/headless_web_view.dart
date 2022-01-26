@@ -15,7 +15,7 @@ InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       useShouldInterceptAjaxRequest: true,
     ),
     android: AndroidInAppWebViewOptions(
-      // useShouldInterceptRequest: true,
+      useShouldInterceptRequest: true,
       useHybridComposition: true,
     ),
     ios: IOSInAppWebViewOptions(

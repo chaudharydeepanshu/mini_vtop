@@ -7,7 +7,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:ntp/ntp.dart';
 
-import 'basicFunctions/proccessing_dialog.dart';
+import '../basicFunctions/proccessing_dialog.dart';
 
 class StudentPortal extends StatefulWidget {
   const StudentPortal({

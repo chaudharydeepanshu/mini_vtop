@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:ntp/ntp.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'basicFunctions/proccessing_dialog.dart';
-import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
+import '../coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
 
 class FullWebView extends StatefulWidget {
   const FullWebView({
@@ -118,8 +114,16 @@ class _FullWebViewState extends State<FullWebView> {
                 InAppWebView(
                   // key: webViewKey,
                   initialUrlRequest: URLRequest(
-                      url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop")),
+                      url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop/")),
                   initialOptions: options,
+                  onReceivedServerTrustAuthRequest:
+                      (controller, challenge) async {
+                    if (kDebugMode) {
+                      print(challenge);
+                    }
+                    return ServerTrustAuthResponse(
+                        action: ServerTrustAuthResponseAction.PROCEED);
+                  },
                   onWebViewCreated: (controller) {
                     // widget.arguments.headlessWebView?.webViewController =
                     //     controller;
@@ -172,7 +176,7 @@ class _FullWebViewState extends State<FullWebView> {
                     if (progress == 100) {}
                     setState(() {
                       this.progress = progress / 100;
-                      urlController.text = this.url;
+                      urlController.text = url;
                     });
                   },
                   onUpdateVisitedHistory: (controller, url, androidIsReload) {
@@ -182,7 +186,7 @@ class _FullWebViewState extends State<FullWebView> {
                     });
                   },
                   onConsoleMessage: (controller, consoleMessage) {
-                    print(consoleMessage);
+                    debugPrint(consoleMessage.toString());
                   },
                 ),
                 progress < 1.0
