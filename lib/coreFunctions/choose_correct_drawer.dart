@@ -34,18 +34,30 @@ chooseCorrectDrawer(
     onDrawer.call(
       CustomDrawer(
         savedThemeMode: savedThemeMode,
+        currentStatus: currentStatus,
+        onCurrentStatus: (String value) {
+          onCurrentStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
     onDrawer.call(
       CustomDrawer(
         savedThemeMode: savedThemeMode,
+        currentStatus: currentStatus,
+        onCurrentStatus: (String value) {
+          onCurrentStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
     onDrawer.call(
       CustomDrawer(
         savedThemeMode: savedThemeMode,
+        currentStatus: currentStatus,
+        onCurrentStatus: (String value) {
+          onCurrentStatus.call(value);
+        },
       ),
     );
   }

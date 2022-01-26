@@ -317,6 +317,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   bool isStopped = false;
 
+  late Timer timer;
+
   @override
   void initState() {
     super.initState();
@@ -366,6 +368,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           }
         });
         vtopStatusType = null;
+        timer = Timer.periodic(const Duration(seconds: 20), (Timer t) {
+          if (currentStatus == "launchLoadingScreen") {
+            debugPrint(
+                "restarting headlessInAppWebView as webview is taking too ling");
+            runHeadlessInAppWebView(
+              headlessWebView: headlessWebView,
+              onCurrentFullUrl: (String value) {
+                currentFullUrl = value;
+              },
+            );
+          }
+        });
 
         // const snackBar = SnackBar(
         //   content: Text('HeadlessInAppWebView created!'),
@@ -1426,6 +1440,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       currentFullUrl: currentFullUrl,
       onCurrentStatus: (String value) {
         setState(() {
+          print("setstate called ");
           currentStatus = value;
         });
       },

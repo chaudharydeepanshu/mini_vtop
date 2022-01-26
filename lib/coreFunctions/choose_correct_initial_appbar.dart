@@ -101,30 +101,32 @@ chooseCorrectAppbar(
           textAlign: TextAlign.center,
         ),
         backgroundColor: const Color(0xff04294f),
-        leading: Padding(
-          padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
-          child: SizedBox(
-            width: 51,
-            height: 40,
-            child: Material(
-              color: Colors.transparent,
-              shape: const StadiumBorder(),
-              child: Tooltip(
-                message: "Switch to full VTOP",
-                child: InkWell(
-                  onTap: () {
-                    // Scaffold.of(context).openDrawer();
-                    onCurrentStatus.call("originalVTOP");
-                  },
-                  customBorder: const StadiumBorder(),
-                  focusColor: Colors.white.withOpacity(0.1),
-                  highlightColor: Colors.white.withOpacity(0.1),
-                  splashColor: Colors.white.withOpacity(0.1),
-                  hoverColor: Colors.white.withOpacity(0.1),
-                  child: const Icon(
-                    Icons.whatshot,
-                    size: 24,
-                    color: Colors.white,
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+            child: SizedBox(
+              width: 51,
+              height: 40,
+              child: Material(
+                color: Colors.transparent,
+                shape: const StadiumBorder(),
+                child: Tooltip(
+                  message: "Switch to full VTOP",
+                  child: InkWell(
+                    onTap: () {
+                      Scaffold.of(context).openDrawer();
+                      // onCurrentStatus.call("originalVTOP");
+                    },
+                    customBorder: const StadiumBorder(),
+                    focusColor: Colors.white.withOpacity(0.1),
+                    highlightColor: Colors.white.withOpacity(0.1),
+                    splashColor: Colors.white.withOpacity(0.1),
+                    hoverColor: Colors.white.withOpacity(0.1),
+                    child: const Icon(
+                      Icons.menu,
+                      size: 24,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -185,29 +187,32 @@ chooseCorrectAppbar(
           textAlign: TextAlign.center,
         ),
         backgroundColor: const Color(0xff04294f),
-        leading: Padding(
-          padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
-          child: SizedBox(
-            width: 51,
-            height: 40,
-            child: Material(
-              color: Colors.transparent,
-              shape: const StadiumBorder(),
-              child: Tooltip(
-                message: "Switch to full VTOP",
-                child: InkWell(
-                  onTap: () {
-                    onCurrentStatus.call("userLoggedIn");
-                  },
-                  customBorder: const StadiumBorder(),
-                  focusColor: Colors.white.withOpacity(0.1),
-                  highlightColor: Colors.white.withOpacity(0.1),
-                  splashColor: Colors.white.withOpacity(0.1),
-                  hoverColor: Colors.white.withOpacity(0.1),
-                  child: const Icon(
-                    Icons.whatshot,
-                    size: 24,
-                    color: Colors.white,
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+            child: SizedBox(
+              width: 51,
+              height: 40,
+              child: Material(
+                color: Colors.transparent,
+                shape: const StadiumBorder(),
+                child: Tooltip(
+                  message: "Switch to full VTOP",
+                  child: InkWell(
+                    onTap: () {
+                      Scaffold.of(context).openDrawer();
+                      // onCurrentStatus.call("userLoggedIn");
+                    },
+                    customBorder: const StadiumBorder(),
+                    focusColor: Colors.white.withOpacity(0.1),
+                    highlightColor: Colors.white.withOpacity(0.1),
+                    splashColor: Colors.white.withOpacity(0.1),
+                    hoverColor: Colors.white.withOpacity(0.1),
+                    child: const Icon(
+                      Icons.menu,
+                      size: 24,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

@@ -7,8 +7,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctions/dailog_box_for_leaving_app.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({Key? key, this.savedThemeMode}) : super(key: key);
+  const CustomDrawer(
+      {Key? key,
+      this.savedThemeMode,
+      required this.currentStatus,
+      required this.onCurrentStatus})
+      : super(key: key);
   final AdaptiveThemeMode? savedThemeMode;
+  final String currentStatus;
+  final ValueChanged<String> onCurrentStatus;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -17,8 +24,32 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   String? previousTheme;
   String? themeButtonText;
+  String? vtopModeButtonText;
+  late String _currentStatus;
 
-  buttonTextCalc() async {
+  @override
+  void didUpdateWidget(CustomDrawer oldWidget) {
+    if (oldWidget.currentStatus != widget.currentStatus) {
+      _currentStatus = widget.currentStatus;
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  vtopModeButtonTextCalc() async {
+    if (_currentStatus == "userLoggedIn") {
+      setState(() {
+        vtopModeButtonText = "Mini VTOP";
+      });
+    } else if (_currentStatus == "originalVTOP") {
+      setState(() {
+        vtopModeButtonText = "Full VTOP";
+      });
+    }
+    print(_currentStatus);
+  }
+
+  themeButtonTextCalc() async {
     if (AdaptiveTheme.of(context).mode.isLight) {
       setState(() {
         themeButtonText = "Light";
@@ -54,6 +85,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   void initState() {
+    _currentStatus = widget.currentStatus;
+    vtopModeButtonTextCalc();
     packageInfoCalc();
     dialogActionButtonsListForLeavingApp = [
       OutlinedButton(
@@ -78,7 +111,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   void didChangeDependencies() {
-    buttonTextCalc(); // calling here as buttonTextCalc need context for localization of app
+    themeButtonTextCalc(); // calling here as buttonTextCalc need context for localization of app
     super.didChangeDependencies();
   }
 
@@ -123,23 +156,39 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             height: 100,
                             alignment: Alignment.center,
                             semanticsLabel: 'App Logo'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text(
-                          'Mini VTOP',
-                          style: TextStyle(fontSize: 20),
-                        ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        // const Text(
+                        //   'Mini VTOP',
+                        //   style: TextStyle(fontSize: 20),
+                        // ),
                       ],
                     ),
                   ),
+                ),
+                ListTile(
+                  title: Text('VTOP Mode - $vtopModeButtonText'),
+                  onTap: () {
+                    // Update the state of the app
+                    if (vtopModeButtonText == "Mini VTOP") {
+                      _currentStatus = "originalVTOP";
+                      widget.onCurrentStatus.call("originalVTOP");
+                    } else if (vtopModeButtonText == "Full VTOP") {
+                      _currentStatus = "userLoggedIn";
+                      widget.onCurrentStatus.call("userLoggedIn");
+                    }
+                    vtopModeButtonTextCalc();
+                    // Then close the drawer
+                    //Navigator.pop(context);
+                  },
                 ),
                 ListTile(
                   title: Text('Theme Mode - $themeButtonText'),
                   onTap: () {
                     // Update the state of the app
                     AdaptiveTheme.of(context).toggleThemeMode();
-                    buttonTextCalc();
+                    themeButtonTextCalc();
                     // Then close the drawer
                     //Navigator.pop(context);
                   },
