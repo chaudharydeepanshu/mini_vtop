@@ -1,21 +1,31 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctions/dailog_box_for_leaving_app.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer(
-      {Key? key,
-      this.savedThemeMode,
-      required this.currentStatus,
-      required this.onCurrentStatus})
-      : super(key: key);
+  const CustomDrawer({
+    Key? key,
+    this.savedThemeMode,
+    required this.currentStatus,
+    required this.onCurrentStatus,
+    required this.headlessWebView,
+    required this.onCurrentFullUrl,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
+  }) : super(key: key);
   final AdaptiveThemeMode? savedThemeMode;
   final String currentStatus;
   final ValueChanged<String> onCurrentStatus;
+  final HeadlessInAppWebView? headlessWebView;
+  final ValueChanged<String> onCurrentFullUrl;
+  final double screenBasedPixelWidth;
+  final double screenBasedPixelHeight;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -24,7 +34,7 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   String? previousTheme;
   String? themeButtonText;
-  String? vtopModeButtonText;
+  String? vtopCurrentStatusText;
   late String _currentStatus;
 
   @override
@@ -37,16 +47,24 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   vtopModeButtonTextCalc() async {
-    if (_currentStatus == "userLoggedIn") {
+    if (_currentStatus == "launchLoadingScreen") {
       setState(() {
-        vtopModeButtonText = "Mini VTOP";
+        vtopCurrentStatusText = "Loading Screen";
+      });
+    } else if (_currentStatus == "signInScreen") {
+      setState(() {
+        vtopCurrentStatusText = "Sign In";
+      });
+    } else if (_currentStatus == "userLoggedIn") {
+      setState(() {
+        vtopCurrentStatusText = "Mini VTOP";
       });
     } else if (_currentStatus == "originalVTOP") {
       setState(() {
-        vtopModeButtonText = "Full VTOP";
+        vtopCurrentStatusText = "Full VTOP";
       });
     }
-    print(_currentStatus);
+    debugPrint(_currentStatus);
   }
 
   themeButtonTextCalc() async {
@@ -85,6 +103,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   void initState() {
+    screenBasedPixelWidth = widget.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.screenBasedPixelHeight;
     _currentStatus = widget.currentStatus;
     vtopModeButtonTextCalc();
     packageInfoCalc();
@@ -120,6 +140,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
     super.dispose();
   }
 
+  late double screenBasedPixelWidth;
+  late double screenBasedPixelHeight;
+
   @override
   Widget build(BuildContext context) {
     debugPrint(themeButtonText);
@@ -133,98 +156,247 @@ class _CustomDrawerState extends State<CustomDrawer> {
         children: [
           Expanded(
             child: ListView(
+              shrinkWrap: true,
               // Important: Remove any padding from the ListView.
               padding: EdgeInsets.zero,
               children: [
-                DrawerHeader(
-                  decoration: const BoxDecoration(
-                      //color: Colors.white,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: DrawerHeader(
+                    decoration: const BoxDecoration(
+                        //color: Colors.white,
+                        ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(minWidth: 1, minHeight: 1),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset('assets/images/logos/logo.svg',
+                                  // fit: BoxFit.fitHeight,
+                                  color: ((WidgetsBinding.instance!.window
+                                                      .platformBrightness ==
+                                                  Brightness.dark &&
+                                              themeButtonText == 'System') ||
+                                          (themeButtonText == 'Dark'))
+                                      ? Colors.white
+                                      : Colors.black,
+                                  // height: 100,
+                                  alignment: Alignment.center,
+                                  semanticsLabel: 'App Logo'),
+                              // const SizedBox(
+                              //   height: 10,
+                              // ),
+                              // const Text(
+                              //   'Mini VTOP',
+                              //   style: TextStyle(fontSize: 20),
+                              // ),
+                            ],
+                          ),
+                        ),
                       ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: MaterialStateProperty.all<Size?>(
+                        Size.fromHeight(screenBasedPixelHeight * 56),
+                      ),
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0xff04294f)),
+                      padding: MaterialStateProperty.all(EdgeInsets.only(
+                          left: screenBasedPixelWidth * 20,
+                          right: screenBasedPixelWidth * 20)),
+                      textStyle: MaterialStateProperty.all(
+                          TextStyle(fontSize: screenBasedPixelWidth * 20)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              screenBasedPixelWidth * 0.0),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Update the state of the app
+                      AdaptiveTheme.of(context).toggleThemeMode();
+                      themeButtonTextCalc();
+                      // Then close the drawer
+                      //Navigator.pop(context);
+                    },
+                    child: Row(
                       children: [
-                        SvgPicture.asset('assets/images/logos/logo.svg',
-                            fit: BoxFit.fitHeight,
-                            color: ((WidgetsBinding.instance!.window
-                                                .platformBrightness ==
-                                            Brightness.dark &&
-                                        themeButtonText == 'System') ||
-                                    (themeButtonText == 'Dark'))
-                                ? Colors.white
-                                : Colors.black,
-                            height: 100,
-                            alignment: Alignment.center,
-                            semanticsLabel: 'App Logo'),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        // const Text(
-                        //   'Mini VTOP',
-                        //   style: TextStyle(fontSize: 20),
-                        // ),
+                        Text(
+                          'Theme Mode - $themeButtonText',
+                          style:
+                              TextStyle(fontSize: screenBasedPixelWidth * 16),
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   ),
                 ),
-                ListTile(
-                  title: Text('VTOP Mode - $vtopModeButtonText'),
-                  onTap: () {
-                    // Update the state of the app
-                    if (vtopModeButtonText == "Mini VTOP") {
-                      _currentStatus = "originalVTOP";
-                      widget.onCurrentStatus.call("originalVTOP");
-                    } else if (vtopModeButtonText == "Full VTOP") {
-                      _currentStatus = "userLoggedIn";
-                      widget.onCurrentStatus.call("userLoggedIn");
-                    }
-                    vtopModeButtonTextCalc();
-                    // Then close the drawer
-                    //Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: Text('Theme Mode - $themeButtonText'),
-                  onTap: () {
-                    // Update the state of the app
-                    AdaptiveTheme.of(context).toggleThemeMode();
-                    themeButtonTextCalc();
-                    // Then close the drawer
-                    //Navigator.pop(context);
-                  },
-                ),
+                (vtopCurrentStatusText != "Sign In" &&
+                        vtopCurrentStatusText != "Loading Screen")
+                    ? Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: screenBasedPixelWidth * 8.0),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: MaterialStateProperty.all<Size?>(
+                                  Size.fromHeight(screenBasedPixelHeight * 56),
+                                ),
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color(0xff04294f)),
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.only(
+                                        left: screenBasedPixelWidth * 20,
+                                        right: screenBasedPixelWidth * 20)),
+                                textStyle: MaterialStateProperty.all(TextStyle(
+                                    fontSize: screenBasedPixelWidth * 20)),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        screenBasedPixelWidth * 0.0),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Update the state of the app
+                                if (vtopCurrentStatusText == "Mini VTOP") {
+                                  _currentStatus = "originalVTOP";
+                                  widget.onCurrentStatus.call("originalVTOP");
+                                } else if (vtopCurrentStatusText ==
+                                    "Full VTOP") {
+                                  _currentStatus = "userLoggedIn";
+                                  widget.onCurrentStatus.call("userLoggedIn");
+                                }
+                                vtopModeButtonTextCalc();
+                                // Then close the drawer
+                                // Navigator.pop(context);
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'VTOP Mode - $vtopCurrentStatusText',
+                                    style: TextStyle(
+                                        fontSize: screenBasedPixelWidth * 16),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: screenBasedPixelWidth * 8.0),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: MaterialStateProperty.all<Size?>(
+                                  Size.fromHeight(screenBasedPixelHeight * 56),
+                                ),
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color(0xff04294f)),
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.only(
+                                        left: screenBasedPixelWidth * 20,
+                                        right: screenBasedPixelWidth * 20)),
+                                textStyle: MaterialStateProperty.all(TextStyle(
+                                    fontSize: screenBasedPixelWidth * 20)),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        screenBasedPixelWidth * 0.0),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                performSignOut(
+                                    context: context,
+                                    headlessWebView: widget.headlessWebView,
+                                    onCurrentFullUrl: (String value) {
+                                      widget.onCurrentFullUrl.call(value);
+                                    });
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Logout',
+                                    style: TextStyle(
+                                        fontSize: screenBasedPixelWidth * 16),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Privacy Policy',
-                  style: const TextStyle(color: Colors.blue),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      leavingAppDialogBox(
-                          actionButtonsList:
-                              dialogActionButtonsListForLeavingApp,
-                          text: dialogTextForForLeavingApp,
-                          context: context);
-                    },
-                ),
-              ],
-            ),
-          ),
-          packageInfo != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("App Version - $version+$buildNumber"),
-                    ],
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: screenBasedPixelWidth * 8.0,
+                  right: screenBasedPixelWidth * 8.0),
+              child: Column(
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                          fontSize: screenBasedPixelWidth * 16,
+                          color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          leavingAppDialogBox(
+                              actionButtonsList:
+                                  dialogActionButtonsListForLeavingApp,
+                              text: dialogTextForForLeavingApp,
+                              context: context);
+                        },
+                    ),
                   ),
-                )
-              : Container(),
+                  packageInfo != null
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                              bottom: screenBasedPixelWidth * 8.0,
+                              top: screenBasedPixelWidth * 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "App Version - $version+$buildNumber",
+                                style: TextStyle(
+                                  fontSize: screenBasedPixelWidth * 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

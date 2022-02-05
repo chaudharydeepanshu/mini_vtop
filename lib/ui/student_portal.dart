@@ -47,7 +47,7 @@ class _StudentPortalState extends State<StudentPortal> {
               widget.onShowStudentProfileAllView?.call(true);
               Navigator.of(context).pop();
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                processingDialog(
+                customDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
                   onIsDialogShowing: (bool value) {
@@ -55,16 +55,32 @@ class _StudentPortalState extends State<StudentPortal> {
                       isDialogShowing = value;
                     });
                   },
-                  dialogTitle: const Text('Requesting Data'),
+                  dialogTitle: Text(
+                    'Requesting Data',
+                    style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+                    textAlign: TextAlign.center,
+                  ),
                   dialogChildren: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(),
-                      Text('Please wait...'),
+                    children: [
+                      SizedBox(
+                        height: screenBasedPixelWidth * 36,
+                        width: screenBasedPixelWidth * 36,
+                        child: CircularProgressIndicator(
+                          strokeWidth: screenBasedPixelWidth * 4.0,
+                        ),
+                      ),
+                      Text(
+                        'Please wait...',
+                        style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                   barrierDismissible: true,
+                  screenBasedPixelHeight: screenBasedPixelHeight,
+                  screenBasedPixelWidth: screenBasedPixelWidth,
                 ).then((_) => isDialogShowing = false);
               });
             },
@@ -83,7 +99,7 @@ class _StudentPortalState extends State<StudentPortal> {
               widget.onTimeTable?.call(true);
               Navigator.of(context).pop();
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                processingDialog(
+                customDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
                   onIsDialogShowing: (bool value) {
@@ -91,16 +107,32 @@ class _StudentPortalState extends State<StudentPortal> {
                       isDialogShowing = value;
                     });
                   },
-                  dialogTitle: const Text('Requesting Data'),
+                  dialogTitle: Text(
+                    'Requesting Data',
+                    style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+                    textAlign: TextAlign.center,
+                  ),
                   dialogChildren: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(),
-                      Text('Please wait...'),
+                    children: [
+                      SizedBox(
+                        height: screenBasedPixelWidth * 36,
+                        width: screenBasedPixelWidth * 36,
+                        child: CircularProgressIndicator(
+                          strokeWidth: screenBasedPixelWidth * 4.0,
+                        ),
+                      ),
+                      Text(
+                        'Please wait...',
+                        style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                   barrierDismissible: true,
+                  screenBasedPixelHeight: screenBasedPixelHeight,
+                  screenBasedPixelWidth: screenBasedPixelWidth,
                 ).then((_) => isDialogShowing = false);
               });
             },
@@ -149,8 +181,13 @@ class _StudentPortalState extends State<StudentPortal> {
     super.dispose();
   }
 
+  late double screenBasedPixelWidth;
+  late double screenBasedPixelHeight;
+
   @override
   Widget build(BuildContext context) {
+    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
     // debugPrint("isDialogShowing: $isDialogShowing");
     // if (widget.arguments.processingSomething == false &&
     //     isDialogShowing == true) {
@@ -164,187 +201,238 @@ class _StudentPortalState extends State<StudentPortal> {
     // print(widget.arguments.studentPortalDocument.outerHtml);
     return Column(
       children: [
-        SingleChildScrollView(
-          controller: controller,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Hello,",
-                          style: GoogleFonts.lato(
-                            // color: Colors.white,
-                            // textStyle: Theme.of(context).textTheme.headline1,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.normal,
+        Expanded(
+          child: SingleChildScrollView(
+            controller: controller,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hello,",
+                            style: GoogleFonts.lato(
+                              // color: Colors.white,
+                              // textStyle: Theme.of(context).textTheme.headline1,
+                              fontSize: screenBasedPixelWidth * 17,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.normal,
+                            ),
                           ),
+                          widget.arguments.studentName != null
+                              ? Text(
+                                  "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                  style: GoogleFonts.lato(
+                                    // color: Colors.white,
+                                    // textStyle: Theme.of(context).textTheme.headline1,
+                                    fontSize: screenBasedPixelWidth * 20,
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                )
+                              : Text(
+                                  "",
+                                  style: GoogleFonts.lato(
+                                    // color: Colors.white,
+                                    // textStyle: Theme.of(context).textTheme.headline1,
+                                    fontSize: screenBasedPixelWidth * 20,
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                ),
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xff04294f),
+                          //border: Border.all(color: Colors.blue, width: 10),
+                          borderRadius: BorderRadius.circular(
+                              screenBasedPixelWidth * 20.0),
                         ),
-                        widget.arguments.studentName != null
-                            ? Text(
-                                "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                Icons.timer,
+                                size: screenBasedPixelWidth * 24,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: screenBasedPixelWidth * 5,
+                              ),
+                              Text(
+                                timerText,
                                 style: GoogleFonts.lato(
-                                  // color: Colors.white,
-                                  // textStyle: Theme.of(context).textTheme.headline1,
-                                  fontSize: 20,
+                                  fontSize: screenBasedPixelWidth * 20,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w700,
                                   fontStyle: FontStyle.normal,
                                 ),
                               )
-                            : Text(
-                                "",
-                                style: GoogleFonts.lato(
-                                  // color: Colors.white,
-                                  // textStyle: Theme.of(context).textTheme.headline1,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                      ],
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xff04294f),
-                        //border: Border.all(color: Colors.blue, width: 10),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Icon(
-                              Icons.timer,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              timerText,
-                              style: GoogleFonts.lato(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                GridView.builder(
-                  controller: controller,
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      childAspectRatio: 3 / 2.5,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20),
-                  itemCount: studentPortalOptions.length,
-                  itemBuilder: (BuildContext ctx, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color(0xff04294f)),
-                          padding: MaterialStateProperty.all(
-                              const EdgeInsets.all(20)),
-                          textStyle: MaterialStateProperty.all(
-                              const TextStyle(fontSize: 20)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          processingDialog(
-                              onIsDialogShowing: (bool value) {
-                                isDialogShowing = value;
-                              },
-                              isDialogShowing: isDialogShowing,
-                              dialogChildren: Column(
-                                children: List.generate(
-                                  studentPortalOptions[index]
-                                          ["internalOptionsMapList"]
-                                      .length,
-                                  (i) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: ListTile(
-                                      tileColor: const Color(0xff04294f),
-                                      textColor: Colors.white,
-                                      onTap: studentPortalOptions[index]
-                                              ["internalOptionsMapList"][i]
-                                          ["action"],
-                                      // leading: FlutterLogo(size: 72.0),
-                                      title: Text(studentPortalOptions[index]
-                                              ["internalOptionsMapList"][i]
-                                          ["name"]),
-                                      // subtitle: Text('Profile'),
-                                      // trailing: const CircularProgressIndicator(),
-                                      // isThreeLine: true,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              context: context,
-                              dialogTitle: Text(
-                                studentPortalOptions[index]["name"],
-                                style: GoogleFonts.lato(
-                                  // color: Colors.white,
-                                  // textStyle: Theme.of(context).textTheme.headline1,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                              barrierDismissible: true);
-                        },
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(studentPortalOptions[index]["icon"]),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                studentPortalOptions[index]["name"],
-                                style: GoogleFonts.lato(
-                                  color: Colors.white,
-                                  // textStyle: Theme.of(context).textTheme.headline1,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
                             ],
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  OrientationBuilder(
+                    builder: (context, orientation) {
+                      return GridView.builder(
+                        controller: controller,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: screenBasedPixelWidth * 200,
+                            childAspectRatio: 3 / 2.5,
+                            crossAxisSpacing: screenBasedPixelWidth * 20,
+                            mainAxisSpacing: screenBasedPixelWidth * 20),
+                        itemCount: studentPortalOptions.length,
+                        itemBuilder: (BuildContext ctx, index) {
+                          return Padding(
+                            padding:
+                                EdgeInsets.all(screenBasedPixelWidth * 15.0),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color(0xff04294f)),
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.all(screenBasedPixelWidth * 20)),
+                                textStyle: MaterialStateProperty.all(TextStyle(
+                                    fontSize: screenBasedPixelWidth * 20)),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        screenBasedPixelWidth * 20.0),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                customDialogBox(
+                                  onIsDialogShowing: (bool value) {
+                                    isDialogShowing = value;
+                                  },
+                                  isDialogShowing: isDialogShowing,
+                                  dialogChildren: Column(
+                                    children: List.generate(
+                                      studentPortalOptions[index]
+                                              ["internalOptionsMapList"]
+                                          .length,
+                                      (i) => Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8.0),
+                                        child: ElevatedButton(
+                                          style: ButtonStyle(
+                                            minimumSize: MaterialStateProperty
+                                                .all<Size?>(
+                                              Size.fromHeight(
+                                                  screenBasedPixelHeight * 56),
+                                            ),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    const Color(0xff04294f)),
+                                            padding: MaterialStateProperty.all(
+                                                EdgeInsets.only(
+                                                    left:
+                                                        screenBasedPixelWidth *
+                                                            20,
+                                                    right:
+                                                        screenBasedPixelWidth *
+                                                            20)),
+                                            textStyle: MaterialStateProperty
+                                                .all(TextStyle(
+                                                    fontSize:
+                                                        screenBasedPixelWidth *
+                                                            20)),
+                                            shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        screenBasedPixelWidth *
+                                                            0.0),
+                                              ),
+                                            ),
+                                          ),
+                                          onPressed: studentPortalOptions[index]
+                                                  ["internalOptionsMapList"][i]
+                                              ["action"],
+                                          child: Text(
+                                            studentPortalOptions[index]
+                                                    ["internalOptionsMapList"]
+                                                [i]["name"],
+                                            style: TextStyle(
+                                                fontSize:
+                                                    screenBasedPixelWidth * 18),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  context: context,
+                                  dialogTitle: Text(
+                                    studentPortalOptions[index]["name"],
+                                    style: GoogleFonts.lato(
+                                      // color: Colors.white,
+                                      // textStyle: Theme.of(context).textTheme.headline1,
+                                      fontSize: screenBasedPixelWidth * 20,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                  barrierDismissible: true,
+                                  screenBasedPixelHeight:
+                                      screenBasedPixelHeight,
+                                  screenBasedPixelWidth: screenBasedPixelWidth,
+                                );
+                              },
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      studentPortalOptions[index]["icon"],
+                                      size: screenBasedPixelWidth * 24,
+                                    ),
+                                    SizedBox(
+                                      height: screenBasedPixelWidth * 10,
+                                    ),
+                                    Text(
+                                      studentPortalOptions[index]["name"],
+                                      style: GoogleFonts.lato(
+                                        color: Colors.white,
+                                        // textStyle: Theme.of(context).textTheme.headline1,
+                                        fontSize: screenBasedPixelWidth * 20,
+                                        fontWeight: FontWeight.w700,
+                                        fontStyle: FontStyle.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -360,6 +448,8 @@ class StudentPortalArguments {
   HeadlessInAppWebView? headlessWebView;
   DateTime? sessionDateTime;
   bool processingSomething;
+  double screenBasedPixelWidth;
+  double screenBasedPixelHeight;
 
   StudentPortalArguments({
     required this.studentPortalDocument,
@@ -368,5 +458,7 @@ class StudentPortalArguments {
     required this.headlessWebView,
     required this.sessionDateTime,
     required this.processingSomething,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
   });
 }

@@ -32,13 +32,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 
   Timer? timer;
 
-  Widget animationOfLoadingScreen = Image.asset(
-    "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
-    scale: 0.1,
-    width: 5000,
-    height: 5000,
-    key: const ValueKey<int>(0),
-  );
+  late Widget animationOfLoadingScreen;
 
   Widget actionButton = const SizedBox();
 
@@ -71,7 +65,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                 style: GoogleFonts.lato(
                   color: Colors.white,
                   textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: 40,
+                  fontSize: widget.arguments.screenBasedPixelWidth * 40,
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -88,6 +82,13 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 
   @override
   void initState() {
+    animationOfLoadingScreen = Image.asset(
+      "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
+      scale: 0.1,
+      width: widget.arguments.screenBasedPixelWidth * 5000,
+      height: widget.arguments.screenBasedPixelWidth * 5000,
+      key: const ValueKey<int>(0),
+    );
     super.initState();
     // callTimerMethod();
     // callChangeTextMethod();
@@ -141,8 +142,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: 5000,
-          height: 5000,
+          width: widget.arguments.screenBasedPixelWidth * 5000,
+          height: widget.arguments.screenBasedPixelWidth * 5000,
           key: const ValueKey<int>(0),
         );
         textOfLoginScreen = "Connecting to\nVIT VTOP\nPlease Wait ...";
@@ -164,8 +165,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: 5000,
-          height: 5000,
+          width: widget.arguments.screenBasedPixelWidth * 5000,
+          height: widget.arguments.screenBasedPixelWidth * 5000,
           key: const ValueKey<int>(1),
         );
         textOfLoginScreen =
@@ -195,7 +196,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                 "Retry",
                 style: GoogleFonts.lato(
                   color: Colors.white,
-                  fontSize: 17,
+                  fontSize: widget.arguments.screenBasedPixelWidth * 17,
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -210,8 +211,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Success_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: 5000,
-          height: 5000,
+          width: widget.arguments.screenBasedPixelWidth * 5000,
+          height: widget.arguments.screenBasedPixelWidth * 5000,
           key: const ValueKey<int>(2),
         );
         textOfLoginScreen = "Successfully\nconnected\nto VTOP";
@@ -223,51 +224,57 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
     }
 
     return Center(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            FittedBox(
-              fit: BoxFit.contain,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: SizedBox(
-                  height: 250,
-                  width: 250,
-                  child: animationOfLoadingScreen,
+      child: Padding(
+        padding: EdgeInsets.all(widget.arguments.screenBasedPixelWidth * 8.0),
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              FittedBox(
+                fit: BoxFit.contain,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return ScaleTransition(scale: animation, child: child);
+                  },
+                  child: SizedBox(
+                    height: widget.arguments.screenBasedPixelWidth * 250,
+                    width: widget.arguments.screenBasedPixelWidth * 250,
+                    child: animationOfLoadingScreen,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: SizedBox(
-                      child: textDialogOfLoginScreen(
-                        textOfLoginScreen: textOfLoginScreen,
-                        textOfLoginScreenValueKey: textOfLoginScreenValueKey,
-                        textDialogOfLoginScreenColor:
-                            textDialogOfLoginScreenColor,
-                        actionButton: actionButton,
+              SizedBox(
+                height: widget.arguments.screenBasedPixelWidth * 30,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: widget.arguments.screenBasedPixelWidth * 20.0,
+                    right: widget.arguments.screenBasedPixelWidth * 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.contain,
+                      child: SizedBox(
+                        child: textDialogOfLoginScreen(
+                          textOfLoginScreen: textOfLoginScreen,
+                          textOfLoginScreenValueKey: textOfLoginScreenValueKey,
+                          textDialogOfLoginScreenColor:
+                              textDialogOfLoginScreenColor,
+                          actionButton: actionButton,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -277,9 +284,13 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 class LaunchLoadingScreenArguments {
   String? vtopStatusType;
   HeadlessInAppWebView? headlessWebView;
+  double screenBasedPixelWidth;
+  double screenBasedPixelHeight;
 
   LaunchLoadingScreenArguments({
     required this.vtopStatusType,
     required this.headlessWebView,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
   });
 }

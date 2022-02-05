@@ -16,6 +16,8 @@ import 'forHeadlessInAppWebView/stop_headless_in_app_web_view.dart';
 
 chooseCorrectBody(
     {required BuildContext context,
+    required double screenBasedPixelWidth,
+    required double screenBasedPixelHeight,
     required String? currentStatus,
     required String? loggedUserStatus,
     required HeadlessInAppWebView? headlessWebView,
@@ -80,7 +82,11 @@ chooseCorrectBody(
           onCurrentFullUrl.call(value);
         },
         arguments: LaunchLoadingScreenArguments(
-            vtopStatusType: vtopStatusType, headlessWebView: headlessWebView),
+          vtopStatusType: vtopStatusType,
+          headlessWebView: headlessWebView,
+          screenBasedPixelWidth: screenBasedPixelWidth,
+          screenBasedPixelHeight: screenBasedPixelHeight,
+        ),
         onRetryOnError: (bool value) {
           onRetryOnError.call(value);
         },
@@ -145,6 +151,8 @@ chooseCorrectBody(
         refreshingCaptcha: refreshingCaptcha,
         vtopLoginErrorType: vtopLoginErrorType,
         credentialsFound: credentialsFound,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
       ),
       onVtopLoginErrorType: (String value) {
         onVtopLoginErrorType.call(value);
@@ -189,12 +197,15 @@ chooseCorrectBody(
           );
         },
         arguments: StudentPortalArguments(
-            processingSomething: processingSomething,
-            studentPortalDocument: studentPortalDocument,
-            studentProfileAllViewDocument: studentProfileAllViewDocument,
-            headlessWebView: headlessWebView,
-            studentName: studentName,
-            sessionDateTime: sessionDateTime),
+          processingSomething: processingSomething,
+          studentPortalDocument: studentPortalDocument,
+          studentProfileAllViewDocument: studentProfileAllViewDocument,
+          headlessWebView: headlessWebView,
+          studentName: studentName,
+          sessionDateTime: sessionDateTime,
+          screenBasedPixelWidth: screenBasedPixelWidth,
+          screenBasedPixelHeight: screenBasedPixelHeight,
+        ),
       ),
     );
   } else if (currentStatus == "originalVTOP") {

@@ -5,6 +5,8 @@ import 'package:mini_vtop/ui/drawer.dart';
 
 chooseCorrectDrawer(
     {required BuildContext context,
+    required double screenBasedPixelWidth,
+    required double screenBasedPixelHeight,
     required String? currentStatus,
     required String? loggedUserStatus,
     required HeadlessInAppWebView? headlessWebView,
@@ -28,7 +30,19 @@ chooseCorrectDrawer(
     );
   } else if (currentStatus == "launchLoadingScreen") {
     onDrawer.call(
-      null,
+      CustomDrawer(
+        savedThemeMode: savedThemeMode,
+        currentStatus: currentStatus,
+        onCurrentStatus: (String value) {
+          onCurrentStatus.call(value);
+        },
+        onCurrentFullUrl: (String value) {
+          onCurrentFullUrl.call(value);
+        },
+        headlessWebView: headlessWebView,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+      ),
     );
   } else if (currentStatus == "signInScreen") {
     onDrawer.call(
@@ -38,6 +52,12 @@ chooseCorrectDrawer(
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
         },
+        onCurrentFullUrl: (String value) {
+          onCurrentFullUrl.call(value);
+        },
+        headlessWebView: headlessWebView,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
@@ -48,6 +68,12 @@ chooseCorrectDrawer(
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
         },
+        onCurrentFullUrl: (String value) {
+          onCurrentFullUrl.call(value);
+        },
+        headlessWebView: headlessWebView,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -58,6 +84,12 @@ chooseCorrectDrawer(
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
         },
+        onCurrentFullUrl: (String value) {
+          onCurrentFullUrl.call(value);
+        },
+        headlessWebView: headlessWebView,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
       ),
     );
   }

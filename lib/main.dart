@@ -97,16 +97,20 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: Home(
             savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
+
+            // child: Home(
+            //   savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
+            // ),
           ),
           routes: {
             PageRoutes.studentProfileAllView: (context) =>
                 StudentProfileAllView(
                   arguments: ModalRoute.of(context)!.settings.arguments
-                      as StudentProfileAllViewArguments?,
+                      as StudentProfileAllViewArguments,
                 ),
             PageRoutes.timeTable: (context) => TimeTable(
                   arguments: ModalRoute.of(context)!.settings.arguments
-                      as TimeTableArguments?,
+                      as TimeTableArguments,
                 ),
           },
         ),
@@ -183,6 +187,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   String? vtopStatusType;
 
   String vtopLoginErrorType = "None";
+
+  late double screenBasedPixelWidth;
+
+  late double screenBasedPixelHeight;
 
   late Widget body;
 
@@ -369,9 +377,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
         vtopStatusType = null;
         timer = Timer.periodic(const Duration(seconds: 20), (Timer t) {
-          if (currentStatus == "launchLoadingScreen") {
+          if (currentStatus == "launchLoadingScreen" &&
+              vtopStatusType == "None") {
             debugPrint(
-                "restarting headlessInAppWebView as webview is taking too ling");
+                "restarting headlessInAppWebView as webview is taking too long");
             runHeadlessInAppWebView(
               headlessWebView: headlessWebView,
               onCurrentFullUrl: (String value) {
@@ -775,6 +784,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       },
                       studentProfileAllViewDocument:
                           studentProfileAllViewDocument,
+                      screenBasedPixelWidth: screenBasedPixelWidth,
+                      screenBasedPixelHeight: screenBasedPixelHeight,
                     ),
                   ).whenComplete(() {
                     setState(() {
@@ -921,6 +932,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               }));
                     },
                     timeTableDocument: timeTableDocument,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    screenBasedPixelWidth: screenBasedPixelWidth,
                   ),
                 ).whenComplete(() {
                   setState(() {
@@ -1255,13 +1268,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // currentStatus = "launchLoadingScreen";
     debugPrint(
-        '$darkModeOn, $theme, ${AdaptiveTheme.of(context).mode.isLight}');
+        'darkModeOn: $darkModeOn, theme: $theme, AdaptiveTheme mode isLight: ${AdaptiveTheme.of(context).mode.isLight}');
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "signInScreen";
     debugPrint("loggedUserStatus: $loggedUserStatus");
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");
+
+    screenBasedPixelWidth = MediaQuery.of(context).size.width * 0.0027625;
+    screenBasedPixelHeight = MediaQuery.of(context).size.height * 0.00169;
 
     chooseCorrectBody(
       onBody: (Widget value) {
@@ -1269,6 +1286,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         body = value;
         // });
       },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
       tryAutoLoginStatus: tryAutoLoginStatus,
       sessionDateTime: sessionDateTime,
       autoCaptcha: autoCaptcha,
@@ -1354,6 +1373,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onAppbar: (Widget value) {
         appbar = value;
       },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
       userEnteredPasswd: userEnteredPasswd,
       userEnteredUname: userEnteredUname,
       headlessWebView: headlessWebView,
@@ -1402,6 +1423,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onDrawer: (Widget? value) {
         drawer = value;
       },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
       userEnteredPasswd: userEnteredPasswd,
       userEnteredUname: userEnteredUname,
       headlessWebView: headlessWebView,
@@ -1440,7 +1463,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       currentFullUrl: currentFullUrl,
       onCurrentStatus: (String value) {
         setState(() {
-          print("setstate called ");
           currentStatus = value;
         });
       },
@@ -1509,7 +1531,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               );
             },
             child: body),
-        drawer: drawer,
+        drawer: Padding(
+          padding: EdgeInsets.only(right: screenBasedPixelWidth * 80),
+          child: drawer,
+        ),
       ),
     );
   }

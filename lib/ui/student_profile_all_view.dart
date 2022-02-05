@@ -7,10 +7,10 @@ class StudentProfileAllView extends StatefulWidget {
 
   const StudentProfileAllView({
     Key? key,
-    this.arguments,
+    required this.arguments,
   }) : super(key: key);
 
-  final StudentProfileAllViewArguments? arguments;
+  final StudentProfileAllViewArguments arguments;
 
   @override
   _StudentProfileAllViewState createState() => _StudentProfileAllViewState();
@@ -70,14 +70,17 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 15, bottom: 15),
+              padding: EdgeInsets.only(
+                  left: screenBasedPixelWidth * 15,
+                  right: screenBasedPixelWidth * 15,
+                  top: screenBasedPixelWidth * 15,
+                  bottom: screenBasedPixelWidth * 15),
               child: Text(
                 "${listOfHeaders[index][0].getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
                 style: GoogleFonts.lato(
                   color: Colors.white,
                   // textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: 20,
+                  fontSize: screenBasedPixelWidth * 20,
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -102,14 +105,17 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 15, right: 15, top: 15, bottom: 15),
+                padding: EdgeInsets.only(
+                    left: screenBasedPixelWidth * 15,
+                    right: screenBasedPixelWidth * 15,
+                    top: screenBasedPixelWidth * 15,
+                    bottom: screenBasedPixelWidth * 15),
                 child: Text(
                   "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: 15,
+                    fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -162,9 +168,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
   @override
   void initState() {
     super.initState();
+    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
 
-    var htmlPersonalDetailTable = widget
-        .arguments?.studentProfileAllViewDocument
+    var htmlPersonalDetailTable = widget.arguments.studentProfileAllViewDocument
         ?.getElementById("page-wrapper")
         ?.children[0]
         .children[0]
@@ -199,7 +206,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
     );
 
     var htmlEducationalDetailTable = widget
-        .arguments?.studentProfileAllViewDocument
+        .arguments.studentProfileAllViewDocument
         ?.getElementById("page-wrapper")
         ?.children[0]
         .children[0]
@@ -229,7 +236,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       noOfMiniTablesToCreate: noOfEducationalDetailMiniTablesToCreate,
     );
 
-    var htmlFamilyDetailTable = widget.arguments?.studentProfileAllViewDocument
+    var htmlFamilyDetailTable = widget.arguments.studentProfileAllViewDocument
         ?.getElementById("page-wrapper")
         ?.children[0]
         .children[0]
@@ -258,7 +265,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       noOfMiniTablesToCreate: noOfFamilyDetailMiniTablesToCreate,
     );
 
-    var htmlProctorDetailTable = widget.arguments?.studentProfileAllViewDocument
+    var htmlProctorDetailTable = widget.arguments.studentProfileAllViewDocument
         ?.getElementById("page-wrapper")
         ?.children[0]
         .children[0]
@@ -291,8 +298,11 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
   @override
   void dispose() {
     super.dispose();
-    widget.arguments?.onShowStudentProfileAllViewDispose?.call(true);
+    widget.arguments.onShowStudentProfileAllViewDispose?.call(true);
   }
+
+  late double screenBasedPixelWidth;
+  late double screenBasedPixelHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -300,25 +310,76 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
+          // toolbarHeight: screenBasedPixelWidth * 80,
           centerTitle: true,
-          title: Text(
-            "Student Profile",
-            style: GoogleFonts.nunito(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: 25,
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.normal,
+          title: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              "Student Profile",
+              style: GoogleFonts.nunito(
+                color: Colors.white,
+                textStyle: Theme.of(context).textTheme.headline1,
+                fontSize: screenBasedPixelWidth * 25,
+                fontWeight: FontWeight.w600,
+                fontStyle: FontStyle.normal,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
           backgroundColor: const Color(0xff04294f),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: "Personal"),
-              Tab(text: "Educational"),
-              Tab(text: "Family"),
-              Tab(text: "Proctor"),
+          leading: Builder(
+            builder: (context) => Padding(
+              padding: EdgeInsets.only(
+                  right: screenBasedPixelWidth * 5,
+                  top: screenBasedPixelWidth * 8,
+                  bottom: screenBasedPixelWidth * 8),
+              child: SizedBox(
+                width: screenBasedPixelWidth * 51,
+                height: screenBasedPixelWidth * 40,
+                child: Material(
+                  color: Colors.transparent,
+                  shape: const StadiumBorder(),
+                  child: Tooltip(
+                    message: "Go back",
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      customBorder: const StadiumBorder(),
+                      focusColor: Colors.white.withOpacity(0.1),
+                      highlightColor: Colors.white.withOpacity(0.1),
+                      splashColor: Colors.white.withOpacity(0.1),
+                      hoverColor: Colors.white.withOpacity(0.1),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: screenBasedPixelWidth * 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          bottom: TabBar(
+            labelPadding: const EdgeInsets.all(0.0),
+            labelStyle: TextStyle(
+              fontSize: screenBasedPixelWidth * 16,
+            ),
+            tabs: const [
+              Tab(
+                child: Text("Personal"),
+              ),
+              Tab(
+                child: Text("Educational"),
+              ),
+              Tab(
+                child: Text("Family"),
+              ),
+              Tab(
+                child: Text("Proctor"),
+              ),
             ],
           ),
         ),
@@ -367,6 +428,8 @@ class StudentProfileAllViewArguments {
   // String userEnteredPasswd;
   // HeadlessInAppWebView headlessWebView;
   // Image? image;
+  double screenBasedPixelWidth;
+  double screenBasedPixelHeight;
 
   StudentProfileAllViewArguments({
     required this.currentStatus,
@@ -376,5 +439,7 @@ class StudentProfileAllViewArguments {
     // required this.userEnteredPasswd,
     // required this.headlessWebView,
     // required this.image,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
   });
 }

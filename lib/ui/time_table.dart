@@ -9,10 +9,10 @@ class TimeTable extends StatefulWidget {
 
   const TimeTable({
     Key? key,
-    this.arguments,
+    required this.arguments,
   }) : super(key: key);
 
-  final TimeTableArguments? arguments;
+  final TimeTableArguments arguments;
 
   @override
   _TimeTableState createState() => _TimeTableState();
@@ -30,8 +30,10 @@ class _TimeTableState extends State<TimeTable> {
   @override
   void initState() {
     super.initState();
+    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
 
-    var htmlTimeTable = widget.arguments?.timeTableDocument?.getElementById(
+    var htmlTimeTable = widget.arguments.timeTableDocument?.getElementById(
         "timeTableStyle"); //document.getElementById("htmlTimeTable");
     List htmlTimeTableTrs = htmlTimeTable?.getElementsByTagName("tr") ?? [];
     // int tdsInTr1 = htmlTimeTableTrs[1].getElementsByTagName("td").length;
@@ -59,14 +61,17 @@ class _TimeTableState extends State<TimeTable> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 15, bottom: 15),
+              padding: EdgeInsets.only(
+                  left: screenBasedPixelWidth * 15,
+                  right: screenBasedPixelWidth * 15,
+                  top: screenBasedPixelWidth * 15,
+                  bottom: screenBasedPixelWidth * 15),
               child: Text(
                 "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                 style: GoogleFonts.lato(
                   color: Colors.black,
                   // textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: 15,
+                  fontSize: screenBasedPixelWidth * 15,
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -87,42 +92,60 @@ class _TimeTableState extends State<TimeTable> {
 
     listOfTableRowsForCustomTimeTable.insert(
       0,
-      const TableRow(
+      TableRow(
         children: <Widget>[
           LegendCellWidget(
             legendText: "Theory",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "Start",
             elementText2: "End",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "08:30",
             elementText2: "10:00",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "10:05",
             elementText2: "11:35",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "11:40",
             elementText2: "13:10",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "13:15",
             elementText2: "14:45",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "14:50",
             elementText2: "16:20",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "16:25",
             elementText2: "17:55",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
           CustomTableRowElement(
             elementText1: "18:00",
             elementText2: "19:30",
+            screenBasedPixelWidth: screenBasedPixelWidth,
+            screenBasedPixelHeight: screenBasedPixelHeight,
           ),
         ],
       ),
@@ -140,7 +163,7 @@ class _TimeTableState extends State<TimeTable> {
       children: listOfTableRowsForCustomTimeTable,
     );
 
-    var htmlSubjectDetailTable = widget.arguments?.timeTableDocument
+    var htmlSubjectDetailTable = widget.arguments.timeTableDocument
         ?.getElementById("studentDetailsList")
         ?.children[1];
     List htmlSubjectDetailTableTrs =
@@ -173,14 +196,17 @@ class _TimeTableState extends State<TimeTable> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 15, right: 15, top: 15, bottom: 15),
+                padding: EdgeInsets.only(
+                    left: screenBasedPixelWidth * 15,
+                    right: screenBasedPixelWidth * 15,
+                    top: screenBasedPixelWidth * 15,
+                    bottom: screenBasedPixelWidth * 15),
                 child: Text(
                   "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: 15,
+                    fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -206,14 +232,17 @@ class _TimeTableState extends State<TimeTable> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 15, right: 15, top: 15, bottom: 15),
+                padding: EdgeInsets.only(
+                    left: screenBasedPixelWidth * 15,
+                    right: screenBasedPixelWidth * 15,
+                    top: screenBasedPixelWidth * 15,
+                    bottom: screenBasedPixelWidth * 15),
                 child: Text(
                   "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: 15,
+                    fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -248,7 +277,7 @@ class _TimeTableState extends State<TimeTable> {
           children: listOfTableRowsForCustomSubjectDetailTable,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -257,20 +286,24 @@ class _TimeTableState extends State<TimeTable> {
               //   left: BorderSide(color: Colors.black, width: 1),
               //   right: BorderSide(color: Colors.black, width: 1),
               // ),
-              border: Border.all(color: Colors.black, width: 1),
+              border: Border.all(
+                  color: Colors.black, width: screenBasedPixelWidth * 1),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 15, right: 15, top: 15, bottom: 15),
+                  padding: EdgeInsets.only(
+                      left: screenBasedPixelWidth * 15,
+                      right: screenBasedPixelWidth * 15,
+                      top: screenBasedPixelWidth * 15,
+                      bottom: screenBasedPixelWidth * 15),
                   child: Text(
                     "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: GoogleFonts.lato(
                       color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: 15,
+                      fontSize: screenBasedPixelWidth * 15,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -287,8 +320,11 @@ class _TimeTableState extends State<TimeTable> {
   @override
   void dispose() {
     super.dispose();
-    widget.arguments?.onTimeTableDocumentDispose?.call(true);
+    widget.arguments.onTimeTableDocumentDispose?.call(true);
   }
+
+  late double screenBasedPixelWidth;
+  late double screenBasedPixelHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -296,24 +332,64 @@ class _TimeTableState extends State<TimeTable> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          "Tables",
-          style: GoogleFonts.nunito(
-            color: Colors.white,
-            textStyle: Theme.of(context).textTheme.headline1,
-            fontSize: 25,
-            fontWeight: FontWeight.w600,
-            fontStyle: FontStyle.normal,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: Text(
+            "Tables",
+            style: GoogleFonts.nunito(
+              color: Colors.white,
+              textStyle: Theme.of(context).textTheme.headline1,
+              fontSize: screenBasedPixelWidth * 25,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.normal,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
         backgroundColor: const Color(0xff04294f),
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: EdgeInsets.only(
+                right: screenBasedPixelWidth * 5,
+                top: screenBasedPixelWidth * 8,
+                bottom: screenBasedPixelWidth * 8),
+            child: SizedBox(
+              width: screenBasedPixelWidth * 51,
+              height: screenBasedPixelWidth * 40,
+              child: Material(
+                color: Colors.transparent,
+                shape: const StadiumBorder(),
+                child: Tooltip(
+                  message: "Go back",
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    customBorder: const StadiumBorder(),
+                    focusColor: Colors.white.withOpacity(0.1),
+                    highlightColor: Colors.white.withOpacity(0.1),
+                    splashColor: Colors.white.withOpacity(0.1),
+                    hoverColor: Colors.white.withOpacity(0.1),
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: screenBasedPixelWidth * 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const TableHeader(
+            TableHeader(
               tableHeaderText: "Time Table",
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              screenBasedPixelHeight: screenBasedPixelHeight,
             ),
             SizedBox(
               height:
@@ -329,14 +405,16 @@ class _TimeTableState extends State<TimeTable> {
                     });
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(screenBasedPixelWidth * 8.0),
                     child: customTimeTable,
                   ),
                 ),
               ),
             ),
-            const TableHeader(
+            TableHeader(
               tableHeaderText: "Subject Detail",
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              screenBasedPixelHeight: screenBasedPixelHeight,
             ),
             SizedBox(
               height: subjectDetailTableSize
@@ -352,7 +430,7 @@ class _TimeTableState extends State<TimeTable> {
                     });
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(screenBasedPixelWidth * 8.0),
                     child: customSubjectDetailTable,
                   ),
                 ),
@@ -369,9 +447,13 @@ class TableHeader extends StatelessWidget {
   const TableHeader({
     Key? key,
     required this.tableHeaderText,
+    required this.screenBasedPixelHeight,
+    required this.screenBasedPixelWidth,
   }) : super(key: key);
 
   final String tableHeaderText;
+  final double screenBasedPixelHeight;
+  final double screenBasedPixelWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -387,14 +469,17 @@ class TableHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 15),
+            padding: EdgeInsets.only(
+                left: screenBasedPixelWidth * 15,
+                right: screenBasedPixelWidth * 15,
+                top: screenBasedPixelWidth * 15,
+                bottom: screenBasedPixelWidth * 15),
             child: Text(
               tableHeaderText,
               style: GoogleFonts.lato(
                 color: Colors.white,
                 // textStyle: Theme.of(context).textTheme.headline1,
-                fontSize: 20,
+                fontSize: screenBasedPixelWidth * 20,
                 fontWeight: FontWeight.w700,
                 fontStyle: FontStyle.normal,
               ),
@@ -411,10 +496,14 @@ class CustomTableRowElement extends StatelessWidget {
     Key? key,
     required this.elementText1,
     required this.elementText2,
+    required this.screenBasedPixelHeight,
+    required this.screenBasedPixelWidth,
   }) : super(key: key);
 
   final String elementText1;
   final String elementText2;
+  final double screenBasedPixelHeight;
+  final double screenBasedPixelWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -429,10 +518,11 @@ class CustomTableRowElement extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
               border: Border(
-                bottom: BorderSide(color: Colors.black, width: 1),
+                bottom: BorderSide(
+                    color: Colors.black, width: screenBasedPixelWidth * 1),
               ),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
@@ -441,18 +531,18 @@ class CustomTableRowElement extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 15,
-                  right: 15,
-                  top: 15,
-                  bottom: 15,
+                padding: EdgeInsets.only(
+                  left: screenBasedPixelWidth * 15,
+                  right: screenBasedPixelWidth * 15,
+                  top: screenBasedPixelWidth * 15,
+                  bottom: screenBasedPixelWidth * 15,
                 ),
                 child: Text(
                   elementText1,
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: 15,
+                    fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -471,18 +561,18 @@ class CustomTableRowElement extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 15,
-                  right: 15,
-                  top: 15,
-                  bottom: 15,
+                padding: EdgeInsets.only(
+                  left: screenBasedPixelWidth * 15,
+                  right: screenBasedPixelWidth * 15,
+                  top: screenBasedPixelWidth * 15,
+                  bottom: screenBasedPixelWidth * 15,
                 ),
                 child: Text(
                   elementText2,
                   style: GoogleFonts.lato(
                     color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: 15,
+                    fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -500,9 +590,13 @@ class LegendCellWidget extends StatelessWidget {
   const LegendCellWidget({
     Key? key,
     required this.legendText,
+    required this.screenBasedPixelHeight,
+    required this.screenBasedPixelWidth,
   }) : super(key: key);
 
   final String legendText;
+  final double screenBasedPixelHeight;
+  final double screenBasedPixelWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -512,18 +606,20 @@ class LegendCellWidget extends StatelessWidget {
         // border: Border.all(color: Colors.black, width: 1),
         // borderRadius: const BorderRadius.all(Radius.circular(40));
       ),
-      height: 75,
+      height: screenBasedPixelHeight * 75,
       // width: 250,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
+          padding: EdgeInsets.only(
+              left: screenBasedPixelWidth * 15,
+              right: screenBasedPixelWidth * 15),
           child: Text(
             legendText,
             style: GoogleFonts.lato(
               color: Colors.black,
               // textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: 15,
+              fontSize: screenBasedPixelWidth * 15,
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.normal,
             ),
@@ -542,6 +638,8 @@ class TimeTableArguments {
   // String userEnteredPasswd;
   // HeadlessInAppWebView headlessWebView;
   // Image? image;
+  double screenBasedPixelWidth;
+  double screenBasedPixelHeight;
 
   TimeTableArguments({
     required this.currentStatus,
@@ -551,5 +649,7 @@ class TimeTableArguments {
     // required this.userEnteredPasswd,
     // required this.headlessWebView,
     // required this.image,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
   });
 }
