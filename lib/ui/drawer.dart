@@ -11,15 +11,17 @@ import '../basicFunctions/dailog_box_for_leaving_app.dart';
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
     Key? key,
-    this.savedThemeMode,
+    required this.themeMode,
     required this.currentStatus,
     required this.onCurrentStatus,
     required this.headlessWebView,
     required this.onCurrentFullUrl,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
+    required this.onthemeMode,
   }) : super(key: key);
-  final AdaptiveThemeMode? savedThemeMode;
+  final ThemeMode? themeMode;
+  final ValueChanged<ThemeMode>? onthemeMode;
   final String currentStatus;
   final ValueChanged<String> onCurrentStatus;
   final HeadlessInAppWebView? headlessWebView;
@@ -68,15 +70,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   themeButtonTextCalc() async {
-    if (AdaptiveTheme.of(context).mode.isLight) {
+    if (widget.themeMode == ThemeMode.light) {
       setState(() {
         themeButtonText = "Light";
       });
-    } else if (AdaptiveTheme.of(context).mode.isDark) {
+    } else if (widget.themeMode == ThemeMode.dark) {
       setState(() {
         themeButtonText = "Dark";
       });
-    } else if (AdaptiveTheme.of(context).mode.isSystem) {
+    } else if (widget.themeMode == ThemeMode.system) {
       setState(() {
         themeButtonText = "System";
       });
@@ -145,6 +147,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    themeButtonTextCalc();
     debugPrint(themeButtonText);
     debugPrint(
         "brightness.name: ${WidgetsBinding.instance!.window.platformBrightness}");
@@ -226,9 +229,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       ),
                     ),
                     onPressed: () {
-                      // Update the state of the app
-                      AdaptiveTheme.of(context).toggleThemeMode();
-                      themeButtonTextCalc();
+                      // toggling the theme mode in this sequence system -> light -> dark
+                      if (widget.themeMode == ThemeMode.light) {
+                        widget.onthemeMode?.call(ThemeMode.dark);
+                      } else if (widget.themeMode == ThemeMode.dark) {
+                        widget.onthemeMode?.call(ThemeMode.system);
+                      } else if (widget.themeMode == ThemeMode.system) {
+                        widget.onthemeMode?.call(ThemeMode.light);
+                      }
                       // Then close the drawer
                       //Navigator.pop(context);
                     },

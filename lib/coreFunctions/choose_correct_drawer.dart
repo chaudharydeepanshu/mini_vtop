@@ -16,7 +16,8 @@ chooseCorrectDrawer(
     required Image? image,
     required bool refreshingCaptcha,
     required String currentFullUrl,
-    required AdaptiveThemeMode? savedThemeMode,
+    required ThemeMode? themeMode,
+    required ValueChanged<ThemeMode>? onThemeMode,
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<bool> onProcessingSomething,
     required ValueChanged<String> onCurrentFullUrl,
@@ -31,7 +32,7 @@ chooseCorrectDrawer(
   } else if (currentStatus == "launchLoadingScreen") {
     onDrawer.call(
       CustomDrawer(
-        savedThemeMode: savedThemeMode,
+        themeMode: themeMode,
         currentStatus: currentStatus,
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
@@ -42,12 +43,15 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
+        onthemeMode: (ThemeMode value) {
+          onThemeMode?.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
     onDrawer.call(
       CustomDrawer(
-        savedThemeMode: savedThemeMode,
+        themeMode: themeMode,
         currentStatus: currentStatus,
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
@@ -58,12 +62,15 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
+        onthemeMode: (ThemeMode value) {
+          onThemeMode?.call(value);
+        },
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
     onDrawer.call(
       CustomDrawer(
-        savedThemeMode: savedThemeMode,
+        themeMode: themeMode,
         currentStatus: currentStatus,
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
@@ -74,12 +81,15 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
+        onthemeMode: (ThemeMode value) {
+          onThemeMode?.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
     onDrawer.call(
       CustomDrawer(
-        savedThemeMode: savedThemeMode,
+        themeMode: themeMode,
         currentStatus: currentStatus,
         onCurrentStatus: (String value) {
           onCurrentStatus.call(value);
@@ -90,6 +100,9 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
+        onthemeMode: (ThemeMode value) {
+          onThemeMode?.call(value);
+        },
       ),
     );
   }

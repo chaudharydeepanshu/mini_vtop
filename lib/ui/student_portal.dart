@@ -158,8 +158,9 @@ class _StudentPortalState extends State<StudentPortal> {
   startTimeout() async {
     DateTime? sessionDateTime = widget.arguments.sessionDateTime;
     DateTime dateTimeNow = await NTP.now();
-    int differenceInSeconds =
-        dateTimeNow.difference(sessionDateTime!).inSeconds;
+    int differenceInSeconds = dateTimeNow
+        .difference(sessionDateTime!)
+        .inSeconds; //todo: this is getting null sometimes so fix it
 
     int secondsRemainingInSession = 3600 - differenceInSeconds;
 

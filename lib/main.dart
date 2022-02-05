@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
@@ -11,6 +10,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
+import 'package:mini_vtop/sharedPreferences/app_theme_shared_preferences.dart';
+import 'package:mini_vtop/ui/AppTheme/AppThemeData.dart';
 import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
@@ -26,103 +27,83 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  int? retrieveSavedThemeModeIndex = await retrieveSavedThemeMode();
+  final ThemeMode savedThemeMode = retrieveSavedThemeModeIndex == 0
+      ? ThemeMode.system
+      : retrieveSavedThemeModeIndex == 1
+          ? ThemeMode.light
+          : ThemeMode.dark;
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  runApp(MyApp(savedThemeMode: savedThemeMode));
+  runApp(MyApp(
+    savedThemeMode: savedThemeMode,
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key, this.savedThemeMode}) : super(key: key);
 
-  final AdaptiveThemeMode? savedThemeMode;
-  final AdaptiveThemeMode firstRunAfterInstallThemeMode =
-      AdaptiveThemeMode.system;
+  final ThemeMode? savedThemeMode;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late ThemeMode? themeMode = widget.savedThemeMode;
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveTheme(
-      light: ThemeData(
-        primarySwatch: Colors.blue,
-        platform: TargetPlatform.android,
-        scaffoldBackgroundColor: Colors.white,
-        primaryTextTheme: const TextTheme(
-          headline6: TextStyle(color: Colors.black),
-        ),
-        //iconTheme: IconThemeData(color: Colors.black),
-        cardTheme: CardTheme(
-          color: Colors.grey.shade400,
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.grey.shade300,
-          iconTheme: const IconThemeData(
-            color: Colors.black,
-          ),
-        ),
-        bottomAppBarTheme: BottomAppBarTheme(
-          color: Colors.grey.shade300,
-        ),
-      ),
-      dark: ThemeData.dark().copyWith(
-        // iconTheme: IconThemeData(color: Colors.black),
-        // scaffoldBackgroundColor: Color(0xFF121212),
-        // canvasColor: Color(0xFF121212),
-        checkboxTheme: CheckboxThemeData(
-          checkColor: MaterialStateProperty.all(Colors.white),
-          fillColor: MaterialStateProperty.all(Colors.lightBlueAccent),
-        ),
-        cardTheme: const CardTheme(
-          color: Color(0xff424242),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF222222),
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-        ),
-        bottomAppBarTheme: const BottomAppBarTheme(
-          color: Color(0xFF222222),
-        ),
-      ),
-      initial: savedThemeMode ?? firstRunAfterInstallThemeMode,
-      builder: (theme, darkTheme) => DismissKeyboard(
-        child: MaterialApp(
-          title: 'Mini VTOP',
-          darkTheme: darkTheme,
-          theme: theme,
-          themeMode: ThemeMode.system,
-          // darkTheme: ThemeData.dark(),
-          debugShowCheckedModeBanner: false,
-          home: Home(
-            savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
-
-            // child: Home(
-            //   savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
-            // ),
-          ),
-          routes: {
-            PageRoutes.studentProfileAllView: (context) =>
-                StudentProfileAllView(
-                  arguments: ModalRoute.of(context)!.settings.arguments
-                      as StudentProfileAllViewArguments,
-                ),
-            PageRoutes.timeTable: (context) => TimeTable(
-                  arguments: ModalRoute.of(context)!.settings.arguments
-                      as TimeTableArguments,
-                ),
+    return DismissKeyboard(
+      child: MaterialApp(
+        title: 'Mini VTOP',
+        // darkTheme: darkTheme,
+        // theme: theme,
+        // themeMode: ThemeMode.system,
+        themeMode: themeMode,
+        theme: ThemeClass.lightTheme,
+        darkTheme: ThemeClass.darkTheme,
+        // darkTheme: ThemeData.dark(),
+        debugShowCheckedModeBanner: false,
+        home: Home(
+          themeMode: themeMode,
+          onThemeMode: (ThemeMode value) {
+            setState(() {
+              themeMode = value;
+              saveThemeMode(value == ThemeMode.system
+                  ? 0
+                  : value == ThemeMode.light
+                      ? 1
+                      : 2);
+            });
           },
+
+          // child: Home(
+          //   savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
+          // ),
         ),
+        routes: {
+          PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as StudentProfileAllViewArguments,
+              ),
+          PageRoutes.timeTable: (context) => TimeTable(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as TimeTableArguments,
+              ),
+        },
       ),
     );
   }
 }
 
 class Home extends StatefulWidget with PreferredSizeWidget {
-  const Home({Key? key, this.savedThemeMode}) : super(key: key);
+  const Home({Key? key, this.themeMode, this.onThemeMode}) : super(key: key);
 
-  final AdaptiveThemeMode? savedThemeMode;
+  final ThemeMode? themeMode;
+  final ValueChanged<ThemeMode>? onThemeMode;
 
   @override
   _HomeState createState() => _HomeState();
@@ -136,15 +117,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   String? theme;
 
   themeCalc() async {
-    if (AdaptiveTheme.of(context).mode.isLight) {
+    if (widget.themeMode == ThemeMode.light) {
       setState(() {
         theme = 'Light';
       });
-    } else if (AdaptiveTheme.of(context).mode.isDark) {
+    } else if (widget.themeMode == ThemeMode.dark) {
       setState(() {
         theme = 'Dark';
       });
-    } else if (AdaptiveTheme.of(context).mode.isSystem) {
+    } else if (widget.themeMode == ThemeMode.system) {
       setState(() {
         theme = 'System';
       });
@@ -326,22 +307,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   bool isStopped = false;
 
   late Timer timer;
+  late Brightness brightness;
 
   @override
   void initState() {
     super.initState();
 
-    AdaptiveTheme.of(context).modeChangeNotifier.addListener(() {
-      WidgetsBinding.instance!.addObserver(this); //most important
-      var brightness = WidgetsBinding.instance!.window.platformBrightness;
-      debugPrint(brightness.name);
-      // > should print Brightness.light / Brightness.dark when you switch
-      themeCalc();
-      setState(() {
-        darkModeOn = (theme == 'Dark') ||
-            (brightness == Brightness.dark && theme == 'System');
-      });
-    });
     WidgetsBinding.instance!.addObserver(this); //most important
     var brightness = WidgetsBinding.instance!.window.platformBrightness;
     debugPrint(brightness.name);
@@ -357,8 +328,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _retrieveSessionDateTime();
     _retrieveTryAutoLoginStatus();
     headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest:
-          URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop/")),
+      initialUrlRequest: URLRequest(
+          // url: Uri.parse("")),
+          url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop/")),
       initialOptions: options,
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
         if (kDebugMode) {
@@ -822,16 +794,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
                   "You are logged out due to inactivity for more than 15 minutes")) {
-                // onRestartHeadlessInAppWebView.call(true);
                 currentStatus = "launchLoadingScreen";
-                // runHeadlessInAppWebView(
-                //   headlessWebView: headlessWebView,
-                //   onCurrentFullUrl: (String value) {
-                //     setState(() {
-                //       currentFullUrl = value;
-                //     });
-                //   },
-                // );
                 debugPrint(
                     "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
                 runHeadlessInAppWebView(
@@ -843,7 +806,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               } else if (ajaxRequest.responseText!
                   .contains("You have been successfully logged out")) {
                 debugPrint("You have been successfully logged out");
-                //--------------Temporary-----------------//
                 currentStatus = "launchLoadingScreen";
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -855,10 +817,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 );
                 debugPrint(
                     "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
-                // await controller.evaluateJavascript(
-                //     source:
-                //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
-                //--------------Temporary-----------------//
               }
             }
           } else if (ajaxRequest.url.toString() ==
@@ -965,7 +923,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             // await headlessWebView?.run();
           }
         }
-// print(ajaxRequest.status);
+        // print(ajaxRequest.status);
         return AjaxRequestAction.PROCEED;
       },
       onLoadStart: (controller, url) async {
@@ -984,9 +942,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
       },
       onLoadStop: (controller, url) async {
-        // Future.delayed(const Duration(seconds: 2), () async {
-        // print(await headlessWebView?.webViewController.getProgress());
-
         if (url.toString() ==
                 "https://vtop.vitbhopal.ac.in/vtop/initialProcess" &&
             await headlessWebView?.webViewController.getProgress() == 100) {
@@ -1020,9 +975,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     });
                   },
                 );
-                // await headlessWebView?.webViewController.evaluateJavascript(
-                //     source:
-                //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
               } else if (value != initialHtml &&
                   document.getElementsByTagName('button').isNotEmpty) {
                 // printWrapped("value: $value");
@@ -1080,91 +1032,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             }
           });
         }
-        // });
-        // await controller
-        //     .evaluateJavascript(
-        //         source: "new XMLSerializer().serializeToString(document);")
-        //     .then((response) async {
-        //   var document = parse('$response');
-        //
-        //   String? inactivityResponse = document
-        //       .getElementById('closedHTML')
-        //       ?.children[0]
-        //       .children[0]
-        //       .children[0]
-        //       .children[1]
-        //       .children[0]
-        //       .children[0]
-        //       .children[0]
-        //       .children[0]
-        //       .innerHtml;
-        //
-        //   // print(response);
-        //   if (inactivityResponse ==
-        //       "You are logged out due to inactivity for more than 15 minutes") {
-        //     debugPrint("response: 232");
-        //     // onRestartHeadlessInAppWebView.call(true);
-        //
-        //     print(
-        //         "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for onLoadStop");
-        //     await controller.evaluateJavascript(
-        //         source:
-        //             '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
-        //     // runHeadlessInAppWebView(
-        //     //   headlessWebView: headlessWebView,
-        //     //   onCurrentFullUrl: (String value) {
-        //     //     setState(() {
-        //     //       currentFullUrl = value;
-        //     //     });
-        //     //   },
-        //     // );
-        //   } else if (response.contains("(STUDENT)")) {
-        //     // onCurrentStatus.call("userLoggedIn");
-        //     currentStatus = "userLoggedIn";
-        //     loggedUserStatus = "studentPortalScreen";
-        //   } else {
-        //     // log(url.toString());
-        //     // printWrapped(response);
-        //     if (url.toString() ==
-        //         "https://vtop.vitbhopal.ac.in/vtop/initialProcess") {
-        //       printWrapped(await headlessWebView?.webViewController
-        //           .evaluateJavascript(
-        //               source:
-        //                   "new XMLSerializer().serializeToString(document);"));
-        //       if (response.contains("openPage()")) {
-        //         debugPrint("response: 200");
-        //         await headlessWebView?.webViewController.evaluateJavascript(
-        //             source:
-        //                 '''ajaxCall("vtopLogin",null,"page_outline");''').then(
-        //             (value) async {
-        //           // await webViewController
-        //           //     ?.evaluateJavascript(
-        //           //         source:
-        //           //             "new XMLSerializer().serializeToString(document);")
-        //           //     .then((response) {
-        //           //   printWrapped(response.toString());
-        //           // });
-        //         });
-        //       } else {
-        //         debugPrint("response: Empty response");
-        //         //print("response: $response");
-        //         //empty response <html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>
-        //       }
-        //     } else if (url.toString() == "https://vtop.vitbhopal.ac.in/vtop/") {
-        //       debugPrint("response: 302");
-        //     }
-        //   }
-        // });
-        // final snackBar = SnackBar(
-        //   content: Text('onLoadStop $url'),
-        //   duration: const Duration(seconds: 1),
-        // );
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        // onCurrentFullUrl.call(url?.toString() ?? '');
         setState(() {
           currentFullUrl = url?.toString() ?? '';
         });
-        // log("status: ${url!.}");
       },
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
@@ -1200,47 +1070,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         debugPrint("HTTP error $url: $statusCode, $description");
       },
     );
-    //     headlessInAppWebView(
-    //   context: context,
-    //   userEnteredUname: userEnteredUname,
-    //   headlessWebView: headlessWebView,
-    //   onCurrentFullUrl: (String value) {
-    //     setState(() {
-    //       currentFullUrl = value;
-    //     });
-    //   },
-    //   onWebViewController: (InAppWebViewController value) {
-    //     setState(() {
-    //       webViewController = value;
-    //     });
-    //   },
-    //   onImage: (Image value) {
-    //     setState(() {
-    //       image = value;
-    //     });
-    //   },
-    //   onCurrentStatus: (String value) {
-    //     setState(() {
-    //       currentStatus = value;
-    //     });
-    //   },
-    //   onVtopLoginAjaxRequest: (Map<String, dynamic> value) {
-    //     setState(() {
-    //       currentStatus = value["currentStatus"];
-    //       webViewController = value["webViewController"];
-    //       image = value["image"];
-    //     });
-    //   },
-    //   onRestartHeadlessInAppWebView: (bool value) {
-    //     runHeadlessInAppWebView(
-    //         onCurrentFullUrl: (String value) {
-    //           setState(() {
-    //             currentFullUrl = value;
-    //           });
-    //         },
-    //         headlessWebView: headlessWebView);
-    //   },
-    // );
 
     runHeadlessInAppWebView(
         onCurrentFullUrl: (String value) {
@@ -1268,9 +1097,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // currentStatus = "launchLoadingScreen";
-    debugPrint(
-        'darkModeOn: $darkModeOn, theme: $theme, AdaptiveTheme mode isLight: ${AdaptiveTheme.of(context).mode.isLight}');
+    // Reassigning new values to brightness, darkModeOn,and themeCalc() on every setstate
+    // so that they get accurate values if parent widgets update these value
+    brightness = WidgetsBinding.instance!.window.platformBrightness;
+    darkModeOn = (widget.themeMode == ThemeMode.system &&
+            brightness == Brightness.dark) ||
+        widget.themeMode == ThemeMode.dark;
+    themeCalc();
+    debugPrint('darkModeOn: $darkModeOn, theme: $theme');
+
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "signInScreen";
     debugPrint("loggedUserStatus: $loggedUserStatus");
@@ -1282,9 +1117,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     chooseCorrectBody(
       onBody: (Widget value) {
-        // setState(() {
         body = value;
-        // });
       },
       screenBasedPixelWidth: screenBasedPixelWidth,
       screenBasedPixelHeight: screenBasedPixelHeight,
@@ -1466,7 +1299,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           currentStatus = value;
         });
       },
-      savedThemeMode: widget.savedThemeMode,
+      themeMode: widget.themeMode,
+      onThemeMode: (ThemeMode value) {
+        widget.onThemeMode?.call(value);
+      },
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -1506,22 +1342,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             duration: const Duration(milliseconds: 500),
             switchInCurve: Curves.easeIn,
             switchOutCurve: Curves.easeOut,
-            // transitionBuilder: (child, animation) {
-            //   const begin = Offset(0.0, 1.0);
-            //   const end = Offset.zero;
-            //   const curve = Curves.ease;
-            //
-            //   final tween = Tween(begin: begin, end: end);
-            //   final curvedAnimation = CurvedAnimation(
-            //     parent: animation,
-            //     curve: curve,
-            //   );
-            //
-            //   return SlideTransition(
-            //     position: tween.animate(curvedAnimation),
-            //     child: child,
-            //   );
-            // },
             transitionBuilder: (child, animation) {
               return SlideTransition(
                 position: Tween<Offset>(
