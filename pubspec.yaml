@@ -43,6 +43,24 @@ dependencies:
   package_info_plus: ^1.3.0
   adaptive_theme: ^2.3.0
 
+#<!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+  flutter_downloader: ^1.7.2
+  share: ^2.0.4
+  path_provider: ^2.0.8
+  permission_handler: ^8.3.0
+  provider: ^6.0.2
+  share_extend: ^2.0.0
+  mime: ^1.0.1
+  flutter_colorpicker: ^1.0.3
+  flutter_icons:
+    git:
+      url: https://github.com/adarsh-technocrat/flutter-icons.git
+      branch: null-safety-migration
+  flutter_datetime_picker:
+    git:
+      url: https://github.com/Realank/flutter_datetime_picker.git
+      ref: master
+#<!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -83,6 +101,15 @@ flutter:
     - assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif
     - assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Success_transparent_by_Icons8.gif
     - assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Sign_In_transparent_by_Icons8.gif
+
+    #<!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+    - assets/browserImages/images/google_logo.png
+    - assets/browserImages/images/yahoo_logo.png
+    - assets/browserImages/images/bing_logo.png
+    - assets/browserImages/images/duckduckgo_logo.png
+    - assets/browserImages/images/ecosia_logo.png
+    - assets/browserImages/icon/icon.png
+    #<!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
 #    - assets/images/screens_animated_gifs/encrypt_decrypt_icon.svg
 #    - assets/images/screens_animated_gifs/merge_icon.svg
 #    - assets/images/screens_animated_gifs/split_icon.svg

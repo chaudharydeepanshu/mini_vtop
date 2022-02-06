@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'dart:typed_data';
@@ -11,12 +12,16 @@ import 'package:html/parser.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/sharedPreferences/app_theme_shared_preferences.dart';
-import 'package:mini_vtop/ui/AppTheme/AppThemeData.dart';
+import 'package:mini_vtop/ui/AppTheme/app_theme_data.dart';
 import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
+import 'browser/models/browser_model.dart';
+import 'browser/models/webview_model.dart';
 import 'coreFunctions/auto_captcha.dart';
 import 'coreFunctions/choose_correct_drawer.dart';
 import 'coreFunctions/choose_correct_initial_body.dart';
@@ -24,6 +29,21 @@ import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
 import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 import 'navigation/page_routes_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+late final dynamic webArchiveDir;
+
+late final dynamic tabViewerBottomOffset1;
+late final dynamic tabViewerBottomOffset2;
+late final dynamic tabViewerBottomOffset3;
+
+const tabViewerTopOffset1 = 0.0;
+const tabViewerTopOffset2 = 10.0;
+const tabViewerTopOffset3 = 20.0;
+
+const tabViewerTopScaleTopOffset = 250.0;
+const tabViewerTopScaleBottomOffset = 230.0;
+// <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,9 +57,49 @@ Future main() async {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  runApp(MyApp(
-    savedThemeMode: savedThemeMode,
-  ));
+  // <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+  webArchiveDir = (await getApplicationSupportDirectory()).path;
+
+  if (Platform.isIOS) {
+    tabViewerBottomOffset1 = 130.0;
+    tabViewerBottomOffset2 = 140.0;
+    tabViewerBottomOffset3 = 150.0;
+  } else {
+    tabViewerBottomOffset1 = 110.0;
+    tabViewerBottomOffset2 = 120.0;
+    tabViewerBottomOffset3 = 130.0;
+  }
+
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+      );
+
+  // await Permission.camera.request();
+  // await Permission.microphone.request();
+  // await Permission.storage.request();
+  // <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+
+  runApp(
+    // <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => WebViewModel(),
+        ),
+        ChangeNotifierProxyProvider<WebViewModel, BrowserModel>(
+          update: (context, webViewModel, browserModel) {
+            browserModel!.setCurrentWebViewModel(webViewModel);
+            return browserModel;
+          },
+          create: (BuildContext context) => BrowserModel(WebViewModel()),
+        ),
+      ],
+      // <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+      child: MyApp(
+        savedThemeMode: savedThemeMode,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -576,7 +636,16 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 } else {
                   printWrapped(
                       "Can't find why something got wrong enable print ajaxRequest for doLogin and see the logs");
-                  // printWrapped("ajaxRequest: ${ajaxRequest}");
+                  printWrapped("ajaxRequest: $ajaxRequest");
+                  vtopLoginErrorType = "Something is wrong! Please retry.";
+                  runHeadlessInAppWebView(
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
                 }
               });
             } else {
@@ -656,6 +725,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           "new XMLSerializer().serializeToString(document);")
                   .then((value) {
                 var document = parse('$value');
+
                 setState(() {
                   studentProfileAllViewDocument = document;
                   studentName = studentProfileAllViewDocument
@@ -722,6 +792,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 });
               });
+            } else if (requestType == "Fake") {
+              debugPrint(
+                  "Fake request executed by calling callStudentProfileAllView() with onRequestType as Fake");
             } else if (requestType == "Real") {
               if (ajaxRequest.status == 200) {
                 requestType = "Empty";
@@ -1200,6 +1273,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           _saveTryAutoLoginStatus();
         });
       },
+      themeMode: widget.themeMode,
+      onThemeMode: (ThemeMode value) {
+        widget.onThemeMode?.call(value);
+      },
     );
 
     chooseCorrectAppbar(
@@ -1302,6 +1379,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       themeMode: widget.themeMode,
       onThemeMode: (ThemeMode value) {
         widget.onThemeMode?.call(value);
+      },
+      onRequestType: (String value) {
+        setState(() {
+          requestType = value;
+        });
       },
     );
 

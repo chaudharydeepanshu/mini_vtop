@@ -1,7 +1,8 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:mini_vtop/ui/drawer.dart';
+
+import 'call_student_profile_all_view.dart';
 
 chooseCorrectDrawer(
     {required BuildContext context,
@@ -17,6 +18,7 @@ chooseCorrectDrawer(
     required bool refreshingCaptcha,
     required String currentFullUrl,
     required ThemeMode? themeMode,
+    required ValueChanged<String> onRequestType,
     required ValueChanged<ThemeMode>? onThemeMode,
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<bool> onProcessingSomething,
@@ -43,7 +45,7 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
-        onthemeMode: (ThemeMode value) {
+        onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
         },
       ),
@@ -62,7 +64,7 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
-        onthemeMode: (ThemeMode value) {
+        onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
         },
       ),
@@ -81,8 +83,22 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
-        onthemeMode: (ThemeMode value) {
+        onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
+        },
+        onShowStudentProfileAllView: (bool value) {
+          onRequestType.call("Fake");
+          callStudentProfileAllView(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
         },
       ),
     );
@@ -100,7 +116,7 @@ chooseCorrectDrawer(
         headlessWebView: headlessWebView,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
-        onthemeMode: (ThemeMode value) {
+        onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
         },
       ),

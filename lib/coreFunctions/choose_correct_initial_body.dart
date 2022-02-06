@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:mini_vtop/coreFunctions/call_time_table.dart';
 import 'package:mini_vtop/coreFunctions/sign_in.dart';
@@ -35,6 +35,8 @@ chooseCorrectBody(
     required var studentPortalDocument,
     required var studentProfileAllViewDocument,
     required bool tryAutoLoginStatus,
+    required ThemeMode? themeMode,
+    required ValueChanged<ThemeMode>? onThemeMode,
     required ValueChanged<bool> onRetryOnError,
     required ValueChanged<bool> onClearUnamePasswd,
     required ValueChanged<bool> onTryAutoLoginStatus,
@@ -196,6 +198,14 @@ chooseCorrectBody(
             },
           );
         },
+        onPerformSignOut: (bool value) {
+          performSignOut(
+              context: context,
+              headlessWebView: headlessWebView,
+              onCurrentFullUrl: (String value) {
+                onCurrentFullUrl.call(value);
+              });
+        },
         arguments: StudentPortalArguments(
           processingSomething: processingSomething,
           studentPortalDocument: studentPortalDocument,
@@ -241,12 +251,17 @@ chooseCorrectBody(
           );
         },
         arguments: FullWebViewArguments(
-            processingSomething: processingSomething,
-            studentPortalDocument: studentPortalDocument,
-            studentProfileAllViewDocument: studentProfileAllViewDocument,
-            headlessWebView: headlessWebView,
-            studentName: studentName,
-            sessionDateTime: sessionDateTime),
+          processingSomething: processingSomething,
+          studentPortalDocument: studentPortalDocument,
+          studentProfileAllViewDocument: studentProfileAllViewDocument,
+          headlessWebView: headlessWebView,
+          studentName: studentName,
+          sessionDateTime: sessionDateTime,
+          themeMode: themeMode,
+          onThemeMode: (ThemeMode value) {
+            onThemeMode?.call(value);
+          },
+        ),
       ),
     );
   }
