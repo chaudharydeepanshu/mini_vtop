@@ -862,7 +862,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             //document.querySelectorAll('table')[1];
             // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
-            _clearTryAutoLoginStatus();
             // print("ajaxRequest: ${ajaxRequest}");
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
@@ -1383,6 +1382,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onRequestType: (String value) {
         setState(() {
           requestType = value;
+        });
+      },
+      onTryAutoLoginStatus: (bool value) {
+        _clearTryAutoLoginStatus();
+        setState(() {
+          tryAutoLoginStatus = value;
+          _saveTryAutoLoginStatus();
         });
       },
     );

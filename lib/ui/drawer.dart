@@ -19,6 +19,7 @@ class CustomDrawer extends StatefulWidget {
     required this.screenBasedPixelHeight,
     required this.onThemeMode,
     this.onShowStudentProfileAllView,
+    this.onTryAutoLoginStatus,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -29,6 +30,7 @@ class CustomDrawer extends StatefulWidget {
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
   final ValueChanged<bool>? onShowStudentProfileAllView;
+  final ValueChanged<bool>? onTryAutoLoginStatus;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -342,6 +344,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 ),
                               ),
                               onPressed: () {
+                                widget.onTryAutoLoginStatus?.call(false);
                                 performSignOut(
                                     context: context,
                                     headlessWebView: widget.headlessWebView,

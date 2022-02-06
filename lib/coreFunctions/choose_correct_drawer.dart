@@ -18,6 +18,7 @@ chooseCorrectDrawer(
     required bool refreshingCaptcha,
     required String currentFullUrl,
     required ThemeMode? themeMode,
+    required ValueChanged<bool> onTryAutoLoginStatus,
     required ValueChanged<String> onRequestType,
     required ValueChanged<ThemeMode>? onThemeMode,
     required ValueChanged<bool> onRefreshingCaptcha,
@@ -100,6 +101,9 @@ chooseCorrectDrawer(
             },
           );
         },
+        onTryAutoLoginStatus: (bool value) {
+          onTryAutoLoginStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -118,6 +122,23 @@ chooseCorrectDrawer(
         screenBasedPixelHeight: screenBasedPixelHeight,
         onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
+        },
+        onShowStudentProfileAllView: (bool value) {
+          onRequestType.call("Fake");
+          callStudentProfileAllView(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+          );
+        },
+        onTryAutoLoginStatus: (bool value) {
+          onTryAutoLoginStatus.call(value);
         },
       ),
     );
