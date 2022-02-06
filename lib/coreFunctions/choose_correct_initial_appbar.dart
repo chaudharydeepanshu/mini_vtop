@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-chooseCorrectAppbar(
-    {required BuildContext context,
-    required double screenBasedPixelWidth,
-    required double screenBasedPixelHeight,
-    required String? currentStatus,
-    required String? loggedUserStatus,
-    required HeadlessInAppWebView? headlessWebView,
-    required String userEnteredUname,
-    required String userEnteredPasswd,
-    required bool processingSomething,
-    required Image? image,
-    required bool refreshingCaptcha,
-    required String currentFullUrl,
-    required var scaffoldKey,
-    required ValueChanged<bool> onRefreshingCaptcha,
-    required ValueChanged<bool> onProcessingSomething,
-    required ValueChanged<String> onCurrentFullUrl,
-    required ValueChanged<String> onCurrentStatus,
-    required ValueChanged<String> onUserEnteredUname,
-    required ValueChanged<String> onUserEnteredPasswd,
-    required ValueChanged<Widget> onAppbar}) async {
+chooseCorrectAppbar({
+  required BuildContext context,
+  required double screenBasedPixelWidth,
+  required double screenBasedPixelHeight,
+  required String? currentStatus,
+  required String? loggedUserStatus,
+  required HeadlessInAppWebView? headlessWebView,
+  required String userEnteredUname,
+  required String userEnteredPasswd,
+  required bool processingSomething,
+  required Image? image,
+  required bool refreshingCaptcha,
+  required String currentFullUrl,
+  required var scaffoldKey,
+  required ValueChanged<bool> onRefreshingCaptcha,
+  required ValueChanged<bool> onProcessingSomething,
+  required ValueChanged<String> onCurrentFullUrl,
+  required ValueChanged<String> onCurrentStatus,
+  required ValueChanged<String> onUserEnteredUname,
+  required ValueChanged<String> onUserEnteredPasswd,
+  required ValueChanged<Widget> onAppbar,
+  required ValueChanged<String> onError,
+}) async {
   if (currentStatus == null) {
     onAppbar.call(
       AppBar(

@@ -11,6 +11,7 @@ Future<void> customDialogBox({
   required Widget dialogChildren,
   required double screenBasedPixelWidth,
   required double screenBasedPixelHeight,
+  required ValueChanged<bool> onProcessingSomething,
 }) async {
   isDialogShowing = true; // set it `true` since dialog is being displayed
   onIsDialogShowing.call(isDialogShowing);
@@ -23,8 +24,12 @@ Future<void> customDialogBox({
           return !barrierDismissible
               ? isDialogShowing
                   ? stopPop()
-                  : directPop()
-              : directPop();
+                  : directPop(onProcessingSomething: (bool value) {
+                      onProcessingSomething.call(value);
+                    })
+              : directPop(onProcessingSomething: (bool value) {
+                  onProcessingSomething.call(value);
+                });
         },
         child: SimpleDialog(
           title: Center(child: dialogTitle),

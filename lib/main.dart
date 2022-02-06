@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/sharedPreferences/app_theme_shared_preferences.dart';
@@ -225,7 +226,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   DateTime? sessionDateTime;
 
-  String? vtopStatusType;
+  String vtopConnectionStatusType = "Initiated";
+
+  String vtopConnectionStatusErrorType = "None";
 
   String vtopLoginErrorType = "None";
 
@@ -369,10 +372,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   late Timer timer;
   late Brightness brightness;
 
+  void checkInternetConnection() async {
+    if (!await InternetConnectionChecker().hasConnection &&
+        vtopConnectionStatusType != "Connected") {
+      debugPrint(
+          "InternetConnectionChecker plugin detected no internet access");
+      setState(() {
+        currentStatus = "launchLoadingScreen";
+        vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+        vtopConnectionStatusType = "Error";
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance!.addObserver(this); //most important
     var brightness = WidgetsBinding.instance!.window.platformBrightness;
     debugPrint(brightness.name);
@@ -400,17 +415,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             action: ServerTrustAuthResponseAction.PROCEED);
       },
       onWebViewCreated: (controller) async {
+        checkInternetConnection();
         Future.delayed(const Duration(seconds: 5), () async {
-          if (vtopStatusType == null) {
+          if (vtopConnectionStatusType == "Initiated") {
             setState(() {
-              vtopStatusType = "Connecting";
+              vtopConnectionStatusType = "Connecting";
             });
           }
         });
-        vtopStatusType = null;
+        // vtopConnectionStatusType = "Initiated";
         timer = Timer.periodic(const Duration(seconds: 20), (Timer t) {
           if (currentStatus == "launchLoadingScreen" &&
-              vtopStatusType == "None") {
+              vtopConnectionStatusErrorType == "None") {
             debugPrint(
                 "restarting headlessInAppWebView as webview is taking too long");
             runHeadlessInAppWebView(
@@ -514,7 +530,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
 
               setState(() {
-                vtopStatusType = "Connected";
+                vtopConnectionStatusType = "Connected";
               });
 
               Future.delayed(const Duration(milliseconds: 2480), () async {
@@ -716,7 +732,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             if (requestType == "New login") {
               _credentialsFound();
               setState(() {
-                vtopStatusType = "Connected";
+                vtopConnectionStatusType = "Connected";
               });
 
               await headlessWebView?.webViewController
@@ -764,7 +780,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 },
               );
               setState(() {
-                vtopStatusType = "Connected";
+                vtopConnectionStatusType = "Connected";
               });
 
               Future.delayed(const Duration(milliseconds: 2480), () async {
@@ -809,11 +825,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     studentProfileAllViewDocument = document;
                   });
 
-                  setState(() {
-                    processingSomething = false;
-                  });
-
-                  Navigator.of(context).pop();
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
 
                   Navigator.pushNamed(
                     context,
@@ -842,11 +859,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 debugPrint(
                     "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
-                setState(() {
-                  processingSomething = false;
-                });
-
-                Navigator.of(context).pop();
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -916,11 +934,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 });
               }
             } else {
-              setState(() {
-                processingSomething = false;
-              });
-
-              Navigator.of(context).pop();
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
 
               debugPrint(
                   "restarting headlessInAppWebView as academics/common/StudentTimeTable ajaxRequest.status != 200");
@@ -944,11 +963,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 setState(() {
                   timeTableDocument = document;
                 });
-                setState(() {
-                  processingSomething = false;
-                });
-
-                Navigator.of(context).pop();
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
                 Navigator.pushNamed(
                   context,
                   PageRoutes.timeTable,
@@ -972,11 +992,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 });
               });
             } else {
-              setState(() {
-                processingSomething = false;
-              });
-
-              Navigator.of(context).pop();
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
 
               debugPrint(
                   "restarting headlessInAppWebView as processViewTimeTable ajaxRequest.status != 200");
@@ -1111,9 +1132,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
         debugPrint("error $url: $code, $message");
-        setState(() {
-          vtopStatusType = message;
-        });
+        if (await InternetConnectionChecker().hasConnection) {
+          setState(() {
+            vtopConnectionStatusType = "Error";
+            vtopConnectionStatusErrorType = message;
+          });
+        } else {
+          vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+          vtopConnectionStatusType = "Error";
+        }
 
 //         var tRexHtml = await controller.getTRexRunnerHtml();
 //         var tRexCss = await controller.getTRexRunnerCss();
@@ -1153,7 +1180,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     // Future.delayed(const Duration(seconds: 4), () async {
     // setState(() {
-    //   vtopStatusType = "Connecting";
+    //   vtopConnectionStatusType = "Connecting";
     // });
     // });
   }
@@ -1238,7 +1265,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
       },
       currentFullUrl: currentFullUrl,
-      vtopStatusType: vtopStatusType,
+      vtopConnectionStatusType: vtopConnectionStatusType,
+      vtopConnectionStatusErrorType: vtopConnectionStatusErrorType,
       onVtopLoginErrorType: (String value) {
         setState(() {
           vtopLoginErrorType = value;
@@ -1255,9 +1283,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       },
       onRetryOnError: (bool value) {
         setState(() {
-          vtopLoginErrorType = "None";
+          vtopConnectionStatusErrorType = "None";
+          vtopConnectionStatusType = "Initiated";
           debugPrint(
-              "restarting headlessInAppWebView manually as vtopStatusType has error");
+              "restarting headlessInAppWebView manually as vtopConnectionStatusType has error");
           runHeadlessInAppWebView(
             headlessWebView: headlessWebView,
             onCurrentFullUrl: (String value) {
@@ -1275,6 +1304,23 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       themeMode: widget.themeMode,
       onThemeMode: (ThemeMode value) {
         widget.onThemeMode?.call(value);
+      },
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
       },
     );
 
@@ -1326,6 +1372,21 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
       },
       scaffoldKey: _scaffoldKey,
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          processingSomething = false;
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
+      },
     );
 
     chooseCorrectDrawer(
@@ -1390,6 +1451,21 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           tryAutoLoginStatus = value;
           _saveTryAutoLoginStatus();
         });
+      },
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          processingSomething = false;
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
       },
     );
 

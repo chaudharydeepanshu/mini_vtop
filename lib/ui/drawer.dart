@@ -20,6 +20,7 @@ class CustomDrawer extends StatefulWidget {
     required this.onThemeMode,
     this.onShowStudentProfileAllView,
     this.onTryAutoLoginStatus,
+    required this.onError,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -31,6 +32,7 @@ class CustomDrawer extends StatefulWidget {
   final double screenBasedPixelHeight;
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTryAutoLoginStatus;
+  final ValueChanged<String> onError;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -346,11 +348,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               onPressed: () {
                                 widget.onTryAutoLoginStatus?.call(false);
                                 performSignOut(
-                                    context: context,
-                                    headlessWebView: widget.headlessWebView,
-                                    onCurrentFullUrl: (String value) {
-                                      widget.onCurrentFullUrl.call(value);
-                                    });
+                                  context: context,
+                                  headlessWebView: widget.headlessWebView,
+                                  onCurrentFullUrl: (String value) {
+                                    widget.onCurrentFullUrl.call(value);
+                                  },
+                                  onError: (String value) {
+                                    widget.onError.call(value);
+                                  },
+                                );
                                 // Then close the drawer
                                 Navigator.pop(context);
                               },

@@ -27,7 +27,8 @@ chooseCorrectBody(
     required Image? image,
     required bool refreshingCaptcha,
     required String currentFullUrl,
-    required String? vtopStatusType,
+    required String vtopConnectionStatusType,
+    required String vtopConnectionStatusErrorType,
     required String vtopLoginErrorType,
     required String? studentName,
     required String autoCaptcha,
@@ -48,6 +49,7 @@ chooseCorrectBody(
     required ValueChanged<String> onUserEnteredPasswd,
     required ValueChanged<String> onVtopLoginErrorType,
     required ValueChanged<Widget> onBody,
+    required ValueChanged<String> onError,
     required bool credentialsFound}) async {
   if (currentStatus == null) {
     onBody.call(
@@ -69,7 +71,12 @@ chooseCorrectBody(
         },
         onConsoleMessage: (bool value) {
           showConsoleMessage(
-              context: context, headlessWebView: headlessWebView);
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+          );
         },
         arguments: RunHeadlessInAppWebViewArguments(
           currentStatus: currentStatus,
@@ -84,10 +91,11 @@ chooseCorrectBody(
           onCurrentFullUrl.call(value);
         },
         arguments: LaunchLoadingScreenArguments(
-          vtopStatusType: vtopStatusType,
+          vtopConnectionStatusType: vtopConnectionStatusType,
           headlessWebView: headlessWebView,
           screenBasedPixelWidth: screenBasedPixelWidth,
           screenBasedPixelHeight: screenBasedPixelHeight,
+          vtopConnectionStatusErrorType: vtopConnectionStatusErrorType,
         ),
         onRetryOnError: (bool value) {
           onRetryOnError.call(value);
@@ -99,46 +107,58 @@ chooseCorrectBody(
       key: const ValueKey<int>(1),
       onPerformSignIn: (Map value) {
         performSignIn(
-            processingSomething: value["processingSomething"],
-            uname: value["uname"],
-            passwd: value["passwd"],
-            captchaCheck: value["captchaCheck"],
-            context: context,
-            headlessWebView: headlessWebView,
-            onCurrentFullUrl: (String value) {
-              onCurrentFullUrl.call(value);
-            },
-            refreshingCaptcha: value["refreshingCaptcha"],
-            onRefreshingCaptcha: (bool value) {
-              onRefreshingCaptcha.call(value);
-            },
-            onProcessingSomething: (bool value) {
-              onProcessingSomething.call(value);
-            });
+          processingSomething: value["processingSomething"],
+          uname: value["uname"],
+          passwd: value["passwd"],
+          captchaCheck: value["captchaCheck"],
+          context: context,
+          headlessWebView: headlessWebView,
+          onCurrentFullUrl: (String value) {
+            onCurrentFullUrl.call(value);
+          },
+          refreshingCaptcha: value["refreshingCaptcha"],
+          onRefreshingCaptcha: (bool value) {
+            onRefreshingCaptcha.call(value);
+          },
+          onProcessingSomething: (bool value) {
+            onProcessingSomething.call(value);
+          },
+          onError: (String value) {
+            onError.call(value);
+          },
+        );
         onUserEnteredUname.call(value["uname"]);
         onUserEnteredPasswd.call(value["passwd"]);
       },
       onPerformSignOut: (bool value) {
         performSignOut(
-            context: context,
-            headlessWebView: headlessWebView,
-            onCurrentFullUrl: (String value) {
-              onCurrentFullUrl.call(value);
-            });
+          context: context,
+          headlessWebView: headlessWebView,
+          onCurrentFullUrl: (String value) {
+            onCurrentFullUrl.call(value);
+          },
+          onError: (String value) {
+            onError.call(value);
+          },
+        );
       },
       onRefreshCaptcha: (Map value) {
         onUserEnteredUname.call(value["uname"]);
         onUserEnteredPasswd.call(value["passwd"]);
         performCaptchaRefresh(
-            headlessWebView: headlessWebView,
-            context: context,
-            onCurrentFullUrl: (String value) {
-              onCurrentFullUrl.call(value);
-            },
-            refreshingCaptcha: value["refreshingCaptcha"],
-            onRefreshingCaptcha: (bool value) {
-              onRefreshingCaptcha.call(value);
-            });
+          headlessWebView: headlessWebView,
+          context: context,
+          onCurrentFullUrl: (String value) {
+            onCurrentFullUrl.call(value);
+          },
+          refreshingCaptcha: value["refreshingCaptcha"],
+          onRefreshingCaptcha: (bool value) {
+            onRefreshingCaptcha.call(value);
+          },
+          onError: (String value) {
+            onError.call(value);
+          },
+        );
       },
       arguments: LoginSectionArguments(
         // headlessWebView: headlessWebView!,
@@ -165,6 +185,9 @@ chooseCorrectBody(
       onTryAutoLoginStatus: (bool value) {
         onTryAutoLoginStatus.call(value);
       },
+      onProcessingSomething: (bool value) {
+        onProcessingSomething.call(value);
+      },
     ));
   } else if (currentStatus == "userLoggedIn") {
     onBody.call(
@@ -182,6 +205,9 @@ chooseCorrectBody(
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },
+            onError: (String value) {
+              onError.call(value);
+            },
           );
         },
         onTimeTable: (bool value) {
@@ -196,15 +222,22 @@ chooseCorrectBody(
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },
+            onError: (String value) {
+              onError.call(value);
+            },
           );
         },
         onPerformSignOut: (bool value) {
           performSignOut(
-              context: context,
-              headlessWebView: headlessWebView,
-              onCurrentFullUrl: (String value) {
-                onCurrentFullUrl.call(value);
-              });
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
         },
         arguments: StudentPortalArguments(
           processingSomething: processingSomething,
@@ -216,6 +249,9 @@ chooseCorrectBody(
           screenBasedPixelWidth: screenBasedPixelWidth,
           screenBasedPixelHeight: screenBasedPixelHeight,
         ),
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -234,6 +270,9 @@ chooseCorrectBody(
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },
+            onError: (String value) {
+              onError.call(value);
+            },
           );
         },
         onTimeTable: (bool value) {
@@ -247,6 +286,9 @@ chooseCorrectBody(
             processingSomething: value,
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
             },
           );
         },

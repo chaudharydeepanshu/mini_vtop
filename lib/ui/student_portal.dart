@@ -17,6 +17,7 @@ class StudentPortal extends StatefulWidget {
     required this.arguments,
     required this.onTimeTable,
     required this.onPerformSignOut,
+    required this.onProcessingSomething,
   }) : super(key: key);
 
   final String? loggedUserStatus;
@@ -24,6 +25,7 @@ class StudentPortal extends StatefulWidget {
   final ValueChanged<bool>? onTimeTable;
   final StudentPortalArguments arguments;
   final ValueChanged<bool>? onPerformSignOut;
+  final ValueChanged<bool> onProcessingSomething;
 
   @override
   _StudentPortalState createState() => _StudentPortalState();
@@ -83,6 +85,9 @@ class _StudentPortalState extends State<StudentPortal> {
                   barrierDismissible: true,
                   screenBasedPixelHeight: screenBasedPixelHeight,
                   screenBasedPixelWidth: screenBasedPixelWidth,
+                  onProcessingSomething: (bool value) {
+                    widget.onProcessingSomething.call(value);
+                  },
                 ).then((_) => isDialogShowing = false);
               });
             },
@@ -135,6 +140,9 @@ class _StudentPortalState extends State<StudentPortal> {
                   barrierDismissible: true,
                   screenBasedPixelHeight: screenBasedPixelHeight,
                   screenBasedPixelWidth: screenBasedPixelWidth,
+                  onProcessingSomething: (bool value) {
+                    widget.onProcessingSomething.call(value);
+                  },
                 ).then((_) => isDialogShowing = false);
               });
             },
@@ -459,6 +467,10 @@ class _StudentPortalState extends State<StudentPortal> {
                                             screenBasedPixelHeight,
                                         screenBasedPixelWidth:
                                             screenBasedPixelWidth,
+                                        onProcessingSomething: (bool value) {
+                                          widget.onProcessingSomething
+                                              .call(value);
+                                        },
                                       );
                                     },
                                     child: FittedBox(

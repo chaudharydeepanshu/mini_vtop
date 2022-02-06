@@ -27,6 +27,7 @@ chooseCorrectDrawer(
     required ValueChanged<String> onCurrentStatus,
     required ValueChanged<String> onUserEnteredUname,
     required ValueChanged<String> onUserEnteredPasswd,
+    required ValueChanged<String> onError,
     required ValueChanged<Widget?> onDrawer}) async {
   if (currentStatus == null) {
     onDrawer.call(
@@ -49,6 +50,9 @@ chooseCorrectDrawer(
         onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
         },
+        onError: (String value) {
+          onError.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -67,6 +71,9 @@ chooseCorrectDrawer(
         screenBasedPixelHeight: screenBasedPixelHeight,
         onThemeMode: (ThemeMode value) {
           onThemeMode?.call(value);
+        },
+        onError: (String value) {
+          onError.call(value);
         },
       ),
     );
@@ -99,10 +106,16 @@ chooseCorrectDrawer(
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },
+            onError: (String value) {
+              onError.call(value);
+            },
           );
         },
         onTryAutoLoginStatus: (bool value) {
           onTryAutoLoginStatus.call(value);
+        },
+        onError: (String value) {
+          onError.call(value);
         },
       ),
     );
@@ -135,10 +148,16 @@ chooseCorrectDrawer(
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },
+            onError: (String value) {
+              onError.call(value);
+            },
           );
         },
         onTryAutoLoginStatus: (bool value) {
           onTryAutoLoginStatus.call(value);
+        },
+        onError: (String value) {
+          onError.call(value);
         },
       ),
     );

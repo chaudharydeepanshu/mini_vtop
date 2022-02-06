@@ -122,7 +122,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 
   callChangeTextMethod() {
     Future.delayed(const Duration(seconds: 5), () async {
-      if (widget.arguments.vtopStatusType == "Connecting") {
+      if (widget.arguments.vtopConnectionStatusType == "Connecting") {
         // Before calling setState check if the state is mounted.
         if (mounted) {
           setState(() {
@@ -137,7 +137,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.arguments.vtopStatusType == "null") {
+    if (widget.arguments.vtopConnectionStatusType == "Initiated") {
       setState(() {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
@@ -152,15 +152,88 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         actionButton = const SizedBox();
       });
       debugPrint("widget.arguments.vtopErrorType");
-    } else if (widget.arguments.vtopStatusType == "Connecting") {
+    } else if (widget.arguments.vtopConnectionStatusType == "Connecting") {
       setState(() {
+        animationOfLoadingScreen = Image.asset(
+          "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
+          scale: 0.1,
+          width: widget.arguments.screenBasedPixelWidth * 5000,
+          height: widget.arguments.screenBasedPixelWidth * 5000,
+          key: const ValueKey<int>(0),
+        );
         textOfLoginScreen = "Connection is\ntaking longer\nthan usual";
         textOfLoginScreenValueKey = const ValueKey<int>(1);
         textDialogOfLoginScreenColor = const Color(0xfffdb813);
+        actionButton = const SizedBox();
       });
-    } else if (widget.arguments.vtopStatusType ==
+    } else if (widget.arguments.vtopConnectionStatusErrorType ==
             "net::ERR_CONNECTION_TIMED_OUT" ||
-        widget.arguments.vtopStatusType == "net::ERR_NAME_NOT_RESOLVED") {
+        widget.arguments.vtopConnectionStatusErrorType ==
+            "net::ERR_NAME_NOT_RESOLVED" ||
+        widget.arguments.vtopConnectionStatusErrorType ==
+            "net::ERR_INTERNET_DISCONNECTED") {
+      setState(() {
+        animationOfLoadingScreen = Image.asset(
+          "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
+          scale: 0.1,
+          width: widget.arguments.screenBasedPixelWidth * 5000,
+          height: widget.arguments.screenBasedPixelWidth * 5000,
+          key: const ValueKey<int>(1),
+        );
+        if (widget.arguments.vtopConnectionStatusErrorType ==
+            "net::ERR_CONNECTION_TIMED_OUT") {
+          textOfLoginScreen = "Connection failed\ndue to connection\ntimeout";
+        } else {
+          if (widget.arguments.vtopConnectionStatusErrorType ==
+              "net::ERR_NAME_NOT_RESOLVED") {
+            textOfLoginScreen =
+                "Connection failed\nas website could\nnot be resolved";
+          } else {
+            if (widget.arguments.vtopConnectionStatusErrorType ==
+                "net::ERR_INTERNET_DISCONNECTED") {
+              textOfLoginScreen =
+                  "Connection failed\nas your internet\nis disconnected";
+            } else {
+              textOfLoginScreen = "Connection failed";
+            }
+          }
+        }
+        textOfLoginScreenValueKey = const ValueKey<int>(3);
+        textDialogOfLoginScreenColor = const Color(0xfff04e23);
+        actionButton = ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+            padding: MaterialStateProperty.all(const EdgeInsets.only(
+                top: 17, bottom: 17, left: 17, right: 17)),
+            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 20)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+          ),
+          onPressed: () {
+            // callChangeTextMethod();
+            widget.onRetryOnError.call(true);
+          },
+          child: Row(
+            children: [
+              const Icon(Icons.refresh),
+              Text(
+                "Retry",
+                style: GoogleFonts.lato(
+                  color: Colors.white,
+                  fontSize: widget.arguments.screenBasedPixelWidth * 17,
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                ),
+              )
+            ],
+          ),
+        );
+      });
+      debugPrint("widget.arguments.vtopErrorType");
+    } else if (widget.arguments.vtopConnectionStatusType == "Error") {
       setState(() {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
@@ -206,7 +279,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         );
       });
       debugPrint("widget.arguments.vtopErrorType");
-    } else if (widget.arguments.vtopStatusType == "Connected") {
+    } else if (widget.arguments.vtopConnectionStatusType == "Connected") {
       setState(() {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Success_transparent_by_Icons8.gif",
@@ -282,13 +355,15 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 }
 
 class LaunchLoadingScreenArguments {
-  String? vtopStatusType;
+  String vtopConnectionStatusType;
+  String vtopConnectionStatusErrorType;
   HeadlessInAppWebView? headlessWebView;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
 
   LaunchLoadingScreenArguments({
-    required this.vtopStatusType,
+    required this.vtopConnectionStatusType,
+    required this.vtopConnectionStatusErrorType,
     required this.headlessWebView,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,

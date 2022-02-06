@@ -21,6 +21,7 @@ class LoginSection extends StatefulWidget {
     required this.onVtopLoginErrorType,
     required this.onClearUnamePasswd,
     required this.onTryAutoLoginStatus,
+    required this.onProcessingSomething,
   }) : super(key: key);
 
   final LoginSectionArguments arguments;
@@ -31,6 +32,7 @@ class LoginSection extends StatefulWidget {
   final ValueChanged<String> onVtopLoginErrorType;
   final ValueChanged<bool> onClearUnamePasswd;
   final ValueChanged<bool> onTryAutoLoginStatus;
+  final ValueChanged<bool> onProcessingSomething;
 
   @override
   _LoginSectionState createState() => _LoginSectionState();
@@ -139,6 +141,9 @@ class _LoginSectionState extends State<LoginSection> {
             barrierDismissible: false,
             screenBasedPixelHeight: screenBasedPixelHeight,
             screenBasedPixelWidth: screenBasedPixelWidth,
+            onProcessingSomething: (bool value) {
+              widget.onProcessingSomething.call(value);
+            },
           ).then((_) => isFirstDialogShowing = false);
           debugPrint("dialogBox initiated");
           signInCredentialsMap = {
@@ -214,6 +219,9 @@ class _LoginSectionState extends State<LoginSection> {
           barrierDismissible: false,
           screenBasedPixelHeight: screenBasedPixelHeight,
           screenBasedPixelWidth: screenBasedPixelWidth,
+          onProcessingSomething: (bool value) {
+            widget.onProcessingSomething.call(value);
+          },
         ).then((_) => isSecondDialogShowing = false);
       });
     }
@@ -231,7 +239,11 @@ class _LoginSectionState extends State<LoginSection> {
       onWillPop: () {
         return !isFirstDialogShowing
             ? stopPop()
-            : directPop(); //will stop popping login screen
+            : directPop(
+                onProcessingSomething: (bool value) {
+                  widget.onProcessingSomething.call(value);
+                },
+              ); //will stop popping login screen
       },
       child: Form(
         key: _formKey,
@@ -796,6 +808,9 @@ class _LoginSectionState extends State<LoginSection> {
                                         screenBasedPixelHeight,
                                     screenBasedPixelWidth:
                                         screenBasedPixelWidth,
+                                    onProcessingSomething: (bool value) {
+                                      widget.onProcessingSomething.call(value);
+                                    },
                                   ).then((_) => isFirstDialogShowing = false);
                                   debugPrint("dialogBox initiated");
                                   signInCredentialsMap = {

@@ -3,7 +3,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 showConsoleMessage(
     {required BuildContext context,
-    required HeadlessInAppWebView? headlessWebView}) async {
+    required HeadlessInAppWebView? headlessWebView,
+    required ValueChanged<String> onCurrentFullUrl}) async {
   if (headlessWebView?.isRunning() ?? false) {
     await headlessWebView?.webViewController
         .evaluateJavascript(source: "console.log('Here is the message!');");
