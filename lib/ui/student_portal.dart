@@ -12,16 +12,18 @@ import '../basicFunctions/proccessing_dialog.dart';
 class StudentPortal extends StatefulWidget {
   const StudentPortal({
     Key? key,
-    this.onShowStudentProfileAllView,
-    this.loggedUserStatus,
+    required this.onShowStudentProfileAllView,
+    required this.loggedUserStatus,
     required this.arguments,
-    this.onTimeTable,
+    required this.onTimeTable,
+    required this.onPerformSignOut,
   }) : super(key: key);
 
   final String? loggedUserStatus;
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTimeTable;
   final StudentPortalArguments arguments;
+  final ValueChanged<bool>? onPerformSignOut;
 
   @override
   _StudentPortalState createState() => _StudentPortalState();
@@ -158,20 +160,34 @@ class _StudentPortalState extends State<StudentPortal> {
   startTimeout() async {
     DateTime? sessionDateTime = widget.arguments.sessionDateTime;
     DateTime dateTimeNow = await NTP.now();
+    // gives difference between current time and the saved session time
     int differenceInSeconds = dateTimeNow
         .difference(sessionDateTime!)
         .inSeconds; //todo: this is getting null sometimes so fix it
 
-    int secondsRemainingInSession = 3600 - differenceInSeconds;
+    // removing that much seconds from 1hour of seconds
+    int secondsRemainingInSession = 3480 - differenceInSeconds;
 
+    // the no. of seconds the timer should run
     timerMaxSeconds = secondsRemainingInSession;
 
+    // interval is 1 second
     var duration = interval;
+
+    // timer provides timer.tick which just keep running at interval of 1 seconds
+    // so the ticker will keep increasing and doesn't get affected by any of our variables
+    // but once it gets bigger then timerMaxSeconds variable we close the timer and sign out the user
+    // now you might be confused that the timer would just reset on closing app then it will not sign out when it should so
+    // so to fight that case we are reassigning timerMaxSeconds variable with the amounts of seconds remaining from that time
     timer = Timer.periodic(duration, (timer) {
       setState(() {
-        // print(timer.tick);
+        // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
+        //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
-        if (timer.tick >= timerMaxSeconds) timer.cancel();
+        if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
+          widget.onPerformSignOut?.call(true);
+          timer.cancel();
+        }
       });
     });
   }
@@ -200,245 +216,291 @@ class _StudentPortalState extends State<StudentPortal> {
     // }
 
     // print(widget.arguments.studentPortalDocument.outerHtml);
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            controller: controller,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return widget.arguments.studentName == null ||
+            (timerText == "00: 00" || timerText.isEmpty)
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Hello,",
-                            style: GoogleFonts.lato(
-                              // color: Colors.white,
-                              // textStyle: Theme.of(context).textTheme.headline1,
-                              fontSize: screenBasedPixelWidth * 17,
-                              fontWeight: FontWeight.w700,
-                              fontStyle: FontStyle.normal,
-                            ),
-                          ),
-                          widget.arguments.studentName != null
-                              ? Text(
-                                  "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
-                                  style: GoogleFonts.lato(
-                                    // color: Colors.white,
-                                    // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: screenBasedPixelWidth * 20,
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                )
-                              : Text(
-                                  "",
-                                  style: GoogleFonts.lato(
-                                    // color: Colors.white,
-                                    // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: screenBasedPixelWidth * 20,
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xff04294f),
-                          //border: Border.all(color: Colors.blue, width: 10),
-                          borderRadius: BorderRadius.circular(
-                              screenBasedPixelWidth * 20.0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(
-                                Icons.timer,
-                                size: screenBasedPixelWidth * 24,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: screenBasedPixelWidth * 5,
-                              ),
-                              Text(
-                                timerText,
-                                style: GoogleFonts.lato(
-                                  fontSize: screenBasedPixelWidth * 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  const CircularProgressIndicator(),
                   const SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
-                  OrientationBuilder(
-                    builder: (context, orientation) {
-                      return GridView.builder(
-                        controller: controller,
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: screenBasedPixelWidth * 200,
-                            childAspectRatio: 3 / 2.5,
-                            crossAxisSpacing: screenBasedPixelWidth * 20,
-                            mainAxisSpacing: screenBasedPixelWidth * 20),
-                        itemCount: studentPortalOptions.length,
-                        itemBuilder: (BuildContext ctx, index) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.all(screenBasedPixelWidth * 15.0),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color(0xff04294f)),
-                                padding: MaterialStateProperty.all(
-                                    EdgeInsets.all(screenBasedPixelWidth * 20)),
-                                textStyle: MaterialStateProperty.all(TextStyle(
-                                    fontSize: screenBasedPixelWidth * 20)),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        screenBasedPixelWidth * 20.0),
+                  Text(
+                    "Please Wait ...",
+                    style: GoogleFonts.lato(
+                      // color: Colors.white,
+                      // textStyle: Theme.of(context).textTheme.headline1,
+                      fontSize: screenBasedPixelWidth * 17,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: controller,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Hello,",
+                                  style: GoogleFonts.lato(
+                                    // color: Colors.white,
+                                    // textStyle: Theme.of(context).textTheme.headline1,
+                                    fontSize: screenBasedPixelWidth * 17,
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.normal,
                                   ),
                                 ),
-                              ),
-                              onPressed: () {
-                                customDialogBox(
-                                  onIsDialogShowing: (bool value) {
-                                    isDialogShowing = value;
-                                  },
-                                  isDialogShowing: isDialogShowing,
-                                  dialogChildren: Column(
-                                    children: List.generate(
-                                      studentPortalOptions[index]
-                                              ["internalOptionsMapList"]
-                                          .length,
-                                      (i) => Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 8.0),
-                                        child: ElevatedButton(
-                                          style: ButtonStyle(
-                                            minimumSize: MaterialStateProperty
-                                                .all<Size?>(
-                                              Size.fromHeight(
-                                                  screenBasedPixelHeight * 56),
-                                            ),
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    const Color(0xff04294f)),
-                                            padding: MaterialStateProperty.all(
-                                                EdgeInsets.only(
-                                                    left:
-                                                        screenBasedPixelWidth *
-                                                            20,
-                                                    right:
-                                                        screenBasedPixelWidth *
-                                                            20)),
-                                            textStyle: MaterialStateProperty
-                                                .all(TextStyle(
-                                                    fontSize:
-                                                        screenBasedPixelWidth *
-                                                            20)),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        screenBasedPixelWidth *
-                                                            0.0),
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: studentPortalOptions[index]
-                                                  ["internalOptionsMapList"][i]
-                                              ["action"],
-                                          child: Text(
-                                            studentPortalOptions[index]
-                                                    ["internalOptionsMapList"]
-                                                [i]["name"],
-                                            style: TextStyle(
-                                                fontSize:
-                                                    screenBasedPixelWidth * 18),
-                                            textAlign: TextAlign.center,
-                                          ),
+                                widget.arguments.studentName != null
+                                    ? Text(
+                                        "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                        style: GoogleFonts.lato(
+                                          // color: Colors.white,
+                                          // textStyle: Theme.of(context).textTheme.headline1,
+                                          fontSize: screenBasedPixelWidth * 20,
+                                          fontWeight: FontWeight.w700,
+                                          fontStyle: FontStyle.normal,
+                                        ),
+                                      )
+                                    : Text(
+                                        "",
+                                        style: GoogleFonts.lato(
+                                          // color: Colors.white,
+                                          // textStyle: Theme.of(context).textTheme.headline1,
+                                          fontSize: screenBasedPixelWidth * 20,
+                                          fontWeight: FontWeight.w700,
+                                          fontStyle: FontStyle.normal,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  context: context,
-                                  dialogTitle: Text(
-                                    studentPortalOptions[index]["name"],
-                                    style: GoogleFonts.lato(
-                                      // color: Colors.white,
-                                      // textStyle: Theme.of(context).textTheme.headline1,
-                                      fontSize: screenBasedPixelWidth * 20,
-                                      fontWeight: FontWeight.w700,
-                                      fontStyle: FontStyle.normal,
-                                    ),
-                                  ),
-                                  barrierDismissible: true,
-                                  screenBasedPixelHeight:
-                                      screenBasedPixelHeight,
-                                  screenBasedPixelWidth: screenBasedPixelWidth,
-                                );
-                              },
-                              child: FittedBox(
-                                fit: BoxFit.contain,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                              ],
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xff04294f),
+                                //border: Border.all(color: Colors.blue, width: 10),
+                                borderRadius: BorderRadius.circular(
+                                    screenBasedPixelWidth * 20.0),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
                                     Icon(
-                                      studentPortalOptions[index]["icon"],
+                                      Icons.timer,
                                       size: screenBasedPixelWidth * 24,
+                                      color: Colors.white,
                                     ),
                                     SizedBox(
-                                      height: screenBasedPixelWidth * 10,
+                                      width: screenBasedPixelWidth * 5,
                                     ),
                                     Text(
-                                      studentPortalOptions[index]["name"],
+                                      timerText,
                                       style: GoogleFonts.lato(
-                                        color: Colors.white,
-                                        // textStyle: Theme.of(context).textTheme.headline1,
                                         fontSize: screenBasedPixelWidth * 20,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.w700,
                                         fontStyle: FontStyle.normal,
                                       ),
-                                    ),
+                                    )
                                   ],
                                 ),
                               ),
                             ),
-                          );
-                        },
-                      );
-                    },
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        OrientationBuilder(
+                          builder: (context, orientation) {
+                            return GridView.builder(
+                              controller: controller,
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent:
+                                          screenBasedPixelWidth * 200,
+                                      childAspectRatio: 3 / 2.5,
+                                      crossAxisSpacing:
+                                          screenBasedPixelWidth * 20,
+                                      mainAxisSpacing:
+                                          screenBasedPixelWidth * 20),
+                              itemCount: studentPortalOptions.length,
+                              itemBuilder: (BuildContext ctx, index) {
+                                return Padding(
+                                  padding: EdgeInsets.all(
+                                      screenBasedPixelWidth * 15.0),
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              const Color(0xff04294f)),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.all(
+                                              screenBasedPixelWidth * 20)),
+                                      textStyle: MaterialStateProperty.all(
+                                          TextStyle(
+                                              fontSize:
+                                                  screenBasedPixelWidth * 20)),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              screenBasedPixelWidth * 20.0),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      customDialogBox(
+                                        onIsDialogShowing: (bool value) {
+                                          isDialogShowing = value;
+                                        },
+                                        isDialogShowing: isDialogShowing,
+                                        dialogChildren: Column(
+                                          children: List.generate(
+                                            studentPortalOptions[index]
+                                                    ["internalOptionsMapList"]
+                                                .length,
+                                            (i) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: ElevatedButton(
+                                                style: ButtonStyle(
+                                                  minimumSize:
+                                                      MaterialStateProperty.all<
+                                                          Size?>(
+                                                    Size.fromHeight(
+                                                        screenBasedPixelHeight *
+                                                            56),
+                                                  ),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          const Color(
+                                                              0xff04294f)),
+                                                  padding: MaterialStateProperty
+                                                      .all(EdgeInsets.only(
+                                                          left:
+                                                              screenBasedPixelWidth *
+                                                                  20,
+                                                          right:
+                                                              screenBasedPixelWidth *
+                                                                  20)),
+                                                  textStyle: MaterialStateProperty
+                                                      .all(TextStyle(
+                                                          fontSize:
+                                                              screenBasedPixelWidth *
+                                                                  20)),
+                                                  shape:
+                                                      MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              screenBasedPixelWidth *
+                                                                  0.0),
+                                                    ),
+                                                  ),
+                                                ),
+                                                onPressed: studentPortalOptions[
+                                                            index][
+                                                        "internalOptionsMapList"]
+                                                    [i]["action"],
+                                                child: Text(
+                                                  studentPortalOptions[index][
+                                                          "internalOptionsMapList"]
+                                                      [i]["name"],
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          screenBasedPixelWidth *
+                                                              18),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        context: context,
+                                        dialogTitle: Text(
+                                          studentPortalOptions[index]["name"],
+                                          style: GoogleFonts.lato(
+                                            // color: Colors.white,
+                                            // textStyle: Theme.of(context).textTheme.headline1,
+                                            fontSize:
+                                                screenBasedPixelWidth * 20,
+                                            fontWeight: FontWeight.w700,
+                                            fontStyle: FontStyle.normal,
+                                          ),
+                                        ),
+                                        barrierDismissible: true,
+                                        screenBasedPixelHeight:
+                                            screenBasedPixelHeight,
+                                        screenBasedPixelWidth:
+                                            screenBasedPixelWidth,
+                                      );
+                                    },
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            studentPortalOptions[index]["icon"],
+                                            size: screenBasedPixelWidth * 24,
+                                          ),
+                                          SizedBox(
+                                            height: screenBasedPixelWidth * 10,
+                                          ),
+                                          Text(
+                                            studentPortalOptions[index]["name"],
+                                            style: GoogleFonts.lato(
+                                              color: Colors.white,
+                                              // textStyle: Theme.of(context).textTheme.headline1,
+                                              fontSize:
+                                                  screenBasedPixelWidth * 20,
+                                              fontWeight: FontWeight.w700,
+                                              fontStyle: FontStyle.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
-    );
+            ],
+          );
   }
 }
 
