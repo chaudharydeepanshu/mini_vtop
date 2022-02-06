@@ -1,4 +1,3 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -18,16 +17,18 @@ class CustomDrawer extends StatefulWidget {
     required this.onCurrentFullUrl,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
-    required this.onthemeMode,
+    required this.onThemeMode,
+    this.onShowStudentProfileAllView,
   }) : super(key: key);
   final ThemeMode? themeMode;
-  final ValueChanged<ThemeMode>? onthemeMode;
+  final ValueChanged<ThemeMode>? onThemeMode;
   final String currentStatus;
   final ValueChanged<String> onCurrentStatus;
   final HeadlessInAppWebView? headlessWebView;
   final ValueChanged<String> onCurrentFullUrl;
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
+  final ValueChanged<bool>? onShowStudentProfileAllView;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -231,11 +232,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     onPressed: () {
                       // toggling the theme mode in this sequence system -> light -> dark
                       if (widget.themeMode == ThemeMode.light) {
-                        widget.onthemeMode?.call(ThemeMode.dark);
+                        widget.onThemeMode?.call(ThemeMode.dark);
                       } else if (widget.themeMode == ThemeMode.dark) {
-                        widget.onthemeMode?.call(ThemeMode.system);
+                        widget.onThemeMode?.call(ThemeMode.system);
                       } else if (widget.themeMode == ThemeMode.system) {
-                        widget.onthemeMode?.call(ThemeMode.light);
+                        widget.onThemeMode?.call(ThemeMode.light);
                       }
                       // Then close the drawer
                       //Navigator.pop(context);
@@ -284,16 +285,24 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               onPressed: () {
                                 // Update the state of the app
                                 if (vtopCurrentStatusText == "Mini VTOP") {
+                                  // making a fake call to StudentProfileAllView so that
+                                  // if the user gets logged out it will automatically restart the webview
+                                  widget.onShowStudentProfileAllView
+                                      ?.call(true);
                                   _currentStatus = "originalVTOP";
                                   widget.onCurrentStatus.call("originalVTOP");
                                 } else if (vtopCurrentStatusText ==
                                     "Full VTOP") {
+                                  // making a fake call to StudentProfileAllView so that
+                                  // if the user gets logged out it will automatically restart the webview
+                                  widget.onShowStudentProfileAllView
+                                      ?.call(true);
                                   _currentStatus = "userLoggedIn";
                                   widget.onCurrentStatus.call("userLoggedIn");
                                 }
                                 vtopModeButtonTextCalc();
                                 // Then close the drawer
-                                // Navigator.pop(context);
+                                Navigator.pop(context);
                               },
                               child: Row(
                                 children: [
@@ -339,6 +348,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                     onCurrentFullUrl: (String value) {
                                       widget.onCurrentFullUrl.call(value);
                                     });
+                                // Then close the drawer
+                                Navigator.pop(context);
                               },
                               child: Row(
                                 children: [
