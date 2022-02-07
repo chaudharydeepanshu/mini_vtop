@@ -415,8 +415,31 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         if (kDebugMode) {
           print(challenge);
         }
+        var sslError = challenge.protectionSpace.sslError;
+        if (sslError != null &&
+            (sslError.iosError != null || sslError.androidError != null)) {
+          if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
+            return ServerTrustAuthResponse(
+                action: ServerTrustAuthResponseAction.PROCEED);
+          }
+          return ServerTrustAuthResponse(
+              action: ServerTrustAuthResponseAction.CANCEL);
+        }
         return ServerTrustAuthResponse(
             action: ServerTrustAuthResponseAction.PROCEED);
+      },
+      onDownloadStart: (controller, url) async {
+        String path = url.path;
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+
+        final taskId = await FlutterDownloader.enqueue(
+          url: url.toString(),
+          fileName: fileName,
+          savedDir: (await getTemporaryDirectory()).path,
+          showNotification: true,
+          openFileFromNotification: true,
+          saveInPublicStorage: true,
+        );
       },
       onWebViewCreated: (controller) async {
         checkInternetConnection();
