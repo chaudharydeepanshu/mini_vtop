@@ -49,8 +49,11 @@ class _StudentPortalState extends State<StudentPortal> {
               // timer.cancel();
               // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // pop the option selection dialog
+              widget.onProcessingSomething.call(
+                  true); //then set processing something true for the new loading dialog
               WidgetsBinding.instance?.addPostFrameCallback((_) {
+                widget.onProcessingSomething.call(true);
                 customDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
@@ -105,6 +108,7 @@ class _StudentPortalState extends State<StudentPortal> {
               // startTimeout();
               widget.onTimeTable?.call(true);
               Navigator.of(context).pop();
+              widget.onProcessingSomething.call(true);
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 customDialogBox(
                   isDialogShowing: isDialogShowing,
@@ -160,7 +164,7 @@ class _StudentPortalState extends State<StudentPortal> {
 
   int currentSeconds = 0;
 
-  late Timer timer;
+  Timer? timer;
 
   String get timerText =>
       '${((timerMaxSeconds - currentSeconds) ~/ 60).toString().padLeft(2, '0')}: ${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
@@ -202,7 +206,9 @@ class _StudentPortalState extends State<StudentPortal> {
 
   @override
   void dispose() {
-    timer.cancel();
+    if (timer != null) {
+      timer?.cancel();
+    }
     super.dispose();
   }
 
@@ -382,6 +388,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                       ),
                                     ),
                                     onPressed: () {
+                                      widget.onProcessingSomething.call(true);
                                       customDialogBox(
                                         onIsDialogShowing: (bool value) {
                                           isDialogShowing = value;

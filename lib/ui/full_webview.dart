@@ -1,24 +1,28 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:ntp/ntp.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../browser/browser.dart';
 import 'AppTheme/app_theme_data.dart';
 
 class FullWebView extends StatefulWidget {
   const FullWebView({
     Key? key,
-    this.onShowStudentProfileAllView,
-    this.loggedUserStatus,
+    required this.onShowStudentProfileAllView,
+    required this.loggedUserStatus,
     required this.arguments,
-    this.onTimeTable,
+    required this.onTimeTable,
+    required this.onPerformSignOut,
   }) : super(key: key);
 
   final String? loggedUserStatus;
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTimeTable;
   final FullWebViewArguments arguments;
+  final ValueChanged<bool>? onPerformSignOut;
 
   @override
   _FullWebViewState createState() => _FullWebViewState();
@@ -29,8 +33,15 @@ class _FullWebViewState extends State<FullWebView> {
   List<Map> studentPortalOptions = [];
   bool isDialogShowing = false;
 
+  requestPermissions() async {
+    await Permission.camera.request();
+    await Permission.microphone.request();
+    await Permission.storage.request();
+  }
+
   @override
   void initState() {
+    requestPermissions();
     startTimeout();
     super.initState();
   }
@@ -41,7 +52,7 @@ class _FullWebViewState extends State<FullWebView> {
 
   int currentSeconds = 0;
 
-  late Timer timer;
+  Timer? timer;
 
   String get timerText =>
       '${((timerMaxSeconds - currentSeconds) ~/ 60).toString().padLeft(2, '0')}: ${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
@@ -49,26 +60,42 @@ class _FullWebViewState extends State<FullWebView> {
   startTimeout() async {
     DateTime? sessionDateTime = widget.arguments.sessionDateTime;
     DateTime dateTimeNow = await NTP.now();
+    // gives difference between current time and the saved session time
     int differenceInSeconds =
         dateTimeNow.difference(sessionDateTime!).inSeconds;
 
-    int secondsRemainingInSession = 3600 - differenceInSeconds;
+    // removing that much seconds from 1hour of seconds
+    int secondsRemainingInSession = 3480 - differenceInSeconds;
 
+    // the no. of seconds the timer should run
     timerMaxSeconds = secondsRemainingInSession;
 
+    // interval is 1 second
     var duration = interval;
+
+    // timer provides timer.tick which just keep running at interval of 1 seconds
+    // so the ticker will keep increasing and doesn't get affected by any of our variables
+    // but once it gets bigger then timerMaxSeconds variable we close the timer and sign out the user
+    // now you might be confused that the timer would just reset on closing app then it will not sign out when it should so
+    // so to fight that case we are reassigning timerMaxSeconds variable with the amounts of seconds remaining from that time
     timer = Timer.periodic(duration, (timer) {
       setState(() {
-        // print(timer.tick);
+        // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
+        //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
-        if (timer.tick >= timerMaxSeconds) timer.cancel();
+        if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
+          widget.onPerformSignOut?.call(true);
+          timer.cancel();
+        }
       });
     });
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    if (timer != null) {
+      timer?.cancel();
+    }
     super.dispose();
   }
 
@@ -77,11 +104,44 @@ class _FullWebViewState extends State<FullWebView> {
   double progress = 0;
   final urlController = TextEditingController();
 
+  late double screenBasedPixelWidth;
+  late double screenBasedPixelHeight;
+
   @override
   Widget build(BuildContext context) {
-    return FlutterBrowserApp(
-      themeMode: widget.arguments.themeMode,
-    );
+    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
+    return widget.arguments.studentName == null ||
+            (timerText == "00: 00" || timerText.isEmpty)
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Please Wait ...",
+                    style: GoogleFonts.lato(
+                      // color: Colors.white,
+                      // textStyle: Theme.of(context).textTheme.headline1,
+                      fontSize: screenBasedPixelWidth * 17,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
+        : FlutterBrowserApp(
+            themeMode: widget.arguments.themeMode,
+          );
   }
 }
 
@@ -126,6 +186,8 @@ class FullWebViewArguments {
   bool processingSomething;
   ThemeMode? themeMode;
   ValueChanged<ThemeMode>? onThemeMode;
+  double screenBasedPixelWidth;
+  double screenBasedPixelHeight;
 
   FullWebViewArguments({
     required this.studentPortalDocument,
@@ -136,5 +198,7 @@ class FullWebViewArguments {
     required this.processingSomething,
     required this.themeMode,
     required this.onThemeMode,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
   });
 }

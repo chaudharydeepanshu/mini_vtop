@@ -280,6 +280,7 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
             savedDir: (await getExternalStorageDirectory())!.path,
             showNotification: true,
             openFileFromNotification: true,
+            saveInPublicStorage: true,
           );
         }
         Navigator.pop(context);

@@ -10,7 +10,6 @@ performCaptchaRefresh(
     required ValueChanged<bool> onRefreshingCaptcha,
     required ValueChanged<String> onCurrentFullUrl,
     required ValueChanged<String> onError}) async {
-  onRefreshingCaptcha.call(refreshingCaptcha);
   if (headlessWebView?.isRunning() ?? false) {
     if (!await InternetConnectionChecker().hasConnection) {
       debugPrint(

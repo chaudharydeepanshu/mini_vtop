@@ -107,6 +107,7 @@ class _LoginSectionState extends State<LoginSection> {
           FocusManager.instance.primaryFocus?.unfocus();
         }
         if (_formKey.currentState!.validate()) {
+          widget.onProcessingSomething.call(true);
           customDialogBox(
             isDialogShowing: isFirstDialogShowing,
             context: context,
@@ -185,6 +186,7 @@ class _LoginSectionState extends State<LoginSection> {
       Navigator.of(context).pop();
       debugPrint("credential dialogBox popped");
       WidgetsBinding.instance?.addPostFrameCallback((_) {
+        widget.onProcessingSomething.call(true);
         customDialogBox(
           isDialogShowing: isSecondDialogShowing,
           context: context,

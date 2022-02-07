@@ -155,7 +155,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              "Flutter Browser has verified that ${_topMainCertificate?.issuer(dn: ASN1DistinguishedNames.COMMON_NAME)} has emitted the web site certificate.",
+                              "This browser has verified that ${_topMainCertificate?.issuer(dn: ASN1DistinguishedNames.COMMON_NAME)} has emitted the web site certificate.",
                               softWrap: true,
                               style: const TextStyle(fontSize: 12.0),
                             ),
@@ -223,7 +223,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                                                     "Certificate Viewer",
                                                     style: TextStyle(
                                                         fontSize: 24.0,
-                                                        color: Colors.black,
+                                                        // color: Colors.black,
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
@@ -823,27 +823,39 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
             RichText(
               text: TextSpan(children: [
                 const TextSpan(
-                    text: "Critical ",
-                    style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
+                  text: "Critical ",
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                    // color: Colors.black,
+                  ),
+                ),
                 TextSpan(
-                    text: keyUsageIsCritical,
-                    style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                  text: keyUsageIsCritical,
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    // color: Colors.black,
+                  ),
+                )
               ]),
             ),
             RichText(
               text: TextSpan(children: [
                 const TextSpan(
-                    text: "Usage ",
-                    style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
+                  text: "Usage ",
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                    // color: Colors.black,
+                  ),
+                ),
                 TextSpan(
-                    text: KeyUsage.fromIndex(i)!.name(),
-                    style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                  text: KeyUsage.fromIndex(i)!.name(),
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    // color: Colors.black,
+                  ),
+                )
               ]),
             ),
           ]);
@@ -892,27 +904,39 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Critical ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Critical ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: basicConstraintsIsCritical,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: basicConstraintsIsCritical,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            )
           ]),
         ),
         RichText(
           text: const TextSpan(children: [
             TextSpan(
-                text: "Certificate Authority ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Certificate Authority ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: "NO",
-                style: TextStyle(fontSize: 12.0, color: Colors.black))
+              text: "NO",
+              style: TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            )
           ]),
         ),
       ]);
@@ -924,40 +948,58 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Critical ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Critical ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: basicConstraintsIsCritical,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: basicConstraintsIsCritical,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            )
           ]),
         ),
         RichText(
           text: const TextSpan(children: [
             TextSpan(
-                text: "Certificate Authority ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Certificate Authority ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: "YES",
-                style: TextStyle(fontSize: 12.0, color: Colors.black))
+              text: "YES",
+              style: TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            )
           ]),
         ),
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Path Length Constraints ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Path Length Constraints ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: basicConstraints.toString(),
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: basicConstraints.toString(),
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         ),
       ]);
@@ -997,27 +1039,39 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
           RichText(
             text: TextSpan(children: [
               const TextSpan(
-                  text: "Critical ",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "Critical ",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
-                  text: extendedKeyUsageIsCritical,
-                  style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                text: extendedKeyUsageIsCritical,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  // color: Colors.black,
+                ),
+              ),
             ]),
           ),
           RichText(
             text: TextSpan(children: [
               TextSpan(
-                  text: "Purpose #${i + 1} ",
-                  style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "Purpose #${i + 1} ",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
-                  text: "${oid.name()} ( ${oid.toValue()} )",
-                  style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                text: "${oid.name()} ( ${oid.toValue()} )",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  // color: Colors.black,
+                ),
+              ),
             ]),
           ),
         ]);
@@ -1077,27 +1131,39 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Critical ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Critical ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: subjectKeyIdentifierIsCritical,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: subjectKeyIdentifierIsCritical,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         ),
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Key ID ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Key ID ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: subjectKeyIdentifierToHexValue,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: subjectKeyIdentifierToHexValue,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         )
       ]);
@@ -1158,27 +1224,39 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Critical ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Critical ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: authorityKeyIdentifierIsCritical,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: authorityKeyIdentifierIsCritical,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         ),
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Key ID ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Key ID ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: authorityKeyIdentifierToHexValue,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: authorityKeyIdentifierToHexValue,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         )
       ]);
@@ -1223,14 +1301,20 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
       RichText(
         text: TextSpan(children: [
           const TextSpan(
-              text: "Critical ",
-              style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black)),
+            text: "Critical ",
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              // color: Colors.black,
+            ),
+          ),
           TextSpan(
-              text: certificatePoliciesIsCritical,
-              style: const TextStyle(fontSize: 12.0, color: Colors.black))
+            text: certificatePoliciesIsCritical,
+            style: const TextStyle(
+              fontSize: 12.0,
+              // color: Colors.black,
+            ),
+          ),
         ]),
       ),
     ];
@@ -1244,16 +1328,22 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
           RichText(
             text: TextSpan(children: [
               TextSpan(
-                  text: "ID policy num. ${i + 1} ",
-                  style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "ID policy num. ${i + 1} ",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
-                  text: (oid != null)
-                      ? "${oid.name()} ( ${oid.toValue()} )"
-                      : "( ${certificatePolicies.policies![i].oid} )",
-                  style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                text: (oid != null)
+                    ? "${oid.name()} ( ${oid.toValue()} )"
+                    : "( ${certificatePolicies.policies![i].oid} )",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  // color: Colors.black,
+                ),
+              ),
             ]),
           ),
         ]);
@@ -1299,14 +1389,20 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
       RichText(
         text: TextSpan(children: [
           const TextSpan(
-              text: "Critical ",
-              style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black)),
+            text: "Critical ",
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              // color: Colors.black,
+            ),
+          ),
           TextSpan(
-              text: cRLDistributionPointsIsCritical,
-              style: const TextStyle(fontSize: 12.0, color: Colors.black))
+            text: cRLDistributionPointsIsCritical,
+            style: const TextStyle(
+              fontSize: 12.0,
+              // color: Colors.black,
+            ),
+          ),
         ]),
       ),
     ];
@@ -1318,11 +1414,13 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
           RichText(
             text: TextSpan(children: [
               const TextSpan(
-                  text: "URI ",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "URI ",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
                   text: cRLDistributionPoints.crls![i],
                   style: const TextStyle(fontSize: 12.0, color: Colors.blue),
@@ -1335,6 +1433,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                             true, // show download progress in status bar (for Android)
                         openFileFromNotification:
                             true, // click on notification to open downloaded file (for Android)
+                        saveInPublicStorage: true,
                       );
                     })
             ]),
@@ -1382,14 +1481,20 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
       RichText(
         text: TextSpan(children: [
           const TextSpan(
-              text: "Critical ",
-              style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black)),
+            text: "Critical ",
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              // color: Colors.black,
+            ),
+          ),
           TextSpan(
-              text: authorityInfoAccessIsCritical,
-              style: const TextStyle(fontSize: 12.0, color: Colors.black))
+            text: authorityInfoAccessIsCritical,
+            style: const TextStyle(
+              fontSize: 12.0,
+              // color: Colors.black,
+            ),
+          ),
         ]),
       ),
     ];
@@ -1405,27 +1510,34 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
           RichText(
             text: TextSpan(children: [
               TextSpan(
-                  text: "Method #${i + 1} ",
-                  style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "Method #${i + 1} ",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
                 text: oid != null
                     ? "${oid.name()} ( ${oid.toValue()} )"
                     : infoAccess.method,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black),
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  // color: Colors.black,
+                ),
               )
             ]),
           ),
           RichText(
             text: TextSpan(children: [
               const TextSpan(
-                  text: "URI ",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "URI ",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
                   text: value,
                   style: const TextStyle(fontSize: 12.0, color: Colors.blue),
@@ -1438,6 +1550,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                             true, // show download progress in status bar (for Android)
                         openFileFromNotification:
                             true, // click on notification to open downloaded file (for Android)
+                        saveInPublicStorage: true,
                       );
                     })
             ]),
@@ -1487,14 +1600,20 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
         RichText(
           text: TextSpan(children: [
             const TextSpan(
-                text: "Critical ",
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
+              text: "Critical ",
+              style: TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                // color: Colors.black,
+              ),
+            ),
             TextSpan(
-                text: subjectAlternativeNamesIsCritical,
-                style: const TextStyle(fontSize: 12.0, color: Colors.black))
+              text: subjectAlternativeNamesIsCritical,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: Colors.black,
+              ),
+            ),
           ]),
         ),
       ]);
@@ -1506,14 +1625,20 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
           RichText(
             text: TextSpan(children: [
               const TextSpan(
-                  text: "DNS Name ",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+                text: "DNS Name ",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  // color: Colors.black,
+                ),
+              ),
               TextSpan(
-                  text: subjectAlternativeName,
-                  style: const TextStyle(fontSize: 12.0, color: Colors.black))
+                text: subjectAlternativeName,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  // color: Colors.black,
+                ),
+              ),
             ]),
           ),
         ]);

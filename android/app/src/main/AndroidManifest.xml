@@ -16,7 +16,9 @@
    <application
         android:label="Mini VTOP"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+       <!--↑↑↑↑↑↑↑↑↑↑↑↑ usesCleartextTraffic for the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
        <activity
             android:name=".MainActivity"
             android:exported="true"

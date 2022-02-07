@@ -145,6 +145,7 @@ chooseCorrectBody(
       onRefreshCaptcha: (Map value) {
         onUserEnteredUname.call(value["uname"]);
         onUserEnteredPasswd.call(value["passwd"]);
+        onRefreshingCaptcha.call(true);
         performCaptchaRefresh(
           headlessWebView: headlessWebView,
           context: context,
@@ -152,11 +153,11 @@ chooseCorrectBody(
             onCurrentFullUrl.call(value);
           },
           refreshingCaptcha: value["refreshingCaptcha"],
-          onRefreshingCaptcha: (bool value) {
-            onRefreshingCaptcha.call(value);
-          },
           onError: (String value) {
             onError.call(value);
+          },
+          onRefreshingCaptcha: (bool value) {
+            onRefreshingCaptcha.call(value);
           },
         );
       },
@@ -303,7 +304,21 @@ chooseCorrectBody(
           onThemeMode: (ThemeMode value) {
             onThemeMode?.call(value);
           },
+          screenBasedPixelWidth: screenBasedPixelWidth,
+          screenBasedPixelHeight: screenBasedPixelHeight,
         ),
+        onPerformSignOut: (bool value) {
+          performSignOut(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
+        },
       ),
     );
   }

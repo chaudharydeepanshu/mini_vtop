@@ -18,6 +18,7 @@ import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
@@ -31,7 +32,7 @@ import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart'
 import 'navigation/page_routes_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+// ↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓
 late final dynamic webArchiveDir;
 
 late final dynamic tabViewerBottomOffset1;
@@ -44,7 +45,11 @@ const tabViewerTopOffset3 = 20.0;
 
 const tabViewerTopScaleTopOffset = 250.0;
 const tabViewerTopScaleBottomOffset = 230.0;
-// <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+
+class TestClass {
+  static void callback(String id, DownloadTaskStatus status, int progress) {}
+}
+// ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +63,7 @@ Future main() async {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
-  // <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+  // ↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓
   webArchiveDir = (await getApplicationSupportDirectory()).path;
 
   if (Platform.isIOS) {
@@ -75,13 +80,12 @@ Future main() async {
       debug: true // optional: set false to disable printing logs to console
       );
 
-  // await Permission.camera.request();
-  // await Permission.microphone.request();
-  // await Permission.storage.request();
-  // <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+  FlutterDownloader.registerCallback(TestClass.callback);
+
+  // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
   runApp(
-    // <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
+    // ↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -95,7 +99,7 @@ Future main() async {
           create: (BuildContext context) => BrowserModel(WebViewModel()),
         ),
       ],
-      // <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+      // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
       child: MyApp(
         savedThemeMode: savedThemeMode,
       ),

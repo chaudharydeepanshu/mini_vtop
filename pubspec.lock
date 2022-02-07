@@ -251,6 +251,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1+3"
+  internet_file:
+    dependency: "direct main"
+    description:
+      name: internet_file
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+1"
   intl:
     dependency: "direct main"
     description:
@@ -634,6 +641,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  universal_file:
+    dependency: transitive
+    description:
+      name: universal_file
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   universal_html:
     dependency: "direct main"
     description:

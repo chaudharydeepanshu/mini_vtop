@@ -10,7 +10,6 @@ callTimeTable(
     required ValueChanged<bool> onProcessingSomething,
     required ValueChanged<String> onCurrentFullUrl,
     required ValueChanged<String> onError}) async {
-  onProcessingSomething.call(processingSomething);
   if (headlessWebView?.isRunning() ?? false) {
     if (!await InternetConnectionChecker().hasConnection) {
       debugPrint(
