@@ -96,10 +96,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
             List<Widget>.generate(2, (int j) {
           Container tableRowColumnContainer = Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
-              // border: Border.all(color: Colors.black, width: 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
+                // color: Colors.white,
+                // border: Border.all(color: Colors.black, width: 1),
+                // borderRadius: const BorderRadius.all(Radius.circular(40));
+                ),
             // height: 75,
             // width: 250,
             child: Align(
@@ -113,7 +113,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
                 child: Text(
                   "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
-                    color: Colors.black,
+                    // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
@@ -140,7 +140,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         children: [
           tableHeader,
           Table(
-            border: TableBorder.all(),
+            border: TableBorder.all(
+                color: (Theme.of(context).textTheme.headline1?.color)!),
             // columnWidths: const <int, TableColumnWidth>{
             // 0: IntrinsicColumnWidth(),
             // 1: FlexColumnWidth(),
@@ -170,7 +171,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
     super.initState();
     screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
     screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
+  }
 
+  @override
+  void didChangeDependencies() {
     var htmlPersonalDetailTable = widget.arguments.studentProfileAllViewDocument
         ?.getElementById("page-wrapper")
         ?.children[0]
@@ -293,6 +297,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       listOfHeaders: listOfProctorDetailHeaders,
       noOfMiniTablesToCreate: noOfProctorDetailMiniTablesToCreate,
     );
+    super.didChangeDependencies();
   }
 
   @override

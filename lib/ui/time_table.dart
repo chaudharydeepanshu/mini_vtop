@@ -28,11 +28,8 @@ class _TimeTableState extends State<TimeTable> {
   var subjectDetailTableSize = Size.zero;
 
   @override
-  void initState() {
-    super.initState();
-    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
-    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     var htmlTimeTable = widget.arguments.timeTableDocument?.getElementById(
         "timeTableStyle"); //document.getElementById("htmlTimeTable");
     List htmlTimeTableTrs = htmlTimeTable?.getElementsByTagName("tr") ?? [];
@@ -52,10 +49,10 @@ class _TimeTableState extends State<TimeTable> {
           htmlTimeTableTrs[i].getElementsByTagName("td").length, (int j) {
         Container tableRowColumnContainer = Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
-            // border: Border.all(color: Colors.black, width: 1),
-            // borderRadius: const BorderRadius.all(Radius.circular(40));
-          ),
+              // color: Colors.white,
+              // border: Border.all(color: Colors.black, width: 1),
+              // borderRadius: const BorderRadius.all(Radius.circular(40));
+              ),
           // height: 75,
           // width: 250,
           child: Align(
@@ -69,7 +66,7 @@ class _TimeTableState extends State<TimeTable> {
               child: Text(
                 "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                 style: GoogleFonts.lato(
-                  color: Colors.black,
+                  // color: Colors.black,
                   // textStyle: Theme.of(context).textTheme.headline1,
                   fontSize: screenBasedPixelWidth * 15,
                   fontWeight: FontWeight.w700,
@@ -152,7 +149,8 @@ class _TimeTableState extends State<TimeTable> {
     );
 
     customTimeTable = Table(
-      border: TableBorder.all(),
+      border: TableBorder.all(
+          color: (Theme.of(context).textTheme.headline1?.color)!),
       // columnWidths: const <int, TableColumnWidth>{
       //   0: IntrinsicColumnWidth(),
       //   1: FlexColumnWidth(),
@@ -187,10 +185,10 @@ class _TimeTableState extends State<TimeTable> {
             (int j) {
           Container tableRowColumnContainer = Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
-              // border: Border.all(color: Colors.black, width: 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
+                // color: Colors.white,
+                // border: Border.all(color: Colors.black, width: 1),
+                // borderRadius: const BorderRadius.all(Radius.circular(40));
+                ),
             // height: 75,
             // width: 250,
             child: Align(
@@ -204,7 +202,7 @@ class _TimeTableState extends State<TimeTable> {
                 child: Text(
                   "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
-                    color: Colors.black,
+                    // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
@@ -223,10 +221,10 @@ class _TimeTableState extends State<TimeTable> {
             (int j) {
           Container tableRowColumnContainer = Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
-              // border: Border.all(color: Colors.black, width: 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
+                // color: Colors.white,
+                // border: Border.all(color: Colors.black, width: 1),
+                // borderRadius: const BorderRadius.all(Radius.circular(40));
+                ),
             // height: 75,
             // width: 250,
             child: Align(
@@ -240,7 +238,7 @@ class _TimeTableState extends State<TimeTable> {
                 child: Text(
                   "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
-                    color: Colors.black,
+                    // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
@@ -266,7 +264,8 @@ class _TimeTableState extends State<TimeTable> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Table(
-          border: TableBorder.all(),
+          border: TableBorder.all(
+              color: (Theme.of(context).textTheme.headline1?.color)!),
           // columnWidths: const <int, TableColumnWidth>{
           //   0: IntrinsicColumnWidth(),
           //   1: FlexColumnWidth(),
@@ -280,14 +279,17 @@ class _TimeTableState extends State<TimeTable> {
           padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              // color: Colors.white,
               // border: Border(
               //   bottom: BorderSide(color: Colors.black, width: 1),
               //   left: BorderSide(color: Colors.black, width: 1),
               //   right: BorderSide(color: Colors.black, width: 1),
               // ),
               border: Border.all(
-                  color: Colors.black, width: screenBasedPixelWidth * 1),
+                  color: (Theme.of(context).textTheme.headline1?.color)!,
+                  width: screenBasedPixelWidth * 1),
+              // border: Border.all(
+              //     color: Colors.black, width: screenBasedPixelWidth * 1),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
             child: Row(
@@ -301,7 +303,7 @@ class _TimeTableState extends State<TimeTable> {
                   child: Text(
                     "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: GoogleFonts.lato(
-                      color: Colors.black,
+                      // color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
                       fontSize: screenBasedPixelWidth * 15,
                       fontWeight: FontWeight.w700,
@@ -315,6 +317,13 @@ class _TimeTableState extends State<TimeTable> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
   }
 
   @override
@@ -509,20 +518,22 @@ class CustomTableRowElement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
-        // border: Border.all(color: Colors.black, width: 1),
-        // borderRadius: const BorderRadius.all(Radius.circular(40));
-      ),
+          // color: Colors.white,
+          // border: Border.all(color: Colors.black, width: 1),
+          // borderRadius: const BorderRadius.all(Radius.circular(40));
+          ),
       // height: 75,
       // width: 250,
       child: Column(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              // color: Colors.white,
+
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.black, width: screenBasedPixelWidth * 1),
+                    color: (Theme.of(context).textTheme.headline1?.color)!,
+                    width: screenBasedPixelWidth * 1),
               ),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
@@ -540,7 +551,7 @@ class CustomTableRowElement extends StatelessWidget {
                 child: Text(
                   elementText1,
                   style: GoogleFonts.lato(
-                    color: Colors.black,
+                    // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
@@ -552,10 +563,10 @@ class CustomTableRowElement extends StatelessWidget {
           ),
           Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
-              // border: Border.all(color: Colors.black, width: 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
+                // color: Colors.white,
+                // border: Border.all(color: Colors.black, width: 1),
+                // borderRadius: const BorderRadius.all(Radius.circular(40));
+                ),
             // height: 37.5,
             // width: 250,
             child: Align(
@@ -570,7 +581,7 @@ class CustomTableRowElement extends StatelessWidget {
                 child: Text(
                   elementText2,
                   style: GoogleFonts.lato(
-                    color: Colors.black,
+                    // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: screenBasedPixelWidth * 15,
                     fontWeight: FontWeight.w700,
@@ -602,10 +613,10 @@ class LegendCellWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
-        // border: Border.all(color: Colors.black, width: 1),
-        // borderRadius: const BorderRadius.all(Radius.circular(40));
-      ),
+          // color: Colors.white,
+          // border: Border.all(color: Colors.black, width: 1),
+          // borderRadius: const BorderRadius.all(Radius.circular(40));
+          ),
       height: screenBasedPixelHeight * 75,
       // width: 250,
       child: Align(
@@ -617,7 +628,7 @@ class LegendCellWidget extends StatelessWidget {
           child: Text(
             legendText,
             style: GoogleFonts.lato(
-              color: Colors.black,
+              // color: Colors.black,
               // textStyle: Theme.of(context).textTheme.headline1,
               fontSize: screenBasedPixelWidth * 15,
               fontWeight: FontWeight.w700,
