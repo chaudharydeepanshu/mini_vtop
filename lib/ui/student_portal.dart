@@ -50,10 +50,9 @@ class _StudentPortalState extends State<StudentPortal> {
               // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
-              widget.onProcessingSomething.call(
-                  true); //then set processing something true for the new loading dialog
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                widget.onProcessingSomething.call(true);
+                widget.onProcessingSomething.call(
+                    true); //then set processing something true for the new loading dialog
                 customDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
@@ -107,9 +106,10 @@ class _StudentPortalState extends State<StudentPortal> {
               // timer.cancel();
               // startTimeout();
               widget.onTimeTable?.call(true);
-              Navigator.of(context).pop();
-              widget.onProcessingSomething.call(true);
+              Navigator.of(context).pop(); // pop the option selection dialog
               WidgetsBinding.instance?.addPostFrameCallback((_) {
+                widget.onProcessingSomething.call(
+                    true); //then set processing something true for the new loading dialog
                 customDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,

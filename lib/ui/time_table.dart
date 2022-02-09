@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 
 import '../basicFunctions/measure_size_of_widget.dart';
+import '../basicFunctions/proccessing_dialog.dart';
 
 class TimeTable extends StatefulWidget {
   static const String routeName = '/timeTable';
@@ -27,281 +28,249 @@ class _TimeTableState extends State<TimeTable> {
   List<TableRow> listOfTableRowsForCustomSubjectDetailTable = [];
   var subjectDetailTableSize = Size.zero;
 
+  late List semestersHtmlForm = widget.arguments.timeTableDocument
+          ?.getElementById('semesterSubId')
+          ?.children ??
+      [];
+
+  List<Map<String, String>> semesters = [];
+
+  // var timeTableDocument = widget.arguments.timeTableDocument;
+  //
+  // @override
+  // void didUpdateWidget(TimeTable oldWidget) {
+  //   if (oldWidget.arguments.timeTableDocument != widget.arguments.timeTableDocument) {
+  //     _currentStatus = widget.currentStatus;
+  //   }
+  //
+  //   super.didUpdateWidget(oldWidget);
+  // }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var htmlTimeTable = widget.arguments.timeTableDocument?.getElementById(
-        "timeTableStyle"); //document.getElementById("htmlTimeTable");
-    List htmlTimeTableTrs = htmlTimeTable?.getElementsByTagName("tr") ?? [];
-    // int tdsInTr1 = htmlTimeTableTrs[1].getElementsByTagName("td").length;
-    // int tdLength = htmlTimeTableTrs[index].getElementsByTagName("td").length;
-    // List<Widget> listOfColumnsForRowWithIndex = [];
+    if (widget.arguments.timeTableDocument
+            ?.getElementById("getStudentDetails")
+            ?.children[0]
+            .text
+            .replaceAll(RegExp('\\s+'), ' ') !=
+        "No Record(s) Found") {
+      var htmlTimeTable = widget.arguments.timeTableDocument?.getElementById(
+          "timeTableStyle"); //document.getElementById("htmlTimeTable");
+      List htmlTimeTableTrs = htmlTimeTable?.getElementsByTagName("tr") ?? [];
+      // int tdsInTr1 = htmlTimeTableTrs[1].getElementsByTagName("td").length;
+      // int tdLength = htmlTimeTableTrs[index].getElementsByTagName("td").length;
+      // List<Widget> listOfColumnsForRowWithIndex = [];
+      listOfTableRowsForCustomTimeTable = List<TableRow>.generate(1, (int i) {
+        debugPrint(
+            "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
+        List<Widget> listOfColumnsForRowWithIndex;
 
-    htmlTimeTableTrs.removeRange(0, 2);
+        listOfColumnsForRowWithIndex = List<Widget>.generate(
+            htmlTimeTableTrs[i].getElementsByTagName("td").length, (int j) {
+          Widget tableRowColumnContainer;
+          if (j == 0) {
+            debugPrint(
+                "legendText: ${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}");
+            tableRowColumnContainer = LegendCellWidget(
+              legendText:
+                  "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              screenBasedPixelHeight: screenBasedPixelHeight,
+            );
+          } else {
+            debugPrint(
+                "CustomTableRowElement: ${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}");
+            debugPrint(
+                "CustomTableRowElement: ${htmlTimeTableTrs[i + 1].getElementsByTagName("td")[j - 1].text.replaceAll(RegExp('\\s+'), ' ')}");
 
-    listOfTableRowsForCustomTimeTable =
-        List<TableRow>.generate(htmlTimeTableTrs.length, (int i) {
-      debugPrint(
-          "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
-      List<Widget> listOfColumnsForRowWithIndex;
+            tableRowColumnContainer = CustomTableRowElement(
+              elementText1:
+                  "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+              elementText2:
+                  "${htmlTimeTableTrs[i + 1].getElementsByTagName("td")[j - 1].text.replaceAll(RegExp('\\s+'), ' ')}",
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              screenBasedPixelHeight: screenBasedPixelHeight,
+            );
+          }
+          return tableRowColumnContainer;
+        });
 
-      listOfColumnsForRowWithIndex = List<Widget>.generate(
-          htmlTimeTableTrs[i].getElementsByTagName("td").length, (int j) {
-        Container tableRowColumnContainer = Container(
-          decoration: const BoxDecoration(
-              // color: Colors.white,
-              // border: Border.all(color: Colors.black, width: 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-              ),
-          // height: 75,
-          // width: 250,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(
-                  left: screenBasedPixelWidth * 15,
-                  right: screenBasedPixelWidth * 15,
-                  top: screenBasedPixelWidth * 15,
-                  bottom: screenBasedPixelWidth * 15),
-              child: Text(
-                "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                style: GoogleFonts.lato(
-                  // color: Colors.black,
-                  // textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: screenBasedPixelWidth * 15,
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-            ),
-          ),
+        TableRow tableRow = TableRow(
+          children: listOfColumnsForRowWithIndex,
         );
 
-        return tableRowColumnContainer;
+        return tableRow;
       });
 
-      TableRow tableRow = TableRow(
-        children: listOfColumnsForRowWithIndex,
-      );
+      htmlTimeTableTrs.removeRange(0, 2);
 
-      return tableRow;
-    });
+      listOfTableRowsForCustomTimeTable = listOfTableRowsForCustomTimeTable +
+          List<TableRow>.generate(htmlTimeTableTrs.length, (int i) {
+            debugPrint(
+                "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
+            List<Widget> listOfColumnsForRowWithIndex;
 
-    listOfTableRowsForCustomTimeTable.insert(
-      0,
-      TableRow(
-        children: <Widget>[
-          LegendCellWidget(
-            legendText: "Theory",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "Start",
-            elementText2: "End",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "08:30",
-            elementText2: "10:00",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "10:05",
-            elementText2: "11:35",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "11:40",
-            elementText2: "13:10",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "13:15",
-            elementText2: "14:45",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "14:50",
-            elementText2: "16:20",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "16:25",
-            elementText2: "17:55",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-          CustomTableRowElement(
-            elementText1: "18:00",
-            elementText2: "19:30",
-            screenBasedPixelWidth: screenBasedPixelWidth,
-            screenBasedPixelHeight: screenBasedPixelHeight,
-          ),
-        ],
-      ),
-    );
-
-    customTimeTable = Table(
-      border: TableBorder.all(
-          color: (Theme.of(context).textTheme.headline1?.color)!),
-      // columnWidths: const <int, TableColumnWidth>{
-      //   0: IntrinsicColumnWidth(),
-      //   1: FlexColumnWidth(),
-      //   2: FixedColumnWidth(64),
-      // },
-      defaultColumnWidth: const IntrinsicColumnWidth(),
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      children: listOfTableRowsForCustomTimeTable,
-    );
-
-    var htmlSubjectDetailTable = widget.arguments.timeTableDocument
-        ?.getElementById("studentDetailsList")
-        ?.children[1];
-    List htmlSubjectDetailTableTrs =
-        htmlSubjectDetailTable?.getElementsByTagName("tr") ?? [];
-
-    var subjectsTotalCreditsTr =
-        htmlSubjectDetailTableTrs[htmlSubjectDetailTableTrs.length - 2];
-
-    htmlSubjectDetailTableTrs.removeAt(0);
-    htmlSubjectDetailTableTrs.removeRange(
-        htmlSubjectDetailTableTrs.length - 2, htmlSubjectDetailTableTrs.length);
-
-    listOfTableRowsForCustomSubjectDetailTable =
-        List<TableRow>.generate(htmlSubjectDetailTableTrs.length, (int i) {
-      debugPrint(
-          "no. of tds in tr $i of SubjectDetailTable: ${htmlSubjectDetailTableTrs[i].getElementsByTagName("td").length}");
-      List<Widget> listOfColumnsForRowWithIndex;
-      if (i < 1) {
-        listOfColumnsForRowWithIndex = List<Widget>.generate(
-            htmlSubjectDetailTableTrs[i].getElementsByTagName("th").length,
-            (int j) {
-          Container tableRowColumnContainer = Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 75,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    left: screenBasedPixelWidth * 15,
-                    right: screenBasedPixelWidth * 15,
-                    top: screenBasedPixelWidth * 15,
-                    bottom: screenBasedPixelWidth * 15),
-                child: Text(
-                  "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: GoogleFonts.lato(
-                    // color: Colors.black,
-                    // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: screenBasedPixelWidth * 15,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
+            listOfColumnsForRowWithIndex = List<Widget>.generate(
+                htmlTimeTableTrs[i].getElementsByTagName("td").length, (int j) {
+              Container tableRowColumnContainer = Container(
+                decoration: const BoxDecoration(
+                    // color: Colors.white,
+                    // border: Border.all(color: Colors.black, width: 1),
+                    // borderRadius: const BorderRadius.all(Radius.circular(40));
+                    ),
+                // height: 75,
+                // width: 250,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        left: screenBasedPixelWidth * 15,
+                        right: screenBasedPixelWidth * 15,
+                        top: screenBasedPixelWidth * 15,
+                        bottom: screenBasedPixelWidth * 15),
+                    child: Text(
+                      "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+                      style: GoogleFonts.lato(
+                        // color: Colors.black,
+                        // textStyle: Theme.of(context).textTheme.headline1,
+                        fontSize: screenBasedPixelWidth * 15,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
+              );
 
-          return tableRowColumnContainer;
-        });
-      } else {
-        listOfColumnsForRowWithIndex = List<Widget>.generate(
-            htmlSubjectDetailTableTrs[i].getElementsByTagName("td").length,
-            (int j) {
-          Container tableRowColumnContainer = Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 75,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                    left: screenBasedPixelWidth * 15,
-                    right: screenBasedPixelWidth * 15,
-                    top: screenBasedPixelWidth * 15,
-                    bottom: screenBasedPixelWidth * 15),
-                child: Text(
-                  "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: GoogleFonts.lato(
-                    // color: Colors.black,
-                    // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: screenBasedPixelWidth * 15,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-              ),
-            ),
-          );
+              return tableRowColumnContainer;
+            });
 
-          return tableRowColumnContainer;
-        });
-      }
-      TableRow tableRow = TableRow(
-        children: listOfColumnsForRowWithIndex,
+            TableRow tableRow = TableRow(
+              children: listOfColumnsForRowWithIndex,
+            );
+
+            return tableRow;
+          });
+
+      // listOfTableRowsForCustomTimeTable.insert(
+      //   0,
+      //   TableRow(
+      //     children: <Widget>[
+      //       LegendCellWidget(
+      //         legendText: "Theory",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "Start",
+      //         elementText2: "End",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "08:30",
+      //         elementText2: "10:00",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "10:05",
+      //         elementText2: "11:35",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "11:40",
+      //         elementText2: "13:10",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "13:15",
+      //         elementText2: "14:45",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "14:50",
+      //         elementText2: "16:20",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "16:25",
+      //         elementText2: "17:55",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //       CustomTableRowElement(
+      //         elementText1: "18:00",
+      //         elementText2: "19:30",
+      //         screenBasedPixelWidth: screenBasedPixelWidth,
+      //         screenBasedPixelHeight: screenBasedPixelHeight,
+      //       ),
+      //     ],
+      //   ),
+      // );
+
+      customTimeTable = Table(
+        border: TableBorder.all(
+            color: (Theme.of(context).textTheme.headline1?.color)!),
+        // columnWidths: const <int, TableColumnWidth>{
+        //   0: IntrinsicColumnWidth(),
+        //   1: FlexColumnWidth(),
+        //   2: FixedColumnWidth(64),
+        // },
+        defaultColumnWidth: const IntrinsicColumnWidth(),
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: listOfTableRowsForCustomTimeTable,
       );
 
-      return tableRow;
-    });
+      var htmlSubjectDetailTable = widget.arguments.timeTableDocument
+              ?.getElementById("studentDetailsList")
+              ?.querySelectorAll("table")[
+          0]; // Use query selector to obtain a NodeList of all of the <table> elements contained within the element.
+      // This will be a list so use the list element to access data
 
-    customSubjectDetailTable = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Table(
-          border: TableBorder.all(
-              color: (Theme.of(context).textTheme.headline1?.color)!),
-          // columnWidths: const <int, TableColumnWidth>{
-          //   0: IntrinsicColumnWidth(),
-          //   1: FlexColumnWidth(),
-          //   2: FixedColumnWidth(64),
-          // },
-          defaultColumnWidth: const IntrinsicColumnWidth(),
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          children: listOfTableRowsForCustomSubjectDetailTable,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              // color: Colors.white,
-              // border: Border(
-              //   bottom: BorderSide(color: Colors.black, width: 1),
-              //   left: BorderSide(color: Colors.black, width: 1),
-              //   right: BorderSide(color: Colors.black, width: 1),
-              // ),
-              border: Border.all(
-                  color: (Theme.of(context).textTheme.headline1?.color)!,
-                  width: screenBasedPixelWidth * 1),
-              // border: Border.all(
-              //     color: Colors.black, width: screenBasedPixelWidth * 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
-            child: Row(
-              children: [
-                Padding(
+      List htmlSubjectDetailTableTrs =
+          htmlSubjectDetailTable?.getElementsByTagName("tr") ?? [];
+
+      var subjectsTotalCreditsTr =
+          htmlSubjectDetailTableTrs[htmlSubjectDetailTableTrs.length - 2];
+
+      htmlSubjectDetailTableTrs.removeAt(0);
+      htmlSubjectDetailTableTrs.removeRange(
+          htmlSubjectDetailTableTrs.length - 2,
+          htmlSubjectDetailTableTrs.length);
+
+      listOfTableRowsForCustomSubjectDetailTable =
+          List<TableRow>.generate(htmlSubjectDetailTableTrs.length, (int i) {
+        debugPrint(
+            "no. of tds in tr $i of SubjectDetailTable: ${htmlSubjectDetailTableTrs[i].getElementsByTagName("td").length}");
+        List<Widget> listOfColumnsForRowWithIndex;
+        if (i < 1) {
+          listOfColumnsForRowWithIndex = List<Widget>.generate(
+              htmlSubjectDetailTableTrs[i].getElementsByTagName("th").length,
+              (int j) {
+            Container tableRowColumnContainer = Container(
+              decoration: const BoxDecoration(
+                  // color: Colors.white,
+                  // border: Border.all(color: Colors.black, width: 1),
+                  // borderRadius: const BorderRadius.all(Radius.circular(40));
+                  ),
+              // height: 75,
+              // width: 250,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
                   padding: EdgeInsets.only(
                       left: screenBasedPixelWidth * 15,
                       right: screenBasedPixelWidth * 15,
                       top: screenBasedPixelWidth * 15,
                       bottom: screenBasedPixelWidth * 15),
                   child: Text(
-                    "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
+                    "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: GoogleFonts.lato(
                       // color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
@@ -311,19 +280,148 @@ class _TimeTableState extends State<TimeTable> {
                     ),
                   ),
                 ),
-              ],
+              ),
+            );
+
+            return tableRowColumnContainer;
+          });
+        } else {
+          listOfColumnsForRowWithIndex = List<Widget>.generate(
+              htmlSubjectDetailTableTrs[i].getElementsByTagName("td").length,
+              (int j) {
+            Container tableRowColumnContainer = Container(
+              decoration: const BoxDecoration(
+                  // color: Colors.white,
+                  // border: Border.all(color: Colors.black, width: 1),
+                  // borderRadius: const BorderRadius.all(Radius.circular(40));
+                  ),
+              // height: 75,
+              // width: 250,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: screenBasedPixelWidth * 15,
+                      right: screenBasedPixelWidth * 15,
+                      top: screenBasedPixelWidth * 15,
+                      bottom: screenBasedPixelWidth * 15),
+                  child: Text(
+                    "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+                    style: GoogleFonts.lato(
+                      // color: Colors.black,
+                      // textStyle: Theme.of(context).textTheme.headline1,
+                      fontSize: screenBasedPixelWidth * 15,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            return tableRowColumnContainer;
+          });
+        }
+        TableRow tableRow = TableRow(
+          children: listOfColumnsForRowWithIndex,
+        );
+
+        return tableRow;
+      });
+
+      customSubjectDetailTable = Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Table(
+            border: TableBorder.all(
+                color: (Theme.of(context).textTheme.headline1?.color)!),
+            // columnWidths: const <int, TableColumnWidth>{
+            //   0: IntrinsicColumnWidth(),
+            //   1: FlexColumnWidth(),
+            //   2: FixedColumnWidth(64),
+            // },
+            defaultColumnWidth: const IntrinsicColumnWidth(),
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: listOfTableRowsForCustomSubjectDetailTable,
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                // color: Colors.white,
+                // border: Border(
+                //   bottom: BorderSide(color: Colors.black, width: 1),
+                //   left: BorderSide(color: Colors.black, width: 1),
+                //   right: BorderSide(color: Colors.black, width: 1),
+                // ),
+                border: Border.all(
+                    color: (Theme.of(context).textTheme.headline1?.color)!,
+                    width: screenBasedPixelWidth * 1),
+                // border: Border.all(
+                //     color: Colors.black, width: screenBasedPixelWidth * 1),
+                // borderRadius: const BorderRadius.all(Radius.circular(40));
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: screenBasedPixelWidth * 15,
+                        right: screenBasedPixelWidth * 15,
+                        top: screenBasedPixelWidth * 15,
+                        bottom: screenBasedPixelWidth * 15),
+                    child: Text(
+                      "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
+                      style: GoogleFonts.lato(
+                        // color: Colors.black,
+                        // textStyle: Theme.of(context).textTheme.headline1,
+                        fontSize: screenBasedPixelWidth * 15,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    debugPrint(widget.arguments.timeTableDocument
+        ?.getElementById("getStudentDetails")
+        ?.children[0]
+        .text
+        .replaceAll(RegExp('\\s+'), ' '));
     screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
     screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
+
+    for (int i = 0; i < semestersHtmlForm.length; i++) {
+      if (semestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' ') !=
+              "-- Choose Semester --" ||
+          semestersHtmlForm[i]
+                  .attributes["value"]
+                  .toString()
+                  .replaceAll(RegExp('\\s+'), ' ') !=
+              "") {
+        Map<String, String> semesterDetail = {
+          "semesterName":
+              semestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' '),
+          "semesterCode": semestersHtmlForm[i]
+              .attributes["value"]
+              .toString()
+              .replaceAll(RegExp('\\s+'), ' '),
+        };
+        semesters.add(semesterDetail);
+      }
+    }
+    debugPrint("semesters: $semesters");
+    dropdownValue = widget.arguments.semesterSubId;
   }
 
   @override
@@ -334,6 +432,10 @@ class _TimeTableState extends State<TimeTable> {
 
   late double screenBasedPixelWidth;
   late double screenBasedPixelHeight;
+
+  late String dropdownValue;
+
+  bool isDialogShowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -395,56 +497,215 @@ class _TimeTableState extends State<TimeTable> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            TableHeader(
-              tableHeaderText: "Time Table",
-              screenBasedPixelWidth: screenBasedPixelWidth,
-              screenBasedPixelHeight: screenBasedPixelHeight,
-            ),
-            SizedBox(
-              height:
-                  timeTableSize.height, //(listOfRows.length + 1) * 48 + 1 + 16,
-              width: MediaQuery.of(context).size.width,
-              child: InteractiveViewer(
-                constrained: false,
-                scaleEnabled: true,
-                child: MeasureSize(
-                  onChange: (size) {
-                    setState(() {
-                      timeTableSize = size;
-                    });
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(screenBasedPixelWidth * 8.0),
-                    child: customTimeTable,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Semester Name - ",
+                    style: GoogleFonts.lato(
+                      // color: Colors.black,
+                      // textStyle: Theme.of(context).textTheme.headline1,
+                      fontSize: screenBasedPixelWidth * 15,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
                   ),
-                ),
+                  SizedBox(
+                    width: screenBasedPixelWidth * 5,
+                  ),
+                  Expanded(
+                    child: FittedBox(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xff04294f),
+                          borderRadius: BorderRadius.only(
+                            topLeft:
+                                Radius.circular(screenBasedPixelWidth * 10),
+                            topRight:
+                                Radius.circular(screenBasedPixelWidth * 10),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          dropdownColor: const Color(0xff04294f),
+                          value: dropdownValue,
+                          // isExpanded: true,
+                          icon: Icon(
+                            Icons.arrow_downward,
+                            size: screenBasedPixelWidth * 24,
+                            color: Colors.white,
+                          ),
+                          elevation: 16,
+                          // style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: screenBasedPixelWidth * 2,
+                            // color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              // dropdownValue = newValue!;
+                              WidgetsBinding.instance
+                                  ?.addPostFrameCallback((_) {
+                                widget.arguments.onProcessingSomething.call(
+                                    true); //then set processing something true for the new loading dialog
+                                customDialogBox(
+                                  isDialogShowing: isDialogShowing,
+                                  context: context,
+                                  onIsDialogShowing: (bool value) {
+                                    setState(() {
+                                      isDialogShowing = value;
+                                    });
+                                  },
+                                  dialogTitle: Text(
+                                    'Requesting Data',
+                                    style: TextStyle(
+                                        fontSize: screenBasedPixelWidth * 24),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  dialogChildren: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: screenBasedPixelWidth * 36,
+                                        width: screenBasedPixelWidth * 36,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth:
+                                              screenBasedPixelWidth * 4.0,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Please wait...',
+                                        style: TextStyle(
+                                            fontSize:
+                                                screenBasedPixelWidth * 20),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                  barrierDismissible: true,
+                                  screenBasedPixelHeight:
+                                      screenBasedPixelHeight,
+                                  screenBasedPixelWidth: screenBasedPixelWidth,
+                                  onProcessingSomething: (bool value) {
+                                    widget.arguments.onProcessingSomething
+                                        .call(value);
+                                  },
+                                ).then((_) => isDialogShowing = false);
+                              });
+                              widget.arguments.onSemesterSubIdChange
+                                  ?.call(newValue!);
+                            });
+                          },
+                          items: semesters.map<DropdownMenuItem<String>>(
+                              (Map<dynamic, dynamic> value) {
+                            return DropdownMenuItem<String>(
+                              value: value["semesterCode"],
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.all(screenBasedPixelWidth * 8.0),
+                                child: FittedBox(
+                                  child: Text(
+                                    value["semesterName"],
+                                    style: GoogleFonts.lato(
+                                      color: Colors.white,
+                                      // textStyle: Theme.of(context).textTheme.headline1,
+                                      fontSize: screenBasedPixelWidth * 15,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            TableHeader(
-              tableHeaderText: "Subject Detail",
-              screenBasedPixelWidth: screenBasedPixelWidth,
-              screenBasedPixelHeight: screenBasedPixelHeight,
-            ),
-            SizedBox(
-              height: subjectDetailTableSize
-                  .height, //(listOfRows.length + 1) * 48 + 1 + 16,
-              width: MediaQuery.of(context).size.width,
-              child: InteractiveViewer(
-                constrained: false,
-                scaleEnabled: true,
-                child: MeasureSize(
-                  onChange: (size) {
-                    setState(() {
-                      subjectDetailTableSize = size;
-                    });
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(screenBasedPixelWidth * 8.0),
-                    child: customSubjectDetailTable,
+            widget.arguments.timeTableDocument
+                        ?.getElementById("getStudentDetails")
+                        ?.children[0]
+                        .text
+                        .replaceAll(RegExp('\\s+'), ' ') !=
+                    "No Record(s) Found"
+                ? Column(
+                    children: [
+                      TableHeader(
+                        tableHeaderText: "Time Table",
+                        screenBasedPixelWidth: screenBasedPixelWidth,
+                        screenBasedPixelHeight: screenBasedPixelHeight,
+                      ),
+                      SizedBox(
+                        height: timeTableSize
+                            .height, //(listOfRows.length + 1) * 48 + 1 + 16,
+                        width: MediaQuery.of(context).size.width,
+                        child: InteractiveViewer(
+                          constrained: false,
+                          scaleEnabled: true,
+                          child: MeasureSize(
+                            onChange: (size) {
+                              setState(() {
+                                timeTableSize = size;
+                              });
+                            },
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.all(screenBasedPixelWidth * 8.0),
+                              child: customTimeTable,
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableHeader(
+                        tableHeaderText: "Subject Detail",
+                        screenBasedPixelWidth: screenBasedPixelWidth,
+                        screenBasedPixelHeight: screenBasedPixelHeight,
+                      ),
+                      SizedBox(
+                        height: subjectDetailTableSize
+                            .height, //(listOfRows.length + 1) * 48 + 1 + 16,
+                        width: MediaQuery.of(context).size.width,
+                        child: InteractiveViewer(
+                          constrained: false,
+                          scaleEnabled: true,
+                          child: MeasureSize(
+                            onChange: (size) {
+                              setState(() {
+                                subjectDetailTableSize = size;
+                              });
+                            },
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.all(screenBasedPixelWidth * 8.0),
+                              child: customSubjectDetailTable,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      const Icon(Icons.error),
+                      Text(
+                        "No Record(s) Found",
+                        style: GoogleFonts.lato(
+                          // color: Colors.black,
+                          // textStyle: Theme.of(context).textTheme.headline1,
+                          fontSize: screenBasedPixelWidth * 15,
+                          fontWeight: FontWeight.w700,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -645,6 +906,9 @@ class TimeTableArguments {
   String? currentStatus;
   ValueChanged<bool>? onTimeTableDocumentDispose;
   dom.Document? timeTableDocument;
+  ValueChanged<String>? onSemesterSubIdChange;
+  String semesterSubId;
+  ValueChanged<bool> onProcessingSomething;
   // String userEnteredUname;
   // String userEnteredPasswd;
   // HeadlessInAppWebView headlessWebView;
@@ -656,6 +920,9 @@ class TimeTableArguments {
     required this.currentStatus,
     required this.onTimeTableDocumentDispose,
     required this.timeTableDocument,
+    required this.onSemesterSubIdChange,
+    required this.semesterSubId,
+    required this.onProcessingSomething,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,
     // required this.headlessWebView,

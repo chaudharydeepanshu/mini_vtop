@@ -25,6 +25,7 @@ import 'basicFunctions/print_wrapped.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
 import 'coreFunctions/auto_captcha.dart';
+import 'coreFunctions/call_time_table.dart';
 import 'coreFunctions/choose_correct_drawer.dart';
 import 'coreFunctions/choose_correct_initial_body.dart';
 import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
@@ -264,6 +265,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   bool tryAutoLoginStatus = false;
 
+  String semesterSubId = "BL20212210";
+
   getStudentName({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
@@ -324,9 +327,38 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> _retrieveSemesterSubId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('semesterSubId')) {
+      return;
+    }
+
+    setState(() {
+      semesterSubId = prefs.getString('semesterSubId')!;
+    });
+  }
+
+  Future<String> _justRetrieveSemesterSubId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('semesterSubId')) {
+      return "BL20212210";
+    }
+
+    return prefs.getString('semesterSubId')!;
+  }
+
   Future<void> _saveSessionDateTime() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('sessionDateTime', sessionDateTime.toString());
+  }
+
+  Future<void> _saveSemesterSubId() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('semesterSubId', semesterSubId.toString());
   }
 
   Future<void> _saveTryAutoLoginStatus() async {
@@ -406,6 +438,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _credentialsFound();
     _retrieveSessionDateTime();
     _retrieveTryAutoLoginStatus();
+    _retrieveSemesterSubId();
     headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(
           // url: Uri.parse("")),
@@ -951,12 +984,23 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   if (value.contains("Please wait")) {
                     // waitStatus = true;
                   } else {
-                    waitStatus = false;
-                    await headlessWebView?.webViewController
-                        .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "BL20212210";
+                    if (requestType == "Real") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
+                    } else if (requestType == "Update") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "$semesterSubId";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    }
                   }
                 });
               }
@@ -985,7 +1029,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   .evaluateJavascript(
                       source:
                           "new XMLSerializer().serializeToString(document);")
-                  .then((value) {
+                  .then((value) async {
                 var document = parse('$value');
                 setState(() {
                   timeTableDocument = document;
@@ -996,27 +1040,139 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     processingSomething = false;
                   });
                 }
-                Navigator.pushNamed(
-                  context,
-                  PageRoutes.timeTable,
-                  arguments: TimeTableArguments(
-                    currentStatus: currentStatus,
-                    onTimeTableDocumentDispose: (bool value) {
-                      debugPrint("timeTable disposed");
-                      WidgetsBinding.instance
-                          ?.addPostFrameCallback((_) => setState(() {
-                                loggedUserStatus = "studentPortalScreen";
-                              }));
-                    },
-                    timeTableDocument: timeTableDocument,
-                    screenBasedPixelHeight: screenBasedPixelHeight,
-                    screenBasedPixelWidth: screenBasedPixelWidth,
-                  ),
-                ).whenComplete(() {
-                  setState(() {
-                    loggedUserStatus = "timeTable";
+                if (requestType == "Real") {
+                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  Navigator.pushNamed(
+                    context,
+                    PageRoutes.timeTable,
+                    arguments: TimeTableArguments(
+                      currentStatus: currentStatus,
+                      onTimeTableDocumentDispose: (bool value) {
+                        debugPrint("timeTable disposed");
+                        WidgetsBinding.instance
+                            ?.addPostFrameCallback((_) => setState(() {
+                                  loggedUserStatus = "studentPortalScreen";
+                                }));
+                      },
+                      timeTableDocument: timeTableDocument,
+                      screenBasedPixelHeight: screenBasedPixelHeight,
+                      screenBasedPixelWidth: screenBasedPixelWidth,
+                      semesterSubId: await _justRetrieveSemesterSubId(),
+                      onSemesterSubIdChange: (String value) {
+                        setState(() {
+                          semesterSubId = value;
+                          requestType = "Update";
+                          callTimeTable(
+                            context: context,
+                            headlessWebView: headlessWebView,
+                            onCurrentFullUrl: (String value) {
+                              currentFullUrl = value;
+                            },
+                            processingSomething: true,
+                            onProcessingSomething: (bool value) {
+                              processingSomething = true;
+                            },
+                            onError: (String value) {
+                              debugPrint(
+                                  "Updating Ui based on the error received");
+                              if (processingSomething == true) {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  processingSomething = false;
+                                });
+                              }
+                              if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                                debugPrint(
+                                    "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                setState(() {
+                                  currentStatus = "launchLoadingScreen";
+                                  vtopConnectionStatusErrorType =
+                                      "net::ERR_INTERNET_DISCONNECTED";
+                                  vtopConnectionStatusType = "Error";
+                                });
+                              }
+                            },
+                          );
+                        });
+                      },
+                      onProcessingSomething: (bool value) {
+                        setState(() {
+                          processingSomething = value;
+                        });
+                      },
+                    ),
+                  ).whenComplete(() {
+                    setState(() {
+                      loggedUserStatus = "timeTable";
+                    });
                   });
-                });
+                } else if (requestType == "Update") {
+                  debugPrint("Table Update Ran");
+                  Navigator.pushReplacementNamed(
+                    context,
+                    PageRoutes.timeTable,
+                    arguments: TimeTableArguments(
+                      currentStatus: currentStatus,
+                      onTimeTableDocumentDispose: (bool value) {
+                        debugPrint("timeTable disposed");
+                        WidgetsBinding.instance
+                            ?.addPostFrameCallback((_) => setState(() {
+                                  loggedUserStatus = "studentPortalScreen";
+                                }));
+                      },
+                      timeTableDocument: timeTableDocument,
+                      screenBasedPixelHeight: screenBasedPixelHeight,
+                      screenBasedPixelWidth: screenBasedPixelWidth,
+                      semesterSubId: semesterSubId,
+                      onSemesterSubIdChange: (String value) {
+                        setState(() {
+                          semesterSubId = value;
+                          requestType = "Update";
+                          callTimeTable(
+                            context: context,
+                            headlessWebView: headlessWebView,
+                            onCurrentFullUrl: (String value) {
+                              currentFullUrl = value;
+                            },
+                            processingSomething: true,
+                            onProcessingSomething: (bool value) {
+                              processingSomething = true;
+                            },
+                            onError: (String value) {
+                              debugPrint(
+                                  "Updating Ui based on the error received");
+                              if (processingSomething == true) {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  processingSomething = false;
+                                });
+                              }
+                              if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                                debugPrint(
+                                    "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                setState(() {
+                                  currentStatus = "launchLoadingScreen";
+                                  vtopConnectionStatusErrorType =
+                                      "net::ERR_INTERNET_DISCONNECTED";
+                                  vtopConnectionStatusType = "Error";
+                                });
+                              }
+                            },
+                          );
+                        });
+                      },
+                      onProcessingSomething: (bool value) {
+                        setState(() {
+                          processingSomething = value;
+                        });
+                      },
+                    ),
+                  ).whenComplete(() {
+                    setState(() {
+                      loggedUserStatus = "timeTable";
+                    });
+                  });
+                }
               });
             } else {
               if (processingSomething == true) {
