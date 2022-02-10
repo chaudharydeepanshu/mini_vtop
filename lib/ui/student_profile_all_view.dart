@@ -410,9 +410,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               Tab(
                 child: Text(
                   "Personal",
+                  maxLines: 1,
                   style: TextStyle(
                     fontSize: widgetSizeProvider(
-                        fixedSize: 24,
+                        fixedSize: 16,
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
@@ -420,9 +421,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               Tab(
                 child: Text(
                   "Educational",
+                  maxLines: 1,
                   style: TextStyle(
                     fontSize: widgetSizeProvider(
-                        fixedSize: 24,
+                        fixedSize: 16,
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
@@ -430,9 +432,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               Tab(
                 child: Text(
                   "Family",
+                  maxLines: 1,
                   style: TextStyle(
                     fontSize: widgetSizeProvider(
-                        fixedSize: 24,
+                        fixedSize: 16,
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
@@ -440,9 +443,10 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               Tab(
                 child: Text(
                   "Proctor",
+                  maxLines: 1,
                   style: TextStyle(
                     fontSize: widgetSizeProvider(
-                        fixedSize: 24,
+                        fixedSize: 16,
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),

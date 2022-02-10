@@ -583,140 +583,148 @@ class _TimeTableState extends State<TimeTable> {
                         fixedSize: 5,
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
-                  FittedBox(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xff04294f),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(
-                            widgetSizeProvider(
-                                fixedSize: 10,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          topRight: Radius.circular(
-                            widgetSizeProvider(
-                                fixedSize: 10,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                        ),
-                      ),
-                      child: DropdownButton<String>(
-                        dropdownColor: const Color(0xff04294f),
-                        value: dropdownValue,
-                        // isExpanded: true,
-                        icon: Icon(
-                          Icons.arrow_downward,
-                          size: widgetSizeProvider(
-                              fixedSize: 24,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          color: Colors.white,
-                        ),
-                        elevation: 16,
-                        // style: const TextStyle(color: Colors.deepPurple),
-                        underline: Container(
-                          height: widgetSizeProvider(
-                              fixedSize: 2,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          // color: Colors.deepPurpleAccent,
-                        ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            // dropdownValue = newValue!;
-                            WidgetsBinding.instance?.addPostFrameCallback((_) {
-                              widget.arguments.onProcessingSomething.call(
-                                  true); //then set processing something true for the new loading dialog
-                              customDialogBox(
-                                isDialogShowing: isDialogShowing,
-                                context: context,
-                                onIsDialogShowing: (bool value) {
-                                  setState(() {
-                                    isDialogShowing = value;
-                                  });
-                                },
-                                dialogTitle: Text(
-                                  'Requesting Data',
-                                  style: TextStyle(
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 24,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                dialogChildren: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: widgetSizeProvider(
-                                          fixedSize: 36,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                      width: widgetSizeProvider(
-                                          fixedSize: 36,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: widgetSizeProvider(
-                                            fixedSize: 4.0,
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Please wait...',
-                                      style: TextStyle(
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 20,
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                                barrierDismissible: true,
-                                screenBasedPixelHeight: screenBasedPixelHeight,
-                                screenBasedPixelWidth: screenBasedPixelWidth,
-                                onProcessingSomething: (bool value) {
-                                  widget.arguments.onProcessingSomething
-                                      .call(value);
-                                },
-                              ).then((_) => isDialogShowing = false);
-                            });
-                            widget.arguments.onSemesterSubIdChange
-                                ?.call(newValue!);
-                          });
-                        },
-                        items: semesters.map<DropdownMenuItem<String>>(
-                            (Map<dynamic, dynamic> value) {
-                          return DropdownMenuItem<String>(
-                            value: value["semesterCode"],
-                            child: Padding(
-                              padding: EdgeInsets.all(
-                                widgetSizeProvider(
-                                    fixedSize: 8,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                              ),
-                              child: FittedBox(
-                                child: Text(
-                                  value["semesterName"],
-                                  style: GoogleFonts.lato(
-                                    color: Colors.white,
-                                    // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 15,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                              ),
+                  SizedBox(
+                    width: widgetSizeProvider(
+                        fixedSize: 220,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    child: FittedBox(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xff04294f),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                              widgetSizeProvider(
+                                  fixedSize: 10,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
                             ),
-                          );
-                        }).toList(),
+                            topRight: Radius.circular(
+                              widgetSizeProvider(
+                                  fixedSize: 10,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          dropdownColor: const Color(0xff04294f),
+                          value: dropdownValue,
+                          // isExpanded: true,
+                          icon: Icon(
+                            Icons.arrow_downward,
+                            size: widgetSizeProvider(
+                                fixedSize: 24,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                            color: Colors.white,
+                          ),
+                          elevation: 16,
+                          // style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: widgetSizeProvider(
+                                fixedSize: 2,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                            // color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              // dropdownValue = newValue!;
+                              WidgetsBinding.instance
+                                  ?.addPostFrameCallback((_) {
+                                widget.arguments.onProcessingSomething.call(
+                                    true); //then set processing something true for the new loading dialog
+                                customDialogBox(
+                                  isDialogShowing: isDialogShowing,
+                                  context: context,
+                                  onIsDialogShowing: (bool value) {
+                                    setState(() {
+                                      isDialogShowing = value;
+                                    });
+                                  },
+                                  dialogTitle: Text(
+                                    'Requesting Data',
+                                    style: TextStyle(
+                                      fontSize: widgetSizeProvider(
+                                          fixedSize: 24,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  dialogChildren: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: widgetSizeProvider(
+                                            fixedSize: 36,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                        width: widgetSizeProvider(
+                                            fixedSize: 36,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: widgetSizeProvider(
+                                              fixedSize: 4.0,
+                                              sizeDecidingVariable:
+                                                  screenBasedPixelWidth),
+                                        ),
+                                      ),
+                                      Text(
+                                        'Please wait...',
+                                        style: TextStyle(
+                                          fontSize: widgetSizeProvider(
+                                              fixedSize: 20,
+                                              sizeDecidingVariable:
+                                                  screenBasedPixelWidth),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                  barrierDismissible: true,
+                                  screenBasedPixelHeight:
+                                      screenBasedPixelHeight,
+                                  screenBasedPixelWidth: screenBasedPixelWidth,
+                                  onProcessingSomething: (bool value) {
+                                    widget.arguments.onProcessingSomething
+                                        .call(value);
+                                  },
+                                ).then((_) => isDialogShowing = false);
+                              });
+                              widget.arguments.onSemesterSubIdChange
+                                  ?.call(newValue!);
+                            });
+                          },
+                          items: semesters.map<DropdownMenuItem<String>>(
+                              (Map<dynamic, dynamic> value) {
+                            return DropdownMenuItem<String>(
+                              value: value["semesterCode"],
+                              child: Padding(
+                                padding: EdgeInsets.all(
+                                  widgetSizeProvider(
+                                      fixedSize: 8,
+                                      sizeDecidingVariable:
+                                          screenBasedPixelWidth),
+                                ),
+                                child: FittedBox(
+                                  child: Text(
+                                    value["semesterName"],
+                                    style: GoogleFonts.lato(
+                                      color: Colors.white,
+                                      // textStyle: Theme.of(context).textTheme.headline1,
+                                      fontSize: widgetSizeProvider(
+                                          fixedSize: 15,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),
