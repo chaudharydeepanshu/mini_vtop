@@ -1426,15 +1426,19 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                   style: const TextStyle(fontSize: 12.0, color: Colors.blue),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () async {
-                      final taskId = await FlutterDownloader.enqueue(
-                        url: cRLDistributionPoints.crls![i],
-                        savedDir: (await getExternalStorageDirectory())!.path,
-                        showNotification:
-                            true, // show download progress in status bar (for Android)
-                        openFileFromNotification:
-                            true, // click on notification to open downloaded file (for Android)
-                        saveInPublicStorage: true,
-                      );
+                      if (Platform.isAndroid) {
+                        final taskId = await FlutterDownloader.enqueue(
+                          url: cRLDistributionPoints.crls![i],
+                          savedDir: (await getExternalStorageDirectory())!.path,
+                          showNotification:
+                              true, // show download progress in status bar (for Android)
+                          openFileFromNotification:
+                              true, // click on notification to open downloaded file (for Android)
+                          saveInPublicStorage: true,
+                        );
+                      } else if (Platform.isWindows) {
+                        // iOS-specific code
+                      }
                     })
             ]),
           ),
@@ -1543,15 +1547,19 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                   style: const TextStyle(fontSize: 12.0, color: Colors.blue),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () async {
-                      final taskId = await FlutterDownloader.enqueue(
-                        url: value,
-                        savedDir: (await getExternalStorageDirectory())!.path,
-                        showNotification:
-                            true, // show download progress in status bar (for Android)
-                        openFileFromNotification:
-                            true, // click on notification to open downloaded file (for Android)
-                        saveInPublicStorage: true,
-                      );
+                      if (Platform.isAndroid) {
+                        final taskId = await FlutterDownloader.enqueue(
+                          url: value,
+                          savedDir: (await getExternalStorageDirectory())!.path,
+                          showNotification:
+                              true, // show download progress in status bar (for Android)
+                          openFileFromNotification:
+                              true, // click on notification to open downloaded file (for Android)
+                          saveInPublicStorage: true,
+                        );
+                      } else if (Platform.isWindows) {
+                        // iOS-specific code
+                      }
                     })
             ]),
           ),

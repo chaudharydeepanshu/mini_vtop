@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 
+import '../basicFunctions/widget_size_limiter.dart';
+
 class StudentProfileAllView extends StatefulWidget {
   static const String routeName = '/studentProfileAllView';
 
@@ -71,16 +73,23 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  left: screenBasedPixelWidth * 15,
-                  right: screenBasedPixelWidth * 15,
-                  top: screenBasedPixelWidth * 15,
-                  bottom: screenBasedPixelWidth * 15),
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
               child: Text(
                 "${listOfHeaders[index][0].getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
                 style: GoogleFonts.lato(
                   color: Colors.white,
                   // textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: screenBasedPixelWidth * 20,
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -106,16 +115,27 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.only(
-                    left: screenBasedPixelWidth * 15,
-                    right: screenBasedPixelWidth * 15,
-                    top: screenBasedPixelWidth * 15,
-                    bottom: screenBasedPixelWidth * 15),
+                  left: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  right: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  top: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  bottom: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
                 child: Text(
                   "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: GoogleFonts.lato(
                     // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: screenBasedPixelWidth * 15,
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -325,7 +345,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               style: GoogleFonts.nunito(
                 color: Colors.white,
                 textStyle: Theme.of(context).textTheme.headline1,
-                fontSize: screenBasedPixelWidth * 25,
+                fontSize: widgetSizeProvider(
+                    fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
                 fontWeight: FontWeight.w600,
                 fontStyle: FontStyle.normal,
               ),
@@ -336,12 +357,19 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           leading: Builder(
             builder: (context) => Padding(
               padding: EdgeInsets.only(
-                  right: screenBasedPixelWidth * 5,
-                  top: screenBasedPixelWidth * 8,
-                  bottom: screenBasedPixelWidth * 8),
+                right: widgetSizeProvider(
+                    fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
               child: SizedBox(
-                width: screenBasedPixelWidth * 51,
-                height: screenBasedPixelWidth * 40,
+                width: widgetSizeProvider(
+                    fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+                height: widgetSizeProvider(
+                    fixedSize: 40,
+                    sizeDecidingVariable: screenBasedPixelHeight),
                 child: Material(
                   color: Colors.transparent,
                   shape: const StadiumBorder(),
@@ -358,7 +386,9 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
                       hoverColor: Colors.white.withOpacity(0.1),
                       child: Icon(
                         Icons.arrow_back,
-                        size: screenBasedPixelWidth * 24,
+                        size: widgetSizeProvider(
+                            fixedSize: 24,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         color: Colors.white,
                       ),
                     ),
@@ -368,22 +398,54 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
             ),
           ),
           bottom: TabBar(
-            labelPadding: const EdgeInsets.all(0.0),
-            labelStyle: TextStyle(
-              fontSize: screenBasedPixelWidth * 16,
+            labelPadding: EdgeInsets.all(
+              widgetSizeProvider(
+                  fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
             ),
-            tabs: const [
+            labelStyle: TextStyle(
+              fontSize: widgetSizeProvider(
+                  fixedSize: 16, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+            tabs: [
               Tab(
-                child: Text("Personal"),
+                child: Text(
+                  "Personal",
+                  style: TextStyle(
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 24,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
+                ),
               ),
               Tab(
-                child: Text("Educational"),
+                child: Text(
+                  "Educational",
+                  style: TextStyle(
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 24,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
+                ),
               ),
               Tab(
-                child: Text("Family"),
+                child: Text(
+                  "Family",
+                  style: TextStyle(
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 24,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
+                ),
               ),
               Tab(
-                child: Text("Proctor"),
+                child: Text(
+                  "Proctor",
+                  style: TextStyle(
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 24,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
+                ),
               ),
             ],
           ),

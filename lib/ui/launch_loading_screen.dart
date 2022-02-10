@@ -4,6 +4,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../basicFunctions/widget_size_limiter.dart';
+
 class LaunchLoadingScreen extends StatefulWidget {
   const LaunchLoadingScreen({
     Key? key,
@@ -24,8 +26,6 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
   // double width = 1000;
   // double height = 300;
   Color textDialogOfLoginScreenColor = const Color(0xff04294f);
-  BorderRadiusGeometry textDialogOfLoginScreenBorderRadius =
-      const BorderRadius.all(Radius.circular(40));
 
   ValueKey textOfLoginScreenValueKey = const ValueKey<int>(0);
   String textOfLoginScreen = "Connecting to\nVIT VTOP\nPlease Wait ...";
@@ -47,12 +47,22 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
       decoration: BoxDecoration(
         color: textDialogOfLoginScreenColor,
         //border: Border.all(color: Colors.blue, width: 10),
-        borderRadius: textDialogOfLoginScreenBorderRadius,
+        borderRadius: BorderRadius.all(
+          Radius.circular(
+            widgetSizeProvider(
+                fixedSize: 40,
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          ),
+        ),
       ),
       duration: const Duration(seconds: 1),
       curve: Curves.fastOutSlowIn,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(
+          widgetSizeProvider(
+              fixedSize: 20,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+        ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           transitionBuilder: (Widget child, Animation<double> animation) {
@@ -65,7 +75,10 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                 style: GoogleFonts.lato(
                   color: Colors.white,
                   textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: widget.arguments.screenBasedPixelWidth * 40,
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 40,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -85,8 +98,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
     animationOfLoadingScreen = Image.asset(
       "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
       scale: 0.1,
-      width: widget.arguments.screenBasedPixelWidth * 5000,
-      height: widget.arguments.screenBasedPixelWidth * 5000,
+      width: widgetSizeProvider(
+          fixedSize: 5000,
+          sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+      height: widgetSizeProvider(
+          fixedSize: 5000,
+          sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
       key: const ValueKey<int>(0),
     );
     super.initState();
@@ -142,8 +159,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: widget.arguments.screenBasedPixelWidth * 5000,
-          height: widget.arguments.screenBasedPixelWidth * 5000,
+          width: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          height: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(0),
         );
         textOfLoginScreen = "Connecting to\nVIT VTOP\nPlease Wait ...";
@@ -157,8 +178,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Training_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: widget.arguments.screenBasedPixelWidth * 5000,
-          height: widget.arguments.screenBasedPixelWidth * 5000,
+          width: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          height: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(0),
         );
         textOfLoginScreen = "Connection is\ntaking longer\nthan usual";
@@ -176,8 +201,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: widget.arguments.screenBasedPixelWidth * 5000,
-          height: widget.arguments.screenBasedPixelWidth * 5000,
+          width: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          height: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(1),
         );
         if (widget.arguments.vtopConnectionStatusErrorType ==
@@ -203,12 +232,42 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         actionButton = ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
-            padding: MaterialStateProperty.all(const EdgeInsets.only(
-                top: 17, bottom: 17, left: 17, right: 17)),
-            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 20)),
+            padding: MaterialStateProperty.all(
+              EdgeInsets.only(
+                top: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                left: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
+            ),
+            textStyle: MaterialStateProperty.all(
+              TextStyle(
+                fontSize: widgetSizeProvider(
+                    fixedSize: 20,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
+            ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(
+                  widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                ),
               ),
             ),
           ),
@@ -223,7 +282,10 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                 "Retry",
                 style: GoogleFonts.lato(
                   color: Colors.white,
-                  fontSize: widget.arguments.screenBasedPixelWidth * 17,
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 17,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -238,8 +300,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_No_Connection_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: widget.arguments.screenBasedPixelWidth * 5000,
-          height: widget.arguments.screenBasedPixelWidth * 5000,
+          width: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          height: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(1),
         );
         textOfLoginScreen =
@@ -249,12 +315,42 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         actionButton = ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
-            padding: MaterialStateProperty.all(const EdgeInsets.only(
-                top: 17, bottom: 17, left: 17, right: 17)),
-            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 20)),
+            padding: MaterialStateProperty.all(
+              EdgeInsets.only(
+                top: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                left: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 17,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
+            ),
+            textStyle: MaterialStateProperty.all(
+              TextStyle(
+                fontSize: widgetSizeProvider(
+                    fixedSize: 20,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
+            ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(
+                  widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                ),
               ),
             ),
           ),
@@ -269,7 +365,10 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                 "Retry",
                 style: GoogleFonts.lato(
                   color: Colors.white,
-                  fontSize: widget.arguments.screenBasedPixelWidth * 17,
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 17,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                 ),
@@ -284,8 +383,12 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         animationOfLoadingScreen = Image.asset(
           "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Success_transparent_by_Icons8.gif",
           scale: 0.1,
-          width: widget.arguments.screenBasedPixelWidth * 5000,
-          height: widget.arguments.screenBasedPixelWidth * 5000,
+          width: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          height: widgetSizeProvider(
+              fixedSize: 5000,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(2),
         );
         textOfLoginScreen = "Successfully\nconnected\nto VTOP";
@@ -298,7 +401,11 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(widget.arguments.screenBasedPixelWidth * 8.0),
+        padding: EdgeInsets.all(
+          widgetSizeProvider(
+              fixedSize: 8,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+        ),
         child: FittedBox(
           fit: BoxFit.contain,
           child: Column(
@@ -314,19 +421,35 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
                     return ScaleTransition(scale: animation, child: child);
                   },
                   child: SizedBox(
-                    height: widget.arguments.screenBasedPixelWidth * 250,
-                    width: widget.arguments.screenBasedPixelWidth * 250,
+                    height: widgetSizeProvider(
+                        fixedSize: 250,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelWidth),
+                    width: widgetSizeProvider(
+                        fixedSize: 250,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelWidth),
                     child: animationOfLoadingScreen,
                   ),
                 ),
               ),
               SizedBox(
-                height: widget.arguments.screenBasedPixelWidth * 30,
+                height: widgetSizeProvider(
+                    fixedSize: 30,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
               ),
               Padding(
                 padding: EdgeInsets.only(
-                    left: widget.arguments.screenBasedPixelWidth * 20.0,
-                    right: widget.arguments.screenBasedPixelWidth * 20.0),
+                  left: widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                  right: widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

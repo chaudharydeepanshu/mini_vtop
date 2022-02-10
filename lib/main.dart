@@ -22,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
+import 'basicFunctions/widget_size_limiter.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
 import 'coreFunctions/auto_captcha.dart';
@@ -77,11 +78,14 @@ Future main() async {
     tabViewerBottomOffset3 = 130.0;
   }
 
-  await FlutterDownloader.initialize(
-      debug: true // optional: set false to disable printing logs to console
-      );
-
-  FlutterDownloader.registerCallback(TestClass.callback);
+  if (Platform.isAndroid) {
+    await FlutterDownloader.initialize(
+        debug: true // optional: set false to disable printing logs to console
+        );
+    FlutterDownloader.registerCallback(TestClass.callback);
+  } else if (Platform.isWindows) {
+// iOS-specific code
+  }
 
   // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
@@ -464,15 +468,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onDownloadStart: (controller, url) async {
         String path = url.path;
         String fileName = path.substring(path.lastIndexOf('/') + 1);
-
-        final taskId = await FlutterDownloader.enqueue(
-          url: url.toString(),
-          fileName: fileName,
-          savedDir: (await getTemporaryDirectory()).path,
-          showNotification: true,
-          openFileFromNotification: true,
-          saveInPublicStorage: true,
-        );
+        if (Platform.isAndroid) {
+          final taskId = await FlutterDownloader.enqueue(
+            url: url.toString(),
+            fileName: fileName,
+            savedDir: (await getTemporaryDirectory()).path,
+            showNotification: true,
+            openFileFromNotification: true,
+            saveInPublicStorage: true,
+          );
+        } else if (Platform.isWindows) {
+// iOS-specific code
+        }
       },
       onWebViewCreated: (controller) async {
         checkInternetConnection();
@@ -1389,7 +1396,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     debugPrint('darkModeOn: $darkModeOn, theme: $theme');
 
     // currentStatus = "launchLoadingScreen";
-    // currentStatus = "signInScreen";
+    // currentStatus = "userLoggedIn";
     debugPrint("loggedUserStatus: $loggedUserStatus");
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");
@@ -1699,7 +1706,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             },
             child: body),
         drawer: Padding(
-          padding: EdgeInsets.only(right: screenBasedPixelWidth * 80),
+          padding: EdgeInsets.only(
+            right: widgetSizeProvider(
+                fixedSize: 80, sizeDecidingVariable: screenBasedPixelWidth),
+          ),
           child: drawer,
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/basicFunctions/stop_pop.dart';
+import 'package:mini_vtop/basicFunctions/widget_size_limiter.dart';
 import 'direct_pop.dart';
 
 Future<void> customDialogBox({
@@ -33,13 +34,36 @@ Future<void> customDialogBox({
         },
         child: SimpleDialog(
           title: Center(child: dialogTitle),
-          titlePadding: EdgeInsets.fromLTRB(screenBasedPixelWidth * 24.0,
-              screenBasedPixelWidth * 24.0, screenBasedPixelWidth * 24.0, 0.0),
+          titlePadding: EdgeInsets.fromLTRB(
+            widgetSizeProvider(
+                fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
+          ),
           contentPadding: EdgeInsets.fromLTRB(
-              0.0,
-              screenBasedPixelHeight * 12.0,
-              0.0,
-              screenBasedPixelHeight * 16.0),
+            widgetSizeProvider(
+                fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 12, sizeDecidingVariable: screenBasedPixelHeight),
+            widgetSizeProvider(
+                fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 16, sizeDecidingVariable: screenBasedPixelHeight),
+          ),
+          insetPadding: EdgeInsets.fromLTRB(
+            widgetSizeProvider(
+                fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 12, sizeDecidingVariable: screenBasedPixelHeight),
+            widgetSizeProvider(
+                fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
+            widgetSizeProvider(
+                fixedSize: 16, sizeDecidingVariable: screenBasedPixelHeight),
+          ),
           children: <Widget>[
             dialogChildren,
           ],

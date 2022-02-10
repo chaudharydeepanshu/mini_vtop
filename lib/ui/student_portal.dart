@@ -8,6 +8,7 @@ import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:ntp/ntp.dart';
 
 import '../basicFunctions/proccessing_dialog.dart';
+import '../basicFunctions/widget_size_limiter.dart';
 
 class StudentPortal extends StatefulWidget {
   const StudentPortal({
@@ -63,7 +64,11 @@ class _StudentPortalState extends State<StudentPortal> {
                   },
                   dialogTitle: Text(
                     'Requesting Data',
-                    style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   dialogChildren: Column(
@@ -71,15 +76,25 @@ class _StudentPortalState extends State<StudentPortal> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: screenBasedPixelWidth * 36,
-                        width: screenBasedPixelWidth * 36,
+                        height: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        width: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         child: CircularProgressIndicator(
-                          strokeWidth: screenBasedPixelWidth * 4.0,
+                          strokeWidth: widgetSizeProvider(
+                              fixedSize: 4,
+                              sizeDecidingVariable: screenBasedPixelWidth),
                         ),
                       ),
                       Text(
                         'Please wait...',
-                        style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -120,7 +135,11 @@ class _StudentPortalState extends State<StudentPortal> {
                   },
                   dialogTitle: Text(
                     'Requesting Data',
-                    style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   dialogChildren: Column(
@@ -128,15 +147,25 @@ class _StudentPortalState extends State<StudentPortal> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: screenBasedPixelWidth * 36,
-                        width: screenBasedPixelWidth * 36,
+                        height: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        width: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         child: CircularProgressIndicator(
-                          strokeWidth: screenBasedPixelWidth * 4.0,
+                          strokeWidth: widgetSizeProvider(
+                              fixedSize: 4,
+                              sizeDecidingVariable: screenBasedPixelWidth),
                         ),
                       ),
                       Text(
                         'Please wait...',
-                        style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -230,8 +259,8 @@ class _StudentPortalState extends State<StudentPortal> {
     // }
 
     // print(widget.arguments.studentPortalDocument.outerHtml);
-    return widget.arguments.studentName == null ||
-            (timerText == "00: 00" || timerText.isEmpty)
+    return (widget.arguments.studentName == null ||
+            (timerText == "00: 00" || timerText.isEmpty))
         ? Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -240,16 +269,27 @@ class _StudentPortalState extends State<StudentPortal> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(
-                    height: 10,
+                  CircularProgressIndicator(
+                    strokeWidth: widgetSizeProvider(
+                        fixedSize: 4,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelWidth),
+                  ),
+                  SizedBox(
+                    height: widgetSizeProvider(
+                        fixedSize: 10,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelHeight),
                   ),
                   Text(
                     "Please Wait ...",
                     style: GoogleFonts.lato(
                       // color: Colors.white,
                       // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: screenBasedPixelWidth * 17,
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 17,
+                          sizeDecidingVariable:
+                              widget.arguments.screenBasedPixelWidth),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -264,7 +304,12 @@ class _StudentPortalState extends State<StudentPortal> {
                 child: SingleChildScrollView(
                   controller: controller,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(
+                      widgetSizeProvider(
+                          fixedSize: 18,
+                          sizeDecidingVariable:
+                              widget.arguments.screenBasedPixelWidth),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,32 +326,27 @@ class _StudentPortalState extends State<StudentPortal> {
                                   style: GoogleFonts.lato(
                                     // color: Colors.white,
                                     // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: screenBasedPixelWidth * 17,
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 17,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
                                     fontWeight: FontWeight.w700,
                                     fontStyle: FontStyle.normal,
                                   ),
                                 ),
-                                widget.arguments.studentName != null
-                                    ? Text(
-                                        "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
-                                        style: GoogleFonts.lato(
-                                          // color: Colors.white,
-                                          // textStyle: Theme.of(context).textTheme.headline1,
-                                          fontSize: screenBasedPixelWidth * 20,
-                                          fontWeight: FontWeight.w700,
-                                          fontStyle: FontStyle.normal,
-                                        ),
-                                      )
-                                    : Text(
-                                        "",
-                                        style: GoogleFonts.lato(
-                                          // color: Colors.white,
-                                          // textStyle: Theme.of(context).textTheme.headline1,
-                                          fontSize: screenBasedPixelWidth * 20,
-                                          fontWeight: FontWeight.w700,
-                                          fontStyle: FontStyle.normal,
-                                        ),
-                                      ),
+                                Text(
+                                  "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                  style: GoogleFonts.lato(
+                                    // color: Colors.white,
+                                    // textStyle: Theme.of(context).textTheme.headline1,
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                )
                               ],
                             ),
                             Container(
@@ -314,25 +354,44 @@ class _StudentPortalState extends State<StudentPortal> {
                                 color: const Color(0xff04294f),
                                 //border: Border.all(color: Colors.blue, width: 10),
                                 borderRadius: BorderRadius.circular(
-                                    screenBasedPixelWidth * 20.0),
+                                  widgetSizeProvider(
+                                      fixedSize: 20,
+                                      sizeDecidingVariable: widget
+                                          .arguments.screenBasedPixelWidth),
+                                ),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(5.0),
+                                padding: EdgeInsets.all(
+                                  widgetSizeProvider(
+                                      fixedSize: 5,
+                                      sizeDecidingVariable: widget
+                                          .arguments.screenBasedPixelWidth),
+                                ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Icon(
                                       Icons.timer,
-                                      size: screenBasedPixelWidth * 24,
+                                      size: widgetSizeProvider(
+                                          fixedSize: 24,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
                                       color: Colors.white,
                                     ),
                                     SizedBox(
-                                      width: screenBasedPixelWidth * 5,
+                                      width: widgetSizeProvider(
+                                          fixedSize: 5,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
                                     ),
                                     Text(
                                       timerText,
                                       style: GoogleFonts.lato(
-                                        fontSize: screenBasedPixelWidth * 20,
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 20,
+                                            sizeDecidingVariable: widget
+                                                .arguments
+                                                .screenBasedPixelWidth),
                                         color: Colors.white,
                                         fontWeight: FontWeight.w700,
                                         fontStyle: FontStyle.normal,
@@ -344,8 +403,11 @@ class _StudentPortalState extends State<StudentPortal> {
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 15,
+                        SizedBox(
+                          height: widgetSizeProvider(
+                              fixedSize: 15,
+                              sizeDecidingVariable:
+                                  widget.arguments.screenBasedPixelHeight),
                         ),
                         OrientationBuilder(
                           builder: (context, orientation) {
@@ -355,35 +417,62 @@ class _StudentPortalState extends State<StudentPortal> {
                               shrinkWrap: true,
                               gridDelegate:
                                   SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent:
-                                          screenBasedPixelWidth * 200,
-                                      childAspectRatio: 3 / 2.5,
-                                      crossAxisSpacing:
-                                          screenBasedPixelWidth * 20,
-                                      mainAxisSpacing:
-                                          screenBasedPixelWidth * 20),
+                                maxCrossAxisExtent: widgetSizeProvider(
+                                    fixedSize: 200,
+                                    sizeDecidingVariable:
+                                        widget.arguments.screenBasedPixelWidth),
+                                childAspectRatio: 3 / 2.5,
+                                crossAxisSpacing: widgetSizeProvider(
+                                    fixedSize: 20,
+                                    sizeDecidingVariable:
+                                        widget.arguments.screenBasedPixelWidth),
+                                mainAxisSpacing: widgetSizeProvider(
+                                    fixedSize: 20,
+                                    sizeDecidingVariable:
+                                        widget.arguments.screenBasedPixelWidth),
+                              ),
                               itemCount: studentPortalOptions.length,
                               itemBuilder: (BuildContext ctx, index) {
                                 return Padding(
                                   padding: EdgeInsets.all(
-                                      screenBasedPixelWidth * 15.0),
+                                    widgetSizeProvider(
+                                        fixedSize: 15,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
                                   child: ElevatedButton(
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(
                                               const Color(0xff04294f)),
                                       padding: MaterialStateProperty.all(
-                                          EdgeInsets.all(
-                                              screenBasedPixelWidth * 20)),
+                                        EdgeInsets.all(
+                                          widgetSizeProvider(
+                                              fixedSize: 20,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                        ),
+                                      ),
                                       textStyle: MaterialStateProperty.all(
-                                          TextStyle(
-                                              fontSize:
-                                                  screenBasedPixelWidth * 20)),
+                                        TextStyle(
+                                          fontSize: widgetSizeProvider(
+                                              fixedSize: 20,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                        ),
+                                      ),
                                       shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                              screenBasedPixelWidth * 20.0),
+                                            widgetSizeProvider(
+                                                fixedSize: 20,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -400,42 +489,67 @@ class _StudentPortalState extends State<StudentPortal> {
                                                     ["internalOptionsMapList"]
                                                 .length,
                                             (i) => Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 8.0),
+                                              padding: EdgeInsets.only(
+                                                bottom: widgetSizeProvider(
+                                                    fixedSize: 8,
+                                                    sizeDecidingVariable: widget
+                                                        .arguments
+                                                        .screenBasedPixelWidth),
+                                              ),
                                               child: ElevatedButton(
                                                 style: ButtonStyle(
                                                   minimumSize:
                                                       MaterialStateProperty.all<
                                                           Size?>(
                                                     Size.fromHeight(
-                                                        screenBasedPixelHeight *
-                                                            56),
+                                                      widgetSizeProvider(
+                                                          fixedSize: 56,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelHeight),
+                                                    ),
                                                   ),
                                                   backgroundColor:
                                                       MaterialStateProperty.all(
                                                           const Color(
                                                               0xff04294f)),
-                                                  padding: MaterialStateProperty
-                                                      .all(EdgeInsets.only(
-                                                          left:
-                                                              screenBasedPixelWidth *
-                                                                  20,
-                                                          right:
-                                                              screenBasedPixelWidth *
-                                                                  20)),
-                                                  textStyle: MaterialStateProperty
-                                                      .all(TextStyle(
-                                                          fontSize:
-                                                              screenBasedPixelWidth *
-                                                                  20)),
+                                                  padding:
+                                                      MaterialStateProperty.all(
+                                                    EdgeInsets.only(
+                                                      left: widgetSizeProvider(
+                                                          fixedSize: 20,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelWidth),
+                                                      right: widgetSizeProvider(
+                                                          fixedSize: 20,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelWidth),
+                                                    ),
+                                                  ),
+                                                  textStyle:
+                                                      MaterialStateProperty.all(
+                                                    TextStyle(
+                                                      fontSize: widgetSizeProvider(
+                                                          fixedSize: 20,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelWidth),
+                                                    ),
+                                                  ),
                                                   shape:
                                                       MaterialStateProperty.all<
                                                           RoundedRectangleBorder>(
                                                     RoundedRectangleBorder(
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              screenBasedPixelWidth *
-                                                                  0.0),
+                                                        widgetSizeProvider(
+                                                            fixedSize: 0,
+                                                            sizeDecidingVariable:
+                                                                widget.arguments
+                                                                    .screenBasedPixelWidth),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -448,9 +562,12 @@ class _StudentPortalState extends State<StudentPortal> {
                                                           "internalOptionsMapList"]
                                                       [i]["name"],
                                                   style: TextStyle(
-                                                      fontSize:
-                                                          screenBasedPixelWidth *
-                                                              18),
+                                                    fontSize: widgetSizeProvider(
+                                                        fixedSize: 18,
+                                                        sizeDecidingVariable: widget
+                                                            .arguments
+                                                            .screenBasedPixelWidth),
+                                                  ),
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -463,8 +580,11 @@ class _StudentPortalState extends State<StudentPortal> {
                                           style: GoogleFonts.lato(
                                             // color: Colors.white,
                                             // textStyle: Theme.of(context).textTheme.headline1,
-                                            fontSize:
-                                                screenBasedPixelWidth * 20,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 20,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
                                             fontWeight: FontWeight.w700,
                                             fontStyle: FontStyle.normal,
                                           ),
@@ -481,25 +601,36 @@ class _StudentPortalState extends State<StudentPortal> {
                                       );
                                     },
                                     child: FittedBox(
-                                      fit: BoxFit.contain,
+                                      fit: BoxFit.scaleDown,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             studentPortalOptions[index]["icon"],
-                                            size: screenBasedPixelWidth * 24,
+                                            size: widgetSizeProvider(
+                                                fixedSize: 24,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
                                           ),
                                           SizedBox(
-                                            height: screenBasedPixelWidth * 10,
+                                            height: widgetSizeProvider(
+                                                fixedSize: 10,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelHeight),
                                           ),
                                           Text(
                                             studentPortalOptions[index]["name"],
                                             style: GoogleFonts.lato(
                                               color: Colors.white,
                                               // textStyle: Theme.of(context).textTheme.headline1,
-                                              fontSize:
-                                                  screenBasedPixelWidth * 20,
+                                              fontSize: widgetSizeProvider(
+                                                  fixedSize: 20,
+                                                  sizeDecidingVariable: widget
+                                                      .arguments
+                                                      .screenBasedPixelWidth),
                                               fontWeight: FontWeight.w700,
                                               fontStyle: FontStyle.normal,
                                             ),

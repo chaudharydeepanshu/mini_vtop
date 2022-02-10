@@ -9,6 +9,7 @@ import '../basicFunctions/direct_pop.dart';
 import '../basicFunctions/proccessing_dialog.dart';
 import '../basicFunctions/stop_pop.dart';
 import '../basicFunctions/upper_case_text_formatter.dart';
+import '../basicFunctions/widget_size_limiter.dart';
 
 class LoginSection extends StatefulWidget {
   const LoginSection({
@@ -64,13 +65,7 @@ class _LoginSectionState extends State<LoginSection> {
   }
   //setState in parent widget will not completely rebuild its inner Stateful Widget so the initstate of child widget will not rerun and updated argument value doesn't update in the ui. To bypass that we can redefine initstate values also in build method but it is better to just use the didUpdateWidget as it is designed for that. Another method would be to just assign a completely new key to the child widget which will force complete rebuild
 
-  Widget animationOfLoginScreen = Image.asset(
-    "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Sign_In_transparent_by_Icons8.gif",
-    scale: 0.1,
-    width: 5000,
-    height: 5000,
-    key: const ValueKey<int>(0),
-  );
+  late Widget animationOfLoginScreen;
 
   late Widget usernameRealField;
   late Widget passwordRealField;
@@ -96,6 +91,18 @@ class _LoginSectionState extends State<LoginSection> {
 
     currentStatus = widget.arguments.currentStatus;
 
+    animationOfLoginScreen = Image.asset(
+      "assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Sign_In_transparent_by_Icons8.gif",
+      scale: 0.1,
+      width: widgetSizeProvider(
+          fixedSize: 5000,
+          sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+      height: widgetSizeProvider(
+          fixedSize: 5000,
+          sizeDecidingVariable: widget.arguments.screenBasedPixelHeight),
+      key: const ValueKey<int>(0),
+    );
+
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       if (widget.arguments.userEnteredUname.isNotEmpty &&
           widget.arguments.userEnteredPasswd.isNotEmpty &&
@@ -118,7 +125,12 @@ class _LoginSectionState extends State<LoginSection> {
             },
             dialogTitle: Text(
               'Sending login request',
-              style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+              style: TextStyle(
+                fontSize: widgetSizeProvider(
+                    fixedSize: 24,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
               textAlign: TextAlign.center,
             ),
             dialogChildren: Column(
@@ -126,15 +138,29 @@ class _LoginSectionState extends State<LoginSection> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: screenBasedPixelWidth * 36,
-                  width: screenBasedPixelWidth * 36,
+                  height: widgetSizeProvider(
+                      fixedSize: 36,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                  width: widgetSizeProvider(
+                      fixedSize: 36,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
                   child: CircularProgressIndicator(
-                    strokeWidth: screenBasedPixelWidth * 4.0,
+                    strokeWidth: widgetSizeProvider(
+                        fixedSize: 4,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelWidth),
                   ),
                 ),
                 Text(
                   'Please wait...',
-                  style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                  style: TextStyle(
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 20,
+                        sizeDecidingVariable:
+                            widget.arguments.screenBasedPixelWidth),
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -197,7 +223,11 @@ class _LoginSectionState extends State<LoginSection> {
           },
           dialogTitle: Text(
             'Sign-in Failed',
-            style: TextStyle(fontSize: screenBasedPixelWidth * 24),
+            style: TextStyle(
+              fontSize: widgetSizeProvider(
+                  fixedSize: 24,
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            ),
             textAlign: TextAlign.center,
           ),
           dialogChildren: Column(
@@ -205,15 +235,29 @@ class _LoginSectionState extends State<LoginSection> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: screenBasedPixelWidth * 36,
-                width: screenBasedPixelWidth * 36,
+                height: widgetSizeProvider(
+                    fixedSize: 36,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                width: widgetSizeProvider(
+                    fixedSize: 36,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
                 child: CircularProgressIndicator(
-                  strokeWidth: screenBasedPixelWidth * 4.0,
+                  strokeWidth: widgetSizeProvider(
+                      fixedSize: 4,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
                 ),
               ),
               Text(
                 'Re-requesting login page please wait...',
-                style: TextStyle(fontSize: screenBasedPixelWidth * 20),
+                style: TextStyle(
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable:
+                          widget.arguments.screenBasedPixelWidth),
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -250,623 +294,913 @@ class _LoginSectionState extends State<LoginSection> {
       child: Form(
         key: _formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
               child: ListView(
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      //Animation.
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          transitionBuilder:
-                              (Widget child, Animation<double> animation) {
-                            return ScaleTransition(
-                                scale: animation, child: child);
-                          },
-                          child: SizedBox(
-                            height: screenBasedPixelWidth * 250,
-                            width: screenBasedPixelWidth * 250,
-                            child: animationOfLoginScreen,
-                          ),
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: widgetSizeProvider(
+                              fixedSize: 700,
+                              sizeDecidingVariable:
+                                  widget.arguments.screenBasedPixelWidth),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          widget.arguments.vtopLoginErrorType != "None"
-                              //Error warning.
-                              ? Padding(
-                                  padding: EdgeInsets.only(
-                                    left: screenBasedPixelWidth * 8.0,
-                                    right: screenBasedPixelWidth * 8.0,
-                                    top: screenBasedPixelWidth * 8.0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xfff04e23),
-                                          // border: Border.all(),
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(
-                                              screenBasedPixelWidth * 5.0,
-                                            ),
-                                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            //Animation.
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.center,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 500),
+                                transitionBuilder: (Widget child,
+                                    Animation<double> animation) {
+                                  return ScaleTransition(
+                                      scale: animation, child: child);
+                                },
+                                child: SizedBox(
+                                  height: widgetSizeProvider(
+                                      fixedSize: 250,
+                                      sizeDecidingVariable: widget
+                                          .arguments.screenBasedPixelHeight),
+                                  width: widgetSizeProvider(
+                                      fixedSize: 250,
+                                      sizeDecidingVariable: widget
+                                          .arguments.screenBasedPixelWidth),
+                                  child: animationOfLoginScreen,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                widget.arguments.vtopLoginErrorType != "None"
+                                    //Error warning.
+                                    ? Padding(
+                                        padding: EdgeInsets.only(
+                                          left: widgetSizeProvider(
+                                              fixedSize: 8,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                          right: widgetSizeProvider(
+                                              fixedSize: 8,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                          top: widgetSizeProvider(
+                                              fixedSize: 8,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                        child: Column(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                    right:
-                                                        screenBasedPixelWidth *
-                                                            8.0,
-                                                    left:
-                                                        screenBasedPixelWidth *
-                                                            8.0,
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.error,
-                                                    size:
-                                                        screenBasedPixelWidth *
-                                                            24,
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xfff04e23),
+                                                // border: Border.all(),
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                    widgetSizeProvider(
+                                                        fixedSize: 5,
+                                                        sizeDecidingVariable: widget
+                                                            .arguments
+                                                            .screenBasedPixelWidth),
                                                   ),
                                                 ),
-                                                Text(
-                                                  widget.arguments
-                                                      .vtopLoginErrorType,
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        screenBasedPixelWidth *
-                                                            15,
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          right: widgetSizeProvider(
+                                                              fixedSize: 8,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                          left: widgetSizeProvider(
+                                                              fixedSize: 8,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.error,
+                                                          size: widgetSizeProvider(
+                                                              fixedSize: 24,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        widget.arguments
+                                                            .vtopLoginErrorType,
+                                                        style: TextStyle(
+                                                          fontSize: widgetSizeProvider(
+                                                              fixedSize: 15,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width:
-                                                  screenBasedPixelWidth * 51.0,
-                                              height:
-                                                  screenBasedPixelHeight * 40,
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                shape: const StadiumBorder(),
-                                                child: Tooltip(
-                                                  message: "Close",
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        widget
-                                                            .onVtopLoginErrorType
-                                                            .call("None");
-                                                      });
-                                                    },
-                                                    customBorder:
-                                                        const StadiumBorder(),
-                                                    focusColor: Colors.black
-                                                        .withOpacity(0.1),
-                                                    highlightColor: Colors.black
-                                                        .withOpacity(0.1),
-                                                    splashColor: Colors.black
-                                                        .withOpacity(0.1),
-                                                    hoverColor: Colors.black
-                                                        .withOpacity(0.1),
-                                                    child: Icon(
-                                                      Icons.close_outlined,
-                                                      size:
-                                                          screenBasedPixelWidth *
-                                                              24,
+                                                  SizedBox(
+                                                    width: widgetSizeProvider(
+                                                        fixedSize: 51,
+                                                        sizeDecidingVariable: widget
+                                                            .arguments
+                                                            .screenBasedPixelWidth),
+                                                    height: widgetSizeProvider(
+                                                        fixedSize: 40,
+                                                        sizeDecidingVariable: widget
+                                                            .arguments
+                                                            .screenBasedPixelWidth),
+                                                    child: Material(
+                                                      color: Colors.transparent,
+                                                      shape:
+                                                          const StadiumBorder(),
+                                                      child: Tooltip(
+                                                        message: "Close",
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              widget
+                                                                  .onVtopLoginErrorType
+                                                                  .call("None");
+                                                            });
+                                                          },
+                                                          customBorder:
+                                                              const StadiumBorder(),
+                                                          focusColor: Colors
+                                                              .black
+                                                              .withOpacity(0.1),
+                                                          highlightColor: Colors
+                                                              .black
+                                                              .withOpacity(0.1),
+                                                          splashColor: Colors
+                                                              .black
+                                                              .withOpacity(0.1),
+                                                          hoverColor: Colors
+                                                              .black
+                                                              .withOpacity(0.1),
+                                                          child: Icon(
+                                                            Icons
+                                                                .close_outlined,
+                                                            size: widgetSizeProvider(
+                                                                fixedSize: 24,
+                                                                sizeDecidingVariable:
+                                                                    widget
+                                                                        .arguments
+                                                                        .screenBasedPixelWidth),
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                      )
+                                    : const SizedBox(),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
                                   ),
-                                )
-                              : const SizedBox(),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: screenBasedPixelWidth * 8.0,
-                                right: screenBasedPixelWidth * 8.0,
-                                top: screenBasedPixelWidth * 8.0),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 500),
-                              transitionBuilder:
-                                  (Widget child, Animation<double> animation) {
-                                return ScaleTransition(
-                                    scale: animation, child: child);
-                              },
-                              child: widget.arguments.credentialsFound
-                                  //Existing credentials display.
-                                  ? Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        //Fake email & password text fields.
-                                        Column(
-                                          children: [
-                                            loginTextFormFields(
-                                              helperText: null,
-                                              controller: _controller,
-                                              onChanged: (String value) {
-                                                setState(() {
-                                                  uname = value;
-                                                });
-                                              },
-                                              labelText: 'Username',
-                                              inputFormatters: [
-                                                UpperCaseTextFormatter(),
-                                                FilteringTextInputFormatter
-                                                    .allow(RegExp("[0-9A-Z]")),
-                                              ],
-                                              validator: (String? value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter username';
-                                                }
-                                                return null;
-                                              },
-                                              autovalidateMode: AutovalidateMode
-                                                  .onUserInteraction,
-                                              suffixIcon: null,
-                                              obscureText: false,
-                                              enableSuggestions: true,
-                                              autocorrect: false,
-                                              enabled: !widget
-                                                  .arguments.credentialsFound,
-                                              readOnly: widget
-                                                  .arguments.credentialsFound,
-                                            ),
-                                            loginTextFormFields(
-                                              helperText: null,
-                                              controller: _controller2,
-                                              onChanged: (String value) {
-                                                setState(() {
-                                                  passwd = value;
-                                                });
-                                              },
-                                              labelText: 'Password',
-                                              inputFormatters: [],
-                                              validator: (String? value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter password';
-                                                }
-                                                return null;
-                                              },
-                                              autovalidateMode: AutovalidateMode
-                                                  .onUserInteraction,
-                                              suffixIcon: null,
-                                              obscureText: isObscure,
-                                              enableSuggestions: false,
-                                              autocorrect: false,
-                                              enabled: !widget
-                                                  .arguments.credentialsFound,
-                                              readOnly: widget
-                                                  .arguments.credentialsFound,
-                                            ),
-                                          ],
-                                        ),
-                                        //Clear button on fake email & password text fields.
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                            right: screenBasedPixelWidth * 8.0,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                  child: AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 500),
+                                    transitionBuilder: (Widget child,
+                                        Animation<double> animation) {
+                                      return ScaleTransition(
+                                          scale: animation, child: child);
+                                    },
+                                    child: widget.arguments.credentialsFound
+                                        //Existing credentials display.
+                                        ? Stack(
+                                            alignment: Alignment.center,
                                             children: [
-                                              customElevatedButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _controller =
-                                                        TextEditingController(
-                                                            text: "");
-                                                    _controller2 =
-                                                        TextEditingController(
-                                                            text: "");
-                                                  });
-
-                                                  widget.onClearUnamePasswd
-                                                      .call(true);
-                                                },
+                                              //Fake email & password text fields.
+                                              Column(
+                                                children: [
+                                                  loginTextFormFields(
+                                                    helperText: null,
+                                                    controller: _controller,
+                                                    onChanged: (String value) {
+                                                      setState(() {
+                                                        uname = value;
+                                                      });
+                                                    },
+                                                    labelText: 'Username',
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter(),
+                                                      FilteringTextInputFormatter
+                                                          .allow(RegExp(
+                                                              "[0-9A-Z]")),
+                                                    ],
+                                                    validator: (String? value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter username';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    autovalidateMode:
+                                                        AutovalidateMode
+                                                            .onUserInteraction,
+                                                    suffixIcon: null,
+                                                    obscureText: false,
+                                                    enableSuggestions: true,
+                                                    autocorrect: false,
+                                                    enabled: !widget.arguments
+                                                        .credentialsFound,
+                                                    readOnly: widget.arguments
+                                                        .credentialsFound,
+                                                  ),
+                                                  loginTextFormFields(
+                                                    helperText: null,
+                                                    controller: _controller2,
+                                                    onChanged: (String value) {
+                                                      setState(() {
+                                                        passwd = value;
+                                                      });
+                                                    },
+                                                    labelText: 'Password',
+                                                    inputFormatters: [],
+                                                    validator: (String? value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter password';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    autovalidateMode:
+                                                        AutovalidateMode
+                                                            .onUserInteraction,
+                                                    suffixIcon: null,
+                                                    obscureText: isObscure,
+                                                    enableSuggestions: false,
+                                                    autocorrect: false,
+                                                    enabled: !widget.arguments
+                                                        .credentialsFound,
+                                                    readOnly: widget.arguments
+                                                        .credentialsFound,
+                                                  ),
+                                                ],
+                                              ),
+                                              //Clear button on fake email & password text fields.
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  right: widgetSizeProvider(
+                                                      fixedSize: 8,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                ),
                                                 child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
                                                   children: [
-                                                    Icon(
-                                                      Icons.close_outlined,
-                                                      size:
-                                                          screenBasedPixelWidth *
-                                                              24.0,
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          screenBasedPixelWidth *
-                                                              8,
-                                                    ),
-                                                    Text(
-                                                      "Clear",
-                                                      style: GoogleFonts.lato(
-                                                        color: Colors.white,
-                                                        fontSize:
-                                                            screenBasedPixelWidth *
-                                                                17.0,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontStyle:
-                                                            FontStyle.normal,
+                                                    customElevatedButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _controller =
+                                                              TextEditingController(
+                                                                  text: "");
+                                                          _controller2 =
+                                                              TextEditingController(
+                                                                  text: "");
+                                                        });
+
+                                                        widget
+                                                            .onClearUnamePasswd
+                                                            .call(true);
+                                                      },
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .close_outlined,
+                                                            size:
+                                                                screenBasedPixelWidth *
+                                                                    24.0,
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                screenBasedPixelWidth *
+                                                                    8,
+                                                          ),
+                                                          Text(
+                                                            "Clear",
+                                                            style: GoogleFonts
+                                                                .lato(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: widgetSizeProvider(
+                                                                  fixedSize: 17,
+                                                                  sizeDecidingVariable: widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .normal,
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                               ),
                                             ],
+                                          )
+                                        //Real email & password text fields.
+                                        : Column(
+                                            children: [
+                                              loginTextFormFields(
+                                                helperText: 'Ex:- 20BCEXXXXX',
+                                                controller: _controller,
+                                                onChanged: (String value) {
+                                                  setState(() {
+                                                    uname = value;
+                                                  });
+                                                },
+                                                labelText: 'Username',
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter(),
+                                                  FilteringTextInputFormatter
+                                                      .allow(
+                                                          RegExp("[0-9A-Z]")),
+                                                ],
+                                                validator: (String? value) {
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return 'Please enter username';
+                                                  }
+                                                  return null;
+                                                },
+                                                autovalidateMode:
+                                                    AutovalidateMode
+                                                        .onUserInteraction,
+                                                suffixIcon: null,
+                                                obscureText: false,
+                                                enableSuggestions: true,
+                                                autocorrect: false,
+                                                enabled: true,
+                                                readOnly: false,
+                                              ),
+                                              SizedBox(
+                                                height: widgetSizeProvider(
+                                                    fixedSize: 10,
+                                                    sizeDecidingVariable: widget
+                                                        .arguments
+                                                        .screenBasedPixelHeight),
+                                              ),
+                                              loginTextFormFields(
+                                                helperText: 'Ex:- password123',
+                                                controller: _controller2,
+                                                onChanged: (String value) {
+                                                  setState(() {
+                                                    passwd = value;
+                                                  });
+                                                },
+                                                labelText: 'Password',
+                                                inputFormatters: [],
+                                                validator: (String? value) {
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return 'Please enter password';
+                                                  }
+                                                  return null;
+                                                },
+                                                autovalidateMode:
+                                                    AutovalidateMode
+                                                        .onUserInteraction,
+                                                suffixIcon: SizedBox(
+                                                  width: widgetSizeProvider(
+                                                      fixedSize: 51,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                  height: widgetSizeProvider(
+                                                      fixedSize: 40,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    shape:
+                                                        const StadiumBorder(),
+                                                    child: Tooltip(
+                                                      message:
+                                                          "Refresh Captcha",
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            isObscure =
+                                                                !isObscure;
+                                                          });
+                                                        },
+                                                        customBorder:
+                                                            const StadiumBorder(),
+                                                        focusColor: Colors.black
+                                                            .withOpacity(0.1),
+                                                        highlightColor: Colors
+                                                            .black
+                                                            .withOpacity(0.1),
+                                                        splashColor: Colors
+                                                            .black
+                                                            .withOpacity(0.1),
+                                                        hoverColor: Colors.black
+                                                            .withOpacity(0.1),
+                                                        child: Icon(
+                                                          isObscure
+                                                              ? Icons.visibility
+                                                              : Icons
+                                                                  .visibility_off,
+                                                          size: widgetSizeProvider(
+                                                              fixedSize: 24,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                          // color: Colors.blue,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                obscureText: isObscure,
+                                                enableSuggestions: false,
+                                                autocorrect: false,
+                                                enabled: true,
+                                                readOnly: false,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  //Real email & password text fields.
-                                  : Column(
-                                      children: [
-                                        loginTextFormFields(
-                                          helperText: 'Ex:- 20BCEXXXXX',
-                                          controller: _controller,
-                                          onChanged: (String value) {
-                                            setState(() {
-                                              uname = value;
-                                            });
-                                          },
-                                          labelText: 'Username',
-                                          inputFormatters: [
-                                            UpperCaseTextFormatter(),
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp("[0-9A-Z]")),
-                                          ],
-                                          validator: (String? value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please enter username';
-                                            }
-                                            return null;
-                                          },
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          suffixIcon: null,
-                                          obscureText: false,
-                                          enableSuggestions: true,
-                                          autocorrect: false,
-                                          enabled: true,
-                                          readOnly: false,
-                                        ),
-                                        SizedBox(
-                                          height: screenBasedPixelHeight * 10,
-                                        ),
-                                        loginTextFormFields(
-                                          helperText: 'Ex:- password123',
-                                          controller: _controller2,
-                                          onChanged: (String value) {
-                                            setState(() {
-                                              passwd = value;
-                                            });
-                                          },
-                                          labelText: 'Password',
-                                          inputFormatters: [],
-                                          validator: (String? value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please enter password';
-                                            }
-                                            return null;
-                                          },
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              isObscure
-                                                  ? Icons.visibility
-                                                  : Icons.visibility_off,
-                                              size:
-                                                  screenBasedPixelHeight * 24.0,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                isObscure = !isObscure;
-                                              });
-                                            },
-                                          ),
-                                          obscureText: isObscure,
-                                          enableSuggestions: false,
-                                          autocorrect: false,
-                                          enabled: true,
-                                          readOnly: false,
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          ),
-                          //Captcha display & captcha refresh button.
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: screenBasedPixelWidth * 8.0,
-                              right: screenBasedPixelWidth * 8.0,
-                              top: screenBasedPixelWidth * 8.0,
-                            ),
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.center,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  //Captcha display.
-                                  Container(
-                                    padding: EdgeInsets.all(
-                                        screenBasedPixelWidth * 20.0),
-                                    child: Shimmer(
-                                      duration: const Duration(
-                                          seconds: 1), //Default value
-                                      interval: const Duration(
-                                          seconds:
-                                              0), //Default value: Duration(seconds: 0)
-                                      color: Colors.pink, //Default value
-                                      colorOpacity: 0.2, //Default value
-                                      enabled: widget.arguments
-                                          .refreshingCaptcha, //Default value
-                                      direction: const ShimmerDirection
-                                          .fromLTRB(), //Default Value
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(width: 0.5),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(
-                                                  screenBasedPixelWidth * 3.0)),
-                                        ),
-                                        height: screenBasedPixelHeight * 45,
-                                        width: screenBasedPixelWidth * 180,
-                                        child: widget.arguments
-                                                    .refreshingCaptcha ==
-                                                true
-                                            ? const SizedBox()
-                                            : image,
-                                      ),
-                                    ),
-                                    // Html(
-                                    //   data: serializedDocument,
-                                    // ),
-                                    // Text("Document: $serializedDocument"),
                                   ),
-                                  //Refresh captcha button.
-                                  SizedBox(
-                                    width: screenBasedPixelWidth * 51,
-                                    height: screenBasedPixelHeight * 40.0,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      shape: const StadiumBorder(),
-                                      child: Tooltip(
-                                        message: "Refresh Captcha",
-                                        child: InkWell(
-                                          onTap: () {
-                                            // _controller3 =
-                                            //     TextEditingController(text: "");
-                                            signInCredentialsMap = {
-                                              "uname":
-                                                  '${_controller?.value.text.toUpperCase()}',
-                                              "passwd":
-                                                  '${_controller2?.value.text}',
-                                              "refreshingCaptcha": true,
-                                            };
-                                            widget.onRefreshCaptcha
-                                                ?.call(signInCredentialsMap);
-                                          },
-                                          customBorder: const StadiumBorder(),
-                                          focusColor:
-                                              Colors.black.withOpacity(0.1),
-                                          highlightColor:
-                                              Colors.black.withOpacity(0.1),
-                                          splashColor:
-                                              Colors.black.withOpacity(0.1),
-                                          hoverColor:
-                                              Colors.black.withOpacity(0.1),
-                                          child: Icon(
-                                            Icons.refresh,
-                                            size: screenBasedPixelHeight * 24,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                ),
+                                //Captcha display & captcha refresh button.
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
                                   ),
-                                  // ElevatedButton(
-                                  //   onPressed: () {
-                                  //     signInCredentialsMap = {
-                                  //       "uname": '${_controller?.value.text.toUpperCase()}',
-                                  //       "passwd": '${_controller2?.value.text}',
-                                  //       "refreshingCaptcha": true,
-                                  //     };
-                                  //     widget.onRefreshCaptcha?.call(signInCredentialsMap);
-                                  //   },
-                                  //   child: const Text("Refresh Captcha"),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          //Captcha.
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: screenBasedPixelWidth * 8.0,
-                                right: screenBasedPixelWidth * 8.0,
-                                top: screenBasedPixelWidth * 8.0),
-                            child: loginTextFormFields(
-                              helperText: '',
-                              controller: _controller3,
-                              onChanged: (String value) {
-                                setState(() {
-                                  captchaCheck = value;
-                                });
-                              },
-                              labelText: 'Captcha',
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                                FilteringTextInputFormatter.allow(
-                                    RegExp("[0-9A-Z]")),
-                              ],
-                              validator: (String? value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter captcha';
-                                }
-                                return null;
-                              },
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              suffixIcon: null,
-                              obscureText: false,
-                              enableSuggestions: false,
-                              autocorrect: false,
-                              enabled: true,
-                              readOnly: false,
-                            ),
-                          ),
-                          //Auto sign-in checkbox tile.
-                          CheckboxListTile(
-                            title: Text(
-                              'Auto sign-in?',
-                              style: TextStyle(
-                                  fontSize: screenBasedPixelWidth * 16),
-                            ),
-                            value: widget.arguments.tryAutoLoginStatus,
-                            onChanged: (bool? value) {
-                              widget.onTryAutoLoginStatus
-                                  .call(!widget.arguments.tryAutoLoginStatus);
-                            },
-                          ),
-                          //Sign-in button.
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: screenBasedPixelWidth * 8.0,
-                                right: screenBasedPixelWidth * 8.0,
-                                top: 8.0,
-                                bottom: screenBasedPixelWidth * 8.0),
-                            child: customElevatedButton(
-                              onPressed: () async {
-                                // Validate returns true if the form is valid, or false otherwise.
-                                FocusScopeNode currentFocus =
-                                    FocusScope.of(context);
-                                if (!currentFocus.hasPrimaryFocus &&
-                                    currentFocus.focusedChild != null) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                }
-                                if (_formKey.currentState!.validate()) {
-                                  customDialogBox(
-                                    isDialogShowing: isFirstDialogShowing,
-                                    context: context,
-                                    onIsDialogShowing: (bool value) {
-                                      setState(() {
-                                        isFirstDialogShowing = value;
-                                      });
-                                    },
-                                    dialogTitle: Text(
-                                      'Sending login request',
-                                      style: TextStyle(
-                                          fontSize: screenBasedPixelWidth * 24),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    dialogChildren: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.center,
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
+                                        //Captcha display.
+                                        Container(
+                                          padding: EdgeInsets.all(
+                                            widgetSizeProvider(
+                                                fixedSize: 20,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
+                                          ),
+                                          child: Shimmer(
+                                            duration: const Duration(
+                                                seconds: 1), //Default value
+                                            interval: const Duration(
+                                                seconds:
+                                                    0), //Default value: Duration(seconds: 0)
+                                            color: Colors.pink, //Default value
+                                            colorOpacity: 0.2, //Default value
+                                            enabled: widget.arguments
+                                                .refreshingCaptcha, //Default value
+                                            direction: const ShimmerDirection
+                                                .fromLTRB(), //Default Value
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  width: widgetSizeProvider(
+                                                      fixedSize: 0.5,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                ),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                  widgetSizeProvider(
+                                                      fixedSize: 3,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                )),
+                                              ),
+                                              height: widgetSizeProvider(
+                                                  fixedSize: 45,
+                                                  sizeDecidingVariable: widget
+                                                      .arguments
+                                                      .screenBasedPixelWidth),
+                                              width: widgetSizeProvider(
+                                                  fixedSize: 180,
+                                                  sizeDecidingVariable: widget
+                                                      .arguments
+                                                      .screenBasedPixelWidth),
+                                              child: widget.arguments
+                                                          .refreshingCaptcha ==
+                                                      true
+                                                  ? const SizedBox()
+                                                  : image,
+                                            ),
+                                          ),
+                                          // Html(
+                                          //   data: serializedDocument,
+                                          // ),
+                                          // Text("Document: $serializedDocument"),
+                                        ),
+                                        //Refresh captcha button.
                                         SizedBox(
-                                          height: screenBasedPixelWidth * 36,
-                                          width: screenBasedPixelWidth * 36,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth:
-                                                screenBasedPixelWidth * 4.0,
+                                          width: widgetSizeProvider(
+                                              fixedSize: 51,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                          height: widgetSizeProvider(
+                                              fixedSize: 40,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            shape: const StadiumBorder(),
+                                            child: Tooltip(
+                                              message: "Refresh Captcha",
+                                              child: InkWell(
+                                                onTap: () {
+                                                  // _controller3 =
+                                                  //     TextEditingController(text: "");
+                                                  signInCredentialsMap = {
+                                                    "uname":
+                                                        '${_controller?.value.text.toUpperCase()}',
+                                                    "passwd":
+                                                        '${_controller2?.value.text}',
+                                                    "refreshingCaptcha": true,
+                                                  };
+                                                  widget.onRefreshCaptcha?.call(
+                                                      signInCredentialsMap);
+                                                },
+                                                customBorder:
+                                                    const StadiumBorder(),
+                                                focusColor: Colors.black
+                                                    .withOpacity(0.1),
+                                                highlightColor: Colors.black
+                                                    .withOpacity(0.1),
+                                                splashColor: Colors.black
+                                                    .withOpacity(0.1),
+                                                hoverColor: Colors.black
+                                                    .withOpacity(0.1),
+                                                child: Icon(
+                                                  Icons.refresh,
+                                                  size: widgetSizeProvider(
+                                                      fixedSize: 24,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                        Text(
-                                          'Please wait...',
-                                          style: TextStyle(
-                                              fontSize:
-                                                  screenBasedPixelWidth * 20),
-                                          textAlign: TextAlign.center,
-                                        ),
+                                        // ElevatedButton(
+                                        //   onPressed: () {
+                                        //     signInCredentialsMap = {
+                                        //       "uname": '${_controller?.value.text.toUpperCase()}',
+                                        //       "passwd": '${_controller2?.value.text}',
+                                        //       "refreshingCaptcha": true,
+                                        //     };
+                                        //     widget.onRefreshCaptcha?.call(signInCredentialsMap);
+                                        //   },
+                                        //   child: const Text("Refresh Captcha"),
+                                        // ),
                                       ],
                                     ),
-                                    barrierDismissible: false,
-                                    screenBasedPixelHeight:
-                                        screenBasedPixelHeight,
-                                    screenBasedPixelWidth:
-                                        screenBasedPixelWidth,
-                                    onProcessingSomething: (bool value) {
-                                      widget.onProcessingSomething.call(value);
+                                  ),
+                                ),
+                                //Captcha.
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
+                                  child: loginTextFormFields(
+                                    helperText: 'The RoboText',
+                                    controller: _controller3,
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        captchaCheck = value;
+                                      });
                                     },
-                                  ).then((_) => isFirstDialogShowing = false);
-                                  debugPrint("dialogBox initiated");
-                                  signInCredentialsMap = {
-                                    "uname":
-                                        '${_controller?.value.text.toUpperCase()}',
-                                    "passwd": '${_controller2?.value.text}',
-                                    "captchaCheck":
-                                        '${_controller3?.value.text.toUpperCase()}',
-                                    "refreshingCaptcha": true,
-                                    "processingSomething": true,
-                                  };
-                                  widget.onPerformSignIn
-                                      ?.call(signInCredentialsMap);
-                                }
-                              },
-                              child: Text(
-                                'Sign In',
-                                style: GoogleFonts.lato(
-                                  color: Colors.white,
-                                  textStyle:
-                                      Theme.of(context).textTheme.headline1,
-                                  // fontSize: 20,
-                                  fontSize: screenBasedPixelWidth * 20,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
+                                    labelText: 'Captcha',
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp("[0-9A-Z]")),
+                                    ],
+                                    validator: (String? value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter captcha';
+                                      }
+                                      return null;
+                                    },
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    suffixIcon: null,
+                                    obscureText: false,
+                                    enableSuggestions: false,
+                                    autocorrect: false,
+                                    enabled: true,
+                                    readOnly: false,
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          //User note.
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: screenBasedPixelWidth * 8.0,
-                                right: screenBasedPixelWidth * 8.0,
-                                top: screenBasedPixelWidth * 8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Notes:-",
-                                  style: TextStyle(
-                                      fontSize: screenBasedPixelWidth * 12,
-                                      fontWeight: FontWeight.bold),
+                                SizedBox(
+                                  height: widgetSizeProvider(
+                                      fixedSize: 10,
+                                      sizeDecidingVariable: widget
+                                          .arguments.screenBasedPixelHeight),
                                 ),
-                                Text(
-                                  "We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\nAlso auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop.",
-                                  style: TextStyle(
-                                      fontSize: screenBasedPixelWidth * 12),
+                                //Auto sign-in checkbox tile.
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
+                                  child: LabeledCheckbox(
+                                    onChanged: (bool? value) {
+                                      widget.onTryAutoLoginStatus.call(
+                                          !widget.arguments.tryAutoLoginStatus);
+                                    },
+                                    labelWidget: Text(
+                                      'Auto sign-in?',
+                                      style: TextStyle(
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 16,
+                                            sizeDecidingVariable: widget
+                                                .arguments
+                                                .screenBasedPixelWidth),
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: widgetSizeProvider(
+                                          fixedSize: 8,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                    ),
+                                    value: widget.arguments.tryAutoLoginStatus,
+                                  ),
+                                ),
+                                //Sign-in button.
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    bottom: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
+                                  child: customElevatedButton(
+                                    onPressed: () async {
+                                      // Validate returns true if the form is valid, or false otherwise.
+                                      FocusScopeNode currentFocus =
+                                          FocusScope.of(context);
+                                      if (!currentFocus.hasPrimaryFocus &&
+                                          currentFocus.focusedChild != null) {
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                      }
+                                      if (_formKey.currentState!.validate()) {
+                                        customDialogBox(
+                                          isDialogShowing: isFirstDialogShowing,
+                                          context: context,
+                                          onIsDialogShowing: (bool value) {
+                                            setState(() {
+                                              isFirstDialogShowing = value;
+                                            });
+                                          },
+                                          dialogTitle: Text(
+                                            'Sending login request',
+                                            style: TextStyle(
+                                              fontSize: widgetSizeProvider(
+                                                  fixedSize: 24,
+                                                  sizeDecidingVariable: widget
+                                                      .arguments
+                                                      .screenBasedPixelWidth),
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          dialogChildren: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                height: widgetSizeProvider(
+                                                    fixedSize: 36,
+                                                    sizeDecidingVariable: widget
+                                                        .arguments
+                                                        .screenBasedPixelWidth),
+                                                width: widgetSizeProvider(
+                                                    fixedSize: 36,
+                                                    sizeDecidingVariable: widget
+                                                        .arguments
+                                                        .screenBasedPixelWidth),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: widgetSizeProvider(
+                                                      fixedSize: 4,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                ),
+                                              ),
+                                              Text(
+                                                'Please wait...',
+                                                style: TextStyle(
+                                                  fontSize: widgetSizeProvider(
+                                                      fixedSize: 20,
+                                                      sizeDecidingVariable: widget
+                                                          .arguments
+                                                          .screenBasedPixelWidth),
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                          barrierDismissible: false,
+                                          screenBasedPixelHeight:
+                                              screenBasedPixelHeight,
+                                          screenBasedPixelWidth:
+                                              screenBasedPixelWidth,
+                                          onProcessingSomething: (bool value) {
+                                            widget.onProcessingSomething
+                                                .call(value);
+                                          },
+                                        ).then((_) =>
+                                            isFirstDialogShowing = false);
+                                        debugPrint("dialogBox initiated");
+                                        signInCredentialsMap = {
+                                          "uname":
+                                              '${_controller?.value.text.toUpperCase()}',
+                                          "passwd":
+                                              '${_controller2?.value.text}',
+                                          "captchaCheck":
+                                              '${_controller3?.value.text.toUpperCase()}',
+                                          "refreshingCaptcha": true,
+                                          "processingSomething": true,
+                                        };
+                                        widget.onPerformSignIn
+                                            ?.call(signInCredentialsMap);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Sign In',
+                                      style: GoogleFonts.lato(
+                                        color: Colors.white,
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                        // fontSize: 20,
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 20,
+                                            sizeDecidingVariable: widget
+                                                .arguments
+                                                .screenBasedPixelWidth),
+                                        fontWeight: FontWeight.w700,
+                                        fontStyle: FontStyle.normal,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                //User note.
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                    top: widgetSizeProvider(
+                                        fixedSize: 8,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Notes:-",
+                                        style: TextStyle(
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 12,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\nAlso auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop.",
+                                        style: TextStyle(
+                                          fontSize: widgetSizeProvider(
+                                              fixedSize: 12,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -890,15 +1224,34 @@ class _LoginSectionState extends State<LoginSection> {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
           padding: MaterialStateProperty.all(EdgeInsets.only(
-            top: screenBasedPixelWidth * 16.0,
-            bottom: screenBasedPixelWidth * 16.0,
-            left: screenBasedPixelWidth * 30.0,
-            right: screenBasedPixelWidth * 30.0,
+            top: widgetSizeProvider(
+                fixedSize: 16,
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            bottom: widgetSizeProvider(
+                fixedSize: 16,
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            left: widgetSizeProvider(
+                fixedSize: 30,
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            right: widgetSizeProvider(
+                fixedSize: 30,
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           )),
-          textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 20)),
+          textStyle: MaterialStateProperty.all(
+            TextStyle(
+              fontSize: widgetSizeProvider(
+                  fixedSize: 20,
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            ),
+          ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(screenBasedPixelWidth * 20.0),
+              borderRadius: BorderRadius.circular(
+                widgetSizeProvider(
+                    fixedSize: 20,
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+              ),
             ),
           ),
         ),
@@ -927,10 +1280,14 @@ class _LoginSectionState extends State<LoginSection> {
       controller: controller,
       style: TextStyle(
         fontWeight: FontWeight.w400,
-        fontSize: screenBasedPixelWidth * 16.0,
-        height: 1.0,
+        fontSize: widgetSizeProvider(
+            fixedSize: 16,
+            sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+        // height: 1.0,
       ),
-      cursorWidth: screenBasedPixelWidth * 2.0,
+      cursorWidth: widgetSizeProvider(
+          fixedSize: 2,
+          sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
       // initialValue: 'Input text',
       // maxLength: 20,
       decoration: InputDecoration(
@@ -940,12 +1297,19 @@ class _LoginSectionState extends State<LoginSection> {
         labelText: labelText,
         labelStyle: TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: screenBasedPixelWidth * 15.9,
-          height: 1.0,
+          fontSize: widgetSizeProvider(
+              fixedSize: 16,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          // height: 1.0,
         ),
+        isDense: true,
         contentPadding: EdgeInsets.symmetric(
-          vertical: screenBasedPixelHeight * 13.5,
-          horizontal: screenBasedPixelWidth * 13.5,
+          vertical: widgetSizeProvider(
+              fixedSize: 13.5,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          horizontal: widgetSizeProvider(
+              fixedSize: 13.5,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
         ),
         // labelStyle: TextStyle(
         //   color: Color(0xFF6200EE),
@@ -953,21 +1317,35 @@ class _LoginSectionState extends State<LoginSection> {
         helperText: helperText,
         helperStyle: TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: screenBasedPixelWidth * 12.0,
+          fontSize: widgetSizeProvider(
+              fixedSize: 12,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
         ),
         floatingLabelStyle: TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: screenBasedPixelWidth * 15.9,
-          height: 1.0,
+          fontSize: widgetSizeProvider(
+              fixedSize: 16,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          // height: 1.0,
         ),
         errorStyle: TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: screenBasedPixelWidth * 12.0,
+          fontSize: widgetSizeProvider(
+              fixedSize: 12,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
         ),
 
         enabledBorder: const UnderlineInputBorder(
             // borderSide: BorderSide(color: Color(0xFF6200EE)),
             ),
+        suffixIconConstraints: BoxConstraints(
+          minHeight: widgetSizeProvider(
+              fixedSize: 24,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          minWidth: widgetSizeProvider(
+              fixedSize: 24,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+        ),
         suffixIcon: suffixIcon,
       ),
       enabled: enabled,
@@ -1018,4 +1396,42 @@ class LoginSectionArguments {
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
   });
+}
+
+class LabeledCheckbox extends StatelessWidget {
+  const LabeledCheckbox({
+    Key? key,
+    required this.labelWidget,
+    required this.padding,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  final Widget labelWidget;
+  final EdgeInsets padding;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        onChanged(!value);
+      },
+      child: Padding(
+        padding: padding,
+        child: Row(
+          children: <Widget>[
+            Expanded(child: labelWidget),
+            Checkbox(
+              value: value,
+              onChanged: (bool? newValue) {
+                onChanged(newValue!);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

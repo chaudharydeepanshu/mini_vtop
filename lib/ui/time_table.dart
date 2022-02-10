@@ -4,6 +4,7 @@ import 'package:html/dom.dart' as dom;
 
 import '../basicFunctions/measure_size_of_widget.dart';
 import '../basicFunctions/proccessing_dialog.dart';
+import '../basicFunctions/widget_size_limiter.dart';
 
 class TimeTable extends StatefulWidget {
   static const String routeName = '/timeTable';
@@ -125,16 +126,27 @@ class _TimeTableState extends State<TimeTable> {
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.only(
-                        left: screenBasedPixelWidth * 15,
-                        right: screenBasedPixelWidth * 15,
-                        top: screenBasedPixelWidth * 15,
-                        bottom: screenBasedPixelWidth * 15),
+                      left: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      right: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      top: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      bottom: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
                     child: Text(
                       "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                       style: GoogleFonts.lato(
                         // color: Colors.black,
                         // textStyle: Theme.of(context).textTheme.headline1,
-                        fontSize: screenBasedPixelWidth * 15,
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 15,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         fontWeight: FontWeight.w700,
                         fontStyle: FontStyle.normal,
                       ),
@@ -265,16 +277,27 @@ class _TimeTableState extends State<TimeTable> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.only(
-                      left: screenBasedPixelWidth * 15,
-                      right: screenBasedPixelWidth * 15,
-                      top: screenBasedPixelWidth * 15,
-                      bottom: screenBasedPixelWidth * 15),
+                    left: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    right: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    top: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    bottom: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
                   child: Text(
                     "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: GoogleFonts.lato(
                       // color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: screenBasedPixelWidth * 15,
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -301,16 +324,27 @@ class _TimeTableState extends State<TimeTable> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.only(
-                      left: screenBasedPixelWidth * 15,
-                      right: screenBasedPixelWidth * 15,
-                      top: screenBasedPixelWidth * 15,
-                      bottom: screenBasedPixelWidth * 15),
+                    left: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    right: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    top: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    bottom: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                  ),
                   child: Text(
                     "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: GoogleFonts.lato(
                       // color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: screenBasedPixelWidth * 15,
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -346,7 +380,10 @@ class _TimeTableState extends State<TimeTable> {
             children: listOfTableRowsForCustomSubjectDetailTable,
           ),
           Padding(
-            padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
+            padding: EdgeInsets.only(
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: Container(
               decoration: BoxDecoration(
                 // color: Colors.white,
@@ -356,8 +393,11 @@ class _TimeTableState extends State<TimeTable> {
                 //   right: BorderSide(color: Colors.black, width: 1),
                 // ),
                 border: Border.all(
-                    color: (Theme.of(context).textTheme.headline1?.color)!,
-                    width: screenBasedPixelWidth * 1),
+                  color: (Theme.of(context).textTheme.headline1?.color)!,
+                  width: widgetSizeProvider(
+                      fixedSize: 1,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
                 // border: Border.all(
                 //     color: Colors.black, width: screenBasedPixelWidth * 1),
                 // borderRadius: const BorderRadius.all(Radius.circular(40));
@@ -366,16 +406,27 @@ class _TimeTableState extends State<TimeTable> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        left: screenBasedPixelWidth * 15,
-                        right: screenBasedPixelWidth * 15,
-                        top: screenBasedPixelWidth * 15,
-                        bottom: screenBasedPixelWidth * 15),
+                      left: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      right: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      top: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                      bottom: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
                     child: Text(
                       "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
                       style: GoogleFonts.lato(
                         // color: Colors.black,
                         // textStyle: Theme.of(context).textTheme.headline1,
-                        fontSize: screenBasedPixelWidth * 15,
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 15,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         fontWeight: FontWeight.w700,
                         fontStyle: FontStyle.normal,
                       ),
@@ -451,7 +502,8 @@ class _TimeTableState extends State<TimeTable> {
             style: GoogleFonts.nunito(
               color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: screenBasedPixelWidth * 25,
+              fontSize: widgetSizeProvider(
+                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.normal,
             ),
@@ -462,12 +514,18 @@ class _TimeTableState extends State<TimeTable> {
         leading: Builder(
           builder: (context) => Padding(
             padding: EdgeInsets.only(
-                right: screenBasedPixelWidth * 5,
-                top: screenBasedPixelWidth * 8,
-                bottom: screenBasedPixelWidth * 8),
+              right: widgetSizeProvider(
+                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: SizedBox(
-              width: screenBasedPixelWidth * 51,
-              height: screenBasedPixelWidth * 40,
+              width: widgetSizeProvider(
+                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+              height: widgetSizeProvider(
+                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
               child: Material(
                 color: Colors.transparent,
                 shape: const StadiumBorder(),
@@ -484,7 +542,9 @@ class _TimeTableState extends State<TimeTable> {
                     hoverColor: Colors.white.withOpacity(0.1),
                     child: Icon(
                       Icons.arrow_back,
-                      size: screenBasedPixelWidth * 24,
+                      size: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       color: Colors.white,
                     ),
                   ),
@@ -498,7 +558,10 @@ class _TimeTableState extends State<TimeTable> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(
+                widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -508,121 +571,152 @@ class _TimeTableState extends State<TimeTable> {
                     style: GoogleFonts.lato(
                       // color: Colors.black,
                       // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: screenBasedPixelWidth * 15,
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 15,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
                   ),
                   SizedBox(
-                    width: screenBasedPixelWidth * 5,
+                    width: widgetSizeProvider(
+                        fixedSize: 5,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                   ),
-                  Expanded(
-                    child: FittedBox(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xff04294f),
-                          borderRadius: BorderRadius.only(
-                            topLeft:
-                                Radius.circular(screenBasedPixelWidth * 10),
-                            topRight:
-                                Radius.circular(screenBasedPixelWidth * 10),
+                  FittedBox(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xff04294f),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(
+                            widgetSizeProvider(
+                                fixedSize: 10,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                          topRight: Radius.circular(
+                            widgetSizeProvider(
+                                fixedSize: 10,
+                                sizeDecidingVariable: screenBasedPixelWidth),
                           ),
                         ),
-                        child: DropdownButton<String>(
-                          dropdownColor: const Color(0xff04294f),
-                          value: dropdownValue,
-                          // isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_downward,
-                            size: screenBasedPixelWidth * 24,
-                            color: Colors.white,
-                          ),
-                          elevation: 16,
-                          // style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: screenBasedPixelWidth * 2,
-                            // color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              // dropdownValue = newValue!;
-                              WidgetsBinding.instance
-                                  ?.addPostFrameCallback((_) {
-                                widget.arguments.onProcessingSomething.call(
-                                    true); //then set processing something true for the new loading dialog
-                                customDialogBox(
-                                  isDialogShowing: isDialogShowing,
-                                  context: context,
-                                  onIsDialogShowing: (bool value) {
-                                    setState(() {
-                                      isDialogShowing = value;
-                                    });
-                                  },
-                                  dialogTitle: Text(
-                                    'Requesting Data',
-                                    style: TextStyle(
-                                        fontSize: screenBasedPixelWidth * 24),
-                                    textAlign: TextAlign.center,
+                      ),
+                      child: DropdownButton<String>(
+                        dropdownColor: const Color(0xff04294f),
+                        value: dropdownValue,
+                        // isExpanded: true,
+                        icon: Icon(
+                          Icons.arrow_downward,
+                          size: widgetSizeProvider(
+                              fixedSize: 24,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          color: Colors.white,
+                        ),
+                        elevation: 16,
+                        // style: const TextStyle(color: Colors.deepPurple),
+                        underline: Container(
+                          height: widgetSizeProvider(
+                              fixedSize: 2,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          // color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            // dropdownValue = newValue!;
+                            WidgetsBinding.instance?.addPostFrameCallback((_) {
+                              widget.arguments.onProcessingSomething.call(
+                                  true); //then set processing something true for the new loading dialog
+                              customDialogBox(
+                                isDialogShowing: isDialogShowing,
+                                context: context,
+                                onIsDialogShowing: (bool value) {
+                                  setState(() {
+                                    isDialogShowing = value;
+                                  });
+                                },
+                                dialogTitle: Text(
+                                  'Requesting Data',
+                                  style: TextStyle(
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 24,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
                                   ),
-                                  dialogChildren: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: screenBasedPixelWidth * 36,
-                                        width: screenBasedPixelWidth * 36,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth:
-                                              screenBasedPixelWidth * 4.0,
-                                        ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                dialogChildren: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      height: widgetSizeProvider(
+                                          fixedSize: 36,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                      width: widgetSizeProvider(
+                                          fixedSize: 36,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: widgetSizeProvider(
+                                            fixedSize: 4.0,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
                                       ),
-                                      Text(
-                                        'Please wait...',
-                                        style: TextStyle(
-                                            fontSize:
-                                                screenBasedPixelWidth * 20),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                  barrierDismissible: true,
-                                  screenBasedPixelHeight:
-                                      screenBasedPixelHeight,
-                                  screenBasedPixelWidth: screenBasedPixelWidth,
-                                  onProcessingSomething: (bool value) {
-                                    widget.arguments.onProcessingSomething
-                                        .call(value);
-                                  },
-                                ).then((_) => isDialogShowing = false);
-                              });
-                              widget.arguments.onSemesterSubIdChange
-                                  ?.call(newValue!);
-                            });
-                          },
-                          items: semesters.map<DropdownMenuItem<String>>(
-                              (Map<dynamic, dynamic> value) {
-                            return DropdownMenuItem<String>(
-                              value: value["semesterCode"],
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.all(screenBasedPixelWidth * 8.0),
-                                child: FittedBox(
-                                  child: Text(
-                                    value["semesterName"],
-                                    style: GoogleFonts.lato(
-                                      color: Colors.white,
-                                      // textStyle: Theme.of(context).textTheme.headline1,
-                                      fontSize: screenBasedPixelWidth * 15,
-                                      fontWeight: FontWeight.w700,
-                                      fontStyle: FontStyle.normal,
                                     ),
+                                    Text(
+                                      'Please wait...',
+                                      style: TextStyle(
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 20,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                                barrierDismissible: true,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                onProcessingSomething: (bool value) {
+                                  widget.arguments.onProcessingSomething
+                                      .call(value);
+                                },
+                              ).then((_) => isDialogShowing = false);
+                            });
+                            widget.arguments.onSemesterSubIdChange
+                                ?.call(newValue!);
+                          });
+                        },
+                        items: semesters.map<DropdownMenuItem<String>>(
+                            (Map<dynamic, dynamic> value) {
+                          return DropdownMenuItem<String>(
+                            value: value["semesterCode"],
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                widgetSizeProvider(
+                                    fixedSize: 8,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
+                              ),
+                              child: FittedBox(
+                                child: Text(
+                                  value["semesterName"],
+                                  style: GoogleFonts.lato(
+                                    color: Colors.white,
+                                    // textStyle: Theme.of(context).textTheme.headline1,
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 15,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.normal,
                                   ),
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),
@@ -656,8 +750,12 @@ class _TimeTableState extends State<TimeTable> {
                               });
                             },
                             child: Padding(
-                              padding:
-                                  EdgeInsets.all(screenBasedPixelWidth * 8.0),
+                              padding: EdgeInsets.all(
+                                widgetSizeProvider(
+                                    fixedSize: 8,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
+                              ),
                               child: customTimeTable,
                             ),
                           ),
@@ -682,8 +780,12 @@ class _TimeTableState extends State<TimeTable> {
                               });
                             },
                             child: Padding(
-                              padding:
-                                  EdgeInsets.all(screenBasedPixelWidth * 8.0),
+                              padding: EdgeInsets.all(
+                                widgetSizeProvider(
+                                    fixedSize: 8,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
+                              ),
                               child: customSubjectDetailTable,
                             ),
                           ),
@@ -699,7 +801,9 @@ class _TimeTableState extends State<TimeTable> {
                         style: GoogleFonts.lato(
                           // color: Colors.black,
                           // textStyle: Theme.of(context).textTheme.headline1,
-                          fontSize: screenBasedPixelWidth * 15,
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 15,
+                              sizeDecidingVariable: screenBasedPixelWidth),
                           fontWeight: FontWeight.w700,
                           fontStyle: FontStyle.normal,
                         ),
@@ -740,16 +844,22 @@ class TableHeader extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.only(
-                left: screenBasedPixelWidth * 15,
-                right: screenBasedPixelWidth * 15,
-                top: screenBasedPixelWidth * 15,
-                bottom: screenBasedPixelWidth * 15),
+              left: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              right: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: Text(
               tableHeaderText,
               style: GoogleFonts.lato(
                 color: Colors.white,
                 // textStyle: Theme.of(context).textTheme.headline1,
-                fontSize: screenBasedPixelWidth * 20,
+                fontSize: widgetSizeProvider(
+                    fixedSize: 20, sizeDecidingVariable: screenBasedPixelWidth),
                 fontWeight: FontWeight.w700,
                 fontStyle: FontStyle.normal,
               ),
@@ -793,8 +903,11 @@ class CustomTableRowElement extends StatelessWidget {
 
               border: Border(
                 bottom: BorderSide(
-                    color: (Theme.of(context).textTheme.headline1?.color)!,
-                    width: screenBasedPixelWidth * 1),
+                  color: (Theme.of(context).textTheme.headline1?.color)!,
+                  width: widgetSizeProvider(
+                      fixedSize: 1,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
               ),
               // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
@@ -804,17 +917,27 @@ class CustomTableRowElement extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.only(
-                  left: screenBasedPixelWidth * 15,
-                  right: screenBasedPixelWidth * 15,
-                  top: screenBasedPixelWidth * 15,
-                  bottom: screenBasedPixelWidth * 15,
+                  left: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  right: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  top: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  bottom: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                 ),
                 child: Text(
                   elementText1,
                   style: GoogleFonts.lato(
                     // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: screenBasedPixelWidth * 15,
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -834,17 +957,27 @@ class CustomTableRowElement extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.only(
-                  left: screenBasedPixelWidth * 15,
-                  right: screenBasedPixelWidth * 15,
-                  top: screenBasedPixelWidth * 15,
-                  bottom: screenBasedPixelWidth * 15,
+                  left: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  right: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  top: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                  bottom: widgetSizeProvider(
+                      fixedSize: 15,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                 ),
                 child: Text(
                   elementText2,
                   style: GoogleFonts.lato(
                     // color: Colors.black,
                     // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: screenBasedPixelWidth * 15,
+                    fontSize: widgetSizeProvider(
+                        fixedSize: 15,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.normal,
                   ),
@@ -878,20 +1011,25 @@ class LegendCellWidget extends StatelessWidget {
           // border: Border.all(color: Colors.black, width: 1),
           // borderRadius: const BorderRadius.all(Radius.circular(40));
           ),
-      height: screenBasedPixelHeight * 75,
+      height: widgetSizeProvider(
+          fixedSize: 75, sizeDecidingVariable: screenBasedPixelHeight),
       // width: 250,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
           padding: EdgeInsets.only(
-              left: screenBasedPixelWidth * 15,
-              right: screenBasedPixelWidth * 15),
+            left: widgetSizeProvider(
+                fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+            right: widgetSizeProvider(
+                fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+          ),
           child: Text(
             legendText,
             style: GoogleFonts.lato(
               // color: Colors.black,
               // textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: screenBasedPixelWidth * 15,
+              fontSize: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.normal,
             ),

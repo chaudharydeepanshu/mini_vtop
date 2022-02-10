@@ -6,6 +6,7 @@ import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctions/dailog_box_for_leaving_app.dart';
+import '../basicFunctions/widget_size_limiter.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
@@ -212,24 +213,50 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: screenBasedPixelWidth * 8.0),
+                  padding: EdgeInsets.only(
+                    top: widgetSizeProvider(
+                        fixedSize: 8,
+                        sizeDecidingVariable: screenBasedPixelHeight),
+                  ),
                   child: ElevatedButton(
                     style: ButtonStyle(
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: MaterialStateProperty.all<Size?>(
-                        Size.fromHeight(screenBasedPixelHeight * 56),
+                        Size.fromHeight(
+                          widgetSizeProvider(
+                              fixedSize: 56,
+                              sizeDecidingVariable: screenBasedPixelHeight),
+                        ),
                       ),
+                      // maximumSize: MaterialStateProperty.all<Size?>(
+                      //   const Size.fromHeight(56),
+                      // ),
                       backgroundColor:
                           MaterialStateProperty.all(const Color(0xff04294f)),
-                      padding: MaterialStateProperty.all(EdgeInsets.only(
-                          left: screenBasedPixelWidth * 20,
-                          right: screenBasedPixelWidth * 20)),
+                      padding: MaterialStateProperty.all(
+                        EdgeInsets.only(
+                          left: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          right: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                      ),
                       textStyle: MaterialStateProperty.all(
-                          TextStyle(fontSize: screenBasedPixelWidth * 20)),
+                        TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                      ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              screenBasedPixelWidth * 0.0),
+                            widgetSizeProvider(
+                                fixedSize: screenBasedPixelWidth,
+                                sizeDecidingVariable: 0),
+                          ),
                         ),
                       ),
                     ),
@@ -249,8 +276,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       children: [
                         Text(
                           'Theme Mode - $themeButtonText',
-                          style:
-                              TextStyle(fontSize: screenBasedPixelWidth * 16),
+                          style: TextStyle(
+                            fontSize: widgetSizeProvider(
+                                fixedSize: 16,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -263,26 +293,52 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(
-                                top: screenBasedPixelWidth * 8.0),
+                              top: widgetSizeProvider(
+                                  fixedSize: 8,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
                             child: ElevatedButton(
                               style: ButtonStyle(
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 minimumSize: MaterialStateProperty.all<Size?>(
-                                  Size.fromHeight(screenBasedPixelHeight * 56),
+                                  Size.fromHeight(
+                                    widgetSizeProvider(
+                                        fixedSize: 56,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelHeight),
+                                  ),
                                 ),
                                 backgroundColor: MaterialStateProperty.all(
                                     const Color(0xff04294f)),
                                 padding: MaterialStateProperty.all(
-                                    EdgeInsets.only(
-                                        left: screenBasedPixelWidth * 20,
-                                        right: screenBasedPixelWidth * 20)),
-                                textStyle: MaterialStateProperty.all(TextStyle(
-                                    fontSize: screenBasedPixelWidth * 20)),
+                                  EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                  ),
+                                ),
+                                textStyle: MaterialStateProperty.all(
+                                  TextStyle(
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                  ),
+                                ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        screenBasedPixelWidth * 0.0),
+                                      widgetSizeProvider(
+                                          fixedSize: 0,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -313,7 +369,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   Text(
                                     'VTOP Mode - $vtopCurrentStatusText',
                                     style: TextStyle(
-                                        fontSize: screenBasedPixelWidth * 16),
+                                      fontSize: widgetSizeProvider(
+                                          fixedSize: 16,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -322,26 +382,52 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                                top: screenBasedPixelWidth * 8.0),
+                              top: widgetSizeProvider(
+                                  fixedSize: 8,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
                             child: ElevatedButton(
                               style: ButtonStyle(
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 minimumSize: MaterialStateProperty.all<Size?>(
-                                  Size.fromHeight(screenBasedPixelHeight * 56),
+                                  Size.fromHeight(
+                                    widgetSizeProvider(
+                                        fixedSize: 56,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelHeight),
+                                  ),
                                 ),
                                 backgroundColor: MaterialStateProperty.all(
                                     const Color(0xff04294f)),
                                 padding: MaterialStateProperty.all(
-                                    EdgeInsets.only(
-                                        left: screenBasedPixelWidth * 20,
-                                        right: screenBasedPixelWidth * 20)),
-                                textStyle: MaterialStateProperty.all(TextStyle(
-                                    fontSize: screenBasedPixelWidth * 20)),
+                                  EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                  ),
+                                ),
+                                textStyle: MaterialStateProperty.all(
+                                  TextStyle(
+                                    fontSize: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                  ),
+                                ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        screenBasedPixelWidth * 0.0),
+                                      widgetSizeProvider(
+                                          fixedSize: 0,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -365,7 +451,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   Text(
                                     'Logout',
                                     style: TextStyle(
-                                        fontSize: screenBasedPixelWidth * 16),
+                                      fontSize: widgetSizeProvider(
+                                          fixedSize: 16,
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
+                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -383,15 +473,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.only(
-                  left: screenBasedPixelWidth * 8.0,
-                  right: screenBasedPixelWidth * 8.0),
+                left: widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
               child: Column(
                 children: [
                   RichText(
                     text: TextSpan(
                       text: 'Privacy Policy',
                       style: TextStyle(
-                          fontSize: screenBasedPixelWidth * 16,
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 16,
+                              sizeDecidingVariable: screenBasedPixelWidth),
                           color: Colors.blue),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
@@ -406,15 +501,23 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   packageInfo != null
                       ? Padding(
                           padding: EdgeInsets.only(
-                              bottom: screenBasedPixelWidth * 8.0,
-                              top: screenBasedPixelWidth * 8.0),
+                            bottom: widgetSizeProvider(
+                                fixedSize: 8,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                            top: widgetSizeProvider(
+                                fixedSize: 8,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "App Version - $version+$buildNumber",
                                 style: TextStyle(
-                                  fontSize: screenBasedPixelWidth * 16,
+                                  fontSize: widgetSizeProvider(
+                                      fixedSize: 16,
+                                      sizeDecidingVariable:
+                                          screenBasedPixelWidth),
                                 ),
                               ),
                             ],

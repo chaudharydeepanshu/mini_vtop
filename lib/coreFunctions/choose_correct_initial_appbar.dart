@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../basicFunctions/widget_size_limiter.dart';
+
 chooseCorrectAppbar({
   required BuildContext context,
   required double screenBasedPixelWidth,
@@ -51,7 +53,8 @@ chooseCorrectAppbar({
             style: GoogleFonts.nunito(
               color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: screenBasedPixelWidth * 25,
+              fontSize: widgetSizeProvider(
+                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.normal,
             ),
@@ -61,10 +64,19 @@ chooseCorrectAppbar({
         backgroundColor: const Color(0xff04294f),
         leading: Builder(
           builder: (context) => Padding(
-            padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
+            padding: EdgeInsets.only(
+              right: widgetSizeProvider(
+                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: SizedBox(
-              width: screenBasedPixelWidth * 51,
-              height: screenBasedPixelWidth * 40,
+              width: widgetSizeProvider(
+                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+              height: widgetSizeProvider(
+                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
               child: Material(
                 color: Colors.transparent,
                 shape: const StadiumBorder(),
@@ -82,7 +94,9 @@ chooseCorrectAppbar({
                     hoverColor: Colors.white.withOpacity(0.1),
                     child: Icon(
                       Icons.menu,
-                      size: screenBasedPixelWidth * 24,
+                      size: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       color: Colors.white,
                     ),
                   ),
@@ -104,7 +118,8 @@ chooseCorrectAppbar({
           style: GoogleFonts.nunito(
             color: Colors.white,
             textStyle: Theme.of(context).textTheme.headline1,
-            fontSize: screenBasedPixelWidth * 25,
+            fontSize: widgetSizeProvider(
+                fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
             fontWeight: FontWeight.w600,
             fontStyle: FontStyle.normal,
           ),
@@ -115,12 +130,18 @@ chooseCorrectAppbar({
         leading: Builder(
           builder: (context) => Padding(
             padding: EdgeInsets.only(
-                right: screenBasedPixelWidth * 5,
-                top: screenBasedPixelWidth * 8,
-                bottom: screenBasedPixelWidth * 8),
+              right: widgetSizeProvider(
+                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: SizedBox(
-              width: screenBasedPixelWidth * 51,
-              height: screenBasedPixelHeight * 40,
+              width: widgetSizeProvider(
+                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+              height: widgetSizeProvider(
+                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
               child: Material(
                 color: Colors.transparent,
                 shape: const StadiumBorder(),
@@ -138,7 +159,9 @@ chooseCorrectAppbar({
                     hoverColor: Colors.white.withOpacity(0.1),
                     child: Icon(
                       Icons.menu,
-                      size: screenBasedPixelWidth * 24,
+                      size: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       color: Colors.white,
                     ),
                   ),
@@ -162,7 +185,8 @@ chooseCorrectAppbar({
             style: GoogleFonts.nunito(
               color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: screenBasedPixelWidth * 25,
+              fontSize: widgetSizeProvider(
+                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.normal,
             ),
@@ -173,12 +197,18 @@ chooseCorrectAppbar({
         leading: Builder(
           builder: (context) => Padding(
             padding: EdgeInsets.only(
-                right: screenBasedPixelWidth * 5,
-                top: screenBasedPixelWidth * 8,
-                bottom: screenBasedPixelWidth * 8),
+              right: widgetSizeProvider(
+                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: SizedBox(
-              width: screenBasedPixelWidth * 51,
-              height: screenBasedPixelWidth * 40,
+              width: widgetSizeProvider(
+                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+              height: widgetSizeProvider(
+                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
               child: Material(
                 color: Colors.transparent,
                 shape: const StadiumBorder(),
@@ -196,7 +226,9 @@ chooseCorrectAppbar({
                     hoverColor: Colors.white.withOpacity(0.1),
                     child: Icon(
                       Icons.menu,
-                      size: screenBasedPixelWidth * 24,
+                      size: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       color: Colors.white,
                     ),
                   ),
@@ -255,7 +287,8 @@ chooseCorrectAppbar({
             style: GoogleFonts.nunito(
               color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: screenBasedPixelWidth * 25,
+              fontSize: widgetSizeProvider(
+                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.normal,
             ),
@@ -266,12 +299,18 @@ chooseCorrectAppbar({
         leading: Builder(
           builder: (context) => Padding(
             padding: EdgeInsets.only(
-                right: screenBasedPixelWidth * 5,
-                top: screenBasedPixelWidth * 8,
-                bottom: screenBasedPixelWidth * 8),
+              right: widgetSizeProvider(
+                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
             child: SizedBox(
-              width: screenBasedPixelWidth * 51,
-              height: screenBasedPixelWidth * 40,
+              width: widgetSizeProvider(
+                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
+              height: widgetSizeProvider(
+                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
               child: Material(
                 color: Colors.transparent,
                 shape: const StadiumBorder(),
@@ -289,7 +328,9 @@ chooseCorrectAppbar({
                     hoverColor: Colors.white.withOpacity(0.1),
                     child: Icon(
                       Icons.menu,
-                      size: screenBasedPixelWidth * 24,
+                      size: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       color: Colors.white,
                     ),
                   ),

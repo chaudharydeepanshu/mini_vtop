@@ -13,6 +13,7 @@ import 'package:share/share.dart';
 import 'custom_image.dart';
 import 'models/browser_model.dart';
 import 'models/webview_model.dart';
+import 'dart:io';
 
 class LongPressAlertDialog extends StatefulWidget {
   static const List<InAppWebViewHitTestResultType> hitTestResultSupported = [
@@ -273,15 +274,18 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
           var uri = Uri.parse(widget.hitTestResult.extra!);
           String path = uri.path;
           String fileName = path.substring(path.lastIndexOf('/') + 1);
-
-          final taskId = await FlutterDownloader.enqueue(
-            url: widget.hitTestResult.extra!,
-            fileName: fileName,
-            savedDir: (await getExternalStorageDirectory())!.path,
-            showNotification: true,
-            openFileFromNotification: true,
-            saveInPublicStorage: true,
-          );
+          if (Platform.isAndroid) {
+            final taskId = await FlutterDownloader.enqueue(
+              url: widget.hitTestResult.extra!,
+              fileName: fileName,
+              savedDir: (await getExternalStorageDirectory())!.path,
+              showNotification: true,
+              openFileFromNotification: true,
+              saveInPublicStorage: true,
+            );
+          } else if (Platform.isWindows) {
+            // iOS-specific code
+          }
         }
         Navigator.pop(context);
       },

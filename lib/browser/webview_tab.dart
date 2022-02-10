@@ -325,15 +325,18 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
       onDownloadStart: (controller, url) async {
         String path = url.path;
         String fileName = path.substring(path.lastIndexOf('/') + 1);
-
-        final taskId = await FlutterDownloader.enqueue(
-          url: url.toString(),
-          fileName: fileName,
-          savedDir: (await getTemporaryDirectory()).path,
-          showNotification: true,
-          openFileFromNotification: true,
-          saveInPublicStorage: true,
-        );
+        if (Platform.isAndroid) {
+          final taskId = await FlutterDownloader.enqueue(
+            url: url.toString(),
+            fileName: fileName,
+            savedDir: (await getTemporaryDirectory()).path,
+            showNotification: true,
+            openFileFromNotification: true,
+            saveInPublicStorage: true,
+          );
+        } else if (Platform.isWindows) {
+          // iOS-specific code
+        }
       },
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
         var sslError = challenge.protectionSpace.sslError;
