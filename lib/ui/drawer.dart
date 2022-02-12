@@ -6,6 +6,7 @@ import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctions/dailog_box_for_leaving_app.dart';
+import '../basicFunctions/proccessing_dialog.dart';
 import '../basicFunctions/widget_size_limiter.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -22,6 +23,7 @@ class CustomDrawer extends StatefulWidget {
     this.onShowStudentProfileAllView,
     this.onTryAutoLoginStatus,
     required this.onError,
+    required this.onProcessingSomething,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -34,6 +36,7 @@ class CustomDrawer extends StatefulWidget {
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTryAutoLoginStatus;
   final ValueChanged<String> onError;
+  final ValueChanged<bool> onProcessingSomething;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -150,6 +153,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   late double screenBasedPixelWidth;
   late double screenBasedPixelHeight;
+
+  bool isDialogShowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +449,74 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   },
                                 );
                                 // Then close the drawer
+
                                 Navigator.pop(context);
+                                WidgetsBinding.instance
+                                    ?.addPostFrameCallback((_) {
+                                  widget.onProcessingSomething.call(
+                                      true); //then set processing something true for the new loading dialog
+                                  customDialogBox(
+                                    isDialogShowing: isDialogShowing,
+                                    context: context,
+                                    onIsDialogShowing: (bool value) {
+                                      setState(() {
+                                        isDialogShowing = value;
+                                      });
+                                    },
+                                    dialogTitle: Text(
+                                      'Processing logout',
+                                      style: TextStyle(
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 24,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    dialogChildren: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          height: widgetSizeProvider(
+                                              fixedSize: 36,
+                                              sizeDecidingVariable:
+                                                  screenBasedPixelWidth),
+                                          width: widgetSizeProvider(
+                                              fixedSize: 36,
+                                              sizeDecidingVariable:
+                                                  screenBasedPixelWidth),
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: widgetSizeProvider(
+                                                fixedSize: 4,
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                          ),
+                                        ),
+                                        Text(
+                                          'Please wait...',
+                                          style: TextStyle(
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 20,
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                    barrierDismissible: true,
+                                    screenBasedPixelHeight:
+                                        screenBasedPixelHeight,
+                                    screenBasedPixelWidth:
+                                        screenBasedPixelWidth,
+                                    onProcessingSomething: (bool value) {
+                                      widget.onProcessingSomething.call(value);
+                                    },
+                                  ).then((_) => isDialogShowing = false);
+                                });
                               },
                               child: Row(
                                 children: [

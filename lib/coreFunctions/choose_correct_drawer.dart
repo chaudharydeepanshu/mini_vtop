@@ -53,6 +53,9 @@ chooseCorrectDrawer(
         onError: (String value) {
           onError.call(value);
         },
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -74,6 +77,9 @@ chooseCorrectDrawer(
         },
         onError: (String value) {
           onError.call(value);
+        },
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
         },
       ),
     );
@@ -117,6 +123,9 @@ chooseCorrectDrawer(
         onError: (String value) {
           onError.call(value);
         },
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -158,6 +167,9 @@ chooseCorrectDrawer(
         },
         onError: (String value) {
           onError.call(value);
+        },
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
         },
       ),
     );

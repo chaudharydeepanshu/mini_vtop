@@ -22,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'basicFunctions/dismiss_keyboard.dart';
 import 'basicFunctions/print_wrapped.dart';
+import 'basicFunctions/proccessing_dialog.dart';
 import 'basicFunctions/widget_size_limiter.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
@@ -31,6 +32,7 @@ import 'coreFunctions/choose_correct_drawer.dart';
 import 'coreFunctions/choose_correct_initial_body.dart';
 import 'coreFunctions/forHeadlessInAppWebView/headless_web_view.dart';
 import 'coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
+import 'coreFunctions/sign_out.dart';
 import 'navigation/page_routes_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -271,6 +273,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   String semesterSubId = "BL20212210";
 
+  bool isDialogShowing = false;
+
   getStudentName({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
@@ -482,6 +486,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         }
       },
       onWebViewCreated: (controller) async {
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
         checkInternetConnection();
         Future.delayed(const Duration(seconds: 5), () async {
           if (vtopConnectionStatusType == "Initiated") {
@@ -496,6 +506,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               vtopConnectionStatusErrorType == "None") {
             debugPrint(
                 "restarting headlessInAppWebView as webview is taking too long");
+
+            if (processingSomething == true) {
+              Navigator.of(context).pop();
+              setState(() {
+                processingSomething = false;
+              });
+            }
+
             runHeadlessInAppWebView(
               headlessWebView: headlessWebView,
               onCurrentFullUrl: (String value) {
@@ -609,9 +627,111 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   refreshingCaptcha = false;
                 });
               });
-            } else {
+            } else if (ajaxRequest.responseText!.contains(
+                    "You are logged out due to inactivity for more than 15 minutes") ||
+                ajaxRequest.responseText!
+                    .contains("You have been successfully logged out")) {
               debugPrint(
-                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
+                  "You are logged out due to inactivity for more than 15 minutes");
+              debugPrint(
+                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+              performSignOut(
+                context: context,
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  setState(() {
+                    currentFullUrl = value;
+                  });
+                },
+                onError: (String value) {
+                  debugPrint("Updating Ui based on the error received");
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
+                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                    debugPrint(
+                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                    setState(() {
+                      currentStatus = "launchLoadingScreen";
+                      vtopConnectionStatusErrorType =
+                          "net::ERR_INTERNET_DISCONNECTED";
+                      vtopConnectionStatusType = "Error";
+                    });
+                  }
+                },
+              );
+
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                processingSomething = true;
+                customDialogBox(
+                  isDialogShowing: isDialogShowing,
+                  context: context,
+                  onIsDialogShowing: (bool value) {
+                    setState(() {
+                      isDialogShowing = value;
+                    });
+                  },
+                  dialogTitle: Text(
+                    'You logged out',
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  dialogChildren: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        width: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        child: CircularProgressIndicator(
+                          strokeWidth: widgetSizeProvider(
+                              fixedSize: 4,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                      ),
+                      Text(
+                        'So, re-requesting login page please wait...',
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  barrierDismissible: false,
+                  screenBasedPixelHeight: screenBasedPixelHeight,
+                  screenBasedPixelWidth: screenBasedPixelWidth,
+                  onProcessingSomething: (bool value) {
+                    setState(() {
+                      processingSomething = value;
+                    });
+                  },
+                ).then((_) => isDialogShowing = false);
+              });
+            } else if (ajaxRequest.status != 200) {
+              debugPrint(
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
+
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
                 onCurrentFullUrl: (String value) {
@@ -625,12 +745,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             // }
           } else if (ajaxRequest.url.toString() == "doLogin") {
             // print("ajaxRequest: ${ajaxRequest}");
-            if (ajaxRequest.status == 200) {
-              await controller
-                  .evaluateJavascript(
-                      source:
-                          "new XMLSerializer().serializeToString(document);")
-                  .then((value) async {
+            await controller
+                .evaluateJavascript(
+                    source: "new XMLSerializer().serializeToString(document);")
+                .then((value) async {
+              if (ajaxRequest.status == 200) {
                 if (value.contains(userEnteredUname + "(STUDENT)")) {
                   printWrapped("User $userEnteredUname successfully signed in");
                   // onCurrentStatus.call("userLoggedIn");
@@ -716,6 +835,20 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   // await controller.evaluateJavascript(
                   //     source:
                   //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
+                } else if (value.contains(
+                    "You are logged out due to inactivity for more than 15 minutes")) {
+                  printWrapped(
+                      "Most probably session expired due to inactivity");
+                  //Invalid User Id / Password WHEN ENTERING CORRECT ID BUT WRONG PASSWORD
+                  vtopLoginErrorType = "Session expired due to inactivity";
+                  runHeadlessInAppWebView(
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                  );
                 } else {
                   printWrapped(
                       "Can't find why something got wrong enable print ajaxRequest for doLogin and see the logs");
@@ -730,67 +863,360 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     },
                   );
                 }
-              });
-            } else {
-              debugPrint(
-                  "restarting headlessInAppWebView as doLogin ajaxRequest.status != 200");
-              runHeadlessInAppWebView(
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  currentFullUrl = value;
-                },
-              );
-            }
+              } else if (ajaxRequest.responseText!.contains(
+                      "You are logged out due to inactivity for more than 15 minutes") ||
+                  ajaxRequest.responseText!
+                      .contains("You have been successfully logged out")) {
+                debugPrint(
+                    "You are logged out due to inactivity for more than 15 minutes");
+                debugPrint(
+                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                performSignOut(
+                  context: context,
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  },
+                  onError: (String value) {
+                    debugPrint("Updating Ui based on the error received");
+                    if (processingSomething == true) {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        processingSomething = false;
+                      });
+                    }
+                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                      debugPrint(
+                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                      setState(() {
+                        currentStatus = "launchLoadingScreen";
+                        vtopConnectionStatusErrorType =
+                            "net::ERR_INTERNET_DISCONNECTED";
+                        vtopConnectionStatusType = "Error";
+                      });
+                    }
+                  },
+                );
+
+                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                  processingSomething = true;
+                  customDialogBox(
+                    isDialogShowing: isDialogShowing,
+                    context: context,
+                    onIsDialogShowing: (bool value) {
+                      setState(() {
+                        isDialogShowing = value;
+                      });
+                    },
+                    dialogTitle: Text(
+                      'You logged out',
+                      style: TextStyle(
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 24,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    dialogChildren: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          width: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          child: CircularProgressIndicator(
+                            strokeWidth: widgetSizeProvider(
+                                fixedSize: 4,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                        ),
+                        Text(
+                          'So, re-requesting login page please wait...',
+                          style: TextStyle(
+                            fontSize: widgetSizeProvider(
+                                fixedSize: 20,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                    barrierDismissible: false,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    screenBasedPixelWidth: screenBasedPixelWidth,
+                    onProcessingSomething: (bool value) {
+                      setState(() {
+                        processingSomething = value;
+                      });
+                    },
+                  ).then((_) => isDialogShowing = false);
+                });
+              } else if (ajaxRequest.status != 200) {
+                debugPrint(
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                );
+              }
+            });
           } else if (ajaxRequest.url.toString() == "doRefreshCaptcha") {
             // printWrapped("ajaxRequest: ${ajaxRequest}");
             // print("ajaxRequest: ${ajaxRequest}");
             if (ajaxRequest.responseText != null) {
-              if (ajaxRequest.responseText!.contains(
-                  "You are logged out due to inactivity for more than 15 minutes")) {
-                // onRestartHeadlessInAppWebView.call(true);
-                // runHeadlessInAppWebView(
-                //   headlessWebView: headlessWebView,
-                //   onCurrentFullUrl: (String value) {
-                //     setState(() {
-                //       currentFullUrl = value;
-                //     });
-                //   },
-                // );
-                debugPrint(
-                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for doRefreshCaptcha");
-                await controller.evaluateJavascript(
-                    source:
-                        '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
-              } else {
-                // await controller.evaluateJavascript(source: '''
-                //   document.querySelector('img[alt="vtopCaptcha"]').src;
-                //   ''').then((value) {
-                var document = parse('${ajaxRequest.responseText}');
-                String? imageSrc = document
-                    .querySelector('img[alt="vtopCaptcha"]')
-                    ?.attributes["src"];
-                String uri = imageSrc!;
-                String base64String = uri.split(', ').last;
-                Uint8List _bytes = base64.decode(base64String);
-                // printWrapped("vtopCaptcha _bytes: $base64String");
-                // onImage.call(Image.memory(_bytes));
-
-                autoFillCaptcha(
+              if (ajaxRequest.status == 200) {
+                if (ajaxRequest.responseText!.contains(
+                        "You are logged out due to inactivity for more than 15 minutes") ||
+                    ajaxRequest.responseText!
+                        .contains("You have been successfully logged out")) {
+                  debugPrint(
+                      "You are logged out due to inactivity for more than 15 minutes");
+                  debugPrint(
+                      "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                  performSignOut(
                     context: context,
                     headlessWebView: headlessWebView,
                     onCurrentFullUrl: (String value) {
                       setState(() {
                         currentFullUrl = value;
                       });
-                    });
+                    },
+                    onError: (String value) {
+                      debugPrint("Updating Ui based on the error received");
+                      if (processingSomething == true) {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          processingSomething = false;
+                        });
+                      }
+                      if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                        debugPrint(
+                            "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                        setState(() {
+                          currentStatus = "launchLoadingScreen";
+                          vtopConnectionStatusErrorType =
+                              "net::ERR_INTERNET_DISCONNECTED";
+                          vtopConnectionStatusType = "Error";
+                        });
+                      }
+                    },
+                  );
 
-                setState(() {
-                  refreshingCaptcha = false;
-                  image = Image.memory(_bytes);
-                  // loaded(uri, image!);
+                  WidgetsBinding.instance?.addPostFrameCallback((_) {
+                    processingSomething = true;
+                    customDialogBox(
+                      isDialogShowing: isDialogShowing,
+                      context: context,
+                      onIsDialogShowing: (bool value) {
+                        setState(() {
+                          isDialogShowing = value;
+                        });
+                      },
+                      dialogTitle: Text(
+                        'You logged out',
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 24,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      dialogChildren: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: widgetSizeProvider(
+                                fixedSize: 36,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                            width: widgetSizeProvider(
+                                fixedSize: 36,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                            child: CircularProgressIndicator(
+                              strokeWidth: widgetSizeProvider(
+                                  fixedSize: 4,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                          ),
+                          Text(
+                            'So, re-requesting login page please wait...',
+                            style: TextStyle(
+                              fontSize: widgetSizeProvider(
+                                  fixedSize: 20,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      barrierDismissible: false,
+                      screenBasedPixelHeight: screenBasedPixelHeight,
+                      screenBasedPixelWidth: screenBasedPixelWidth,
+                      onProcessingSomething: (bool value) {
+                        setState(() {
+                          processingSomething = value;
+                        });
+                      },
+                    ).then((_) => isDialogShowing = false);
+                  });
+                } else {
+                  // await controller.evaluateJavascript(source: '''
+                  //   document.querySelector('img[alt="vtopCaptcha"]').src;
+                  //   ''').then((value) {
+                  var document = parse('${ajaxRequest.responseText}');
+                  String? imageSrc = document
+                      .querySelector('img[alt="vtopCaptcha"]')
+                      ?.attributes["src"];
+                  String uri = imageSrc!;
+                  String base64String = uri.split(', ').last;
+                  Uint8List _bytes = base64.decode(base64String);
+                  // printWrapped("vtopCaptcha _bytes: $base64String");
+                  // onImage.call(Image.memory(_bytes));
+
+                  autoFillCaptcha(
+                      context: context,
+                      headlessWebView: headlessWebView,
+                      onCurrentFullUrl: (String value) {
+                        setState(() {
+                          currentFullUrl = value;
+                        });
+                      });
+
+                  setState(() {
+                    refreshingCaptcha = false;
+                    image = Image.memory(_bytes);
+                    // loaded(uri, image!);
+                  });
+                  // print("vtopCaptcha _bytes: ${_bytes}");
+                  // });
+                }
+              } else if (ajaxRequest.responseText!.contains(
+                      "You are logged out due to inactivity for more than 15 minutes") ||
+                  ajaxRequest.responseText!
+                      .contains("You have been successfully logged out")) {
+                debugPrint(
+                    "You are logged out due to inactivity for more than 15 minutes");
+                debugPrint(
+                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                performSignOut(
+                  context: context,
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  },
+                  onError: (String value) {
+                    debugPrint("Updating Ui based on the error received");
+                    if (processingSomething == true) {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        processingSomething = false;
+                      });
+                    }
+                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                      debugPrint(
+                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                      setState(() {
+                        currentStatus = "launchLoadingScreen";
+                        vtopConnectionStatusErrorType =
+                            "net::ERR_INTERNET_DISCONNECTED";
+                        vtopConnectionStatusType = "Error";
+                      });
+                    }
+                  },
+                );
+
+                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                  processingSomething = true;
+                  customDialogBox(
+                    isDialogShowing: isDialogShowing,
+                    context: context,
+                    onIsDialogShowing: (bool value) {
+                      setState(() {
+                        isDialogShowing = value;
+                      });
+                    },
+                    dialogTitle: Text(
+                      'You logged out',
+                      style: TextStyle(
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 24,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    dialogChildren: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          width: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          child: CircularProgressIndicator(
+                            strokeWidth: widgetSizeProvider(
+                                fixedSize: 4,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                        ),
+                        Text(
+                          'So, re-requesting login page please wait...',
+                          style: TextStyle(
+                            fontSize: widgetSizeProvider(
+                                fixedSize: 20,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                    barrierDismissible: false,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    screenBasedPixelWidth: screenBasedPixelWidth,
+                    onProcessingSomething: (bool value) {
+                      setState(() {
+                        processingSomething = value;
+                      });
+                    },
+                  ).then((_) => isDialogShowing = false);
                 });
-                // print("vtopCaptcha _bytes: ${_bytes}");
-                // });
+              } else if (ajaxRequest.status != 200) {
+                debugPrint(
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                );
               }
             }
           } else if (ajaxRequest.url.toString() ==
@@ -922,7 +1348,101 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     });
                   });
                 });
-              } else {
+              } else if (ajaxRequest.responseText!.contains(
+                      "You are logged out due to inactivity for more than 15 minutes") ||
+                  ajaxRequest.responseText!
+                      .contains("You have been successfully logged out")) {
+                debugPrint(
+                    "You are logged out due to inactivity for more than 15 minutes");
+                debugPrint(
+                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                performSignOut(
+                  context: context,
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    setState(() {
+                      currentFullUrl = value;
+                    });
+                  },
+                  onError: (String value) {
+                    debugPrint("Updating Ui based on the error received");
+                    if (processingSomething == true) {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        processingSomething = false;
+                      });
+                    }
+                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                      debugPrint(
+                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                      setState(() {
+                        currentStatus = "launchLoadingScreen";
+                        vtopConnectionStatusErrorType =
+                            "net::ERR_INTERNET_DISCONNECTED";
+                        vtopConnectionStatusType = "Error";
+                      });
+                    }
+                  },
+                );
+
+                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                  processingSomething = true;
+                  customDialogBox(
+                    isDialogShowing: isDialogShowing,
+                    context: context,
+                    onIsDialogShowing: (bool value) {
+                      setState(() {
+                        isDialogShowing = value;
+                      });
+                    },
+                    dialogTitle: Text(
+                      'You logged out',
+                      style: TextStyle(
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 24,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    dialogChildren: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          width: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          child: CircularProgressIndicator(
+                            strokeWidth: widgetSizeProvider(
+                                fixedSize: 4,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                        ),
+                        Text(
+                          'So, re-requesting login page please wait...',
+                          style: TextStyle(
+                            fontSize: widgetSizeProvider(
+                                fixedSize: 20,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                    barrierDismissible: false,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    screenBasedPixelWidth: screenBasedPixelWidth,
+                    onProcessingSomething: (bool value) {
+                      setState(() {
+                        processingSomething = value;
+                      });
+                    },
+                  ).then((_) => isDialogShowing = false);
+                });
+              } else if (ajaxRequest.status != 200) {
                 debugPrint(
                     "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
@@ -939,8 +1459,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     currentFullUrl = value;
                   },
                 );
-                // Navigator.of(context).pop();
-                // debugPrint("dialogBox popped");
               }
             }
             // print(document.outerHtml);
@@ -948,32 +1466,30 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
             // print("ajaxRequest: ${ajaxRequest}");
+            if (processingSomething == true) {
+              Navigator.of(context).pop();
+              setState(() {
+                processingSomething = false;
+              });
+            }
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
-                  "You are logged out due to inactivity for more than 15 minutes")) {
-                currentStatus = "launchLoadingScreen";
+                      "You are logged out due to inactivity for more than 15 minutes") ||
+                  ajaxRequest.responseText!
+                      .contains("You have been successfully logged out")) {
+                setState(() {
+                  currentStatus = "launchLoadingScreen";
+                  vtopConnectionStatusType = "Initiated";
+                });
+
                 debugPrint(
-                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
+                    "called inactivityResponse or successfullyLogout Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
                   onCurrentFullUrl: (String value) {
                     currentFullUrl = value;
                   },
                 );
-              } else if (ajaxRequest.responseText!
-                  .contains("You have been successfully logged out")) {
-                debugPrint("You have been successfully logged out");
-                currentStatus = "launchLoadingScreen";
-                runHeadlessInAppWebView(
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    setState(() {
-                      currentFullUrl = value;
-                    });
-                  },
-                );
-                debugPrint(
-                    "called inactivityResponse Action https://vtop.vitbhopal.ac.in/vtop for processLogout");
               }
             }
           } else if (ajaxRequest.url.toString() ==
@@ -1011,7 +1527,104 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   }
                 });
               }
-            } else {
+            } else if (ajaxRequest.responseText!.contains(
+                    "You are logged out due to inactivity for more than 15 minutes") ||
+                ajaxRequest.responseText!
+                    .contains("You have been successfully logged out")) {
+              debugPrint(
+                  "You are logged out due to inactivity for more than 15 minutes");
+              debugPrint(
+                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+              performSignOut(
+                context: context,
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  setState(() {
+                    currentFullUrl = value;
+                  });
+                },
+                onError: (String value) {
+                  debugPrint("Updating Ui based on the error received");
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
+                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                    debugPrint(
+                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                    setState(() {
+                      currentStatus = "launchLoadingScreen";
+                      vtopConnectionStatusErrorType =
+                          "net::ERR_INTERNET_DISCONNECTED";
+                      vtopConnectionStatusType = "Error";
+                    });
+                  }
+                },
+              );
+
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                processingSomething = true;
+                customDialogBox(
+                  isDialogShowing: isDialogShowing,
+                  context: context,
+                  onIsDialogShowing: (bool value) {
+                    setState(() {
+                      isDialogShowing = value;
+                    });
+                  },
+                  dialogTitle: Text(
+                    'You logged out',
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  dialogChildren: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        width: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        child: CircularProgressIndicator(
+                          strokeWidth: widgetSizeProvider(
+                              fixedSize: 4,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                      ),
+                      Text(
+                        'So, re-requesting login page please wait...',
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  barrierDismissible: false,
+                  screenBasedPixelHeight: screenBasedPixelHeight,
+                  screenBasedPixelWidth: screenBasedPixelWidth,
+                  onProcessingSomething: (bool value) {
+                    setState(() {
+                      processingSomething = value;
+                    });
+                  },
+                ).then((_) => isDialogShowing = false);
+              });
+            } else if (ajaxRequest.status != 200) {
+              debugPrint(
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
               if (processingSomething == true) {
                 Navigator.of(context).pop();
                 setState(() {
@@ -1019,8 +1632,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 });
               }
 
-              debugPrint(
-                  "restarting headlessInAppWebView as academics/common/StudentTimeTable ajaxRequest.status != 200");
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
                 onCurrentFullUrl: (String value) {
@@ -1181,7 +1792,104 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 }
               });
-            } else {
+            } else if (ajaxRequest.responseText!.contains(
+                    "You are logged out due to inactivity for more than 15 minutes") ||
+                ajaxRequest.responseText!
+                    .contains("You have been successfully logged out")) {
+              debugPrint(
+                  "You are logged out due to inactivity for more than 15 minutes");
+              debugPrint(
+                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+              performSignOut(
+                context: context,
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  setState(() {
+                    currentFullUrl = value;
+                  });
+                },
+                onError: (String value) {
+                  debugPrint("Updating Ui based on the error received");
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
+                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                    debugPrint(
+                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                    setState(() {
+                      currentStatus = "launchLoadingScreen";
+                      vtopConnectionStatusErrorType =
+                          "net::ERR_INTERNET_DISCONNECTED";
+                      vtopConnectionStatusType = "Error";
+                    });
+                  }
+                },
+              );
+
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                processingSomething = true;
+                customDialogBox(
+                  isDialogShowing: isDialogShowing,
+                  context: context,
+                  onIsDialogShowing: (bool value) {
+                    setState(() {
+                      isDialogShowing = value;
+                    });
+                  },
+                  dialogTitle: Text(
+                    'You logged out',
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 24,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  dialogChildren: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        width: widgetSizeProvider(
+                            fixedSize: 36,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                        child: CircularProgressIndicator(
+                          strokeWidth: widgetSizeProvider(
+                              fixedSize: 4,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                      ),
+                      Text(
+                        'So, re-requesting login page please wait...',
+                        style: TextStyle(
+                          fontSize: widgetSizeProvider(
+                              fixedSize: 20,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  barrierDismissible: false,
+                  screenBasedPixelHeight: screenBasedPixelHeight,
+                  screenBasedPixelWidth: screenBasedPixelWidth,
+                  onProcessingSomething: (bool value) {
+                    setState(() {
+                      processingSomething = value;
+                    });
+                  },
+                ).then((_) => isDialogShowing = false);
+              });
+            } else if (ajaxRequest.status != 200) {
+              debugPrint(
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
               if (processingSomething == true) {
                 Navigator.of(context).pop();
                 setState(() {
@@ -1189,8 +1897,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 });
               }
 
-              debugPrint(
-                  "restarting headlessInAppWebView as processViewTimeTable ajaxRequest.status != 200");
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
                 onCurrentFullUrl: (String value) {
@@ -1472,6 +2178,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         _clearUnamePasswd();
       },
       onRetryOnError: (bool value) {
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
         setState(() {
           vtopConnectionStatusErrorType = "None";
           vtopConnectionStatusType = "Initiated";
