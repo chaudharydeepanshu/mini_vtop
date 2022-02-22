@@ -635,6 +635,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   "You are logged out due to inactivity for more than 15 minutes");
               debugPrint(
                   "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
+              }
+
               performSignOut(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -731,6 +744,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   processingSomething = false;
                 });
               }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
+              }
 
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
@@ -776,6 +794,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       },
                     );
                     getStudentName(forXAction: 'New login');
+                    //actually we are using getStudentName() to get profile document and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request
 
                     setState(() {
                       // currentStatus = "userLoggedIn";
@@ -784,15 +803,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       studentPortalDocument =
                           parse('${ajaxRequest.responseText}');
                     });
-
-                    // manageUserSession(
-                    //     context: context,
-                    //     headlessWebView: headlessWebView,
-                    //     onCurrentFullUrl: (String value) {
-                    //       setState(() {
-                    //         currentFullUrl = value;
-                    //       });
-                    //     });
                     return value;
                   });
                 } else if (value.contains("User Id Not available")) {
@@ -873,6 +883,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes");
                 debugPrint(
                     "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
+
                 performSignOut(
                   context: context,
                   headlessWebView: headlessWebView,
@@ -969,6 +992,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     processingSomething = false;
                   });
                 }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -991,6 +1019,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes");
                   debugPrint(
                       "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
+                  if (loggedUserStatus != "studentPortalScreen") {
+                    debugPrint(
+                        "closing open gages on auto logout on session time end");
+                    Navigator.of(context).pop();
+                  }
+
                   performSignOut(
                     context: context,
                     headlessWebView: headlessWebView,
@@ -1116,6 +1157,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes");
                 debugPrint(
                     "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
+
                 performSignOut(
                   context: context,
                   headlessWebView: headlessWebView,
@@ -1211,6 +1265,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     processingSomething = false;
                   });
+                }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
                 }
 
                 runHeadlessInAppWebView(
@@ -1358,6 +1417,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes");
                 debugPrint(
                     "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
+
                 performSignOut(
                   context: context,
                   headlessWebView: headlessWebView,
@@ -1454,6 +1526,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     processingSomething = false;
                   });
                 }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -1468,11 +1545,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
             // print("ajaxRequest: ${ajaxRequest}");
+
             if (processingSomething == true) {
               Navigator.of(context).pop();
               setState(() {
                 processingSomething = false;
               });
+            }
+            if (loggedUserStatus != "studentPortalScreen") {
+              debugPrint(
+                  "closing open gages on auto logout on session time end");
+              Navigator.of(context).pop();
             }
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
@@ -1537,6 +1620,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   "You are logged out due to inactivity for more than 15 minutes");
               debugPrint(
                   "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
+              }
+
               performSignOut(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -1632,6 +1728,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 setState(() {
                   processingSomething = false;
                 });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
               }
 
               runHeadlessInAppWebView(
@@ -1721,10 +1822,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         });
                       },
                     ),
-                  ).whenComplete(() {
-                    setState(() {
-                      loggedUserStatus = "timeTable";
-                    });
+                  );
+                  setState(() {
+                    loggedUserStatus = "timeTable";
                   });
                 } else if (requestType == "Update") {
                   debugPrint("Table Update Ran");
@@ -1787,10 +1887,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         });
                       },
                     ),
-                  ).whenComplete(() {
-                    setState(() {
-                      loggedUserStatus = "timeTable";
-                    });
+                  );
+                  setState(() {
+                    loggedUserStatus = "timeTable";
                   });
                 }
               });
@@ -1802,6 +1901,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   "You are logged out due to inactivity for more than 15 minutes");
               debugPrint(
                   "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
+              }
+
               performSignOut(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -1828,6 +1940,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       vtopConnectionStatusType = "Error";
                     });
                   }
+                },
+              );
+
+              debugPrint(
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.responseText!.contains('You are logged out due to inactivity for more than 15 minutes') || ajaxRequest.responseText!.contains('You have been successfully logged out')");
+
+              if (processingSomething == true) {
+                Navigator.of(context).pop();
+                setState(() {
+                  processingSomething = false;
+                });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
+              }
+
+              runHeadlessInAppWebView(
+                headlessWebView: headlessWebView,
+                onCurrentFullUrl: (String value) {
+                  currentFullUrl = value;
                 },
               );
 
@@ -1897,6 +2031,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 setState(() {
                   processingSomething = false;
                 });
+              }
+              if (loggedUserStatus != "studentPortalScreen") {
+                debugPrint(
+                    "closing open gages on auto logout on session time end");
+                Navigator.of(context).pop();
               }
 
               runHeadlessInAppWebView(

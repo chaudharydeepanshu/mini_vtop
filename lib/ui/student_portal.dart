@@ -225,6 +225,7 @@ class _StudentPortalState extends State<StudentPortal> {
         // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
         //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
+        // timerMaxSeconds = 5;
         if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
           widget.onPerformSignOut?.call(true);
           timer.cancel();

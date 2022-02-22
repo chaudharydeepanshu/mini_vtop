@@ -1185,7 +1185,7 @@ class _LoginSectionState extends State<LoginSection> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Text(
-                                        "We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\nAlso auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop.",
+                                        "We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\nAlso auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop. \nThis app don't run in background so it can't extend the user session time if it is kept in background.",
                                         style: TextStyle(
                                           fontSize: widgetSizeProvider(
                                               fixedSize: 12,
