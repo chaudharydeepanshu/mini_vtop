@@ -756,43 +756,45 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   // Navigator.of(context)
                   //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
                   _saveUnamePasswd();
-                  sessionDateTime = await NTP.now();
-                  _saveSessionDateTime();
-                  debugPrint(
-                      'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
-                  declareManageUserSessionConstants(
-                      onCurrentFullUrl: (String value) {
-                        currentFullUrl = value;
-                      },
+                  sessionDateTime = await NTP.now().then((value) {
+                    _saveSessionDateTime();
+                    debugPrint(
+                        'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
+                    declareManageUserSessionConstants(
+                        onCurrentFullUrl: (String value) {
+                          currentFullUrl = value;
+                        },
+                        headlessWebView: headlessWebView,
+                        context: context);
+                    manageUserSession(
+                      context: context,
                       headlessWebView: headlessWebView,
-                      context: context);
-                  manageUserSession(
-                    context: context,
-                    headlessWebView: headlessWebView,
-                    onCurrentFullUrl: (String value) {
-                      setState(() {
-                        currentFullUrl = value;
-                      });
-                    },
-                  );
-                  getStudentName(forXAction: 'New login');
+                      onCurrentFullUrl: (String value) {
+                        setState(() {
+                          currentFullUrl = value;
+                        });
+                      },
+                    );
+                    getStudentName(forXAction: 'New login');
 
-                  setState(() {
-                    // currentStatus = "userLoggedIn";
-                    // loggedUserStatus = "studentPortalScreen";
-                    // processingSomething = false;
-                    studentPortalDocument =
-                        parse('${ajaxRequest.responseText}');
+                    setState(() {
+                      // currentStatus = "userLoggedIn";
+                      // loggedUserStatus = "studentPortalScreen";
+                      // processingSomething = false;
+                      studentPortalDocument =
+                          parse('${ajaxRequest.responseText}');
+                    });
+
+                    // manageUserSession(
+                    //     context: context,
+                    //     headlessWebView: headlessWebView,
+                    //     onCurrentFullUrl: (String value) {
+                    //       setState(() {
+                    //         currentFullUrl = value;
+                    //       });
+                    //     });
+                    return value;
                   });
-
-                  // manageUserSession(
-                  //     context: context,
-                  //     headlessWebView: headlessWebView,
-                  //     onCurrentFullUrl: (String value) {
-                  //       setState(() {
-                  //         currentFullUrl = value;
-                  //       });
-                  //     });
                 } else if (value.contains("User Id Not available")) {
                   printWrapped("User Id Not available");
                   //User Id Not available WHEN ENTERING WRONG USER ID

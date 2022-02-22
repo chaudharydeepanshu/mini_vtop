@@ -165,75 +165,9 @@ class _TimeTableState extends State<TimeTable> {
             return tableRow;
           });
 
-      // listOfTableRowsForCustomTimeTable.insert(
-      //   0,
-      //   TableRow(
-      //     children: <Widget>[
-      //       LegendCellWidget(
-      //         legendText: "Theory",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "Start",
-      //         elementText2: "End",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "08:30",
-      //         elementText2: "10:00",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "10:05",
-      //         elementText2: "11:35",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "11:40",
-      //         elementText2: "13:10",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "13:15",
-      //         elementText2: "14:45",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "14:50",
-      //         elementText2: "16:20",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "16:25",
-      //         elementText2: "17:55",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //       CustomTableRowElement(
-      //         elementText1: "18:00",
-      //         elementText2: "19:30",
-      //         screenBasedPixelWidth: screenBasedPixelWidth,
-      //         screenBasedPixelHeight: screenBasedPixelHeight,
-      //       ),
-      //     ],
-      //   ),
-      // );
-
       customTimeTable = Table(
         border: TableBorder.all(
             color: (Theme.of(context).textTheme.headline1?.color)!),
-        // columnWidths: const <int, TableColumnWidth>{
-        //   0: IntrinsicColumnWidth(),
-        //   1: FlexColumnWidth(),
-        //   2: FixedColumnWidth(64),
-        // },
         defaultColumnWidth: const IntrinsicColumnWidth(),
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: listOfTableRowsForCustomTimeTable,
@@ -605,7 +539,8 @@ class _TimeTableState extends State<TimeTable> {
                           ),
                         ),
                         child: DropdownButton<String>(
-                          dropdownColor: const Color(0xff04294f),
+                          itemHeight: kMinInteractiveDimension,
+                          dropdownColor: Colors.blueAccent,
                           value: dropdownValue,
                           // isExpanded: true,
                           icon: Icon(
@@ -699,27 +634,45 @@ class _TimeTableState extends State<TimeTable> {
                               (Map<dynamic, dynamic> value) {
                             return DropdownMenuItem<String>(
                               value: value["semesterCode"],
-                              child: Padding(
-                                padding: EdgeInsets.all(
-                                  widgetSizeProvider(
-                                      fixedSize: 8,
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth),
-                                ),
-                                child: FittedBox(
-                                  child: Text(
-                                    value["semesterName"],
-                                    style: GoogleFonts.lato(
-                                      color: Colors.white,
-                                      // textStyle: Theme.of(context).textTheme.headline1,
-                                      fontSize: widgetSizeProvider(
-                                          fixedSize: 15,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                      fontWeight: FontWeight.w700,
-                                      fontStyle: FontStyle.normal,
+                              child: Container(
+                                height:value["semesterCode"] == dropdownValue ? kMinInteractiveDimension : null,
+                                // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
+                                decoration: BoxDecoration(
+                                  color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
+                                  borderRadius: BorderRadius.all(
+                                   Radius.circular(
+                                      widgetSizeProvider(
+                                          fixedSize: 10,
+                                          sizeDecidingVariable: screenBasedPixelWidth),
                                     ),
                                   ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(
+                                        widgetSizeProvider(
+                                            fixedSize: 8,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                      ),
+                                      child: FittedBox(
+                                        child: Text(
+                                          value["semesterName"],
+                                          style: GoogleFonts.lato(
+                                            color: Colors.white,
+                                            // textStyle: Theme.of(context).textTheme.headline1,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 15,
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                            fontWeight: FontWeight.w700,
+                                            fontStyle: FontStyle.normal,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
