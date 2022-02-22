@@ -276,7 +276,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   bool isDialogShowing = false;
 
-  getStudentName({required String forXAction}) async {
+  openStudentProfileAllView({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
                                 ''');
@@ -737,7 +737,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               });
             } else if (ajaxRequest.status != 200) {
               debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
 
               if (processingSomething == true) {
                 Navigator.of(context).pop();
@@ -794,8 +794,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         });
                       },
                     );
-                    getStudentName(forXAction: 'New login');
-                    //actually we are using getStudentName() to get profile document and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request
+                    openStudentProfileAllView(forXAction: 'New login');
+                    //actually we are using openStudentProfileAllView() to get profile document and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request
 
                     setState(() {
                       // currentStatus = "userLoggedIn";
@@ -2240,7 +2240,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 .innerHtml;
             if (studentId != null) {
               if (studentId.contains("(STUDENT)")) {
-                getStudentName(forXAction: 'Logged in');
+                openStudentProfileAllView(forXAction: 'Logged in');
 
                 studentPortalDocument = document;
                 // print(url.toString());

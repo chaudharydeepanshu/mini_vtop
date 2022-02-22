@@ -37,8 +37,20 @@ class _StudentPortalState extends State<StudentPortal> {
   List<Map> studentPortalOptions = [];
   bool isDialogShowing = false;
 
+  late StudentPortalArguments arguments;
+
+  @override
+  void didUpdateWidget(StudentPortal oldWidget) {
+    if (oldWidget.arguments != widget.arguments) {
+      arguments = widget.arguments;
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
   @override
   void initState() {
+    arguments = widget.arguments;
     studentPortalOptions = [
       {
         "name": "Your Info",
@@ -199,7 +211,7 @@ class _StudentPortalState extends State<StudentPortal> {
       '${((timerMaxSeconds - currentSeconds) ~/ 60).toString().padLeft(2, '0')}: ${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
 
   startTimeout() async {
-    DateTime? sessionDateTime = widget.arguments.sessionDateTime;
+    DateTime? sessionDateTime = arguments.sessionDateTime;
     DateTime dateTimeNow = await NTP.now();
     // gives difference between current time and the saved session time
     int differenceInSeconds = dateTimeNow
@@ -247,10 +259,10 @@ class _StudentPortalState extends State<StudentPortal> {
 
   @override
   Widget build(BuildContext context) {
-    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
-    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
+    screenBasedPixelWidth = arguments.screenBasedPixelWidth;
+    screenBasedPixelHeight = arguments.screenBasedPixelHeight;
     // debugPrint("isDialogShowing: $isDialogShowing");
-    // if (widget.arguments.processingSomething == false &&
+    // if (arguments.processingSomething == false &&
     //     isDialogShowing == true) {
     //   // _controller3 = TextEditingController(text: "");
     //   // Future.delayed(const Duration(milliseconds: 500), () async {
@@ -259,8 +271,8 @@ class _StudentPortalState extends State<StudentPortal> {
     //   // });
     // }
 
-    // print(widget.arguments.studentPortalDocument.outerHtml);
-    return (widget.arguments.studentName == null ||
+    // print(arguments.studentPortalDocument.outerHtml);
+    return (arguments.studentName == null ||
             (timerText == "00: 00" || timerText.isEmpty))
         ? Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -273,14 +285,12 @@ class _StudentPortalState extends State<StudentPortal> {
                   CircularProgressIndicator(
                     strokeWidth: widgetSizeProvider(
                         fixedSize: 4,
-                        sizeDecidingVariable:
-                            widget.arguments.screenBasedPixelWidth),
+                        sizeDecidingVariable: arguments.screenBasedPixelWidth),
                   ),
                   SizedBox(
                     height: widgetSizeProvider(
                         fixedSize: 10,
-                        sizeDecidingVariable:
-                            widget.arguments.screenBasedPixelHeight),
+                        sizeDecidingVariable: arguments.screenBasedPixelHeight),
                   ),
                   Text(
                     "Please Wait ...",
@@ -290,7 +300,7 @@ class _StudentPortalState extends State<StudentPortal> {
                       fontSize: widgetSizeProvider(
                           fixedSize: 17,
                           sizeDecidingVariable:
-                              widget.arguments.screenBasedPixelWidth),
+                              arguments.screenBasedPixelWidth),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -309,7 +319,7 @@ class _StudentPortalState extends State<StudentPortal> {
                       widgetSizeProvider(
                           fixedSize: 18,
                           sizeDecidingVariable:
-                              widget.arguments.screenBasedPixelWidth),
+                              arguments.screenBasedPixelWidth),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -336,7 +346,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                   ),
                                 ),
                                 Text(
-                                  "${toBeginningOfSentenceCase(widget.arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                  "${toBeginningOfSentenceCase(arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
                                   style: GoogleFonts.lato(
                                     // color: Colors.white,
                                     // textStyle: Theme.of(context).textTheme.headline1,
@@ -408,7 +418,7 @@ class _StudentPortalState extends State<StudentPortal> {
                           height: widgetSizeProvider(
                               fixedSize: 15,
                               sizeDecidingVariable:
-                                  widget.arguments.screenBasedPixelHeight),
+                                  arguments.screenBasedPixelHeight),
                         ),
                         OrientationBuilder(
                           builder: (context, orientation) {
@@ -421,16 +431,16 @@ class _StudentPortalState extends State<StudentPortal> {
                                 maxCrossAxisExtent: widgetSizeProvider(
                                     fixedSize: 200,
                                     sizeDecidingVariable:
-                                        widget.arguments.screenBasedPixelWidth),
+                                        arguments.screenBasedPixelWidth),
                                 childAspectRatio: 3 / 2.5,
                                 crossAxisSpacing: widgetSizeProvider(
                                     fixedSize: 20,
                                     sizeDecidingVariable:
-                                        widget.arguments.screenBasedPixelWidth),
+                                        arguments.screenBasedPixelWidth),
                                 mainAxisSpacing: widgetSizeProvider(
                                     fixedSize: 20,
                                     sizeDecidingVariable:
-                                        widget.arguments.screenBasedPixelWidth),
+                                        arguments.screenBasedPixelWidth),
                               ),
                               itemCount: studentPortalOptions.length,
                               itemBuilder: (BuildContext ctx, index) {
@@ -506,7 +516,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                                       widgetSizeProvider(
                                                           fixedSize: 56,
                                                           sizeDecidingVariable:
-                                                              widget.arguments
+                                                              arguments
                                                                   .screenBasedPixelHeight),
                                                     ),
                                                   ),
@@ -520,12 +530,12 @@ class _StudentPortalState extends State<StudentPortal> {
                                                       left: widgetSizeProvider(
                                                           fixedSize: 20,
                                                           sizeDecidingVariable:
-                                                              widget.arguments
+                                                              arguments
                                                                   .screenBasedPixelWidth),
                                                       right: widgetSizeProvider(
                                                           fixedSize: 20,
                                                           sizeDecidingVariable:
-                                                              widget.arguments
+                                                              arguments
                                                                   .screenBasedPixelWidth),
                                                     ),
                                                   ),
@@ -535,7 +545,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                                       fontSize: widgetSizeProvider(
                                                           fixedSize: 20,
                                                           sizeDecidingVariable:
-                                                              widget.arguments
+                                                              arguments
                                                                   .screenBasedPixelWidth),
                                                     ),
                                                   ),
@@ -548,7 +558,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                                         widgetSizeProvider(
                                                             fixedSize: 0,
                                                             sizeDecidingVariable:
-                                                                widget.arguments
+                                                                arguments
                                                                     .screenBasedPixelWidth),
                                                       ),
                                                     ),
@@ -565,9 +575,9 @@ class _StudentPortalState extends State<StudentPortal> {
                                                   style: TextStyle(
                                                     fontSize: widgetSizeProvider(
                                                         fixedSize: 18,
-                                                        sizeDecidingVariable: widget
-                                                            .arguments
-                                                            .screenBasedPixelWidth),
+                                                        sizeDecidingVariable:
+                                                            arguments
+                                                                .screenBasedPixelWidth),
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
