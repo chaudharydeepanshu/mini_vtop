@@ -156,6 +156,7 @@ class _MyAppState extends State<MyApp> {
           //   savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
           // ),
         ),
+
         routes: {
           PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
                 arguments: ModalRoute.of(context)!.settings.arguments
@@ -1828,66 +1829,151 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 } else if (requestType == "Update") {
                   debugPrint("Table Update Ran");
-                  Navigator.pushReplacementNamed(
+                  Navigator.pushReplacement(
                     context,
-                    PageRoutes.timeTable,
-                    arguments: TimeTableArguments(
-                      currentStatus: currentStatus,
-                      onTimeTableDocumentDispose: (bool value) {
-                        debugPrint("timeTable disposed");
-                        WidgetsBinding.instance
-                            ?.addPostFrameCallback((_) => setState(() {
-                                  loggedUserStatus = "studentPortalScreen";
-                                }));
+                    PageRouteBuilder(
+                      pageBuilder: (buildContext, animation1, animation2) =>
+                          TimeTable(
+                        arguments: TimeTableArguments(
+                          currentStatus: currentStatus,
+                          onTimeTableDocumentDispose: (bool value) {
+                            debugPrint("timeTable disposed");
+                            WidgetsBinding.instance
+                                ?.addPostFrameCallback((_) => setState(() {
+                                      loggedUserStatus = "studentPortalScreen";
+                                    }));
+                          },
+                          timeTableDocument: timeTableDocument,
+                          screenBasedPixelHeight: screenBasedPixelHeight,
+                          screenBasedPixelWidth: screenBasedPixelWidth,
+                          semesterSubId: semesterSubId,
+                          onSemesterSubIdChange: (String value) {
+                            setState(() {
+                              semesterSubId = value;
+                              requestType = "Update";
+                              callTimeTable(
+                                context: context,
+                                headlessWebView: headlessWebView,
+                                onCurrentFullUrl: (String value) {
+                                  currentFullUrl = value;
+                                },
+                                processingSomething: true,
+                                onProcessingSomething: (bool value) {
+                                  processingSomething = true;
+                                },
+                                onError: (String value) {
+                                  debugPrint(
+                                      "Updating Ui based on the error received");
+                                  if (processingSomething == true) {
+                                    Navigator.of(context).pop();
+                                    setState(() {
+                                      processingSomething = false;
+                                    });
+                                  }
+                                  if (value ==
+                                      "net::ERR_INTERNET_DISCONNECTED") {
+                                    debugPrint(
+                                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                    setState(() {
+                                      currentStatus = "launchLoadingScreen";
+                                      vtopConnectionStatusErrorType =
+                                          "net::ERR_INTERNET_DISCONNECTED";
+                                      vtopConnectionStatusType = "Error";
+                                    });
+                                  }
+                                },
+                              );
+                            });
+                          },
+                          onProcessingSomething: (bool value) {
+                            setState(() {
+                              processingSomething = value;
+                            });
+                          },
+                        ),
+                      ),
+                      // transitionsBuilder:
+                      //     (context, animation, secondaryAnimation, child) =>
+                      //         FadeTransition(opacity: animation, child: child),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
                       },
-                      timeTableDocument: timeTableDocument,
-                      screenBasedPixelHeight: screenBasedPixelHeight,
-                      screenBasedPixelWidth: screenBasedPixelWidth,
-                      semesterSubId: semesterSubId,
-                      onSemesterSubIdChange: (String value) {
-                        setState(() {
-                          semesterSubId = value;
-                          requestType = "Update";
-                          callTimeTable(
-                            context: context,
-                            headlessWebView: headlessWebView,
-                            onCurrentFullUrl: (String value) {
-                              currentFullUrl = value;
-                            },
-                            processingSomething: true,
-                            onProcessingSomething: (bool value) {
-                              processingSomething = true;
-                            },
-                            onError: (String value) {
-                              debugPrint(
-                                  "Updating Ui based on the error received");
-                              if (processingSomething == true) {
-                                Navigator.of(context).pop();
-                                setState(() {
-                                  processingSomething = false;
-                                });
-                              }
-                              if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                                debugPrint(
-                                    "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                                setState(() {
-                                  currentStatus = "launchLoadingScreen";
-                                  vtopConnectionStatusErrorType =
-                                      "net::ERR_INTERNET_DISCONNECTED";
-                                  vtopConnectionStatusType = "Error";
-                                });
-                              }
-                            },
-                          );
-                        });
-                      },
-                      onProcessingSomething: (bool value) {
-                        setState(() {
-                          processingSomething = value;
-                        });
-                      },
+                      transitionDuration: Duration.zero,
+                      // reverseTransitionDuration:
+                      //     // const Duration(milliseconds: 2000),
                     ),
                   );
+                  // Navigator.pushReplacementNamed(
+                  //   context,
+                  //   PageRoutes.timeTable,
+                  //   arguments: TimeTableArguments(
+                  //     currentStatus: currentStatus,
+                  //     onTimeTableDocumentDispose: (bool value) {
+                  //       debugPrint("timeTable disposed");
+                  //       WidgetsBinding.instance
+                  //           ?.addPostFrameCallback((_) => setState(() {
+                  //                 loggedUserStatus = "studentPortalScreen";
+                  //               }));
+                  //     },
+                  //     timeTableDocument: timeTableDocument,
+                  //     screenBasedPixelHeight: screenBasedPixelHeight,
+                  //     screenBasedPixelWidth: screenBasedPixelWidth,
+                  //     semesterSubId: semesterSubId,
+                  //     onSemesterSubIdChange: (String value) {
+                  //       setState(() {
+                  //         semesterSubId = value;
+                  //         requestType = "Update";
+                  //         callTimeTable(
+                  //           context: context,
+                  //           headlessWebView: headlessWebView,
+                  //           onCurrentFullUrl: (String value) {
+                  //             currentFullUrl = value;
+                  //           },
+                  //           processingSomething: true,
+                  //           onProcessingSomething: (bool value) {
+                  //             processingSomething = true;
+                  //           },
+                  //           onError: (String value) {
+                  //             debugPrint(
+                  //                 "Updating Ui based on the error received");
+                  //             if (processingSomething == true) {
+                  //               Navigator.of(context).pop();
+                  //               setState(() {
+                  //                 processingSomething = false;
+                  //               });
+                  //             }
+                  //             if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                  //               debugPrint(
+                  //                   "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                  //               setState(() {
+                  //                 currentStatus = "launchLoadingScreen";
+                  //                 vtopConnectionStatusErrorType =
+                  //                     "net::ERR_INTERNET_DISCONNECTED";
+                  //                 vtopConnectionStatusType = "Error";
+                  //               });
+                  //             }
+                  //           },
+                  //         );
+                  //       });
+                  //     },
+                  //     onProcessingSomething: (bool value) {
+                  //       setState(() {
+                  //         processingSomething = value;
+                  //       });
+                  //     },
+                  //   ),
+                  // );
                   setState(() {
                     loggedUserStatus = "timeTable";
                   });

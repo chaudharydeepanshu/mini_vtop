@@ -383,8 +383,8 @@ class _TimeTableState extends State<TimeTable> {
         ?.children[0]
         .text
         .replaceAll(RegExp('\\s+'), ' '));
-    screenBasedPixelWidth = widget.arguments.screenBasedPixelWidth;
-    screenBasedPixelHeight = widget.arguments.screenBasedPixelHeight;
+    screenBasedPixelWidth = (widget.arguments.screenBasedPixelWidth);
+    screenBasedPixelHeight = (widget.arguments.screenBasedPixelHeight);
 
     for (int i = 0; i < semestersHtmlForm.length; i++) {
       if (semestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' ') !=
@@ -406,7 +406,7 @@ class _TimeTableState extends State<TimeTable> {
       }
     }
     debugPrint("semesters: $semesters");
-    dropdownValue = widget.arguments.semesterSubId;
+    dropdownValue = (widget.arguments.semesterSubId);
   }
 
   @override
@@ -635,15 +635,20 @@ class _TimeTableState extends State<TimeTable> {
                             return DropdownMenuItem<String>(
                               value: value["semesterCode"],
                               child: Container(
-                                height:value["semesterCode"] == dropdownValue ? kMinInteractiveDimension : null,
+                                height: value["semesterCode"] == dropdownValue
+                                    ? kMinInteractiveDimension
+                                    : null,
                                 // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
                                 decoration: BoxDecoration(
-                                  color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
+                                  color: value["semesterCode"] == dropdownValue
+                                      ? const Color(0xff04294f)
+                                      : null,
                                   borderRadius: BorderRadius.all(
-                                   Radius.circular(
+                                    Radius.circular(
                                       widgetSizeProvider(
                                           fixedSize: 10,
-                                          sizeDecidingVariable: screenBasedPixelWidth),
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth),
                                     ),
                                   ),
                                 ),
