@@ -221,60 +221,105 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   InAppWebViewController? webViewController;
 
   HeadlessInAppWebView? headlessWebView;
-  String currentFullUrl = "";
-  String serializedDocument = "";
-  Image? image;
+  String currentFullUrl = ""; // Used to store and get the exact url of WebView.
 
-  String userEnteredUname = "";
-  String userEnteredPasswd = "";
-  String autoCaptcha = '';
+  Image? image; // Used to store and get the latest Captcha.
 
-  String? loggedUserStatus;
+  String userEnteredUname = ""; // Used to store and get user entered Username.
+  String userEnteredPasswd = ""; // Used to store and get user entered Password.
+  String autoCaptcha =
+      ''; // Used to store and get the automatically solved captcha
 
-  String? currentStatus = "launchLoadingScreen";
+  String?
+      loggedUserStatus; // Used to store and get the exact location of user in website after logging in
 
-  bool processingSomething = false;
-  bool refreshingCaptcha = true;
+  String? currentStatus =
+      "launchLoadingScreen"; // Used to store and get the exact location of user.
+  // Mainly used to change main scaffold body.
 
-  DateTime? sessionDateTime;
+  bool processingSomething =
+      false; // Used to store and get the status of Dialog box.
+  // processingSomething = false means no dialog box is open on screen.
 
-  String vtopConnectionStatusType = "Initiated";
+  bool refreshingCaptcha =
+      true; // Used to store and get the status of captcha loading on refreshing.
 
-  String vtopConnectionStatusErrorType = "None";
+  DateTime?
+      sessionDateTime; // Used to store and get the date and time at which the user logged in.
 
-  String vtopLoginErrorType = "None";
+  String vtopConnectionStatusType =
+      "Initiated"; // Used to store and get the status of website connection.
+  // vtopConnectionStatusType == "Initiated" used to show the first trying to load screen.
+  // vtopConnectionStatusType == "Connecting" used to show the taking longer than usual loading screen.
+  // vtopConnectionStatusType == "Connected" used to show the connected screen.
+  // vtopConnectionStatusType == "Error" used to show the taking error screen.
 
-  late double screenBasedPixelWidth;
+  String vtopConnectionStatusErrorType =
+      "None"; // Used to store and get the website connection error type.
+  // vtopConnectionStatusErrorType == "None" used to show no connection error.
+  // vtopConnectionStatusErrorType == "net::ERR_CONNECTION_TIMED_OUT" used to connection timeout error.
+  // vtopConnectionStatusErrorType == "net::ERR_NAME_NOT_RESOLVED" used to show the website cannot be resolved error.
+  // vtopConnectionStatusErrorType == "net::ERR_INTERNET_DISCONNECTED" used to show the internet connection is not available error.
 
-  late double screenBasedPixelHeight;
+  String vtopLoginErrorType =
+      "None"; // Used to store and get the website login error type.
+  // vtopLoginErrorType == "User Id Not available" used to show error if user entered user id is wrong.
+  // vtopLoginErrorType == "Most probably invalid password" used to show error if user entered password is wrong.
+  // vtopLoginErrorType == "Invalid Captcha" used to show error if user entered captcha is wrong.
+  // vtopLoginErrorType == "Session expired due to inactivity" used to show error if session is expired.
+  // vtopLoginErrorType == "Something is wrong! Please retry." used to show error cause of error is unknown.
 
-  late Widget body;
+  late double
+      screenBasedPixelWidth; // Used to store and get the (device screen width * 0.0027625) value.
 
-  late Widget appbar;
+  late double
+      screenBasedPixelHeight; // Used to store and get the (device screen height * 0.00169) value.
 
-  late Widget? drawer;
+  late Widget body; // Used to store and get the body of main scaffold.
 
-  int noOfHomePageBuilds = 0;
+  late Widget appbar; // Used to store and get the appbar of main scaffold.
 
-  int noOfLoginAjaxRequests = 0;
+  late Widget? drawer; // Used to store and get the drawer of main scaffold.
 
-  String requestType = "Empty";
+  int noOfHomePageBuilds =
+      0; // Used to store and get the no Of times homepage successfully builds.
+  // noOfHomePageBuilds == 0 means homepage didn't build so wait.
+  // noOfHomePageBuilds == 1 don't wait as homepage successfully built and ignore further homepage builds.
+  // It may also have a use for avoiding declaring again"session expiry avoiding" function variables.
 
-  String? studentName;
+  int noOfLoginAjaxRequests =
+      0; // Used to store and get the no of times Login Ajax Requests are made.
 
-  bool credentialsFound = false;
+  String requestType =
+      "Empty"; // Used to store and get the type of action to be taken by an ajax request being made.
+  // requestType == "New login" used in studentsRecord/StudentProfileAllView to get the user name and update user status to student portal instantly as user have already successfully logged in.
+  // requestType == "Logged in" used in studentsRecord/StudentProfileAllView to get the user name and update user status to student portal but with 2480 milliseconds delay as it will show loading screen successful animation.
+  // requestType == "Fake" used in studentsRecord/StudentProfileAllView to check if user session is active or not and if ajaxRequest.status == 200 then just update document and pop any dialog open if timed out then just call inActivityResponse().
+  // requestType == "Real" used in studentsRecord/StudentProfileAllView to get all user detail document and then open user detail display scaffold.
+  // requestType == "Real" used in academics/common/StudentTimeTable to get user default semester id timetable document and then open user timetable detail display scaffold.
+  // requestType == "Update" used in academics/common/StudentTimeTable to get user dropdown selection semester id timetable document and then update timetable detail display scaffold by replacing it with a new one.
 
-  dom.Document? studentPortalDocument;
+  String? studentName; // Used to store and get logged in user name.
 
-  dom.Document? studentProfileAllViewDocument;
+  bool credentialsFound =
+      false; // Used to check if successfully logged in user credentials are present or not.
 
-  dom.Document? timeTableDocument;
+  dom.Document?
+      studentPortalDocument; // Used to store and get website homepage html document.
 
-  bool tryAutoLoginStatus = false;
+  dom.Document?
+      studentProfileAllViewDocument; // Used to store and get website studentsRecord/StudentProfileAllView ajax request html document which holds all student related detail.
 
-  String semesterSubId = "BL20212210";
+  dom.Document?
+      timeTableDocument; // Used to store and get website processViewTimeTable ajax request html document which holds current selected semester id timetable and subject detail.
 
-  bool isDialogShowing = false;
+  bool tryAutoLoginStatus =
+      false; // Used to store and get the status if a user wants to AutoLogin enabled or not.
+
+  String semesterSubId =
+      "BL20212210"; // Used to store and get the user semester sub id.
+
+  bool isDialogShowing = false; // Used to store and get the dialog box status.
 
   openStudentProfileAllView({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
@@ -432,6 +477,110 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    inActivityResponse() {
+      debugPrint(
+          "You are logged out due to inactivity for more than 15 minutes");
+      debugPrint(
+          "called inactivityResponse or successfullyLoggedOut Action for ajaxRequests");
+
+      if (processingSomething == true) {
+        Navigator.of(context).pop();
+        setState(() {
+          processingSomething = false;
+        });
+      }
+      if (loggedUserStatus != "studentPortalScreen") {
+        debugPrint("closing open gages on auto logout on session time end");
+        Navigator.of(context).pop();
+      }
+
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        processingSomething = true;
+        customDialogBox(
+          isDialogShowing: isDialogShowing,
+          context: context,
+          onIsDialogShowing: (bool value) {
+            setState(() {
+              isDialogShowing = value;
+            });
+          },
+          dialogTitle: Text(
+            'Session ended',
+            style: TextStyle(
+              fontSize: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          dialogChildren: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: widgetSizeProvider(
+                    fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+                width: widgetSizeProvider(
+                    fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+                child: CircularProgressIndicator(
+                  strokeWidth: widgetSizeProvider(
+                      fixedSize: 4,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
+              ),
+              Text(
+                'Starting new session\nplease wait...',
+                style: TextStyle(
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 20,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          barrierDismissible: false,
+          screenBasedPixelHeight: screenBasedPixelHeight,
+          screenBasedPixelWidth: screenBasedPixelWidth,
+          onProcessingSomething: (bool value) {
+            setState(() {
+              processingSomething = value;
+            });
+          },
+        ).then((_) => isDialogShowing = false);
+      });
+
+      performSignOut(
+        context: context,
+        headlessWebView: headlessWebView,
+        onCurrentFullUrl: (String value) {
+          setState(() {
+            currentFullUrl = value;
+          });
+        },
+        onError: (String value) {
+          debugPrint("Updating Ui based on the error received");
+          if (processingSomething == true) {
+            Navigator.of(context).pop();
+            setState(() {
+              processingSomething = false;
+            });
+          }
+          if (value == "net::ERR_INTERNET_DISCONNECTED") {
+            debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+            setState(() {
+              currentStatus = "launchLoadingScreen";
+              vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+              vtopConnectionStatusType = "Error";
+            });
+          }
+        },
+      );
+
+      setState(() {
+        currentStatus = "launchLoadingScreen";
+      });
+    }
+
     super.initState();
     WidgetsBinding.instance!.addObserver(this); //most important
     var brightness = WidgetsBinding.instance!.window.platformBrightness;
@@ -487,12 +636,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         }
       },
       onWebViewCreated: (controller) async {
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          setState(() {
-            processingSomething = false;
-          });
-        }
+        // if (loggedUserStatus != "studentPortalScreen") {
+        //   debugPrint("closing open gages on auto logout on session time end");
+        //   Navigator.of(context).pop();
+        // }
         checkInternetConnection();
         Future.delayed(const Duration(seconds: 5), () async {
           if (vtopConnectionStatusType == "Initiated") {
@@ -507,13 +654,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               vtopConnectionStatusErrorType == "None") {
             debugPrint(
                 "restarting headlessInAppWebView as webview is taking too long");
-
-            if (processingSomething == true) {
-              Navigator.of(context).pop();
-              setState(() {
-                processingSomething = false;
-              });
-            }
 
             runHeadlessInAppWebView(
               headlessWebView: headlessWebView,
@@ -576,14 +716,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         if (ajaxRequest.event?.type == AjaxRequestEventType.LOADEND) {
           // printWrapped("ajaxRequest: ${ajaxRequest}");
           if (ajaxRequest.url.toString() == "vtopLogin") {
+            noOfLoginAjaxRequests++;
             // if (ajaxRequest.status == 200) {
             //   noOfLoginAjaxRequests++;
             // } else {
             //   noOfHomePageBuilds--;
             // }
-            debugPrint(noOfHomePageBuilds.toString());
-            debugPrint(noOfLoginAjaxRequests.toString());
-            debugPrint(ajaxRequest.status.toString());
+            debugPrint("noOfHomePageBuilds: ${noOfHomePageBuilds.toString()}");
+            debugPrint(
+                "noOfLoginAjaxRequests: ${noOfLoginAjaxRequests.toString()}");
+            debugPrint(
+                "vtopLogin ajaxRequest.status: ${ajaxRequest.status.toString()}");
             // if (noOfLoginAjaxRequests == noOfHomePageBuilds) {
             if (ajaxRequest.status == 200) {
               // await controller.evaluateJavascript(
@@ -632,10 +775,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
+              inActivityResponse();
+            } else if (ajaxRequest.status != 200) {
               debugPrint(
-                  "You are logged out due to inactivity for more than 15 minutes");
-              debugPrint(
-                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
 
               if (processingSomething == true) {
                 Navigator.of(context).pop();
@@ -649,35 +792,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 Navigator.of(context).pop();
               }
 
-              performSignOut(
-                context: context,
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  setState(() {
-                    currentFullUrl = value;
-                  });
-                },
-                onError: (String value) {
-                  debugPrint("Updating Ui based on the error received");
-                  if (processingSomething == true) {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      processingSomething = false;
-                    });
-                  }
-                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                    debugPrint(
-                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                    setState(() {
-                      currentStatus = "launchLoadingScreen";
-                      vtopConnectionStatusErrorType =
-                          "net::ERR_INTERNET_DISCONNECTED";
-                      vtopConnectionStatusType = "Error";
-                    });
-                  }
-                },
-              );
-
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 processingSomething = true;
                 customDialogBox(
@@ -689,7 +803,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     });
                   },
                   dialogTitle: Text(
-                    'You logged out',
+                    'WebView is dead',
                     style: TextStyle(
                       fontSize: widgetSizeProvider(
                           fixedSize: 24,
@@ -715,7 +829,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         ),
                       ),
                       Text(
-                        'So, re-requesting login page please wait...',
+                        'So, re-starting WebView please wait...',
                         style: TextStyle(
                           fontSize: widgetSizeProvider(
                               fixedSize: 20,
@@ -735,21 +849,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   },
                 ).then((_) => isDialogShowing = false);
               });
-            } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
 
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
@@ -849,7 +948,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   //     source:
                   //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
                 } else if (value.contains(
-                    "You are logged out due to inactivity for more than 15 minutes")) {
+                        "You are logged out due to inactivity for more than 15 minutes") ||
+                    ajaxRequest.responseText!
+                        .contains("You have been successfully logged out")) {
                   printWrapped(
                       "Most probably session expired due to inactivity");
                   //Invalid User Id / Password WHEN ENTERING CORRECT ID BUT WRONG PASSWORD
@@ -880,10 +981,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
+                inActivityResponse();
+              } else if (ajaxRequest.status != 200) {
                 debugPrint(
-                    "You are logged out due to inactivity for more than 15 minutes");
-                debugPrint(
-                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
                 if (processingSomething == true) {
                   Navigator.of(context).pop();
@@ -897,35 +998,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   Navigator.of(context).pop();
                 }
 
-                performSignOut(
-                  context: context,
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    setState(() {
-                      currentFullUrl = value;
-                    });
-                  },
-                  onError: (String value) {
-                    debugPrint("Updating Ui based on the error received");
-                    if (processingSomething == true) {
-                      Navigator.of(context).pop();
-                      setState(() {
-                        processingSomething = false;
-                      });
-                    }
-                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                      debugPrint(
-                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                      setState(() {
-                        currentStatus = "launchLoadingScreen";
-                        vtopConnectionStatusErrorType =
-                            "net::ERR_INTERNET_DISCONNECTED";
-                        vtopConnectionStatusType = "Error";
-                      });
-                    }
-                  },
-                );
-
                 WidgetsBinding.instance?.addPostFrameCallback((_) {
                   processingSomething = true;
                   customDialogBox(
@@ -937,7 +1009,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       });
                     },
                     dialogTitle: Text(
-                      'You logged out',
+                      'WebView is dead',
                       style: TextStyle(
                         fontSize: widgetSizeProvider(
                             fixedSize: 24,
@@ -963,7 +1035,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           ),
                         ),
                         Text(
-                          'So, re-requesting login page please wait...',
+                          'So, re-starting WebView please wait...',
                           style: TextStyle(
                             fontSize: widgetSizeProvider(
                                 fixedSize: 20,
@@ -983,21 +1055,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     },
                   ).then((_) => isDialogShowing = false);
                 });
-              } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -1016,109 +1073,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         "You are logged out due to inactivity for more than 15 minutes") ||
                     ajaxRequest.responseText!
                         .contains("You have been successfully logged out")) {
-                  debugPrint(
-                      "You are logged out due to inactivity for more than 15 minutes");
-                  debugPrint(
-                      "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
-
-                  if (processingSomething == true) {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      processingSomething = false;
-                    });
-                  }
-                  if (loggedUserStatus != "studentPortalScreen") {
-                    debugPrint(
-                        "closing open gages on auto logout on session time end");
-                    Navigator.of(context).pop();
-                  }
-
-                  performSignOut(
-                    context: context,
-                    headlessWebView: headlessWebView,
-                    onCurrentFullUrl: (String value) {
-                      setState(() {
-                        currentFullUrl = value;
-                      });
-                    },
-                    onError: (String value) {
-                      debugPrint("Updating Ui based on the error received");
-                      if (processingSomething == true) {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          processingSomething = false;
-                        });
-                      }
-                      if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                        debugPrint(
-                            "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                        setState(() {
-                          currentStatus = "launchLoadingScreen";
-                          vtopConnectionStatusErrorType =
-                              "net::ERR_INTERNET_DISCONNECTED";
-                          vtopConnectionStatusType = "Error";
-                        });
-                      }
-                    },
-                  );
-
-                  WidgetsBinding.instance?.addPostFrameCallback((_) {
-                    processingSomething = true;
-                    customDialogBox(
-                      isDialogShowing: isDialogShowing,
-                      context: context,
-                      onIsDialogShowing: (bool value) {
-                        setState(() {
-                          isDialogShowing = value;
-                        });
-                      },
-                      dialogTitle: Text(
-                        'You logged out',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 24,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      dialogChildren: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: widgetSizeProvider(
-                                fixedSize: 36,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                            width: widgetSizeProvider(
-                                fixedSize: 36,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                            child: CircularProgressIndicator(
-                              strokeWidth: widgetSizeProvider(
-                                  fixedSize: 4,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                          ),
-                          Text(
-                            'So, re-requesting login page please wait...',
-                            style: TextStyle(
-                              fontSize: widgetSizeProvider(
-                                  fixedSize: 20,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                      barrierDismissible: false,
-                      screenBasedPixelHeight: screenBasedPixelHeight,
-                      screenBasedPixelWidth: screenBasedPixelWidth,
-                      onProcessingSomething: (bool value) {
-                        setState(() {
-                          processingSomething = value;
-                        });
-                      },
-                    ).then((_) => isDialogShowing = false);
-                  });
+                  inActivityResponse();
                 } else {
                   // await controller.evaluateJavascript(source: '''
                   //   document.querySelector('img[alt="vtopCaptcha"]').src;
@@ -1154,10 +1109,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
+                inActivityResponse();
+              } else if (ajaxRequest.status != 200) {
                 debugPrint(
-                    "You are logged out due to inactivity for more than 15 minutes");
-                debugPrint(
-                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
                 if (processingSomething == true) {
                   Navigator.of(context).pop();
@@ -1171,35 +1126,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   Navigator.of(context).pop();
                 }
 
-                performSignOut(
-                  context: context,
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    setState(() {
-                      currentFullUrl = value;
-                    });
-                  },
-                  onError: (String value) {
-                    debugPrint("Updating Ui based on the error received");
-                    if (processingSomething == true) {
-                      Navigator.of(context).pop();
-                      setState(() {
-                        processingSomething = false;
-                      });
-                    }
-                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                      debugPrint(
-                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                      setState(() {
-                        currentStatus = "launchLoadingScreen";
-                        vtopConnectionStatusErrorType =
-                            "net::ERR_INTERNET_DISCONNECTED";
-                        vtopConnectionStatusType = "Error";
-                      });
-                    }
-                  },
-                );
-
                 WidgetsBinding.instance?.addPostFrameCallback((_) {
                   processingSomething = true;
                   customDialogBox(
@@ -1211,7 +1137,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       });
                     },
                     dialogTitle: Text(
-                      'You logged out',
+                      'WebView is dead',
                       style: TextStyle(
                         fontSize: widgetSizeProvider(
                             fixedSize: 24,
@@ -1237,7 +1163,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           ),
                         ),
                         Text(
-                          'So, re-requesting login page please wait...',
+                          'So, re-starting WebView please wait...',
                           style: TextStyle(
                             fontSize: widgetSizeProvider(
                                 fixedSize: 20,
@@ -1257,21 +1183,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     },
                   ).then((_) => isDialogShowing = false);
                 });
-              } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -1366,6 +1277,112 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             } else if (requestType == "Fake") {
               debugPrint(
                   "Fake request executed by calling callStudentProfileAllView() with onRequestType as Fake");
+              if (ajaxRequest.status == 200) {
+                requestType = "Empty";
+
+                await headlessWebView?.webViewController
+                    .evaluateJavascript(
+                        source:
+                            "new XMLSerializer().serializeToString(document);")
+                    .then((value) {
+                  var document = parse('$value');
+                  setState(() {
+                    studentProfileAllViewDocument = document;
+                  });
+
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      processingSomething = false;
+                    });
+                  }
+                });
+              } else if (ajaxRequest.responseText!.contains(
+                      "You are logged out due to inactivity for more than 15 minutes") ||
+                  ajaxRequest.responseText!
+                      .contains("You have been successfully logged out")) {
+                inActivityResponse();
+              } else if (ajaxRequest.status != 200) {
+                debugPrint(
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
+
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
+                }
+                if (loggedUserStatus != "studentPortalScreen") {
+                  debugPrint(
+                      "closing open gages on auto logout on session time end");
+                  Navigator.of(context).pop();
+                }
+
+                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                  processingSomething = true;
+                  customDialogBox(
+                    isDialogShowing: isDialogShowing,
+                    context: context,
+                    onIsDialogShowing: (bool value) {
+                      setState(() {
+                        isDialogShowing = value;
+                      });
+                    },
+                    dialogTitle: Text(
+                      'WebView is dead',
+                      style: TextStyle(
+                        fontSize: widgetSizeProvider(
+                            fixedSize: 24,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    dialogChildren: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          width: widgetSizeProvider(
+                              fixedSize: 36,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          child: CircularProgressIndicator(
+                            strokeWidth: widgetSizeProvider(
+                                fixedSize: 4,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                        ),
+                        Text(
+                          'So, re-starting WebView please wait...',
+                          style: TextStyle(
+                            fontSize: widgetSizeProvider(
+                                fixedSize: 20,
+                                sizeDecidingVariable: screenBasedPixelWidth),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                    barrierDismissible: false,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    screenBasedPixelWidth: screenBasedPixelWidth,
+                    onProcessingSomething: (bool value) {
+                      setState(() {
+                        processingSomething = value;
+                      });
+                    },
+                  ).then((_) => isDialogShowing = false);
+                });
+
+                runHeadlessInAppWebView(
+                  headlessWebView: headlessWebView,
+                  onCurrentFullUrl: (String value) {
+                    currentFullUrl = value;
+                  },
+                );
+              }
             } else if (requestType == "Real") {
               if (ajaxRequest.status == 200) {
                 requestType = "Empty";
@@ -1414,10 +1431,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
+                inActivityResponse();
+              } else if (ajaxRequest.status != 200) {
                 debugPrint(
-                    "You are logged out due to inactivity for more than 15 minutes");
-                debugPrint(
-                    "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
                 if (processingSomething == true) {
                   Navigator.of(context).pop();
@@ -1431,35 +1448,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   Navigator.of(context).pop();
                 }
 
-                performSignOut(
-                  context: context,
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    setState(() {
-                      currentFullUrl = value;
-                    });
-                  },
-                  onError: (String value) {
-                    debugPrint("Updating Ui based on the error received");
-                    if (processingSomething == true) {
-                      Navigator.of(context).pop();
-                      setState(() {
-                        processingSomething = false;
-                      });
-                    }
-                    if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                      debugPrint(
-                          "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                      setState(() {
-                        currentStatus = "launchLoadingScreen";
-                        vtopConnectionStatusErrorType =
-                            "net::ERR_INTERNET_DISCONNECTED";
-                        vtopConnectionStatusType = "Error";
-                      });
-                    }
-                  },
-                );
-
                 WidgetsBinding.instance?.addPostFrameCallback((_) {
                   processingSomething = true;
                   customDialogBox(
@@ -1471,7 +1459,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       });
                     },
                     dialogTitle: Text(
-                      'You logged out',
+                      'WebView is dead',
                       style: TextStyle(
                         fontSize: widgetSizeProvider(
                             fixedSize: 24,
@@ -1497,7 +1485,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           ),
                         ),
                         Text(
-                          'So, re-requesting login page please wait...',
+                          'So, re-starting WebView please wait...',
                           style: TextStyle(
                             fontSize: widgetSizeProvider(
                                 fixedSize: 20,
@@ -1517,21 +1505,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     },
                   ).then((_) => isDialogShowing = false);
                 });
-              } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
 
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
@@ -1546,7 +1519,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
             // print("ajaxRequest: ${ajaxRequest}");
-
+            debugPrint("processing logout");
             if (processingSomething == true) {
               Navigator.of(context).pop();
               setState(() {
@@ -1558,6 +1531,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   "closing open gages on auto logout on session time end");
               Navigator.of(context).pop();
             }
+
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.responseText!.contains(
                       "You are logged out due to inactivity for more than 15 minutes") ||
@@ -1617,10 +1591,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
+              inActivityResponse();
+            } else if (ajaxRequest.status != 200) {
               debugPrint(
-                  "You are logged out due to inactivity for more than 15 minutes");
-              debugPrint(
-                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
               if (processingSomething == true) {
                 Navigator.of(context).pop();
@@ -1634,35 +1608,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 Navigator.of(context).pop();
               }
 
-              performSignOut(
-                context: context,
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  setState(() {
-                    currentFullUrl = value;
-                  });
-                },
-                onError: (String value) {
-                  debugPrint("Updating Ui based on the error received");
-                  if (processingSomething == true) {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      processingSomething = false;
-                    });
-                  }
-                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                    debugPrint(
-                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                    setState(() {
-                      currentStatus = "launchLoadingScreen";
-                      vtopConnectionStatusErrorType =
-                          "net::ERR_INTERNET_DISCONNECTED";
-                      vtopConnectionStatusType = "Error";
-                    });
-                  }
-                },
-              );
-
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 processingSomething = true;
                 customDialogBox(
@@ -1674,7 +1619,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     });
                   },
                   dialogTitle: Text(
-                    'You logged out',
+                    'WebView is dead',
                     style: TextStyle(
                       fontSize: widgetSizeProvider(
                           fixedSize: 24,
@@ -1700,7 +1645,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         ),
                       ),
                       Text(
-                        'So, re-requesting login page please wait...',
+                        'So, re-starting WebView please wait...',
                         style: TextStyle(
                           fontSize: widgetSizeProvider(
                               fixedSize: 20,
@@ -1720,21 +1665,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   },
                 ).then((_) => isDialogShowing = false);
               });
-            } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
 
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
@@ -1983,10 +1913,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
+              inActivityResponse();
+            } else if (ajaxRequest.status != 200) {
               debugPrint(
-                  "You are logged out due to inactivity for more than 15 minutes");
-              debugPrint(
-                  "called inactivityResponse or successfullyLoggedOut Action for doLogin ajaxRequest");
+                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
 
               if (processingSomething == true) {
                 Navigator.of(context).pop();
@@ -1999,57 +1929,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "closing open gages on auto logout on session time end");
                 Navigator.of(context).pop();
               }
-
-              performSignOut(
-                context: context,
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  setState(() {
-                    currentFullUrl = value;
-                  });
-                },
-                onError: (String value) {
-                  debugPrint("Updating Ui based on the error received");
-                  if (processingSomething == true) {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      processingSomething = false;
-                    });
-                  }
-                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                    debugPrint(
-                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                    setState(() {
-                      currentStatus = "launchLoadingScreen";
-                      vtopConnectionStatusErrorType =
-                          "net::ERR_INTERNET_DISCONNECTED";
-                      vtopConnectionStatusType = "Error";
-                    });
-                  }
-                },
-              );
-
-              debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.responseText!.contains('You are logged out due to inactivity for more than 15 minutes') || ajaxRequest.responseText!.contains('You have been successfully logged out')");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
-
-              runHeadlessInAppWebView(
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  currentFullUrl = value;
-                },
-              );
 
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 processingSomething = true;
@@ -2062,7 +1941,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     });
                   },
                   dialogTitle: Text(
-                    'You logged out',
+                    'WebView is dead',
                     style: TextStyle(
                       fontSize: widgetSizeProvider(
                           fixedSize: 24,
@@ -2088,7 +1967,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         ),
                       ),
                       Text(
-                        'So, re-requesting login page please wait...',
+                        'So, re-starting WebView please wait...',
                         style: TextStyle(
                           fontSize: widgetSizeProvider(
                               fixedSize: 20,
@@ -2108,21 +1987,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   },
                 ).then((_) => isDialogShowing = false);
               });
-            } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
 
               runHeadlessInAppWebView(
                 headlessWebView: headlessWebView,
@@ -2158,6 +2022,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
       },
       onLoadStop: (controller, url) async {
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          debugPrint("Dialog popped on onLoadStop of HeadlessInAppWebView");
+          setState(() {
+            processingSomething = false;
+          });
+        }
+
         if (url.toString() ==
                 "https://vtop.vitbhopal.ac.in/vtop/initialProcess" &&
             await headlessWebView?.webViewController.getProgress() == 100) {
@@ -2182,7 +2054,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   .innerHtml;
 
               if (inactivityResponse ==
-                  "You are logged out due to inactivity for more than 15 minutes") {
+                      "You are logged out due to inactivity for more than 15 minutes" ||
+                  inactivityResponse ==
+                      "You have been successfully logged out") {
                 runHeadlessInAppWebView(
                   headlessWebView: headlessWebView,
                   onCurrentFullUrl: (String value) {
@@ -2203,6 +2077,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
                   debugPrint(
                       "noOfHomePageBuilds: ${noOfHomePageBuilds.toString()}");
+                  //As soon as noOfHomePageBuilds == 1 load login screen and neglect other homepage builds
                   if (noOfHomePageBuilds == 1) {
                     declareAutoFillCaptchaConstants(
                         onCurrentFullUrl: (String value) {
@@ -2255,8 +2130,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
         debugPrint("error $url: $code, $message");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
         if (await InternetConnectionChecker().hasConnection) {
           setState(() {
+            currentStatus = "launchLoadingScreen";
             vtopConnectionStatusType = "Error";
             vtopConnectionStatusErrorType = message;
           });

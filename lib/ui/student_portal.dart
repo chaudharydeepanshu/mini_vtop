@@ -239,6 +239,63 @@ class _StudentPortalState extends State<StudentPortal> {
         currentSeconds = timer.tick;
         // timerMaxSeconds = 5;
         if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            widget.onProcessingSomething.call(true);
+            customDialogBox(
+              isDialogShowing: isDialogShowing,
+              context: context,
+              onIsDialogShowing: (bool value) {
+                setState(() {
+                  isDialogShowing = value;
+                });
+              },
+              dialogTitle: Text(
+                'You logged out',
+                style: TextStyle(
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 24,
+                      sizeDecidingVariable: screenBasedPixelWidth),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              dialogChildren: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: widgetSizeProvider(
+                        fixedSize: 36,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    width: widgetSizeProvider(
+                        fixedSize: 36,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    child: CircularProgressIndicator(
+                      strokeWidth: widgetSizeProvider(
+                          fixedSize: 4,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                  ),
+                  Text(
+                    'So, re-requesting login page please wait...',
+                    style: TextStyle(
+                      fontSize: widgetSizeProvider(
+                          fixedSize: 20,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              barrierDismissible: false,
+              screenBasedPixelHeight: screenBasedPixelHeight,
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              onProcessingSomething: (bool value) {
+                setState(() {
+                  widget.onProcessingSomething.call(value);
+                });
+              },
+            ).then((_) => isDialogShowing = false);
+          });
           widget.onPerformSignOut?.call(true);
           timer.cancel();
         }

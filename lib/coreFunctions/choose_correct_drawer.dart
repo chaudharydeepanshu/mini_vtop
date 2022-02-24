@@ -116,6 +116,8 @@ chooseCorrectDrawer(
               onError.call(value);
             },
           );
+          onProcessingSomething:
+          (bool value) {};
         },
         onTryAutoLoginStatus: (bool value) {
           onTryAutoLoginStatus.call(value);
