@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 
-class BuildSemesterSelector extends StatefulWidget {
-  const BuildSemesterSelector(
+class BuildVtopModeSelector extends StatefulWidget {
+  const BuildVtopModeSelector(
       {Key? key,
       required this.screenBasedPixelWidth,
       required this.screenBasedPixelHeight,
@@ -14,26 +14,26 @@ class BuildSemesterSelector extends StatefulWidget {
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
 
-  final List<Map<String, String>> semesters;
+  final List<String> semesters;
 
   final ValueChanged<String?> onDropDownChanged;
 
   final String dropdownValue;
 
   @override
-  _BuildSemesterSelectorState createState() => _BuildSemesterSelectorState();
+  _BuildVtopModeSelectorState createState() => _BuildVtopModeSelectorState();
 }
 
-class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
+class _BuildVtopModeSelectorState extends State<BuildVtopModeSelector> {
   late final double _screenBasedPixelWidth = widget.screenBasedPixelWidth;
   late final double _screenBasedPixelHeight = widget.screenBasedPixelHeight;
 
   late String _dropdownValue = widget.dropdownValue;
 
-  late final List<Map<String, String>> _semesters = widget.semesters;
+  late final List<String> _semesters = widget.semesters;
 
   @override
-  void didUpdateWidget(BuildSemesterSelector oldWidget) {
+  void didUpdateWidget(BuildVtopModeSelector oldWidget) {
     if (oldWidget.dropdownValue != widget.dropdownValue) {
       setState(() {
         _dropdownValue = widget.dropdownValue;
@@ -49,7 +49,7 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          "Semester",
+          "VTOP Mode",
           style: getDynamicTextStyle(
               textStyle: Theme.of(context).textTheme.bodyText1,
               sizeDecidingVariable: _screenBasedPixelWidth),
@@ -107,17 +107,17 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
                     onChanged: (String? newValue) {
                       widget.onDropDownChanged.call(newValue);
                     },
-                    items: _semesters.map<DropdownMenuItem<String>>(
-                        (Map<dynamic, dynamic> value) {
+                    items: _semesters
+                        .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
-                        value: value["semesterCode"],
+                        value: value,
                         child: Container(
-                          height: value["semesterCode"] == _dropdownValue
+                          height: value == _dropdownValue
                               ? kMinInteractiveDimension
                               : null,
                           // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
                           decoration: BoxDecoration(
-                            color: value["semesterCode"] == _dropdownValue
+                            color: value == _dropdownValue
                                 ? Theme.of(context).colorScheme.primary
                                 : null,
                             borderRadius: BorderRadius.all(
@@ -141,14 +141,13 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    value["semesterName"],
+                                    value,
                                     style: getDynamicTextStyle(
                                         textStyle: Theme.of(context)
                                             .textTheme
                                             .button
                                             ?.copyWith(
-                                              color: value["semesterCode"] ==
-                                                      _dropdownValue
+                                              color: value == _dropdownValue
                                                   ? Theme.of(context)
                                                       .colorScheme
                                                       .onPrimary

@@ -32,6 +32,9 @@ class CustomDrawer extends StatefulWidget {
     required this.semesterSubId,
     required this.onRequestType,
     required this.onUpdateDefaultSemesterId,
+    required this.onUpdateDefaultVtopMode,
+    required this.onUpdateVtopMode,
+    required this.vtopMode,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -47,8 +50,12 @@ class CustomDrawer extends StatefulWidget {
   final ValueChanged<bool> onProcessingSomething;
   final dom.Document? timeTableDocument;
   final String semesterSubId;
+  final String vtopMode;
   final ValueChanged<String> onRequestType;
   final ValueChanged<String> onUpdateDefaultSemesterId;
+  final ValueChanged<String> onUpdateDefaultVtopMode;
+
+  final ValueChanged<String> onUpdateVtopMode;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -360,7 +367,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   widget.onShowStudentProfileAllView
                                       ?.call(true);
                                   _currentStatus = "originalVTOP";
-                                  widget.onCurrentStatus.call("originalVTOP");
+                                  widget.onUpdateVtopMode.call("Full VTOP");
+                                  // widget.onCurrentStatus.call("originalVTOP");
                                 } else if (vtopCurrentStatusText ==
                                     "Full VTOP") {
                                   // making a fake call to StudentProfileAllView so that
@@ -368,7 +376,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   widget.onShowStudentProfileAllView
                                       ?.call(true);
                                   _currentStatus = "userLoggedIn";
-                                  widget.onCurrentStatus.call("userLoggedIn");
+                                  widget.onUpdateVtopMode.call("Mini VTOP");
+                                  // widget.onCurrentStatus.call("userLoggedIn");
                                 }
                                 vtopModeButtonTextCalc();
                                 // Then close the drawer
@@ -607,43 +616,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       screenBasedPixelWidth:
                                           screenBasedPixelWidth,
                                       semesterSubId: widget.semesterSubId,
-                                      onSemesterSubIdChange: (String value) {
-                                        // setState(() {
-                                        //   semesterSubId = value;
-                                        //   requestType = "Update";
-                                        //   callTimeTable(
-                                        //     context: context,
-                                        //     headlessWebView: headlessWebView,
-                                        //     onCurrentFullUrl: (String value) {
-                                        //       currentFullUrl = value;
-                                        //     },
-                                        //     processingSomething: true,
-                                        //     onProcessingSomething: (bool value) {
-                                        //       processingSomething = true;
-                                        //     },
-                                        //     onError: (String value) {
-                                        //       debugPrint(
-                                        //           "Updating Ui based on the error received");
-                                        //       if (processingSomething == true) {
-                                        //         Navigator.of(context).pop();
-                                        //         setState(() {
-                                        //           processingSomething = false;
-                                        //         });
-                                        //       }
-                                        //       if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                                        //         debugPrint(
-                                        //             "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                                        //         setState(() {
-                                        //           currentStatus = "launchLoadingScreen";
-                                        //           vtopConnectionStatusErrorType =
-                                        //           "net::ERR_INTERNET_DISCONNECTED";
-                                        //           vtopConnectionStatusType = "Error";
-                                        //         });
-                                        //       }
-                                        //     },
-                                        //   );
-                                        // });
-                                      },
+                                      onSemesterSubIdChange: (String value) {},
                                       onProcessingSomething: (bool value) {
                                         widget.onProcessingSomething
                                             .call(value);
@@ -651,6 +624,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       onUpdateDefaultSemesterId:
                                           (String value) {
                                         widget.onUpdateDefaultSemesterId
+                                            .call(value);
+                                      },
+                                      vtopMode: widget.vtopMode,
+                                      onUpdateDefaultVtopMode: (String value) {
+                                        print(
+                                            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff$value");
+                                        widget.onUpdateDefaultVtopMode
                                             .call(value);
                                       },
                                     ),

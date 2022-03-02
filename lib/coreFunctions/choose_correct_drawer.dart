@@ -21,6 +21,7 @@ chooseCorrectDrawer({
   required ThemeMode? themeMode,
   required dom.Document? timeTableDocument,
   required String semesterSubId,
+  required String vtopMode,
   required ValueChanged<bool> onTryAutoLoginStatus,
   required ValueChanged<String> onRequestType,
   required ValueChanged<ThemeMode>? onThemeMode,
@@ -33,6 +34,8 @@ chooseCorrectDrawer({
   required ValueChanged<String> onError,
   required ValueChanged<Widget?> onDrawer,
   required ValueChanged<String> onUpdateDefaultSemesterId,
+  required ValueChanged<String> onUpdateDefaultVtopMode,
+  required ValueChanged<String> onUpdateVtopMode,
 }) async {
   if (currentStatus == null) {
     onDrawer.call(
@@ -69,6 +72,13 @@ chooseCorrectDrawer({
         onUpdateDefaultSemesterId: (String value) {
           onUpdateDefaultSemesterId.call(value);
         },
+        onUpdateDefaultVtopMode: (String value) {
+          onUpdateDefaultVtopMode.call(value);
+        },
+        onUpdateVtopMode: (String value) {
+          onUpdateVtopMode.call(value);
+        },
+        vtopMode: vtopMode,
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -102,6 +112,13 @@ chooseCorrectDrawer({
         onUpdateDefaultSemesterId: (String value) {
           onUpdateDefaultSemesterId.call(value);
         },
+        onUpdateDefaultVtopMode: (String value) {
+          onUpdateDefaultVtopMode.call(value);
+        },
+        onUpdateVtopMode: (String value) {
+          onUpdateVtopMode.call(value);
+        },
+        vtopMode: vtopMode,
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
@@ -157,6 +174,13 @@ chooseCorrectDrawer({
         onUpdateDefaultSemesterId: (String value) {
           onUpdateDefaultSemesterId.call(value);
         },
+        onUpdateDefaultVtopMode: (String value) {
+          onUpdateDefaultVtopMode.call(value);
+        },
+        onUpdateVtopMode: (String value) {
+          onUpdateVtopMode.call(value);
+        },
+        vtopMode: vtopMode,
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -210,6 +234,13 @@ chooseCorrectDrawer({
         onUpdateDefaultSemesterId: (String value) {
           onUpdateDefaultSemesterId.call(value);
         },
+        onUpdateDefaultVtopMode: (String value) {
+          onUpdateDefaultVtopMode.call(value);
+        },
+        onUpdateVtopMode: (String value) {
+          onUpdateVtopMode.call(value);
+        },
+        vtopMode: vtopMode,
       ),
     );
   }

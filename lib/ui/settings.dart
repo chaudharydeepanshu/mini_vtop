@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import '../basicFunctionsAndWidgets/build_semester_selector.dart';
+import '../basicFunctionsAndWidgets/build_vtop_mode_selector.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
@@ -50,7 +51,8 @@ class _SettingsState extends State<Settings> {
       }
     }
     debugPrint("semesters: $semesters");
-    dropdownValue = (widget.arguments.semesterSubId);
+    semesterIdDropdownValue = (widget.arguments.semesterSubId);
+    vtopModeDropdownValue = (widget.arguments.vtopMode);
   }
 
   @override
@@ -62,7 +64,8 @@ class _SettingsState extends State<Settings> {
   late double screenBasedPixelWidth;
   late double screenBasedPixelHeight;
 
-  late String dropdownValue;
+  late String semesterIdDropdownValue;
+  late String vtopModeDropdownValue;
 
   bool isDialogShowing = false;
 
@@ -73,8 +76,11 @@ class _SettingsState extends State<Settings> {
 
   List<Map<String, String>> semesters = [];
 
+  List<String> vtopModes = ['Mini VTOP', 'Full VTOP'];
+
   @override
   Widget build(BuildContext context) {
+    print("pppppppppppppppppppppppppppppppppppp$vtopModeDropdownValue");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -126,82 +132,59 @@ class _SettingsState extends State<Settings> {
                             sizeDecidingVariable:
                                 widget.arguments.screenBasedPixelWidth),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                          widgetSizeProvider(
-                              fixedSize: 8,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: widgetSizeProvider(
-                                  fixedSize: 2,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ),
-                          child: Column(
+                      child: Column(
+                        children: [
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.all(
-                                  widgetSizeProvider(
-                                      fixedSize: 8,
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth),
-                                ),
-                                child: Text(
-                                  "VTOP Defaults",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 16,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
+                              SettingsBox(
+                                settingsType: 'Mini VTOP Defaults',
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                settingsBoxChildren: [
+                                  BuildSemesterSelector(
+                                    semesters: semesters,
+                                    dropdownValue: semesterIdDropdownValue,
+                                    onDropDownChanged: (String? newValue) {
+                                      setState(() {
+                                        semesterIdDropdownValue = newValue!;
+                                      });
+                                      widget.arguments.onUpdateDefaultSemesterId
+                                          .call(newValue!);
+                                    },
+                                    screenBasedPixelHeight:
+                                        screenBasedPixelHeight,
+                                    screenBasedPixelWidth:
+                                        screenBasedPixelWidth,
                                   ),
-                                ),
+                                ],
                               ),
-                              Divider(
-                                indent: 0,
-                                endIndent: 0,
-                                thickness: widgetSizeProvider(
-                                    fixedSize: 2,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                                color: Theme.of(context).colorScheme.outline,
-                                height: 0,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(
-                                  widgetSizeProvider(
-                                      fixedSize: 8,
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth),
-                                ),
-                                child: BuildSemesterSelector(
-                                  semesters: semesters,
-                                  dropdownValue: dropdownValue,
-                                  onDropDownChanged: (String? newValue) {
-                                    setState(() {
-                                      dropdownValue = newValue!;
-                                    });
-                                    widget.arguments.onUpdateDefaultSemesterId
-                                        .call(newValue!);
-                                  },
-                                  screenBasedPixelHeight:
-                                      screenBasedPixelHeight,
-                                  screenBasedPixelWidth: screenBasedPixelWidth,
-                                ),
+                              SettingsBox(
+                                settingsType: 'App Defaults',
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                settingsBoxChildren: [
+                                  BuildVtopModeSelector(
+                                    semesters: vtopModes,
+                                    dropdownValue: vtopModeDropdownValue,
+                                    onDropDownChanged: (String? newValue) {
+                                      setState(() {
+                                        vtopModeDropdownValue = newValue!;
+                                      });
+                                      widget.arguments.onUpdateDefaultVtopMode
+                                          .call(newValue!);
+                                    },
+                                    screenBasedPixelHeight:
+                                        screenBasedPixelHeight,
+                                    screenBasedPixelWidth:
+                                        screenBasedPixelWidth,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
@@ -215,14 +198,113 @@ class _SettingsState extends State<Settings> {
   }
 }
 
+class SettingsBox extends StatefulWidget {
+  const SettingsBox({
+    Key? key,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
+    required this.settingsBoxChildren,
+    required this.settingsType,
+  }) : super(key: key);
+
+  final double screenBasedPixelWidth;
+  final double screenBasedPixelHeight;
+  final List<Widget> settingsBoxChildren;
+  final String settingsType;
+
+  @override
+  _SettingsBoxState createState() => _SettingsBoxState();
+}
+
+class _SettingsBoxState extends State<SettingsBox> {
+  late final double _screenBasedPixelWidth = widget.screenBasedPixelWidth;
+  late final double _screenBasedPixelHeight = widget.screenBasedPixelHeight;
+
+  late List<Widget> _settingsBoxChildren = widget.settingsBoxChildren;
+
+  late final String _settingsType = widget.settingsType;
+
+  @override
+  void didUpdateWidget(SettingsBox oldWidget) {
+    if (oldWidget.settingsBoxChildren != widget.settingsBoxChildren) {
+      setState(() {
+        _settingsBoxChildren = widget.settingsBoxChildren;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(
+        widgetSizeProvider(
+            fixedSize: 8, sizeDecidingVariable: _screenBasedPixelWidth),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: widgetSizeProvider(
+                fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          color: Theme.of(context).colorScheme.primaryContainer,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(
+                widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: _screenBasedPixelWidth),
+              ),
+              child: Text(
+                _settingsType,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: widgetSizeProvider(
+                      fixedSize: 16,
+                      sizeDecidingVariable: _screenBasedPixelWidth),
+                ),
+              ),
+            ),
+            Divider(
+              indent: 0,
+              endIndent: 0,
+              thickness: widgetSizeProvider(
+                  fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
+              color: Theme.of(context).colorScheme.outline,
+              height: 0,
+            ),
+            Padding(
+              padding: EdgeInsets.all(
+                widgetSizeProvider(
+                    fixedSize: 8, sizeDecidingVariable: _screenBasedPixelWidth),
+              ),
+              child: Column(
+                children: _settingsBoxChildren,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class SettingsArguments {
   String? currentStatus;
   ValueChanged<bool>? onTimeTableDocumentDispose;
   dom.Document? timeTableDocument;
   ValueChanged<String>? onSemesterSubIdChange;
   String semesterSubId;
+  String vtopMode;
   ValueChanged<bool> onProcessingSomething;
   ValueChanged<String> onUpdateDefaultSemesterId;
+  ValueChanged<String> onUpdateDefaultVtopMode;
+
   // String userEnteredUname;
   // String userEnteredPasswd;
   // HeadlessInAppWebView headlessWebView;
@@ -236,8 +318,10 @@ class SettingsArguments {
     required this.timeTableDocument,
     required this.onSemesterSubIdChange,
     required this.semesterSubId,
+    required this.vtopMode,
     required this.onProcessingSomething,
     required this.onUpdateDefaultSemesterId,
+    required this.onUpdateDefaultVtopMode,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,
     // required this.headlessWebView,

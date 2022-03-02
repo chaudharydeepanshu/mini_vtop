@@ -341,6 +341,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   String semesterSubId =
       "BL20212210"; // Used to store and get the user semester sub id.
 
+  String vtopMode = "Mini VTOP"; // Used to store and get the user vtop mode.
+
   bool isDialogShowing = false; // Used to store and get the dialog box status.
 
   openStudentProfileAllView({required String forXAction}) async {
@@ -421,10 +423,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     // Check where the name is saved before or not
     if (!prefs.containsKey('semesterSubId')) {
+      semesterSubId = "BL20212210";
       return "BL20212210";
     }
 
+    semesterSubId = prefs.getString('semesterSubId')!;
     return prefs.getString('semesterSubId')!;
+  }
+
+  Future<String> _justRetrieveVtopMode() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('vtopMode')) {
+      vtopMode = "Mini VTOP";
+      return "Mini VTOP";
+    }
+
+    vtopMode = prefs.getString('vtopMode')!;
+    return prefs.getString('vtopMode')!;
   }
 
   Future<void> _saveSessionDateTime() async {
@@ -435,6 +452,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   Future<void> _saveSemesterSubId() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('semesterSubId', semesterSubId.toString());
+  }
+
+  Future<void> _saveVtopMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('vtopMode', vtopMode.toString());
   }
 
   Future<void> _saveTryAutoLoginStatus() async {
@@ -619,6 +641,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _retrieveSessionDateTime();
     _retrieveTryAutoLoginStatus();
     _retrieveSemesterSubId();
+    _justRetrieveVtopMode();
+
     headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(
           // url: Uri.parse("")),
@@ -1243,7 +1267,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       .children[2]
                       .children[1]
                       .innerHtml;
-                  currentStatus = "userLoggedIn";
+                  if (vtopMode == "Mini VTOP") {
+                    currentStatus = "userLoggedIn";
+                  } else if (vtopMode == "Full VTOP") {
+                    currentStatus = "originalVTOP";
+                  }
                   loggedUserStatus = "studentPortalScreen";
                   Navigator.of(context)
                       .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
@@ -1292,7 +1320,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         .children[2]
                         .children[1]
                         .innerHtml;
-                    currentStatus = "userLoggedIn";
+
+                    if (vtopMode == "Mini VTOP") {
+                      currentStatus = "userLoggedIn";
+                    } else if (vtopMode == "Full VTOP") {
+                      currentStatus = "originalVTOP";
+                    }
+
                     loggedUserStatus = "studentPortalScreen";
                   });
                   initialiseTimeTableHtmlDocument();
@@ -2289,6 +2323,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");
     debugPrint("vtopLoginErrorType: $vtopLoginErrorType");
+    debugPrint("vtopMode: $vtopMode");
 
     screenBasedPixelWidth = MediaQuery.of(context).size.width * 0.0027625;
     screenBasedPixelHeight = MediaQuery.of(context).size.height * 0.00169;
@@ -2560,6 +2595,24 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         });
         _saveSemesterSubId();
       },
+      onUpdateVtopMode: (String value) {
+        setState(() {
+          if (value == "Mini VTOP") {
+            currentStatus = "userLoggedIn";
+            vtopMode = "Mini VTOP";
+          } else if (value == "Full VTOP") {
+            currentStatus = "originalVTOP";
+            vtopMode = "Full VTOP";
+          }
+        });
+      },
+      onUpdateDefaultVtopMode: (String value) {
+        setState(() {
+          vtopMode = value;
+        });
+        _saveVtopMode();
+      },
+      vtopMode: vtopMode,
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
