@@ -4,7 +4,7 @@
 // import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 // import 'package:html/parser.dart' show parse;
-// import 'package:mini_vtop/basicFunctions/print_wrapped.dart';
+// import 'package:mini_vtop/basicFunctionsAndWidgets/print_wrapped.dart';
 // import '../manage_user_session.dart';
 // import '../sign_out.dart';
 

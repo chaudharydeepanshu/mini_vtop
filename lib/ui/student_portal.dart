@@ -8,8 +8,8 @@ import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 
-import '../basicFunctions/proccessing_dialog.dart';
-import '../basicFunctions/widget_size_limiter.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'AppTheme/lib_color_schemes.g.dart';
 
 class StudentPortal extends StatefulWidget {

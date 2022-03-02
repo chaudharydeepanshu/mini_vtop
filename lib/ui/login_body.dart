@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
-import '../basicFunctions/direct_pop.dart';
-import '../basicFunctions/proccessing_dialog.dart';
-import '../basicFunctions/stop_pop.dart';
-import '../basicFunctions/upper_case_text_formatter.dart';
-import '../basicFunctions/widget_size_limiter.dart';
+import '../basicFunctionsAndWidgets/direct_pop.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/stop_pop.dart';
+import '../basicFunctionsAndWidgets/upper_case_text_formatter.dart';
+import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class LoginSection extends StatefulWidget {
   const LoginSection({

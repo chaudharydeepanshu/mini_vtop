@@ -32,6 +32,7 @@ chooseCorrectDrawer({
   required ValueChanged<String> onUserEnteredPasswd,
   required ValueChanged<String> onError,
   required ValueChanged<Widget?> onDrawer,
+  required ValueChanged<String> onUpdateDefaultSemesterId,
 }) async {
   if (currentStatus == null) {
     onDrawer.call(
@@ -65,6 +66,9 @@ chooseCorrectDrawer({
         onRequestType: (String value) {
           onRequestType.call(value);
         },
+        onUpdateDefaultSemesterId: (String value) {
+          onUpdateDefaultSemesterId.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -94,6 +98,9 @@ chooseCorrectDrawer({
         semesterSubId: semesterSubId,
         onRequestType: (String value) {
           onRequestType.call(value);
+        },
+        onUpdateDefaultSemesterId: (String value) {
+          onUpdateDefaultSemesterId.call(value);
         },
       ),
     );
@@ -147,6 +154,9 @@ chooseCorrectDrawer({
         onRequestType: (String value) {
           onRequestType.call(value);
         },
+        onUpdateDefaultSemesterId: (String value) {
+          onUpdateDefaultSemesterId.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -196,6 +206,9 @@ chooseCorrectDrawer({
         semesterSubId: semesterSubId,
         onRequestType: (String value) {
           onRequestType.call(value);
+        },
+        onUpdateDefaultSemesterId: (String value) {
+          onUpdateDefaultSemesterId.call(value);
         },
       ),
     );

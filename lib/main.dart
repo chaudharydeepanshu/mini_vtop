@@ -28,10 +28,10 @@ import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'basicFunctions/dismiss_keyboard.dart';
-import 'basicFunctions/print_wrapped.dart';
-import 'basicFunctions/proccessing_dialog.dart';
-import 'basicFunctions/widget_size_limiter.dart';
+import 'basicFunctionsAndWidgets/dismiss_keyboard.dart';
+import 'basicFunctionsAndWidgets/print_wrapped.dart';
+import 'basicFunctionsAndWidgets/proccessing_dialog.dart';
+import 'basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
 import 'coreFunctions/auto_captcha.dart';
@@ -2554,6 +2554,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       },
       timeTableDocument: timeTableDocument,
       semesterSubId: semesterSubId,
+      onUpdateDefaultSemesterId: (String value) {
+        setState(() {
+          semesterSubId = value;
+        });
+        _saveSemesterSubId();
+      },
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

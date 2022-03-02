@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:mini_vtop/ui/settings.dart';
 
-import '../basicFunctions/measure_size_of_widget.dart';
-import '../basicFunctions/proccessing_dialog.dart';
-import '../basicFunctions/widget_size_limiter.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector.dart';
+import '../basicFunctionsAndWidgets/measure_size_of_widget.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class TimeTable extends StatefulWidget {
   static const String routeName = '/timeTable';
@@ -435,305 +437,230 @@ class _TimeTableState extends State<TimeTable> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(
-                widgetSizeProvider(
-                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Semester - ",
-                    style: getDynamicTextStyle(
-                        textStyle: Theme.of(context).textTheme.bodyText1,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
-                  SizedBox(
-                    width: widgetSizeProvider(
-                        fixedSize: 5,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
-                  SizedBox(
-                    width: widgetSizeProvider(
-                        fixedSize: 220,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    child: FittedBox(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(
-                              widgetSizeProvider(
-                                  fixedSize: 10,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                            topRight: Radius.circular(
-                              widgetSizeProvider(
-                                  fixedSize: 10,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                          ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                Column(
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: widgetSizeProvider(
+                            fixedSize: 700,
+                            sizeDecidingVariable:
+                                widget.arguments.screenBasedPixelWidth),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                          widgetSizeProvider(
+                              fixedSize: 8,
+                              sizeDecidingVariable: screenBasedPixelWidth),
                         ),
-                        child: DropdownButton<String>(
-                          itemHeight: kMinInteractiveDimension,
-                          dropdownColor:
-                              Theme.of(context).colorScheme.primaryContainer,
-                          value: dropdownValue,
-                          // isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_downward,
-                            size: widgetSizeProvider(
-                                fixedSize: 24,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            // color: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
                           ),
-                          elevation: 16,
-                          // style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: widgetSizeProvider(
-                                fixedSize: 2,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                            // color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              // dropdownValue = newValue!;
-                              WidgetsBinding.instance
-                                  ?.addPostFrameCallback((_) {
-                                widget.arguments.onProcessingSomething.call(
-                                    true); //then set processing something true for the new loading dialog
-                                customDialogBox(
-                                  isDialogShowing: isDialogShowing,
-                                  context: context,
-                                  onIsDialogShowing: (bool value) {
-                                    setState(() {
-                                      isDialogShowing = value;
-                                    });
-                                  },
-                                  dialogTitle: Text(
-                                    'Requesting Data',
-                                    style: getDynamicTextStyle(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .headline6
-                                            ?.copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface
-                                                    .withOpacity(0.87)),
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  dialogChildren: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: widgetSizeProvider(
-                                            fixedSize: 36,
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                        width: widgetSizeProvider(
-                                            fixedSize: 36,
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: widgetSizeProvider(
-                                              fixedSize: 4.0,
-                                              sizeDecidingVariable:
-                                                  screenBasedPixelWidth),
-                                        ),
-                                      ),
-                                      Text(
-                                        'Please wait...',
+                          child: Padding(
+                            padding: EdgeInsets.all(
+                              widgetSizeProvider(
+                                  fixedSize: 8,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                            child: BuildSemesterSelector(
+                              semesters: semesters,
+                              dropdownValue: dropdownValue,
+                              onDropDownChanged: (String? newValue) {
+                                setState(() {
+                                  // dropdownValue = newValue!;
+                                  WidgetsBinding.instance
+                                      ?.addPostFrameCallback((_) {
+                                    widget.arguments.onProcessingSomething.call(
+                                        true); //then set processing something true for the new loading dialog
+                                    customDialogBox(
+                                      isDialogShowing: isDialogShowing,
+                                      context: context,
+                                      onIsDialogShowing: (bool value) {
+                                        setState(() {
+                                          isDialogShowing = value;
+                                        });
+                                      },
+                                      dialogTitle: Text(
+                                        'Requesting Data',
                                         style: getDynamicTextStyle(
                                             textStyle: Theme.of(context)
                                                 .textTheme
-                                                .bodyText1
+                                                .headline6
                                                 ?.copyWith(
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onSurface
-                                                        .withOpacity(0.60)),
+                                                        .withOpacity(0.87)),
                                             sizeDecidingVariable:
                                                 screenBasedPixelWidth),
                                         textAlign: TextAlign.center,
                                       ),
-                                    ],
-                                  ),
-                                  barrierDismissible: true,
-                                  screenBasedPixelHeight:
-                                      screenBasedPixelHeight,
-                                  screenBasedPixelWidth: screenBasedPixelWidth,
-                                  onProcessingSomething: (bool value) {
-                                    widget.arguments.onProcessingSomething
-                                        .call(value);
-                                  },
-                                ).then((_) => isDialogShowing = false);
-                              });
-                              widget.arguments.onSemesterSubIdChange
-                                  ?.call(newValue!);
-                            });
-                          },
-                          items: semesters.map<DropdownMenuItem<String>>(
-                              (Map<dynamic, dynamic> value) {
-                            return DropdownMenuItem<String>(
-                              value: value["semesterCode"],
-                              child: Container(
-                                height: value["semesterCode"] == dropdownValue
-                                    ? kMinInteractiveDimension
-                                    : null,
-                                // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
-                                decoration: BoxDecoration(
-                                  color: value["semesterCode"] == dropdownValue
-                                      ? Theme.of(context).colorScheme.primary
-                                      : null,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(
-                                      widgetSizeProvider(
-                                          fixedSize: 10,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
+                                      dialogChildren: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height: widgetSizeProvider(
+                                                fixedSize: 36,
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                            width: widgetSizeProvider(
+                                                fixedSize: 36,
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: widgetSizeProvider(
+                                                  fixedSize: 4.0,
+                                                  sizeDecidingVariable:
+                                                      screenBasedPixelWidth),
+                                            ),
+                                          ),
+                                          Text(
+                                            'Please wait...',
+                                            style: getDynamicTextStyle(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1
+                                                    ?.copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface
+                                                            .withOpacity(0.60)),
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                      barrierDismissible: true,
+                                      screenBasedPixelHeight:
+                                          screenBasedPixelHeight,
+                                      screenBasedPixelWidth:
+                                          screenBasedPixelWidth,
+                                      onProcessingSomething: (bool value) {
+                                        widget.arguments.onProcessingSomething
+                                            .call(value);
+                                      },
+                                    ).then((_) => isDialogShowing = false);
+                                  });
+                                  widget.arguments.onSemesterSubIdChange
+                                      ?.call(newValue!);
+                                });
+                              },
+                              screenBasedPixelHeight: screenBasedPixelHeight,
+                              screenBasedPixelWidth: screenBasedPixelWidth,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    widget.arguments.timeTableDocument
+                                ?.getElementById("getStudentDetails")
+                                ?.children[0]
+                                .text
+                                .replaceAll(RegExp('\\s+'), ' ') !=
+                            "No Record(s) Found"
+                        ? Column(
+                            children: [
+                              TableHeader(
+                                tableHeaderText: "Time Table",
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                              ),
+                              SizedBox(
+                                height: timeTableSize
+                                    .height, //(listOfRows.length + 1) * 48 + 1 + 16,
+                                width: MediaQuery.of(context).size.width,
+                                child: InteractiveViewer(
+                                  constrained: false,
+                                  scaleEnabled: true,
+                                  child: MeasureSize(
+                                    onChange: (size) {
+                                      setState(() {
+                                        timeTableSize = size;
+                                      });
+                                    },
+                                    child: Padding(
                                       padding: EdgeInsets.all(
                                         widgetSizeProvider(
                                             fixedSize: 8,
                                             sizeDecidingVariable:
                                                 screenBasedPixelWidth),
                                       ),
-                                      child: FittedBox(
-                                        child: Text(
-                                          value["semesterName"],
-                                          style: getDynamicTextStyle(
-                                              textStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .button
-                                                  ?.copyWith(
-                                                    color: value[
-                                                                "semesterCode"] ==
-                                                            dropdownValue
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .onPrimary
-                                                        : Theme.of(context)
-                                                            .colorScheme
-                                                            .onPrimaryContainer,
-                                                  ),
-                                              sizeDecidingVariable:
-                                                  screenBasedPixelWidth),
-                                        ),
-                                      ),
+                                      child: customTimeTable,
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                              TableHeader(
+                                tableHeaderText: "Subject Detail",
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                              ),
+                              SizedBox(
+                                height: subjectDetailTableSize
+                                    .height, //(listOfRows.length + 1) * 48 + 1 + 16,
+                                width: MediaQuery.of(context).size.width,
+                                child: InteractiveViewer(
+                                  constrained: false,
+                                  scaleEnabled: true,
+                                  child: MeasureSize(
+                                    onChange: (size) {
+                                      setState(() {
+                                        subjectDetailTableSize = size;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.all(
+                                        widgetSizeProvider(
+                                            fixedSize: 8,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
+                                      ),
+                                      child: customSubjectDetailTable,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              Icon(
+                                Icons.error,
+                              ),
+                              Text(
+                                "No Record(s) Found",
+                                style: getDynamicTextStyle(
+                                    textStyle:
+                                        Theme.of(context).textTheme.bodyText1,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
+                              ),
+                            ],
+                          ),
+                  ],
+                ),
+              ],
             ),
-            widget.arguments.timeTableDocument
-                        ?.getElementById("getStudentDetails")
-                        ?.children[0]
-                        .text
-                        .replaceAll(RegExp('\\s+'), ' ') !=
-                    "No Record(s) Found"
-                ? Column(
-                    children: [
-                      TableHeader(
-                        tableHeaderText: "Time Table",
-                        screenBasedPixelWidth: screenBasedPixelWidth,
-                        screenBasedPixelHeight: screenBasedPixelHeight,
-                      ),
-                      SizedBox(
-                        height: timeTableSize
-                            .height, //(listOfRows.length + 1) * 48 + 1 + 16,
-                        width: MediaQuery.of(context).size.width,
-                        child: InteractiveViewer(
-                          constrained: false,
-                          scaleEnabled: true,
-                          child: MeasureSize(
-                            onChange: (size) {
-                              setState(() {
-                                timeTableSize = size;
-                              });
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(
-                                widgetSizeProvider(
-                                    fixedSize: 8,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                              ),
-                              child: customTimeTable,
-                            ),
-                          ),
-                        ),
-                      ),
-                      TableHeader(
-                        tableHeaderText: "Subject Detail",
-                        screenBasedPixelWidth: screenBasedPixelWidth,
-                        screenBasedPixelHeight: screenBasedPixelHeight,
-                      ),
-                      SizedBox(
-                        height: subjectDetailTableSize
-                            .height, //(listOfRows.length + 1) * 48 + 1 + 16,
-                        width: MediaQuery.of(context).size.width,
-                        child: InteractiveViewer(
-                          constrained: false,
-                          scaleEnabled: true,
-                          child: MeasureSize(
-                            onChange: (size) {
-                              setState(() {
-                                subjectDetailTableSize = size;
-                              });
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(
-                                widgetSizeProvider(
-                                    fixedSize: 8,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                              ),
-                              child: customSubjectDetailTable,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      Icon(
-                        Icons.error,
-                      ),
-                      Text(
-                        "No Record(s) Found",
-                        style: getDynamicTextStyle(
-                            textStyle: Theme.of(context).textTheme.bodyText1,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                      ),
-                    ],
-                  ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

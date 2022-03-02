@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/basicFunctions/stop_pop.dart';
-import 'package:mini_vtop/basicFunctions/widget_size_limiter.dart';
+import 'package:mini_vtop/basicFunctionsAndWidgets/stop_pop.dart';
+import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'direct_pop.dart';
 
 Future<void> customDialogBox({

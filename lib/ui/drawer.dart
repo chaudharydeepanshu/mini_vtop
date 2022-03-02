@@ -6,9 +6,9 @@ import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:mini_vtop/ui/settings.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../basicFunctions/dailog_box_for_leaving_app.dart';
-import '../basicFunctions/proccessing_dialog.dart';
-import '../basicFunctions/widget_size_limiter.dart';
+import '../basicFunctionsAndWidgets/dailog_box_for_leaving_app.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 import '../coreFunctions/call_time_table.dart';
 import '../navigation/page_routes_model.dart';
 import 'package:html/dom.dart' as dom;
@@ -31,6 +31,7 @@ class CustomDrawer extends StatefulWidget {
     required this.timeTableDocument,
     required this.semesterSubId,
     required this.onRequestType,
+    required this.onUpdateDefaultSemesterId,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -47,6 +48,7 @@ class CustomDrawer extends StatefulWidget {
   final dom.Document? timeTableDocument;
   final String semesterSubId;
   final ValueChanged<String> onRequestType;
+  final ValueChanged<String> onUpdateDefaultSemesterId;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -644,6 +646,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       },
                                       onProcessingSomething: (bool value) {
                                         widget.onProcessingSomething
+                                            .call(value);
+                                      },
+                                      onUpdateDefaultSemesterId:
+                                          (String value) {
+                                        widget.onUpdateDefaultSemesterId
                                             .call(value);
                                       },
                                     ),
