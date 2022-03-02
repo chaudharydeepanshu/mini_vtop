@@ -25,19 +25,20 @@ class LaunchLoadingScreen extends StatefulWidget {
 class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
   // double width = 1000;
   // double height = 300;
-  Color textDialogOfLoginScreenColor = const Color(0xff04294f);
-
-  ValueKey textOfLoginScreenValueKey = const ValueKey<int>(0);
-  String textOfLoginScreen = "Connecting to\nVIT VTOP\nPlease Wait ...";
 
   Timer? timer;
 
   late Widget animationOfLoadingScreen;
 
-  Widget actionButton = const SizedBox();
+  late Color textDialogOfLoginScreenColor;
+
+  late ValueKey textOfLoginScreenValueKey;
+  late Widget textOfLoginScreen;
+
+  late Widget actionButton;
 
   Widget textDialogOfLoginScreen(
-      {required String textOfLoginScreen,
+      {required Widget textOfLoginScreen,
       required Key textOfLoginScreenValueKey,
       required Color textDialogOfLoginScreenColor,
       required Widget actionButton}) {
@@ -70,21 +71,7 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
           },
           child: Column(
             children: [
-              Text(
-                textOfLoginScreen,
-                style: GoogleFonts.lato(
-                  color: Colors.white,
-                  textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 40,
-                      sizeDecidingVariable:
-                          widget.arguments.screenBasedPixelWidth),
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
-                textAlign: TextAlign.center,
-                key: textOfLoginScreenValueKey,
-              ),
+              textOfLoginScreen,
               actionButton,
             ],
           ),
@@ -112,29 +99,31 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    textDialogOfLoginScreenColor = Theme.of(context)
+        .colorScheme
+        .primaryContainer; // const Color(0xff04294f);
+
+    textOfLoginScreenValueKey = const ValueKey<int>(0);
+    textOfLoginScreen = Text(
+      "Connecting to\nVIT VTOP\nPlease Wait ...",
+      style: getDynamicTextStyle(
+          textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+          sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+      textAlign: TextAlign.center,
+      key: textOfLoginScreenValueKey,
+    );
+
+    actionButton = const SizedBox();
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     timer?.cancel();
     super.dispose();
-  }
-
-  var listOfColors = [
-    const Color(0xff04294f),
-    const Color(0xfff04e23),
-    const Color(0xffffb400),
-    const Color(0xff00acdc)
-  ];
-  // generates a new Random object
-  final random = Random();
-
-  Future<void> callTimerMethod() async {
-    // Timer.periodic(const Duration(seconds: 3), (timer) {
-    //   // generate a random index based on the list length
-    //   // and use it to retrieve the element
-    //   var element = listOfColors[random.nextInt(listOfColors.length)];
-    //   setState(() {
-    //     textDialogOfLoginScreenColor = element;
-    //   });
-    // });
   }
 
   callChangeTextMethod() {
@@ -143,7 +132,14 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         // Before calling setState check if the state is mounted.
         if (mounted) {
           setState(() {
-            textOfLoginScreen = "Connection is\ntaking longer\nthan usual";
+            textOfLoginScreen = Text(
+              "Connection is\ntaking longer\nthan usual",
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.headline4,
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+              key: textOfLoginScreenValueKey,
+            );
             textOfLoginScreenValueKey = const ValueKey<int>(1);
             textDialogOfLoginScreenColor = const Color(0xfffdb813);
           });
@@ -167,9 +163,19 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(0),
         );
-        textOfLoginScreen = "Connecting to\nVIT VTOP\nPlease Wait ...";
+        textOfLoginScreen = Text(
+          "Connecting to\nVIT VTOP\nPlease Wait ...",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+          key: textOfLoginScreenValueKey,
+        );
         textOfLoginScreenValueKey = const ValueKey<int>(0);
-        textDialogOfLoginScreenColor = const Color(0xff04294f);
+        textDialogOfLoginScreenColor =
+            Theme.of(context).colorScheme.primaryContainer;
         actionButton = const SizedBox();
       });
       debugPrint("widget.arguments.vtopErrorType");
@@ -186,7 +192,14 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(0),
         );
-        textOfLoginScreen = "Connection is\ntaking longer\nthan usual";
+        textOfLoginScreen = Text(
+          "Connection is\ntaking longer\nthan usual",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline4,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+          key: textOfLoginScreenValueKey,
+        );
         textOfLoginScreenValueKey = const ValueKey<int>(1);
         textDialogOfLoginScreenColor = const Color(0xfffdb813);
         actionButton = const SizedBox();
@@ -211,27 +224,65 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
         );
         if (widget.arguments.vtopConnectionStatusErrorType ==
             "net::ERR_CONNECTION_TIMED_OUT") {
-          textOfLoginScreen = "Connection failed\ndue to connection\ntimeout";
+          textOfLoginScreen = Text(
+            "Connection failed\ndue to connection\ntimeout",
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+            textAlign: TextAlign.center,
+            key: textOfLoginScreenValueKey,
+          );
         } else {
           if (widget.arguments.vtopConnectionStatusErrorType ==
               "net::ERR_NAME_NOT_RESOLVED") {
-            textOfLoginScreen =
-                "Connection failed\nas website could\nnot be resolved";
+            textOfLoginScreen = Text(
+              "Connection failed\nas website could\nnot be resolved",
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+              key: textOfLoginScreenValueKey,
+            );
           } else {
             if (widget.arguments.vtopConnectionStatusErrorType ==
                 "net::ERR_INTERNET_DISCONNECTED") {
-              textOfLoginScreen =
-                  "Connection failed\nas your internet\nis disconnected";
+              textOfLoginScreen = Text(
+                "Connection failed\nas your internet\nis disconnected",
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                textAlign: TextAlign.center,
+                key: textOfLoginScreenValueKey,
+              );
             } else {
-              textOfLoginScreen = "Connection failed";
+              textOfLoginScreen = Text(
+                "Connection failed",
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                    sizeDecidingVariable:
+                        widget.arguments.screenBasedPixelWidth),
+                textAlign: TextAlign.center,
+                key: textOfLoginScreenValueKey,
+              );
             }
           }
         }
         textOfLoginScreenValueKey = const ValueKey<int>(3);
-        textDialogOfLoginScreenColor = const Color(0xfff04e23);
+        textDialogOfLoginScreenColor =
+            Theme.of(context).colorScheme.errorContainer;
         actionButton = ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+            backgroundColor:
+                MaterialStateProperty.all(Theme.of(context).colorScheme.error),
             padding: MaterialStateProperty.all(
               EdgeInsets.only(
                 top: widgetSizeProvider(
@@ -253,12 +304,9 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               ),
             ),
             textStyle: MaterialStateProperty.all(
-              TextStyle(
-                fontSize: widgetSizeProvider(
-                    fixedSize: 20,
-                    sizeDecidingVariable:
-                        widget.arguments.screenBasedPixelWidth),
-              ),
+              getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.button,
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -280,15 +328,6 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               const Icon(Icons.refresh),
               Text(
                 "Retry",
-                style: GoogleFonts.lato(
-                  color: Colors.white,
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 17,
-                      sizeDecidingVariable:
-                          widget.arguments.screenBasedPixelWidth),
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
               )
             ],
           ),
@@ -308,13 +347,23 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(1),
         );
-        textOfLoginScreen =
-            "Connection failed\nas something is\nwrong with VTOP";
+        textOfLoginScreen = Text(
+          "Connection failed\nas something is\nwrong with VTOP",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline4?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+          key: textOfLoginScreenValueKey,
+        );
         textOfLoginScreenValueKey = const ValueKey<int>(3);
-        textDialogOfLoginScreenColor = const Color(0xfff04e23);
+        textDialogOfLoginScreenColor =
+            Theme.of(context).colorScheme.errorContainer;
         actionButton = ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+            backgroundColor:
+                MaterialStateProperty.all(Theme.of(context).colorScheme.error),
             padding: MaterialStateProperty.all(
               EdgeInsets.only(
                 top: widgetSizeProvider(
@@ -336,12 +385,9 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               ),
             ),
             textStyle: MaterialStateProperty.all(
-              TextStyle(
-                fontSize: widgetSizeProvider(
-                    fixedSize: 20,
-                    sizeDecidingVariable:
-                        widget.arguments.screenBasedPixelWidth),
-              ),
+              getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.button,
+                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -363,15 +409,6 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               const Icon(Icons.refresh),
               Text(
                 "Retry",
-                style: GoogleFonts.lato(
-                  color: Colors.white,
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 17,
-                      sizeDecidingVariable:
-                          widget.arguments.screenBasedPixelWidth),
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
               )
             ],
           ),
@@ -391,7 +428,14 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           key: const ValueKey<int>(2),
         );
-        textOfLoginScreen = "Successfully\nconnected\nto VTOP";
+        textOfLoginScreen = Text(
+          "Successfully\nconnected\nto VTOP",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline4,
+              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+          key: textOfLoginScreenValueKey,
+        );
         textOfLoginScreenValueKey = const ValueKey<int>(4);
         textDialogOfLoginScreenColor = Colors.green;
         actionButton = const SizedBox();

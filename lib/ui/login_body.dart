@@ -125,12 +125,13 @@ class _LoginSectionState extends State<LoginSection> {
             },
             dialogTitle: Text(
               'Sending login request',
-              style: TextStyle(
-                fontSize: widgetSizeProvider(
-                    fixedSize: 24,
-                    sizeDecidingVariable:
-                        widget.arguments.screenBasedPixelWidth),
-              ),
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.87)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
               textAlign: TextAlign.center,
             ),
             dialogChildren: Column(
@@ -155,12 +156,16 @@ class _LoginSectionState extends State<LoginSection> {
                 ),
                 Text(
                   'Please wait...',
-                  style: TextStyle(
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 20,
-                        sizeDecidingVariable:
-                            widget.arguments.screenBasedPixelWidth),
-                  ),
+                  style: getDynamicTextStyle(
+                      textStyle: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          ?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.60)),
+                      sizeDecidingVariable: screenBasedPixelWidth),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -223,11 +228,13 @@ class _LoginSectionState extends State<LoginSection> {
           },
           dialogTitle: Text(
             'Sign-in Failed',
-            style: TextStyle(
-              fontSize: widgetSizeProvider(
-                  fixedSize: 24,
-                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-            ),
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.87)),
+                sizeDecidingVariable: screenBasedPixelWidth),
             textAlign: TextAlign.center,
           ),
           dialogChildren: Column(
@@ -252,12 +259,13 @@ class _LoginSectionState extends State<LoginSection> {
               ),
               Text(
                 'Re-requesting login page please wait...',
-                style: TextStyle(
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 20,
-                      sizeDecidingVariable:
-                          widget.arguments.screenBasedPixelWidth),
-                ),
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.60)),
+                    sizeDecidingVariable: screenBasedPixelWidth),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -363,7 +371,9 @@ class _LoginSectionState extends State<LoginSection> {
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
-                                                color: const Color(0xfff04e23),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .errorContainer,
                                                 // border: Border.all(),
                                                 borderRadius: BorderRadius.all(
                                                   Radius.circular(
@@ -406,19 +416,27 @@ class _LoginSectionState extends State<LoginSection> {
                                                                   widget
                                                                       .arguments
                                                                       .screenBasedPixelWidth),
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .onErrorContainer,
                                                         ),
                                                       ),
                                                       Text(
                                                         widget.arguments
                                                             .vtopLoginErrorType,
-                                                        style: TextStyle(
-                                                          fontSize: widgetSizeProvider(
-                                                              fixedSize: 15,
-                                                              sizeDecidingVariable:
-                                                                  widget
-                                                                      .arguments
-                                                                      .screenBasedPixelWidth),
-                                                        ),
+                                                        style: getDynamicTextStyle(
+                                                            textStyle: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .caption
+                                                                ?.copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .onErrorContainer),
+                                                            sizeDecidingVariable:
+                                                                screenBasedPixelWidth),
                                                       ),
                                                     ],
                                                   ),
@@ -470,6 +488,10 @@ class _LoginSectionState extends State<LoginSection> {
                                                                     widget
                                                                         .arguments
                                                                         .screenBasedPixelWidth),
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onErrorContainer,
                                                           ),
                                                         ),
                                                       ),
@@ -623,22 +645,6 @@ class _LoginSectionState extends State<LoginSection> {
                                                           ),
                                                           Text(
                                                             "Clear",
-                                                            style: GoogleFonts
-                                                                .lato(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: widgetSizeProvider(
-                                                                  fixedSize: 17,
-                                                                  sizeDecidingVariable: widget
-                                                                      .arguments
-                                                                      .screenBasedPixelWidth),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .normal,
-                                                            ),
                                                           )
                                                         ],
                                                       ),
@@ -861,7 +867,7 @@ class _LoginSectionState extends State<LoginSection> {
                                         //Refresh captcha button.
                                         SizedBox(
                                           width: widgetSizeProvider(
-                                              fixedSize: 51,
+                                              fixedSize: 70,
                                               sizeDecidingVariable: widget
                                                   .arguments
                                                   .screenBasedPixelWidth),
@@ -870,59 +876,78 @@ class _LoginSectionState extends State<LoginSection> {
                                               sizeDecidingVariable: widget
                                                   .arguments
                                                   .screenBasedPixelWidth),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            shape: const StadiumBorder(),
-                                            child: Tooltip(
-                                              message: "Refresh Captcha",
-                                              child: InkWell(
-                                                onTap: () {
-                                                  // _controller3 =
-                                                  //     TextEditingController(text: "");
-                                                  signInCredentialsMap = {
-                                                    "uname":
-                                                        '${_controller?.value.text.toUpperCase()}',
-                                                    "passwd":
-                                                        '${_controller2?.value.text}',
-                                                    "refreshingCaptcha": true,
-                                                  };
-                                                  widget.onRefreshCaptcha?.call(
-                                                      signInCredentialsMap);
-                                                },
-                                                customBorder:
-                                                    const StadiumBorder(),
-                                                focusColor: Colors.black
-                                                    .withOpacity(0.1),
-                                                highlightColor: Colors.black
-                                                    .withOpacity(0.1),
-                                                splashColor: Colors.black
-                                                    .withOpacity(0.1),
-                                                hoverColor: Colors.black
-                                                    .withOpacity(0.1),
-                                                child: Icon(
-                                                  Icons.refresh,
-                                                  size: widgetSizeProvider(
-                                                      fixedSize: 24,
-                                                      sizeDecidingVariable: widget
-                                                          .arguments
-                                                          .screenBasedPixelWidth),
-                                                  color: Colors.blue,
+                                          child: Tooltip(
+                                            message: "Refresh Captcha",
+                                            child: ElevatedButton(
+                                              style: ButtonStyle(
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                                minimumSize:
+                                                    MaterialStateProperty.all<
+                                                        Size?>(
+                                                  Size.fromHeight(
+                                                    widgetSizeProvider(
+                                                        fixedSize: 56,
+                                                        sizeDecidingVariable:
+                                                            screenBasedPixelHeight),
+                                                  ),
                                                 ),
+                                                // backgroundColor: MaterialStateProperty.all(
+                                                //     const Color(0xff04294f)),
+                                                padding:
+                                                    MaterialStateProperty.all(
+                                                  EdgeInsets.only(
+                                                    left: widgetSizeProvider(
+                                                        fixedSize: 20,
+                                                        sizeDecidingVariable:
+                                                            screenBasedPixelWidth),
+                                                    right: widgetSizeProvider(
+                                                        fixedSize: 20,
+                                                        sizeDecidingVariable:
+                                                            screenBasedPixelWidth),
+                                                  ),
+                                                ),
+                                                textStyle:
+                                                    MaterialStateProperty.all(
+                                                  getDynamicTextStyle(
+                                                      sizeDecidingVariable:
+                                                          screenBasedPixelWidth,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1),
+                                                ),
+                                                shape: MaterialStateProperty
+                                                    .all<StadiumBorder>(
+                                                  const StadiumBorder(),
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                // _controller3 =
+                                                //     TextEditingController(text: "");
+                                                signInCredentialsMap = {
+                                                  "uname":
+                                                      '${_controller?.value.text.toUpperCase()}',
+                                                  "passwd":
+                                                      '${_controller2?.value.text}',
+                                                  "refreshingCaptcha": true,
+                                                };
+                                                widget.onRefreshCaptcha?.call(
+                                                    signInCredentialsMap);
+                                              },
+                                              child: Icon(
+                                                Icons.refresh,
+                                                size: widgetSizeProvider(
+                                                    fixedSize: 24,
+                                                    sizeDecidingVariable: widget
+                                                        .arguments
+                                                        .screenBasedPixelWidth),
+                                                // color: Colors.blue,
                                               ),
                                             ),
                                           ),
                                         ),
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     signInCredentialsMap = {
-                                        //       "uname": '${_controller?.value.text.toUpperCase()}',
-                                        //       "passwd": '${_controller2?.value.text}',
-                                        //       "refreshingCaptcha": true,
-                                        //     };
-                                        //     widget.onRefreshCaptcha?.call(signInCredentialsMap);
-                                        //   },
-                                        //   child: const Text("Refresh Captcha"),
-                                        // ),
                                       ],
                                     ),
                                   ),
@@ -944,7 +969,7 @@ class _LoginSectionState extends State<LoginSection> {
                                             .arguments.screenBasedPixelWidth),
                                   ),
                                   child: loginTextFormFields(
-                                    helperText: 'The RoboText',
+                                    helperText: '🤖🤖🤖',
                                     controller: _controller3,
                                     onChanged: (String value) {
                                       setState(() {
@@ -1002,13 +1027,12 @@ class _LoginSectionState extends State<LoginSection> {
                                     },
                                     labelWidget: Text(
                                       'Auto sign-in?',
-                                      style: TextStyle(
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 16,
-                                            sizeDecidingVariable: widget
-                                                .arguments
-                                                .screenBasedPixelWidth),
-                                      ),
+                                      style: getDynamicTextStyle(
+                                          sizeDecidingVariable:
+                                              screenBasedPixelWidth,
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1),
                                     ),
                                     padding: EdgeInsets.symmetric(
                                       horizontal: widgetSizeProvider(
@@ -1060,13 +1084,17 @@ class _LoginSectionState extends State<LoginSection> {
                                           },
                                           dialogTitle: Text(
                                             'Sending login request',
-                                            style: TextStyle(
-                                              fontSize: widgetSizeProvider(
-                                                  fixedSize: 24,
-                                                  sizeDecidingVariable: widget
-                                                      .arguments
-                                                      .screenBasedPixelWidth),
-                                            ),
+                                            style: getDynamicTextStyle(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6
+                                                    ?.copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface
+                                                            .withOpacity(0.87)),
+                                                sizeDecidingVariable:
+                                                    screenBasedPixelWidth),
                                             textAlign: TextAlign.center,
                                           ),
                                           dialogChildren: Column(
@@ -1097,13 +1125,19 @@ class _LoginSectionState extends State<LoginSection> {
                                               ),
                                               Text(
                                                 'Please wait...',
-                                                style: TextStyle(
-                                                  fontSize: widgetSizeProvider(
-                                                      fixedSize: 20,
-                                                      sizeDecidingVariable: widget
-                                                          .arguments
-                                                          .screenBasedPixelWidth),
-                                                ),
+                                                style: getDynamicTextStyle(
+                                                    textStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyText1
+                                                        ?.copyWith(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onSurface
+                                                                .withOpacity(
+                                                                    0.60)),
+                                                    sizeDecidingVariable:
+                                                        screenBasedPixelWidth),
                                                 textAlign: TextAlign.center,
                                               ),
                                             ],
@@ -1136,20 +1170,6 @@ class _LoginSectionState extends State<LoginSection> {
                                     },
                                     child: Text(
                                       'Sign In',
-                                      style: GoogleFonts.lato(
-                                        color: Colors.white,
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .headline1,
-                                        // fontSize: 20,
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 20,
-                                            sizeDecidingVariable: widget
-                                                .arguments
-                                                .screenBasedPixelWidth),
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
-                                      ),
                                     ),
                                   ),
                                 ),
@@ -1176,23 +1196,21 @@ class _LoginSectionState extends State<LoginSection> {
                                     children: [
                                       Text(
                                         "Notes:-",
-                                        style: TextStyle(
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 12,
-                                                sizeDecidingVariable: widget
-                                                    .arguments
-                                                    .screenBasedPixelWidth),
-                                            fontWeight: FontWeight.bold),
+                                        style: getDynamicTextStyle(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
                                       ),
                                       Text(
-                                        "We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\nAlso auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop. \nThis app don't run in background so it can't extend the user session time if it is kept in background.",
-                                        style: TextStyle(
-                                          fontSize: widgetSizeProvider(
-                                              fixedSize: 12,
-                                              sizeDecidingVariable: widget
-                                                  .arguments
-                                                  .screenBasedPixelWidth),
-                                        ),
+                                        "1. We have limited Auto sign-in tries to 1 time only as it could fail due to various reasons.\n2. Also auto sign-in gets disabled on manual logout by user so that the user don't get stuck in an endless login & logout loop. \n3. This app don't run in background so it can't extend the user session time if it is kept in background.",
+                                        style: getDynamicTextStyle(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2,
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
                                       ),
                                     ],
                                   ),
@@ -1222,7 +1240,7 @@ class _LoginSectionState extends State<LoginSection> {
       alignment: Alignment.center,
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+          // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
           padding: MaterialStateProperty.all(EdgeInsets.only(
             top: widgetSizeProvider(
                 fixedSize: 16,
@@ -1238,11 +1256,9 @@ class _LoginSectionState extends State<LoginSection> {
                 sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
           )),
           textStyle: MaterialStateProperty.all(
-            TextStyle(
-              fontSize: widgetSizeProvider(
-                  fixedSize: 20,
-                  sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-            ),
+            getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.button,
+                sizeDecidingVariable: screenBasedPixelWidth),
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
@@ -1278,13 +1294,9 @@ class _LoginSectionState extends State<LoginSection> {
   }) {
     return TextFormField(
       controller: controller,
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: widgetSizeProvider(
-            fixedSize: 16,
-            sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-        // height: 1.0,
-      ),
+      style: getDynamicTextStyle(
+          textStyle: Theme.of(context).textTheme.subtitle1,
+          sizeDecidingVariable: screenBasedPixelWidth),
       cursorWidth: widgetSizeProvider(
           fixedSize: 2,
           sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
@@ -1295,13 +1307,13 @@ class _LoginSectionState extends State<LoginSection> {
         // fillColor: Color(0xff04294f),
         // icon: const Icon(Icons.favorite),
         labelText: labelText,
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: widgetSizeProvider(
-              fixedSize: 16,
-              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-          // height: 1.0,
-        ),
+        labelStyle: getDynamicTextStyle(
+            textStyle:
+                Theme.of(context).inputDecorationTheme.labelStyle?.copyWith(
+                      height: 1.0,
+                    ),
+            sizeDecidingVariable: screenBasedPixelWidth),
+
         isDense: true,
         contentPadding: EdgeInsets.symmetric(
           vertical: widgetSizeProvider(
@@ -1315,25 +1327,18 @@ class _LoginSectionState extends State<LoginSection> {
         //   color: Color(0xFF6200EE),
         // ),
         helperText: helperText,
-        helperStyle: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: widgetSizeProvider(
-              fixedSize: 12,
-              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-        ),
-        floatingLabelStyle: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: widgetSizeProvider(
-              fixedSize: 16,
-              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-          // height: 1.0,
-        ),
-        errorStyle: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: widgetSizeProvider(
-              fixedSize: 12,
-              sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-        ),
+        helperStyle: getDynamicTextStyle(
+            textStyle: Theme.of(context).inputDecorationTheme.helperStyle,
+            sizeDecidingVariable: screenBasedPixelWidth),
+
+        floatingLabelStyle: getDynamicTextStyle(
+            textStyle:
+                Theme.of(context).inputDecorationTheme.floatingLabelStyle,
+            sizeDecidingVariable: screenBasedPixelWidth),
+
+        errorStyle: getDynamicTextStyle(
+            textStyle: Theme.of(context).inputDecorationTheme.errorStyle,
+            sizeDecidingVariable: screenBasedPixelWidth),
 
         enabledBorder: const UnderlineInputBorder(
             // borderSide: BorderSide(color: Color(0xFF6200EE)),

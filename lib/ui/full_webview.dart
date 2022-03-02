@@ -164,8 +164,9 @@ class _FlutterBrowserAppState extends State<FlutterBrowserApp> {
         title: 'Original VTOP Browser',
         debugShowCheckedModeBanner: false,
         themeMode: themeMode,
-        theme: ThemeClass.lightTheme,
-        darkTheme: ThemeClass.darkTheme,
+        theme: AppThemeData.lightThemeData.copyWith(),
+        //ThemeClass.lightTheme,
+        darkTheme: AppThemeData.darkThemeData.copyWith(),
         // theme: ThemeData(
         //   primarySwatch: Colors.blue,
         //   visualDensity: VisualDensity.adaptivePlatformDensity,

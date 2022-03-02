@@ -141,15 +141,9 @@ class _TimeTableState extends State<TimeTable> {
                     ),
                     child: Text(
                       "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                      style: GoogleFonts.lato(
-                        // color: Colors.black,
-                        // textStyle: Theme.of(context).textTheme.headline1,
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 15,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        fontWeight: FontWeight.w700,
-                        fontStyle: FontStyle.normal,
-                      ),
+                      style: getDynamicTextStyle(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                     ),
                   ),
                 ),
@@ -166,8 +160,7 @@ class _TimeTableState extends State<TimeTable> {
           });
 
       customTimeTable = Table(
-        border: TableBorder.all(
-            color: (Theme.of(context).textTheme.headline1?.color)!),
+        border: TableBorder.all(color: Theme.of(context).colorScheme.outline),
         defaultColumnWidth: const IntrinsicColumnWidth(),
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: listOfTableRowsForCustomTimeTable,
@@ -226,15 +219,9 @@ class _TimeTableState extends State<TimeTable> {
                   ),
                   child: Text(
                     "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                    style: GoogleFonts.lato(
-                      // color: Colors.black,
-                      // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 15,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      fontWeight: FontWeight.w700,
-                      fontStyle: FontStyle.normal,
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context).textTheme.bodyText1,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
               ),
@@ -273,15 +260,9 @@ class _TimeTableState extends State<TimeTable> {
                   ),
                   child: Text(
                     "${htmlSubjectDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                    style: GoogleFonts.lato(
-                      // color: Colors.black,
-                      // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 15,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      fontWeight: FontWeight.w700,
-                      fontStyle: FontStyle.normal,
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context).textTheme.bodyText1,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
               ),
@@ -302,8 +283,8 @@ class _TimeTableState extends State<TimeTable> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Table(
-            border: TableBorder.all(
-                color: (Theme.of(context).textTheme.headline1?.color)!),
+            border:
+                TableBorder.all(color: Theme.of(context).colorScheme.outline),
             // columnWidths: const <int, TableColumnWidth>{
             //   0: IntrinsicColumnWidth(),
             //   1: FlexColumnWidth(),
@@ -327,7 +308,7 @@ class _TimeTableState extends State<TimeTable> {
                 //   right: BorderSide(color: Colors.black, width: 1),
                 // ),
                 border: Border.all(
-                  color: (Theme.of(context).textTheme.headline1?.color)!,
+                  color: Theme.of(context).colorScheme.outline,
                   width: widgetSizeProvider(
                       fixedSize: 1,
                       sizeDecidingVariable: screenBasedPixelWidth),
@@ -355,15 +336,9 @@ class _TimeTableState extends State<TimeTable> {
                     ),
                     child: Text(
                       "${subjectsTotalCreditsTr.getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
-                      style: GoogleFonts.lato(
-                        // color: Colors.black,
-                        // textStyle: Theme.of(context).textTheme.headline1,
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 15,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        fontWeight: FontWeight.w700,
-                        fontStyle: FontStyle.normal,
-                      ),
+                      style: getDynamicTextStyle(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                          sizeDecidingVariable: screenBasedPixelWidth),
                     ),
                   ),
                 ],
@@ -428,62 +403,34 @@ class _TimeTableState extends State<TimeTable> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: Text(
-            "Tables",
-            style: GoogleFonts.nunito(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: widgetSizeProvider(
-                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.normal,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        backgroundColor: const Color(0xff04294f),
-        leading: Builder(
-          builder: (context) => Padding(
-            padding: EdgeInsets.only(
-              right: widgetSizeProvider(
-                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-              top: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              bottom: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            child: SizedBox(
-              width: widgetSizeProvider(
-                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-              height: widgetSizeProvider(
-                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
-              child: Material(
-                color: Colors.transparent,
-                shape: const StadiumBorder(),
-                child: Tooltip(
-                  message: "Go back",
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    customBorder: const StadiumBorder(),
-                    focusColor: Colors.white.withOpacity(0.1),
-                    highlightColor: Colors.white.withOpacity(0.1),
-                    splashColor: Colors.white.withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.1),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      color: Colors.white,
-                    ),
+        title: Text(
+          "Tables",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
+              sizeDecidingVariable: screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        leading: Builder(
+          builder: (context) => OutlinedButton(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.button,
               ),
+              side: MaterialStateProperty.all<BorderSide>(
+                  const BorderSide(color: Colors.transparent)),
+              shape: MaterialStateProperty.all<StadiumBorder>(
+                  const StadiumBorder()),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back,
+              size: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ),
@@ -501,16 +448,10 @@ class _TimeTableState extends State<TimeTable> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Semester Name - ",
-                    style: GoogleFonts.lato(
-                      // color: Colors.black,
-                      // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 15,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      fontWeight: FontWeight.w700,
-                      fontStyle: FontStyle.normal,
-                    ),
+                    "Semester - ",
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context).textTheme.bodyText1,
+                        sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                   SizedBox(
                     width: widgetSizeProvider(
@@ -524,7 +465,7 @@ class _TimeTableState extends State<TimeTable> {
                     child: FittedBox(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xff04294f),
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(
                               widgetSizeProvider(
@@ -540,7 +481,8 @@ class _TimeTableState extends State<TimeTable> {
                         ),
                         child: DropdownButton<String>(
                           itemHeight: kMinInteractiveDimension,
-                          dropdownColor: Colors.blueAccent,
+                          dropdownColor:
+                              Theme.of(context).colorScheme.primaryContainer,
                           value: dropdownValue,
                           // isExpanded: true,
                           icon: Icon(
@@ -548,7 +490,8 @@ class _TimeTableState extends State<TimeTable> {
                             size: widgetSizeProvider(
                                 fixedSize: 24,
                                 sizeDecidingVariable: screenBasedPixelWidth),
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            // color: Colors.white,
                           ),
                           elevation: 16,
                           // style: const TextStyle(color: Colors.deepPurple),
@@ -575,12 +518,17 @@ class _TimeTableState extends State<TimeTable> {
                                   },
                                   dialogTitle: Text(
                                     'Requesting Data',
-                                    style: TextStyle(
-                                      fontSize: widgetSizeProvider(
-                                          fixedSize: 24,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
+                                    style: getDynamicTextStyle(
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline6
+                                            ?.copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withOpacity(0.87)),
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
                                     textAlign: TextAlign.center,
                                   ),
                                   dialogChildren: Column(
@@ -606,12 +554,17 @@ class _TimeTableState extends State<TimeTable> {
                                       ),
                                       Text(
                                         'Please wait...',
-                                        style: TextStyle(
-                                          fontSize: widgetSizeProvider(
-                                              fixedSize: 20,
-                                              sizeDecidingVariable:
-                                                  screenBasedPixelWidth),
-                                        ),
+                                        style: getDynamicTextStyle(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1
+                                                ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface
+                                                        .withOpacity(0.60)),
+                                            sizeDecidingVariable:
+                                                screenBasedPixelWidth),
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
@@ -641,7 +594,7 @@ class _TimeTableState extends State<TimeTable> {
                                 // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
                                 decoration: BoxDecoration(
                                   color: value["semesterCode"] == dropdownValue
-                                      ? const Color(0xff04294f)
+                                      ? Theme.of(context).colorScheme.primary
                                       : null,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(
@@ -664,16 +617,23 @@ class _TimeTableState extends State<TimeTable> {
                                       child: FittedBox(
                                         child: Text(
                                           value["semesterName"],
-                                          style: GoogleFonts.lato(
-                                            color: Colors.white,
-                                            // textStyle: Theme.of(context).textTheme.headline1,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 15,
-                                                sizeDecidingVariable:
-                                                    screenBasedPixelWidth),
-                                            fontWeight: FontWeight.w700,
-                                            fontStyle: FontStyle.normal,
-                                          ),
+                                          style: getDynamicTextStyle(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .button
+                                                  ?.copyWith(
+                                                    color: value[
+                                                                "semesterCode"] ==
+                                                            dropdownValue
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimaryContainer,
+                                                  ),
+                                              sizeDecidingVariable:
+                                                  screenBasedPixelWidth),
                                         ),
                                       ),
                                     ),
@@ -761,18 +721,14 @@ class _TimeTableState extends State<TimeTable> {
                   )
                 : Column(
                     children: [
-                      const Icon(Icons.error),
+                      Icon(
+                        Icons.error,
+                      ),
                       Text(
                         "No Record(s) Found",
-                        style: GoogleFonts.lato(
-                          // color: Colors.black,
-                          // textStyle: Theme.of(context).textTheme.headline1,
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 15,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
+                        style: getDynamicTextStyle(
+                            textStyle: Theme.of(context).textTheme.bodyText1,
+                            sizeDecidingVariable: screenBasedPixelWidth),
                       ),
                     ],
                   ),
@@ -798,8 +754,8 @@ class TableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xff04294f),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
         // border: Border.all(color: Colors.white, width: 1),
         // borderRadius: const BorderRadius.all(Radius.circular(40));
       ),
@@ -821,14 +777,11 @@ class TableHeader extends StatelessWidget {
             ),
             child: Text(
               tableHeaderText,
-              style: GoogleFonts.lato(
-                color: Colors.white,
-                // textStyle: Theme.of(context).textTheme.headline1,
-                fontSize: widgetSizeProvider(
-                    fixedSize: 20, sizeDecidingVariable: screenBasedPixelWidth),
-                fontWeight: FontWeight.w700,
-                fontStyle: FontStyle.normal,
-              ),
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                  sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ],
@@ -869,7 +822,7 @@ class CustomTableRowElement extends StatelessWidget {
 
               border: Border(
                 bottom: BorderSide(
-                  color: (Theme.of(context).textTheme.headline1?.color)!,
+                  color: Theme.of(context).colorScheme.outline,
                   width: widgetSizeProvider(
                       fixedSize: 1,
                       sizeDecidingVariable: screenBasedPixelWidth),
@@ -898,15 +851,9 @@ class CustomTableRowElement extends StatelessWidget {
                 ),
                 child: Text(
                   elementText1,
-                  style: GoogleFonts.lato(
-                    // color: Colors.black,
-                    // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 15,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
+                  style: getDynamicTextStyle(
+                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),
             ),
@@ -938,15 +885,9 @@ class CustomTableRowElement extends StatelessWidget {
                 ),
                 child: Text(
                   elementText2,
-                  style: GoogleFonts.lato(
-                    // color: Colors.black,
-                    // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 15,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
+                  style: getDynamicTextStyle(
+                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),
             ),
@@ -991,14 +932,9 @@ class LegendCellWidget extends StatelessWidget {
           ),
           child: Text(
             legendText,
-            style: GoogleFonts.lato(
-              // color: Colors.black,
-              // textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: widgetSizeProvider(
-                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.normal,
-            ),
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.bodyText1,
+                sizeDecidingVariable: screenBasedPixelWidth),
           ),
         ),
       ),

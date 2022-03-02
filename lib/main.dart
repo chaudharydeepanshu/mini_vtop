@@ -1,3 +1,10 @@
+//todo: fix widget popping on refreshing captcha after session end
+//todo: disable sign in button when loading captcha
+//todo: create a settings section in app drawer which have the settings to disable battery optimization and run in background
+//todo: also provide option to change defaults in the settings section of the app
+//todo: make timetable table display the current day and class in different color so that it is easy to identify
+//todo: fix the janky transition when changing vtop full mode to vtop mini mode
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -14,6 +21,7 @@ import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/sharedPreferences/app_theme_shared_preferences.dart';
 import 'package:mini_vtop/ui/AppTheme/app_theme_data.dart';
+import 'package:mini_vtop/ui/settings.dart';
 import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
@@ -107,8 +115,11 @@ Future main() async {
         ),
       ],
       // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
-      child: MyApp(
-        savedThemeMode: savedThemeMode,
+      child: MediaQuery(
+        data: const MediaQueryData(),
+        child: MyApp(
+          savedThemeMode: savedThemeMode,
+        ),
       ),
     ),
   );
@@ -135,8 +146,11 @@ class _MyAppState extends State<MyApp> {
         // theme: theme,
         // themeMode: ThemeMode.system,
         themeMode: themeMode,
-        theme: ThemeClass.lightTheme,
-        darkTheme: ThemeClass.darkTheme,
+        theme: AppThemeData.lightThemeData.copyWith(),
+
+        //ThemeClass.lightTheme,
+        darkTheme: AppThemeData.darkThemeData.copyWith(),
+
         // darkTheme: ThemeData.dark(),
         debugShowCheckedModeBanner: false,
         home: Home(
@@ -166,6 +180,10 @@ class _MyAppState extends State<MyApp> {
                 arguments: ModalRoute.of(context)!.settings.arguments
                     as TimeTableArguments,
               ),
+          PageRoutes.settings: (context) => Settings(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as SettingsArguments,
+              ),
         },
       ),
     );
@@ -173,7 +191,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Home extends StatefulWidget with PreferredSizeWidget {
-  const Home({Key? key, this.themeMode, this.onThemeMode}) : super(key: key);
+  const Home({
+    Key? key,
+    this.themeMode,
+    this.onThemeMode,
+  }) : super(key: key);
 
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -1227,6 +1249,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
                   processingSomething = false;
                 });
+                initialiseTimeTableHtmlDocument();
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
@@ -1272,6 +1295,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     currentStatus = "userLoggedIn";
                     loggedUserStatus = "studentPortalScreen";
                   });
+                  initialiseTimeTableHtmlDocument();
                 });
               });
             } else if (requestType == "Fake") {
@@ -1581,6 +1605,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
              document.getElementById('semesterSubId').value = "$semesterSubId";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    } else if (requestType == "Fake") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     }
@@ -1907,6 +1939,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     loggedUserStatus = "timeTable";
                   });
+                } else if (requestType == "Fake") {
+                  // semesterSubId = await _justRetrieveSemesterSubId();
+
                 }
               });
             } else if (ajaxRequest.responseText!.contains(
@@ -2190,6 +2225,42 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     // });
   }
 
+  initialiseTimeTableHtmlDocument() {
+    requestType = "Fake";
+    callTimeTable(
+      context: context,
+      headlessWebView: headlessWebView,
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: false,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+        });
+      },
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
+      },
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -2210,11 +2281,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     themeCalc();
     debugPrint('darkModeOn: $darkModeOn, theme: $theme');
 
+    // vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+    // vtopConnectionStatusType = "Error";
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "userLoggedIn";
     debugPrint("loggedUserStatus: $loggedUserStatus");
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");
+    debugPrint("vtopLoginErrorType: $vtopLoginErrorType");
 
     screenBasedPixelWidth = MediaQuery.of(context).size.width * 0.0027625;
     screenBasedPixelHeight = MediaQuery.of(context).size.height * 0.00169;
@@ -2258,7 +2332,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onProcessingSomething: (bool value) {
         setState(() {
           processingSomething = value;
-          vtopLoginErrorType = "None";
+          // vtopLoginErrorType = "None";
         });
       },
       refreshingCaptcha: refreshingCaptcha,
@@ -2367,7 +2441,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onProcessingSomething: (bool value) {
         setState(() {
           processingSomething = value;
-          vtopLoginErrorType = "None";
+          // vtopLoginErrorType = "None";
         });
       },
       refreshingCaptcha: refreshingCaptcha,
@@ -2432,7 +2506,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onProcessingSomething: (bool value) {
         setState(() {
           processingSomething = value;
-          vtopLoginErrorType = "None";
+          // vtopLoginErrorType = "None";
         });
       },
       refreshingCaptcha: refreshingCaptcha,
@@ -2478,6 +2552,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           });
         }
       },
+      timeTableDocument: timeTableDocument,
+      semesterSubId: semesterSubId,
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

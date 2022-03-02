@@ -5,10 +5,12 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 
 import '../basicFunctions/proccessing_dialog.dart';
 import '../basicFunctions/widget_size_limiter.dart';
+import 'AppTheme/lib_color_schemes.g.dart';
 
 class StudentPortal extends StatefulWidget {
   const StudentPortal({
@@ -76,11 +78,16 @@ class _StudentPortalState extends State<StudentPortal> {
                   },
                   dialogTitle: Text(
                     'Requesting Data',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.87)),
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     textAlign: TextAlign.center,
                   ),
                   dialogChildren: Column(
@@ -102,11 +109,16 @@ class _StudentPortalState extends State<StudentPortal> {
                       ),
                       Text(
                         'Please wait...',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
+                        style: getDynamicTextStyle(
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.60)),
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -147,11 +159,16 @@ class _StudentPortalState extends State<StudentPortal> {
                   },
                   dialogTitle: Text(
                     'Requesting Data',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.87)),
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     textAlign: TextAlign.center,
                   ),
                   dialogChildren: Column(
@@ -173,11 +190,16 @@ class _StudentPortalState extends State<StudentPortal> {
                       ),
                       Text(
                         'Please wait...',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
+                        style: getDynamicTextStyle(
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.60)),
+                            sizeDecidingVariable: screenBasedPixelWidth),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -251,11 +273,13 @@ class _StudentPortalState extends State<StudentPortal> {
               },
               dialogTitle: Text(
                 'You logged out',
-                style: TextStyle(
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 24,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.87)),
+                    sizeDecidingVariable: screenBasedPixelWidth),
                 textAlign: TextAlign.center,
               ),
               dialogChildren: Column(
@@ -277,11 +301,16 @@ class _StudentPortalState extends State<StudentPortal> {
                   ),
                   Text(
                     'So, re-requesting login page please wait...',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 20,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.60)),
+                        sizeDecidingVariable: screenBasedPixelWidth),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -351,16 +380,9 @@ class _StudentPortalState extends State<StudentPortal> {
                   ),
                   Text(
                     "Please Wait ...",
-                    style: GoogleFonts.lato(
-                      // color: Colors.white,
-                      // textStyle: Theme.of(context).textTheme.headline1,
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 17,
-                          sizeDecidingVariable:
-                              arguments.screenBasedPixelWidth),
-                      fontWeight: FontWeight.w700,
-                      fontStyle: FontStyle.normal,
-                    ),
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context).textTheme.headline5,
+                        sizeDecidingVariable: arguments.screenBasedPixelWidth),
                   ),
                 ],
               ),
@@ -391,35 +413,41 @@ class _StudentPortalState extends State<StudentPortal> {
                               children: [
                                 Text(
                                   "Hello,",
-                                  style: GoogleFonts.lato(
-                                    // color: Colors.white,
-                                    // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 17,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                  ),
+                                  style: getDynamicTextStyle(
+                                      textStyle:
+                                          Theme.of(context).textTheme.headline6,
+                                      sizeDecidingVariable:
+                                          arguments.screenBasedPixelWidth),
+                                  // style: GoogleFonts.lato(
+                                  //   // color: Colors.white,
+                                  //   // textStyle: Theme.of(context).textTheme.headline1,
+                                  //   fontSize: widgetSizeProvider(
+                                  //       fixedSize: 17,
+                                  //       sizeDecidingVariable: widget
+                                  //           .arguments.screenBasedPixelWidth),
+                                  //   fontWeight: FontWeight.w700,
+                                  //   fontStyle: FontStyle.normal,
+                                  // ),
                                 ),
-                                Text(
-                                  "${toBeginningOfSentenceCase(arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
-                                  style: GoogleFonts.lato(
-                                    // color: Colors.white,
-                                    // textStyle: Theme.of(context).textTheme.headline1,
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    "${toBeginningOfSentenceCase(arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                    style: getDynamicTextStyle(
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline5,
+                                        sizeDecidingVariable:
+                                            arguments.screenBasedPixelWidth),
                                   ),
                                 )
                               ],
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xff04294f),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
                                 //border: Border.all(color: Colors.blue, width: 10),
                                 borderRadius: BorderRadius.circular(
                                   widgetSizeProvider(
@@ -440,11 +468,14 @@ class _StudentPortalState extends State<StudentPortal> {
                                   children: <Widget>[
                                     Icon(
                                       Icons.timer,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       size: widgetSizeProvider(
                                           fixedSize: 24,
                                           sizeDecidingVariable: widget
                                               .arguments.screenBasedPixelWidth),
-                                      color: Colors.white,
+                                      // color: Colors.white,
                                     ),
                                     SizedBox(
                                       width: widgetSizeProvider(
@@ -452,17 +483,24 @@ class _StudentPortalState extends State<StudentPortal> {
                                           sizeDecidingVariable: widget
                                               .arguments.screenBasedPixelWidth),
                                     ),
-                                    Text(
-                                      timerText,
-                                      style: GoogleFonts.lato(
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 20,
-                                            sizeDecidingVariable: widget
-                                                .arguments
+                                    SizedBox(
+                                      width: widgetSizeProvider(
+                                          fixedSize: 55,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                      child: Text(
+                                        timerText,
+                                        style: getDynamicTextStyle(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline6
+                                                ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                            sizeDecidingVariable: arguments
                                                 .screenBasedPixelWidth),
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
                                       ),
                                     )
                                   ],
@@ -510,9 +548,9 @@ class _StudentPortalState extends State<StudentPortal> {
                                   ),
                                   child: ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              const Color(0xff04294f)),
+                                      // backgroundColor:
+                                      //     MaterialStateProperty.all(
+                                      //         const Color(0xff04294f)),
                                       padding: MaterialStateProperty.all(
                                         EdgeInsets.all(
                                           widgetSizeProvider(
@@ -523,13 +561,12 @@ class _StudentPortalState extends State<StudentPortal> {
                                         ),
                                       ),
                                       textStyle: MaterialStateProperty.all(
-                                        TextStyle(
-                                          fontSize: widgetSizeProvider(
-                                              fixedSize: 20,
-                                              sizeDecidingVariable: widget
-                                                  .arguments
-                                                  .screenBasedPixelWidth),
-                                        ),
+                                        getDynamicTextStyle(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .button,
+                                            sizeDecidingVariable: arguments
+                                                .screenBasedPixelWidth),
                                       ),
                                       shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(
@@ -577,10 +614,10 @@ class _StudentPortalState extends State<StudentPortal> {
                                                                   .screenBasedPixelHeight),
                                                     ),
                                                   ),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all(
-                                                          const Color(
-                                                              0xff04294f)),
+                                                  // backgroundColor:
+                                                  //     MaterialStateProperty.all(
+                                                  //         const Color(
+                                                  //             0xff04294f)),
                                                   padding:
                                                       MaterialStateProperty.all(
                                                     EdgeInsets.only(
@@ -598,13 +635,14 @@ class _StudentPortalState extends State<StudentPortal> {
                                                   ),
                                                   textStyle:
                                                       MaterialStateProperty.all(
-                                                    TextStyle(
-                                                      fontSize: widgetSizeProvider(
-                                                          fixedSize: 20,
-                                                          sizeDecidingVariable:
-                                                              arguments
-                                                                  .screenBasedPixelWidth),
-                                                    ),
+                                                    getDynamicTextStyle(
+                                                        textStyle:
+                                                            Theme.of(context)
+                                                                .textTheme
+                                                                .button,
+                                                        sizeDecidingVariable:
+                                                            arguments
+                                                                .screenBasedPixelWidth),
                                                   ),
                                                   shape:
                                                       MaterialStateProperty.all<
@@ -629,13 +667,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                                   studentPortalOptions[index][
                                                           "internalOptionsMapList"]
                                                       [i]["name"],
-                                                  style: TextStyle(
-                                                    fontSize: widgetSizeProvider(
-                                                        fixedSize: 18,
-                                                        sizeDecidingVariable:
-                                                            arguments
-                                                                .screenBasedPixelWidth),
-                                                  ),
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -691,17 +722,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                           ),
                                           Text(
                                             studentPortalOptions[index]["name"],
-                                            style: GoogleFonts.lato(
-                                              color: Colors.white,
-                                              // textStyle: Theme.of(context).textTheme.headline1,
-                                              fontSize: widgetSizeProvider(
-                                                  fixedSize: 20,
-                                                  sizeDecidingVariable: widget
-                                                      .arguments
-                                                      .screenBasedPixelWidth),
-                                              fontWeight: FontWeight.w700,
-                                              fontStyle: FontStyle.normal,
-                                            ),
                                           ),
                                         ],
                                       ),

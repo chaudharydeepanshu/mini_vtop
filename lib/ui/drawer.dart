@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
+import 'package:mini_vtop/ui/settings.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctions/dailog_box_for_leaving_app.dart';
 import '../basicFunctions/proccessing_dialog.dart';
 import '../basicFunctions/widget_size_limiter.dart';
+import '../coreFunctions/call_time_table.dart';
+import '../navigation/page_routes_model.dart';
+import 'package:html/dom.dart' as dom;
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
@@ -24,6 +28,9 @@ class CustomDrawer extends StatefulWidget {
     this.onTryAutoLoginStatus,
     required this.onError,
     required this.onProcessingSomething,
+    required this.timeTableDocument,
+    required this.semesterSubId,
+    required this.onRequestType,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -37,6 +44,9 @@ class CustomDrawer extends StatefulWidget {
   final ValueChanged<bool>? onTryAutoLoginStatus;
   final ValueChanged<String> onError;
   final ValueChanged<bool> onProcessingSomething;
+  final dom.Document? timeTableDocument;
+  final String semesterSubId;
+  final ValueChanged<String> onRequestType;
 
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -236,8 +246,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       // maximumSize: MaterialStateProperty.all<Size?>(
                       //   const Size.fromHeight(56),
                       // ),
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0xff04294f)),
+                      // backgroundColor:
+                      //     MaterialStateProperty.all(const Color(0xff04294f)),
                       padding: MaterialStateProperty.all(
                         EdgeInsets.only(
                           left: widgetSizeProvider(
@@ -249,11 +259,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         ),
                       ),
                       textStyle: MaterialStateProperty.all(
-                        TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
+                        getDynamicTextStyle(
+                            sizeDecidingVariable: screenBasedPixelWidth,
+                            textStyle: Theme.of(context).textTheme.bodyText1),
                       ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
@@ -281,11 +289,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       children: [
                         Text(
                           'Theme Mode - $themeButtonText',
-                          style: TextStyle(
-                            fontSize: widgetSizeProvider(
-                                fixedSize: 16,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -313,8 +316,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                             screenBasedPixelHeight),
                                   ),
                                 ),
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color(0xff04294f)),
+                                // backgroundColor: MaterialStateProperty.all(
+                                //     const Color(0xff04294f)),
                                 padding: MaterialStateProperty.all(
                                   EdgeInsets.only(
                                     left: widgetSizeProvider(
@@ -328,12 +331,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   ),
                                 ),
                                 textStyle: MaterialStateProperty.all(
-                                  TextStyle(
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
+                                  getDynamicTextStyle(
+                                      sizeDecidingVariable:
+                                          screenBasedPixelWidth,
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
                                 ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
@@ -373,12 +376,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 children: [
                                   Text(
                                     'VTOP Mode - $vtopCurrentStatusText',
-                                    style: TextStyle(
-                                      fontSize: widgetSizeProvider(
-                                          fixedSize: 16,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -402,8 +399,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                             screenBasedPixelHeight),
                                   ),
                                 ),
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color(0xff04294f)),
+                                // backgroundColor: MaterialStateProperty.all(
+                                //     const Color(0xff04294f)),
                                 padding: MaterialStateProperty.all(
                                   EdgeInsets.only(
                                     left: widgetSizeProvider(
@@ -417,12 +414,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   ),
                                 ),
                                 textStyle: MaterialStateProperty.all(
-                                  TextStyle(
-                                    fontSize: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
+                                  getDynamicTextStyle(
+                                      sizeDecidingVariable:
+                                          screenBasedPixelWidth,
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
                                 ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
@@ -522,12 +519,144 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 children: [
                                   Text(
                                     'Logout',
-                                    style: TextStyle(
-                                      fontSize: widgetSizeProvider(
-                                          fixedSize: 16,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: widgetSizeProvider(
+                                  fixedSize: 8,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: MaterialStateProperty.all<Size?>(
+                                  Size.fromHeight(
+                                    widgetSizeProvider(
+                                        fixedSize: 56,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelHeight),
+                                  ),
+                                ),
+                                // backgroundColor: MaterialStateProperty.all(
+                                //     const Color(0xff04294f)),
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.only(
+                                    left: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                    right: widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable:
+                                            screenBasedPixelWidth),
+                                  ),
+                                ),
+                                textStyle: MaterialStateProperty.all(
+                                  getDynamicTextStyle(
+                                      sizeDecidingVariable:
+                                          screenBasedPixelWidth,
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
+                                ),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      widgetSizeProvider(
+                                          fixedSize: 0,
                                           sizeDecidingVariable:
                                               screenBasedPixelWidth),
                                     ),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Update the state of the app
+                                // making a fake call to StudentProfileAllView so that
+                                // if the user gets logged out it will automatically restart the webview
+
+                                // Then close the drawer
+                                Navigator.pop(context);
+
+                                if (widget.timeTableDocument != null) {
+                                  Navigator.pushNamed(
+                                    context,
+                                    PageRoutes.settings,
+                                    arguments: SettingsArguments(
+                                      currentStatus: widget.currentStatus,
+                                      onTimeTableDocumentDispose: (bool value) {
+                                        debugPrint("timeTable disposed");
+                                        WidgetsBinding.instance
+                                            ?.addPostFrameCallback(
+                                                (_) => setState(() {
+                                                      // loggedUserStatus = "studentPortalScreen";
+                                                    }));
+                                      },
+                                      timeTableDocument:
+                                          widget.timeTableDocument,
+                                      screenBasedPixelHeight:
+                                          screenBasedPixelHeight,
+                                      screenBasedPixelWidth:
+                                          screenBasedPixelWidth,
+                                      semesterSubId: widget.semesterSubId,
+                                      onSemesterSubIdChange: (String value) {
+                                        // setState(() {
+                                        //   semesterSubId = value;
+                                        //   requestType = "Update";
+                                        //   callTimeTable(
+                                        //     context: context,
+                                        //     headlessWebView: headlessWebView,
+                                        //     onCurrentFullUrl: (String value) {
+                                        //       currentFullUrl = value;
+                                        //     },
+                                        //     processingSomething: true,
+                                        //     onProcessingSomething: (bool value) {
+                                        //       processingSomething = true;
+                                        //     },
+                                        //     onError: (String value) {
+                                        //       debugPrint(
+                                        //           "Updating Ui based on the error received");
+                                        //       if (processingSomething == true) {
+                                        //         Navigator.of(context).pop();
+                                        //         setState(() {
+                                        //           processingSomething = false;
+                                        //         });
+                                        //       }
+                                        //       if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                                        //         debugPrint(
+                                        //             "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                        //         setState(() {
+                                        //           currentStatus = "launchLoadingScreen";
+                                        //           vtopConnectionStatusErrorType =
+                                        //           "net::ERR_INTERNET_DISCONNECTED";
+                                        //           vtopConnectionStatusType = "Error";
+                                        //         });
+                                        //       }
+                                        //     },
+                                        //   );
+                                        // });
+                                      },
+                                      onProcessingSomething: (bool value) {
+                                        widget.onProcessingSomething
+                                            .call(value);
+                                      },
+                                    ),
+                                  );
+                                  // setState(() {
+                                  // loggedUserStatus = "timeTable";
+                                  // });
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Settings',
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -555,11 +684,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   RichText(
                     text: TextSpan(
                       text: 'Privacy Policy',
-                      style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 16,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          color: Colors.blue),
+                      style: getDynamicTextStyle(
+                          textStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                          sizeDecidingVariable: screenBasedPixelWidth),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           leavingAppDialogBox(
@@ -585,12 +717,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             children: [
                               Text(
                                 "App Version - $version+$buildNumber",
-                                style: TextStyle(
-                                  fontSize: widgetSizeProvider(
-                                      fixedSize: 16,
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth),
-                                ),
+                                style: getDynamicTextStyle(
+                                    textStyle:
+                                        Theme.of(context).textTheme.bodyText2,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
                               ),
                             ],
                           ),

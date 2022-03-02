@@ -61,8 +61,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       debugPrint("listOfLists[$index].length: ${listOfLists[index].length}");
 
       Widget tableHeader = Container(
-        decoration: const BoxDecoration(
-          color: Color(0xff04294f),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary, // Color(0xff04294f),
           // border: Border.all(color: Colors.white, width: 1),
           // borderRadius: const BorderRadius.all(Radius.circular(40));
         ),
@@ -84,15 +84,11 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               ),
               child: Text(
                 "${listOfHeaders[index][0].getElementsByTagName("td")[0].text.replaceAll(RegExp('\\s+'), ' ')}",
-                style: GoogleFonts.lato(
-                  color: Colors.white,
-                  // textStyle: Theme.of(context).textTheme.headline1,
-                  fontSize: widgetSizeProvider(
-                      fixedSize: 20,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ],
@@ -130,15 +126,9 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
                 ),
                 child: Text(
                   "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: GoogleFonts.lato(
-                    // color: Colors.black,
-                    // textStyle: Theme.of(context).textTheme.headline1,
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 15,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
+                  style: getDynamicTextStyle(
+                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),
             ),
@@ -160,8 +150,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         children: [
           tableHeader,
           Table(
-            border: TableBorder.all(
-                color: (Theme.of(context).textTheme.headline1?.color)!),
+            border:
+                TableBorder.all(color: Theme.of(context).colorScheme.outline),
             // columnWidths: const <int, TableColumnWidth>{
             // 0: IntrinsicColumnWidth(),
             // 1: FlexColumnWidth(),
@@ -337,63 +327,34 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         appBar: AppBar(
           // toolbarHeight: screenBasedPixelWidth * 80,
           centerTitle: true,
-          title: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-            child: Text(
-              "Student Profile",
-              style: GoogleFonts.nunito(
-                color: Colors.white,
-                textStyle: Theme.of(context).textTheme.headline1,
-                fontSize: widgetSizeProvider(
-                    fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-                fontWeight: FontWeight.w600,
-                fontStyle: FontStyle.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          backgroundColor: const Color(0xff04294f),
-          leading: Builder(
-            builder: (context) => Padding(
-              padding: EdgeInsets.only(
-                right: widgetSizeProvider(
-                    fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-                top: widgetSizeProvider(
-                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-                bottom: widgetSizeProvider(
-                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              child: SizedBox(
-                width: widgetSizeProvider(
-                    fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-                height: widgetSizeProvider(
-                    fixedSize: 40,
-                    sizeDecidingVariable: screenBasedPixelHeight),
-                child: Material(
-                  color: Colors.transparent,
-                  shape: const StadiumBorder(),
-                  child: Tooltip(
-                    message: "Go back",
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      customBorder: const StadiumBorder(),
-                      focusColor: Colors.white.withOpacity(0.1),
-                      highlightColor: Colors.white.withOpacity(0.1),
-                      splashColor: Colors.white.withOpacity(0.1),
-                      hoverColor: Colors.white.withOpacity(0.1),
-                      child: Icon(
-                        Icons.arrow_back,
-                        size: widgetSizeProvider(
-                            fixedSize: 24,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        color: Colors.white,
-                      ),
+          title: Text(
+            "Student Profile",
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                  ),
+                sizeDecidingVariable: screenBasedPixelWidth),
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          leading: Builder(
+            builder: (context) => OutlinedButton(
+              style: ButtonStyle(
+                textStyle: MaterialStateProperty.all(
+                  Theme.of(context).textTheme.button,
                 ),
+                side: MaterialStateProperty.all<BorderSide>(
+                    const BorderSide(color: Colors.transparent)),
+                shape: MaterialStateProperty.all<StadiumBorder>(
+                    const StadiumBorder()),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.arrow_back,
+                size: widgetSizeProvider(
+                    fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ),
@@ -402,53 +363,33 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
               widgetSizeProvider(
                   fixedSize: 0, sizeDecidingVariable: screenBasedPixelWidth),
             ),
-            labelStyle: TextStyle(
-              fontSize: widgetSizeProvider(
-                  fixedSize: 16, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            tabs: [
+            labelStyle: getDynamicTextStyle(
+                textStyle: Theme.of(context).tabBarTheme.labelStyle,
+                sizeDecidingVariable: screenBasedPixelWidth),
+            labelColor: Theme.of(context).tabBarTheme.labelColor,
+            tabs: const [
               Tab(
                 child: Text(
                   "Personal",
                   maxLines: 1,
-                  style: TextStyle(
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 16,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
                 ),
               ),
               Tab(
                 child: Text(
                   "Educational",
                   maxLines: 1,
-                  style: TextStyle(
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 16,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
                 ),
               ),
               Tab(
                 child: Text(
                   "Family",
                   maxLines: 1,
-                  style: TextStyle(
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 16,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
                 ),
               ),
               Tab(
                 child: Text(
                   "Proctor",
                   maxLines: 1,
-                  style: TextStyle(
-                    fontSize: widgetSizeProvider(
-                        fixedSize: 16,
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                  ),
                 ),
               ),
             ],

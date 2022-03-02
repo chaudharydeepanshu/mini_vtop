@@ -3,32 +3,36 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:mini_vtop/ui/drawer.dart';
 
 import 'call_student_profile_all_view.dart';
+import 'package:html/dom.dart' as dom;
 
-chooseCorrectDrawer(
-    {required BuildContext context,
-    required double screenBasedPixelWidth,
-    required double screenBasedPixelHeight,
-    required String? currentStatus,
-    required String? loggedUserStatus,
-    required HeadlessInAppWebView? headlessWebView,
-    required String userEnteredUname,
-    required String userEnteredPasswd,
-    required bool processingSomething,
-    required Image? image,
-    required bool refreshingCaptcha,
-    required String currentFullUrl,
-    required ThemeMode? themeMode,
-    required ValueChanged<bool> onTryAutoLoginStatus,
-    required ValueChanged<String> onRequestType,
-    required ValueChanged<ThemeMode>? onThemeMode,
-    required ValueChanged<bool> onRefreshingCaptcha,
-    required ValueChanged<bool> onProcessingSomething,
-    required ValueChanged<String> onCurrentFullUrl,
-    required ValueChanged<String> onCurrentStatus,
-    required ValueChanged<String> onUserEnteredUname,
-    required ValueChanged<String> onUserEnteredPasswd,
-    required ValueChanged<String> onError,
-    required ValueChanged<Widget?> onDrawer}) async {
+chooseCorrectDrawer({
+  required BuildContext context,
+  required double screenBasedPixelWidth,
+  required double screenBasedPixelHeight,
+  required String? currentStatus,
+  required String? loggedUserStatus,
+  required HeadlessInAppWebView? headlessWebView,
+  required String userEnteredUname,
+  required String userEnteredPasswd,
+  required bool processingSomething,
+  required Image? image,
+  required bool refreshingCaptcha,
+  required String currentFullUrl,
+  required ThemeMode? themeMode,
+  required dom.Document? timeTableDocument,
+  required String semesterSubId,
+  required ValueChanged<bool> onTryAutoLoginStatus,
+  required ValueChanged<String> onRequestType,
+  required ValueChanged<ThemeMode>? onThemeMode,
+  required ValueChanged<bool> onRefreshingCaptcha,
+  required ValueChanged<bool> onProcessingSomething,
+  required ValueChanged<String> onCurrentFullUrl,
+  required ValueChanged<String> onCurrentStatus,
+  required ValueChanged<String> onUserEnteredUname,
+  required ValueChanged<String> onUserEnteredPasswd,
+  required ValueChanged<String> onError,
+  required ValueChanged<Widget?> onDrawer,
+}) async {
   if (currentStatus == null) {
     onDrawer.call(
       null,
@@ -56,6 +60,11 @@ chooseCorrectDrawer(
         onProcessingSomething: (bool value) {
           onProcessingSomething.call(value);
         },
+        timeTableDocument: timeTableDocument,
+        semesterSubId: semesterSubId,
+        onRequestType: (String value) {
+          onRequestType.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -80,6 +89,11 @@ chooseCorrectDrawer(
         },
         onProcessingSomething: (bool value) {
           onProcessingSomething.call(value);
+        },
+        timeTableDocument: timeTableDocument,
+        semesterSubId: semesterSubId,
+        onRequestType: (String value) {
+          onRequestType.call(value);
         },
       ),
     );
@@ -128,6 +142,11 @@ chooseCorrectDrawer(
         onProcessingSomething: (bool value) {
           onProcessingSomething.call(value);
         },
+        timeTableDocument: timeTableDocument,
+        semesterSubId: semesterSubId,
+        onRequestType: (String value) {
+          onRequestType.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -172,6 +191,11 @@ chooseCorrectDrawer(
         },
         onProcessingSomething: (bool value) {
           onProcessingSomething.call(value);
+        },
+        timeTableDocument: timeTableDocument,
+        semesterSubId: semesterSubId,
+        onRequestType: (String value) {
+          onRequestType.call(value);
         },
       ),
     );

@@ -43,65 +43,36 @@ chooseCorrectAppbar({
     onAppbar.call(
       AppBar(
         key: const ValueKey<int>(0),
-        // elevation: 0,
+        // elevation: 5,
         centerTitle: true,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: Text(
-            "VIT Bhopal - VTOP",
-            style: GoogleFonts.nunito(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: widgetSizeProvider(
-                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.normal,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        backgroundColor: const Color(0xff04294f),
-        leading: Builder(
-          builder: (context) => Padding(
-            padding: EdgeInsets.only(
-              right: widgetSizeProvider(
-                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-              top: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              bottom: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            child: SizedBox(
-              width: widgetSizeProvider(
-                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-              height: widgetSizeProvider(
-                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
-              child: Material(
-                color: Colors.transparent,
-                shape: const StadiumBorder(),
-                child: Tooltip(
-                  message: "Open Drawer",
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                      // onCurrentStatus.call("originalVTOP");
-                    },
-                    customBorder: const StadiumBorder(),
-                    focusColor: Colors.white.withOpacity(0.1),
-                    highlightColor: Colors.white.withOpacity(0.1),
-                    splashColor: Colors.white.withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.1),
-                    child: Icon(
-                      Icons.menu,
-                      size: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      color: Colors.white,
-                    ),
+        title: Text(
+          "VIT Bhopal - VTOP",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
+              sizeDecidingVariable: screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        leading: Builder(
+          builder: (context) => OutlinedButton(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.button,
               ),
+              side: MaterialStateProperty.all<BorderSide>(
+                  const BorderSide(color: Colors.transparent)),
+              shape: MaterialStateProperty.all<StadiumBorder>(
+                  const StadiumBorder()),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Icon(
+              Icons.menu,
+              size: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ),
@@ -115,58 +86,33 @@ chooseCorrectAppbar({
         centerTitle: true,
         title: Text(
           "Student Sign-In",
-          style: GoogleFonts.nunito(
-            color: Colors.white,
-            textStyle: Theme.of(context).textTheme.headline1,
-            fontSize: widgetSizeProvider(
-                fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-            fontWeight: FontWeight.w600,
-            fontStyle: FontStyle.normal,
-          ),
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+              sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: const Color(0xff04294f),
+        backgroundColor: Theme.of(context).colorScheme.surface,
 
         leading: Builder(
-          builder: (context) => Padding(
-            padding: EdgeInsets.only(
-              right: widgetSizeProvider(
-                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-              top: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              bottom: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            child: SizedBox(
-              width: widgetSizeProvider(
-                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-              height: widgetSizeProvider(
-                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
-              child: Material(
-                color: Colors.transparent,
-                shape: const StadiumBorder(),
-                child: Tooltip(
-                  message: "Open Drawer",
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                      // onCurrentStatus.call("originalVTOP");
-                    },
-                    customBorder: const StadiumBorder(),
-                    focusColor: Colors.white.withOpacity(0.1),
-                    highlightColor: Colors.white.withOpacity(0.1),
-                    splashColor: Colors.white.withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.1),
-                    child: Icon(
-                      Icons.menu,
-                      size: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+          builder: (context) => OutlinedButton(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.button,
               ),
+              side: MaterialStateProperty.all<BorderSide>(
+                  const BorderSide(color: Colors.transparent)),
+              shape: MaterialStateProperty.all<StadiumBorder>(
+                  const StadiumBorder()),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Icon(
+              Icons.menu,
+              size: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ),
@@ -177,63 +123,34 @@ chooseCorrectAppbar({
       AppBar(
         // toolbarHeight: screenBasedPixelHeight * 56,
         centerTitle: true,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: Text(
-            "Student Portal",
-            style: GoogleFonts.nunito(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: widgetSizeProvider(
-                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.normal,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        backgroundColor: const Color(0xff04294f),
-        leading: Builder(
-          builder: (context) => Padding(
-            padding: EdgeInsets.only(
-              right: widgetSizeProvider(
-                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-              top: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              bottom: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            child: SizedBox(
-              width: widgetSizeProvider(
-                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-              height: widgetSizeProvider(
-                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
-              child: Material(
-                color: Colors.transparent,
-                shape: const StadiumBorder(),
-                child: Tooltip(
-                  message: "Open Drawer",
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                      // onCurrentStatus.call("originalVTOP");
-                    },
-                    customBorder: const StadiumBorder(),
-                    focusColor: Colors.white.withOpacity(0.1),
-                    highlightColor: Colors.white.withOpacity(0.1),
-                    splashColor: Colors.white.withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.1),
-                    child: Icon(
-                      Icons.menu,
-                      size: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      color: Colors.white,
-                    ),
+        title: Text(
+          "Student Portal",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
+              sizeDecidingVariable: screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        leading: Builder(
+          builder: (context) => OutlinedButton(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.button,
               ),
+              side: MaterialStateProperty.all<BorderSide>(
+                  const BorderSide(color: Colors.transparent)),
+              shape: MaterialStateProperty.all<StadiumBorder>(
+                  const StadiumBorder()),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Icon(
+              Icons.menu,
+              size: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ),
@@ -279,63 +196,34 @@ chooseCorrectAppbar({
     onAppbar.call(
       AppBar(
         centerTitle: true,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: Text(
-            "Original VTOP",
-            style: GoogleFonts.nunito(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline1,
-              fontSize: widgetSizeProvider(
-                  fixedSize: 25, sizeDecidingVariable: screenBasedPixelWidth),
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.normal,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        backgroundColor: const Color(0xff04294f),
-        leading: Builder(
-          builder: (context) => Padding(
-            padding: EdgeInsets.only(
-              right: widgetSizeProvider(
-                  fixedSize: 5, sizeDecidingVariable: screenBasedPixelWidth),
-              top: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              bottom: widgetSizeProvider(
-                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            child: SizedBox(
-              width: widgetSizeProvider(
-                  fixedSize: 51, sizeDecidingVariable: screenBasedPixelWidth),
-              height: widgetSizeProvider(
-                  fixedSize: 40, sizeDecidingVariable: screenBasedPixelWidth),
-              child: Material(
-                color: Colors.transparent,
-                shape: const StadiumBorder(),
-                child: Tooltip(
-                  message: "Open Drawer",
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                      // onCurrentStatus.call("userLoggedIn");
-                    },
-                    customBorder: const StadiumBorder(),
-                    focusColor: Colors.white.withOpacity(0.1),
-                    highlightColor: Colors.white.withOpacity(0.1),
-                    splashColor: Colors.white.withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.1),
-                    child: Icon(
-                      Icons.menu,
-                      size: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      color: Colors.white,
-                    ),
+        title: Text(
+          "Original VTOP",
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
+              sizeDecidingVariable: screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        leading: Builder(
+          builder: (context) => OutlinedButton(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.button,
               ),
+              side: MaterialStateProperty.all<BorderSide>(
+                  const BorderSide(color: Colors.transparent)),
+              shape: MaterialStateProperty.all<StadiumBorder>(
+                  const StadiumBorder()),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Icon(
+              Icons.menu,
+              size: widgetSizeProvider(
+                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
             ),
           ),
         ),
