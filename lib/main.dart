@@ -1,7 +1,5 @@
 //todo: fix widget popping on refreshing captcha after session end
-//todo: disable sign in button when loading captcha
 //todo: create a settings section in app drawer which have the settings to disable battery optimization and run in background
-//todo: also provide option to change defaults in the settings section of the app
 //todo: make timetable table display the current day and class in different color so that it is easy to identify
 //todo: fix the janky transition when changing vtop full mode to vtop mini mode
 
