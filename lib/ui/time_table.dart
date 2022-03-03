@@ -389,7 +389,7 @@ class _TimeTableState extends State<TimeTable> {
   @override
   void dispose() {
     super.dispose();
-    widget.arguments.onTimeTableDocumentDispose?.call(true);
+    widget.arguments.onWidgetDispose?.call(true);
   }
 
   late double screenBasedPixelWidth;
@@ -871,7 +871,7 @@ class LegendCellWidget extends StatelessWidget {
 
 class TimeTableArguments {
   String? currentStatus;
-  ValueChanged<bool>? onTimeTableDocumentDispose;
+  ValueChanged<bool>? onWidgetDispose;
   dom.Document? timeTableDocument;
   ValueChanged<String>? onSemesterSubIdChange;
   String semesterSubId;
@@ -885,7 +885,7 @@ class TimeTableArguments {
 
   TimeTableArguments({
     required this.currentStatus,
-    required this.onTimeTableDocumentDispose,
+    required this.onWidgetDispose,
     required this.timeTableDocument,
     required this.onSemesterSubIdChange,
     required this.semesterSubId,

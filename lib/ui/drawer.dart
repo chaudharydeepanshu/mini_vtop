@@ -35,11 +35,15 @@ class CustomDrawer extends StatefulWidget {
     required this.onUpdateDefaultVtopMode,
     required this.onUpdateVtopMode,
     required this.vtopMode,
+    required this.loggedUserStatus,
+    required this.onLoggedUserStatus,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
   final String currentStatus;
+  final String? loggedUserStatus;
   final ValueChanged<String> onCurrentStatus;
+  final ValueChanged<String> onLoggedUserStatus;
   final HeadlessInAppWebView? headlessWebView;
   final ValueChanged<String> onCurrentFullUrl;
   final double screenBasedPixelWidth;
@@ -601,13 +605,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                     PageRoutes.settings,
                                     arguments: SettingsArguments(
                                       currentStatus: widget.currentStatus,
-                                      onTimeTableDocumentDispose: (bool value) {
-                                        debugPrint("timeTable disposed");
+                                      onWidgetDispose: (bool value) {
+                                        debugPrint("settings disposed");
                                         WidgetsBinding.instance
                                             ?.addPostFrameCallback(
-                                                (_) => setState(() {
-                                                      // loggedUserStatus = "studentPortalScreen";
-                                                    }));
+                                          (_) => widget.onLoggedUserStatus
+                                              .call("studentPortalScreen"),
+                                        );
                                       },
                                       timeTableDocument:
                                           widget.timeTableDocument,
@@ -628,16 +632,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       },
                                       vtopMode: widget.vtopMode,
                                       onUpdateDefaultVtopMode: (String value) {
-                                        print(
-                                            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff$value");
                                         widget.onUpdateDefaultVtopMode
                                             .call(value);
                                       },
                                     ),
                                   );
-                                  // setState(() {
-                                  // loggedUserStatus = "timeTable";
-                                  // });
+                                  widget.onLoggedUserStatus.call("settings");
                                 }
                               },
                               child: Row(

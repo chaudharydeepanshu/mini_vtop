@@ -521,11 +521,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    inActivityResponse() {
-      debugPrint(
-          "You are logged out due to inactivity for more than 15 minutes");
-      debugPrint(
-          "called inactivityResponse or successfullyLoggedOut Action for ajaxRequests");
+    inActivityOrStatusNot200Response(
+        {required String dialogTitle, required String dialogChildrenText}) {
+      debugPrint("You are logged out as $dialogTitle");
+      debugPrint("called inActivityOrStatusNot200Response for ajaxRequests");
 
       if (processingSomething == true) {
         Navigator.of(context).pop();
@@ -821,87 +820,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
-              inActivityResponse();
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Session ended',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as vtopLogin ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
-
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                processingSomething = true;
-                customDialogBox(
-                  isDialogShowing: isDialogShowing,
-                  context: context,
-                  onIsDialogShowing: (bool value) {
-                    setState(() {
-                      isDialogShowing = value;
-                    });
-                  },
-                  dialogTitle: Text(
-                    'WebView is dead',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  dialogChildren: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        width: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        child: CircularProgressIndicator(
-                          strokeWidth: widgetSizeProvider(
-                              fixedSize: 4,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      Text(
-                        'So, re-starting WebView please wait...',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: false,
-                  screenBasedPixelHeight: screenBasedPixelHeight,
-                  screenBasedPixelWidth: screenBasedPixelWidth,
-                  onProcessingSomething: (bool value) {
-                    setState(() {
-                      processingSomething = value;
-                    });
-                  },
-                ).then((_) => isDialogShowing = false);
-              });
-
-              runHeadlessInAppWebView(
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  currentFullUrl = value;
-                },
-              );
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Request Status != 200',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             }
             // print("vtopCaptcha _bytes: ${_bytes}");
             // });
@@ -1027,87 +952,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
-                inActivityResponse();
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Session ended',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
-
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  processingSomething = true;
-                  customDialogBox(
-                    isDialogShowing: isDialogShowing,
-                    context: context,
-                    onIsDialogShowing: (bool value) {
-                      setState(() {
-                        isDialogShowing = value;
-                      });
-                    },
-                    dialogTitle: Text(
-                      'WebView is dead',
-                      style: TextStyle(
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 24,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    dialogChildren: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          width: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          child: CircularProgressIndicator(
-                            strokeWidth: widgetSizeProvider(
-                                fixedSize: 4,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                        ),
-                        Text(
-                          'So, re-starting WebView please wait...',
-                          style: TextStyle(
-                            fontSize: widgetSizeProvider(
-                                fixedSize: 20,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                    barrierDismissible: false,
-                    screenBasedPixelHeight: screenBasedPixelHeight,
-                    screenBasedPixelWidth: screenBasedPixelWidth,
-                    onProcessingSomething: (bool value) {
-                      setState(() {
-                        processingSomething = value;
-                      });
-                    },
-                  ).then((_) => isDialogShowing = false);
-                });
-
-                runHeadlessInAppWebView(
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    currentFullUrl = value;
-                  },
-                );
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Request Status != 200',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               }
             });
           } else if (ajaxRequest.url.toString() == "doRefreshCaptcha") {
@@ -1119,7 +970,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         "You are logged out due to inactivity for more than 15 minutes") ||
                     ajaxRequest.responseText!
                         .contains("You have been successfully logged out")) {
-                  inActivityResponse();
+                  inActivityOrStatusNot200Response(
+                      dialogTitle: 'Session ended',
+                      dialogChildrenText:
+                          'Starting new session\nplease wait...');
                 } else {
                   // await controller.evaluateJavascript(source: '''
                   //   document.querySelector('img[alt="vtopCaptcha"]').src;
@@ -1155,87 +1009,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
-                inActivityResponse();
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Session ended',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
-
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  processingSomething = true;
-                  customDialogBox(
-                    isDialogShowing: isDialogShowing,
-                    context: context,
-                    onIsDialogShowing: (bool value) {
-                      setState(() {
-                        isDialogShowing = value;
-                      });
-                    },
-                    dialogTitle: Text(
-                      'WebView is dead',
-                      style: TextStyle(
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 24,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    dialogChildren: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          width: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          child: CircularProgressIndicator(
-                            strokeWidth: widgetSizeProvider(
-                                fixedSize: 4,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                        ),
-                        Text(
-                          'So, re-starting WebView please wait...',
-                          style: TextStyle(
-                            fontSize: widgetSizeProvider(
-                                fixedSize: 20,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                    barrierDismissible: false,
-                    screenBasedPixelHeight: screenBasedPixelHeight,
-                    screenBasedPixelWidth: screenBasedPixelWidth,
-                    onProcessingSomething: (bool value) {
-                      setState(() {
-                        processingSomething = value;
-                      });
-                    },
-                  ).then((_) => isDialogShowing = false);
-                });
-
-                runHeadlessInAppWebView(
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    currentFullUrl = value;
-                  },
-                );
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Request Status != 200',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               }
             }
           } else if (ajaxRequest.url.toString() ==
@@ -1359,87 +1139,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
-                inActivityResponse();
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Session ended',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
-
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  processingSomething = true;
-                  customDialogBox(
-                    isDialogShowing: isDialogShowing,
-                    context: context,
-                    onIsDialogShowing: (bool value) {
-                      setState(() {
-                        isDialogShowing = value;
-                      });
-                    },
-                    dialogTitle: Text(
-                      'WebView is dead',
-                      style: TextStyle(
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 24,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    dialogChildren: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          width: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          child: CircularProgressIndicator(
-                            strokeWidth: widgetSizeProvider(
-                                fixedSize: 4,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                        ),
-                        Text(
-                          'So, re-starting WebView please wait...',
-                          style: TextStyle(
-                            fontSize: widgetSizeProvider(
-                                fixedSize: 20,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                    barrierDismissible: false,
-                    screenBasedPixelHeight: screenBasedPixelHeight,
-                    screenBasedPixelWidth: screenBasedPixelWidth,
-                    onProcessingSomething: (bool value) {
-                      setState(() {
-                        processingSomething = value;
-                      });
-                    },
-                  ).then((_) => isDialogShowing = false);
-                });
-
-                runHeadlessInAppWebView(
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    currentFullUrl = value;
-                  },
-                );
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Request Status != 200',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               }
             } else if (requestType == "Real") {
               if (ajaxRequest.status == 200) {
@@ -1467,7 +1173,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     PageRoutes.studentProfileAllView,
                     arguments: StudentProfileAllViewArguments(
                       currentStatus: currentStatus,
-                      onShowStudentProfileAllViewDispose: (bool value) {
+                      onWidgetDispose: (bool value) {
                         debugPrint("studentProfileAllView disposed");
                         WidgetsBinding.instance
                             ?.addPostFrameCallback((_) => setState(() {
@@ -1479,97 +1185,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       screenBasedPixelWidth: screenBasedPixelWidth,
                       screenBasedPixelHeight: screenBasedPixelHeight,
                     ),
-                  ).whenComplete(() {
-                    setState(() {
-                      loggedUserStatus = "studentProfileAllView";
-                    });
+                  );
+                  setState(() {
+                    loggedUserStatus = "studentProfileAllView";
                   });
                 });
               } else if (ajaxRequest.responseText!.contains(
                       "You are logged out due to inactivity for more than 15 minutes") ||
                   ajaxRequest.responseText!
                       .contains("You have been successfully logged out")) {
-                inActivityResponse();
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Session ended',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               } else if (ajaxRequest.status != 200) {
-                debugPrint(
-                    "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-                if (processingSomething == true) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    processingSomething = false;
-                  });
-                }
-                if (loggedUserStatus != "studentPortalScreen") {
-                  debugPrint(
-                      "closing open gages on auto logout on session time end");
-                  Navigator.of(context).pop();
-                }
-
-                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  processingSomething = true;
-                  customDialogBox(
-                    isDialogShowing: isDialogShowing,
-                    context: context,
-                    onIsDialogShowing: (bool value) {
-                      setState(() {
-                        isDialogShowing = value;
-                      });
-                    },
-                    dialogTitle: Text(
-                      'WebView is dead',
-                      style: TextStyle(
-                        fontSize: widgetSizeProvider(
-                            fixedSize: 24,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    dialogChildren: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          width: widgetSizeProvider(
-                              fixedSize: 36,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          child: CircularProgressIndicator(
-                            strokeWidth: widgetSizeProvider(
-                                fixedSize: 4,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                        ),
-                        Text(
-                          'So, re-starting WebView please wait...',
-                          style: TextStyle(
-                            fontSize: widgetSizeProvider(
-                                fixedSize: 20,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                    barrierDismissible: false,
-                    screenBasedPixelHeight: screenBasedPixelHeight,
-                    screenBasedPixelWidth: screenBasedPixelWidth,
-                    onProcessingSomething: (bool value) {
-                      setState(() {
-                        processingSomething = value;
-                      });
-                    },
-                  ).then((_) => isDialogShowing = false);
-                });
-
-                runHeadlessInAppWebView(
-                  headlessWebView: headlessWebView,
-                  onCurrentFullUrl: (String value) {
-                    currentFullUrl = value;
-                  },
-                );
+                inActivityOrStatusNot200Response(
+                    dialogTitle: 'Request Status != 200',
+                    dialogChildrenText: 'Starting new session\nplease wait...');
               }
             }
             // print(document.outerHtml);
@@ -1657,87 +1288,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
-              inActivityResponse();
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Session ended',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
-
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                processingSomething = true;
-                customDialogBox(
-                  isDialogShowing: isDialogShowing,
-                  context: context,
-                  onIsDialogShowing: (bool value) {
-                    setState(() {
-                      isDialogShowing = value;
-                    });
-                  },
-                  dialogTitle: Text(
-                    'WebView is dead',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  dialogChildren: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        width: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        child: CircularProgressIndicator(
-                          strokeWidth: widgetSizeProvider(
-                              fixedSize: 4,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      Text(
-                        'So, re-starting WebView please wait...',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: false,
-                  screenBasedPixelHeight: screenBasedPixelHeight,
-                  screenBasedPixelWidth: screenBasedPixelWidth,
-                  onProcessingSomething: (bool value) {
-                    setState(() {
-                      processingSomething = value;
-                    });
-                  },
-                ).then((_) => isDialogShowing = false);
-              });
-
-              runHeadlessInAppWebView(
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  currentFullUrl = value;
-                },
-              );
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Request Status != 200',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             }
           } else if (ajaxRequest.url.toString() == "processViewTimeTable") {
             // debugPrint("ajaxRequest: $ajaxRequest");
@@ -1765,7 +1322,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     PageRoutes.timeTable,
                     arguments: TimeTableArguments(
                       currentStatus: currentStatus,
-                      onTimeTableDocumentDispose: (bool value) {
+                      onWidgetDispose: (bool value) {
                         debugPrint("timeTable disposed");
                         WidgetsBinding.instance
                             ?.addPostFrameCallback((_) => setState(() {
@@ -1832,7 +1389,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           TimeTable(
                         arguments: TimeTableArguments(
                           currentStatus: currentStatus,
-                          onTimeTableDocumentDispose: (bool value) {
+                          onWidgetDispose: (bool value) {
                             debugPrint("timeTable disposed");
                             WidgetsBinding.instance
                                 ?.addPostFrameCallback((_) => setState(() {
@@ -1910,6 +1467,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       //     // const Duration(milliseconds: 2000),
                     ),
                   );
+                  setState(() {
+                    loggedUserStatus = "timeTable";
+                  });
                   // Navigator.pushReplacementNamed(
                   //   context,
                   //   PageRoutes.timeTable,
@@ -1970,9 +1530,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   //     },
                   //   ),
                   // );
-                  setState(() {
-                    loggedUserStatus = "timeTable";
-                  });
+
                 } else if (requestType == "Fake") {
                   // semesterSubId = await _justRetrieveSemesterSubId();
 
@@ -1982,87 +1540,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     "You are logged out due to inactivity for more than 15 minutes") ||
                 ajaxRequest.responseText!
                     .contains("You have been successfully logged out")) {
-              inActivityResponse();
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Session ended',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             } else if (ajaxRequest.status != 200) {
-              debugPrint(
-                  "restarting headlessInAppWebView as studentsRecord/StudentProfileAllView ajaxRequest.status != 200");
-
-              if (processingSomething == true) {
-                Navigator.of(context).pop();
-                setState(() {
-                  processingSomething = false;
-                });
-              }
-              if (loggedUserStatus != "studentPortalScreen") {
-                debugPrint(
-                    "closing open gages on auto logout on session time end");
-                Navigator.of(context).pop();
-              }
-
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                processingSomething = true;
-                customDialogBox(
-                  isDialogShowing: isDialogShowing,
-                  context: context,
-                  onIsDialogShowing: (bool value) {
-                    setState(() {
-                      isDialogShowing = value;
-                    });
-                  },
-                  dialogTitle: Text(
-                    'WebView is dead',
-                    style: TextStyle(
-                      fontSize: widgetSizeProvider(
-                          fixedSize: 24,
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  dialogChildren: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        width: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        child: CircularProgressIndicator(
-                          strokeWidth: widgetSizeProvider(
-                              fixedSize: 4,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      Text(
-                        'So, re-starting WebView please wait...',
-                        style: TextStyle(
-                          fontSize: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: false,
-                  screenBasedPixelHeight: screenBasedPixelHeight,
-                  screenBasedPixelWidth: screenBasedPixelWidth,
-                  onProcessingSomething: (bool value) {
-                    setState(() {
-                      processingSomething = value;
-                    });
-                  },
-                ).then((_) => isDialogShowing = false);
-              });
-
-              runHeadlessInAppWebView(
-                headlessWebView: headlessWebView,
-                onCurrentFullUrl: (String value) {
-                  currentFullUrl = value;
-                },
-              );
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Request Status != 200',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
             }
           } else {
             printWrapped("ajaxRequest: $ajaxRequest");
@@ -2613,6 +2097,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         _saveVtopMode();
       },
       vtopMode: vtopMode,
+      onLoggedUserStatus: (String value) {
+        setState(() {
+          loggedUserStatus = value;
+        });
+      },
     );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

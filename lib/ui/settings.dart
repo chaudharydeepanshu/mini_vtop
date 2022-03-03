@@ -58,7 +58,7 @@ class _SettingsState extends State<Settings> {
   @override
   void dispose() {
     super.dispose();
-    // widget.arguments.onTimeTableDocumentDispose?.call(true);
+    widget.arguments.onWidgetDispose?.call(true);
   }
 
   late double screenBasedPixelWidth;
@@ -80,7 +80,6 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    print("pppppppppppppppppppppppppppppppppppp$vtopModeDropdownValue");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -296,7 +295,7 @@ class _SettingsBoxState extends State<SettingsBox> {
 
 class SettingsArguments {
   String? currentStatus;
-  ValueChanged<bool>? onTimeTableDocumentDispose;
+  ValueChanged<bool>? onWidgetDispose;
   dom.Document? timeTableDocument;
   ValueChanged<String>? onSemesterSubIdChange;
   String semesterSubId;
@@ -314,7 +313,7 @@ class SettingsArguments {
 
   SettingsArguments({
     required this.currentStatus,
-    required this.onTimeTableDocumentDispose,
+    required this.onWidgetDispose,
     required this.timeTableDocument,
     required this.onSemesterSubIdChange,
     required this.semesterSubId,

@@ -36,6 +36,7 @@ chooseCorrectDrawer({
   required ValueChanged<String> onUpdateDefaultSemesterId,
   required ValueChanged<String> onUpdateDefaultVtopMode,
   required ValueChanged<String> onUpdateVtopMode,
+  required ValueChanged<String> onLoggedUserStatus,
 }) async {
   if (currentStatus == null) {
     onDrawer.call(
@@ -79,6 +80,10 @@ chooseCorrectDrawer({
           onUpdateVtopMode.call(value);
         },
         vtopMode: vtopMode,
+        loggedUserStatus: loggedUserStatus,
+        onLoggedUserStatus: (String value) {
+          onLoggedUserStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -119,6 +124,10 @@ chooseCorrectDrawer({
           onUpdateVtopMode.call(value);
         },
         vtopMode: vtopMode,
+        loggedUserStatus: loggedUserStatus,
+        onLoggedUserStatus: (String value) {
+          onLoggedUserStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
@@ -181,6 +190,10 @@ chooseCorrectDrawer({
           onUpdateVtopMode.call(value);
         },
         vtopMode: vtopMode,
+        loggedUserStatus: loggedUserStatus,
+        onLoggedUserStatus: (String value) {
+          onLoggedUserStatus.call(value);
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -241,6 +254,10 @@ chooseCorrectDrawer({
           onUpdateVtopMode.call(value);
         },
         vtopMode: vtopMode,
+        loggedUserStatus: loggedUserStatus,
+        onLoggedUserStatus: (String value) {
+          onLoggedUserStatus.call(value);
+        },
       ),
     );
   }

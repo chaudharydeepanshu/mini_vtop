@@ -313,7 +313,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
   @override
   void dispose() {
     super.dispose();
-    widget.arguments.onShowStudentProfileAllViewDispose?.call(true);
+    widget.arguments.onWidgetDispose?.call(true);
   }
 
   late double screenBasedPixelWidth;
@@ -434,7 +434,7 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
 
 class StudentProfileAllViewArguments {
   String? currentStatus;
-  ValueChanged<bool>? onShowStudentProfileAllViewDispose;
+  ValueChanged<bool>? onWidgetDispose;
   dom.Document? studentProfileAllViewDocument;
   // String userEnteredUname;
   // String userEnteredPasswd;
@@ -445,7 +445,7 @@ class StudentProfileAllViewArguments {
 
   StudentProfileAllViewArguments({
     required this.currentStatus,
-    required this.onShowStudentProfileAllViewDispose,
+    required this.onWidgetDispose,
     required this.studentProfileAllViewDocument,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,
