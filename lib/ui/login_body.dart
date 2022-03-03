@@ -923,19 +923,24 @@ class _LoginSectionState extends State<LoginSection> {
                                                   const StadiumBorder(),
                                                 ),
                                               ),
-                                              onPressed: () {
-                                                // _controller3 =
-                                                //     TextEditingController(text: "");
-                                                signInCredentialsMap = {
-                                                  "uname":
-                                                      '${_controller?.value.text.toUpperCase()}',
-                                                  "passwd":
-                                                      '${_controller2?.value.text}',
-                                                  "refreshingCaptcha": true,
-                                                };
-                                                widget.onRefreshCaptcha?.call(
-                                                    signInCredentialsMap);
-                                              },
+                                              onPressed: widget.arguments
+                                                          .refreshingCaptcha ==
+                                                      false
+                                                  ? () {
+                                                      // _controller3 =
+                                                      //     TextEditingController(text: "");
+                                                      signInCredentialsMap = {
+                                                        "uname":
+                                                            '${_controller?.value.text.toUpperCase()}',
+                                                        "passwd":
+                                                            '${_controller2?.value.text}',
+                                                        "refreshingCaptcha":
+                                                            true,
+                                                      };
+                                                      widget.onRefreshCaptcha?.call(
+                                                          signInCredentialsMap);
+                                                    }
+                                                  : null,
                                               child: Icon(
                                                 Icons.refresh,
                                                 size: widgetSizeProvider(
@@ -1064,110 +1069,125 @@ class _LoginSectionState extends State<LoginSection> {
                                             .arguments.screenBasedPixelWidth),
                                   ),
                                   child: customElevatedButton(
-                                    onPressed: () async {
-                                      // Validate returns true if the form is valid, or false otherwise.
-                                      FocusScopeNode currentFocus =
-                                          FocusScope.of(context);
-                                      if (!currentFocus.hasPrimaryFocus &&
-                                          currentFocus.focusedChild != null) {
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
-                                      }
-                                      if (_formKey.currentState!.validate()) {
-                                        customDialogBox(
-                                          isDialogShowing: isFirstDialogShowing,
-                                          context: context,
-                                          onIsDialogShowing: (bool value) {
-                                            setState(() {
-                                              isFirstDialogShowing = value;
-                                            });
-                                          },
-                                          dialogTitle: Text(
-                                            'Sending login request',
-                                            style: getDynamicTextStyle(
-                                                textStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .headline6
-                                                    ?.copyWith(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurface
-                                                            .withOpacity(0.87)),
-                                                sizeDecidingVariable:
-                                                    screenBasedPixelWidth),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          dialogChildren: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                height: widgetSizeProvider(
-                                                    fixedSize: 36,
-                                                    sizeDecidingVariable: widget
-                                                        .arguments
-                                                        .screenBasedPixelWidth),
-                                                width: widgetSizeProvider(
-                                                    fixedSize: 36,
-                                                    sizeDecidingVariable: widget
-                                                        .arguments
-                                                        .screenBasedPixelWidth),
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: widgetSizeProvider(
-                                                      fixedSize: 4,
-                                                      sizeDecidingVariable: widget
-                                                          .arguments
-                                                          .screenBasedPixelWidth),
+                                    onPressed: widget
+                                                .arguments.refreshingCaptcha ==
+                                            false
+                                        ? () async {
+                                            // Validate returns true if the form is valid, or false otherwise.
+                                            FocusScopeNode currentFocus =
+                                                FocusScope.of(context);
+                                            if (!currentFocus.hasPrimaryFocus &&
+                                                currentFocus.focusedChild !=
+                                                    null) {
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+                                            }
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              customDialogBox(
+                                                isDialogShowing:
+                                                    isFirstDialogShowing,
+                                                context: context,
+                                                onIsDialogShowing:
+                                                    (bool value) {
+                                                  setState(() {
+                                                    isFirstDialogShowing =
+                                                        value;
+                                                  });
+                                                },
+                                                dialogTitle: Text(
+                                                  'Sending login request',
+                                                  style: getDynamicTextStyle(
+                                                      textStyle: Theme.of(
+                                                              context)
+                                                          .textTheme
+                                                          .headline6
+                                                          ?.copyWith(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .onSurface
+                                                                  .withOpacity(
+                                                                      0.87)),
+                                                      sizeDecidingVariable:
+                                                          screenBasedPixelWidth),
+                                                  textAlign: TextAlign.center,
                                                 ),
-                                              ),
-                                              Text(
-                                                'Please wait...',
-                                                style: getDynamicTextStyle(
-                                                    textStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText1
-                                                        ?.copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .onSurface
-                                                                .withOpacity(
-                                                                    0.60)),
-                                                    sizeDecidingVariable:
-                                                        screenBasedPixelWidth),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ],
-                                          ),
-                                          barrierDismissible: false,
-                                          screenBasedPixelHeight:
-                                              screenBasedPixelHeight,
-                                          screenBasedPixelWidth:
-                                              screenBasedPixelWidth,
-                                          onProcessingSomething: (bool value) {
-                                            widget.onProcessingSomething
-                                                .call(value);
-                                          },
-                                        ).then((_) =>
-                                            isFirstDialogShowing = false);
-                                        debugPrint("dialogBox initiated");
-                                        signInCredentialsMap = {
-                                          "uname":
-                                              '${_controller?.value.text.toUpperCase()}',
-                                          "passwd":
-                                              '${_controller2?.value.text}',
-                                          "captchaCheck":
-                                              '${_controller3?.value.text.toUpperCase()}',
-                                          "refreshingCaptcha": true,
-                                          "processingSomething": true,
-                                        };
-                                        widget.onPerformSignIn
-                                            ?.call(signInCredentialsMap);
-                                      }
-                                    },
+                                                dialogChildren: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      height: widgetSizeProvider(
+                                                          fixedSize: 36,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelWidth),
+                                                      width: widgetSizeProvider(
+                                                          fixedSize: 36,
+                                                          sizeDecidingVariable:
+                                                              widget.arguments
+                                                                  .screenBasedPixelWidth),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: widgetSizeProvider(
+                                                            fixedSize: 4,
+                                                            sizeDecidingVariable:
+                                                                widget.arguments
+                                                                    .screenBasedPixelWidth),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'Please wait...',
+                                                      style: getDynamicTextStyle(
+                                                          textStyle: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyText1
+                                                              ?.copyWith(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface
+                                                                      .withOpacity(
+                                                                          0.60)),
+                                                          sizeDecidingVariable:
+                                                              screenBasedPixelWidth),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ],
+                                                ),
+                                                barrierDismissible: false,
+                                                screenBasedPixelHeight:
+                                                    screenBasedPixelHeight,
+                                                screenBasedPixelWidth:
+                                                    screenBasedPixelWidth,
+                                                onProcessingSomething:
+                                                    (bool value) {
+                                                  widget.onProcessingSomething
+                                                      .call(value);
+                                                },
+                                              ).then((_) =>
+                                                  isFirstDialogShowing = false);
+                                              debugPrint("dialogBox initiated");
+                                              signInCredentialsMap = {
+                                                "uname":
+                                                    '${_controller?.value.text.toUpperCase()}',
+                                                "passwd":
+                                                    '${_controller2?.value.text}',
+                                                "captchaCheck":
+                                                    '${_controller3?.value.text.toUpperCase()}',
+                                                "refreshingCaptcha": true,
+                                                "processingSomething": true,
+                                              };
+                                              widget.onPerformSignIn
+                                                  ?.call(signInCredentialsMap);
+                                            }
+                                          }
+                                        : null,
                                     child: Text(
                                       'Sign In',
                                     ),
