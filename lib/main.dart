@@ -1,3 +1,5 @@
+//todo: use local google fonts
+//todo: fix text field helper text size on smaller devices
 //todo: fix widget popping on refreshing captcha after session end
 //todo: create a settings section in app drawer which have the settings to disable battery optimization and run in background
 //todo: make timetable table display the current day and class in different color so that it is easy to identify
@@ -1801,6 +1803,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     // vtopConnectionStatusType = "Error";
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "userLoggedIn";
+    // currentStatus = "signInScreen";
     debugPrint("loggedUserStatus: $loggedUserStatus");
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");

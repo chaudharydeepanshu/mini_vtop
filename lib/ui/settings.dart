@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import '../basicFunctionsAndWidgets/build_semester_selector.dart';
+import '../basicFunctionsAndWidgets/build_update_checker.dart';
 import '../basicFunctionsAndWidgets/build_vtop_mode_selector.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
@@ -137,35 +138,46 @@ class _SettingsState extends State<Settings> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SettingsBox(
-                                settingsType: 'Mini VTOP Defaults',
-                                screenBasedPixelWidth: screenBasedPixelWidth,
-                                screenBasedPixelHeight: screenBasedPixelHeight,
-                                settingsBoxChildren: [
-                                  BuildSemesterSelector(
-                                    semesters: semesters,
-                                    dropdownValue: semesterIdDropdownValue,
-                                    onDropDownChanged: (String? newValue) {
-                                      setState(() {
-                                        semesterIdDropdownValue = newValue!;
-                                      });
-                                      widget.arguments.onUpdateDefaultSemesterId
-                                          .call(newValue!);
-                                    },
-                                    screenBasedPixelHeight:
-                                        screenBasedPixelHeight,
-                                    screenBasedPixelWidth:
-                                        screenBasedPixelWidth,
-                                  ),
-                                ],
-                              ),
-                              SettingsBox(
+                              (widget.arguments.currentStatus !=
+                                          "signInScreen" &&
+                                      widget.arguments.currentStatus !=
+                                          "launchLoadingScreen")
+                                  ? CustomBox(
+                                      settingsType: 'Mini VTOP Defaults',
+                                      screenBasedPixelWidth:
+                                          screenBasedPixelWidth,
+                                      screenBasedPixelHeight:
+                                          screenBasedPixelHeight,
+                                      settingsBoxChildren: [
+                                        BuildSemesterSelector(
+                                          dropdownItems: semesters,
+                                          dropdownValue:
+                                              semesterIdDropdownValue,
+                                          onDropDownChanged:
+                                              (String? newValue) {
+                                            setState(() {
+                                              semesterIdDropdownValue =
+                                                  newValue!;
+                                            });
+                                            widget.arguments
+                                                .onUpdateDefaultSemesterId
+                                                .call(newValue!);
+                                          },
+                                          screenBasedPixelHeight:
+                                              screenBasedPixelHeight,
+                                          screenBasedPixelWidth:
+                                              screenBasedPixelWidth,
+                                        ),
+                                      ],
+                                    )
+                                  : SizedBox(),
+                              CustomBox(
                                 settingsType: 'App Defaults',
                                 screenBasedPixelWidth: screenBasedPixelWidth,
                                 screenBasedPixelHeight: screenBasedPixelHeight,
                                 settingsBoxChildren: [
                                   BuildVtopModeSelector(
-                                    semesters: vtopModes,
+                                    dropdownItems: vtopModes,
                                     dropdownValue: vtopModeDropdownValue,
                                     onDropDownChanged: (String? newValue) {
                                       setState(() {
@@ -178,6 +190,24 @@ class _SettingsState extends State<Settings> {
                                         screenBasedPixelHeight,
                                     screenBasedPixelWidth:
                                         screenBasedPixelWidth,
+                                  ),
+                                ],
+                              ),
+                              CustomBox(
+                                settingsType: 'General',
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                settingsBoxChildren: [
+                                  BuildUpdateChecker(
+                                    onPressedUpdate: (String? newValue) {},
+                                    screenBasedPixelHeight:
+                                        screenBasedPixelHeight,
+                                    screenBasedPixelWidth:
+                                        screenBasedPixelWidth,
+                                    onProcessingSomething: (bool value) {
+                                      widget.arguments.onProcessingSomething
+                                          .call(value);
+                                    },
                                   ),
                                 ],
                               ),
@@ -197,8 +227,8 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-class SettingsBox extends StatefulWidget {
-  const SettingsBox({
+class CustomBox extends StatefulWidget {
+  const CustomBox({
     Key? key,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
@@ -212,25 +242,35 @@ class SettingsBox extends StatefulWidget {
   final String settingsType;
 
   @override
-  _SettingsBoxState createState() => _SettingsBoxState();
+  _CustomBoxState createState() => _CustomBoxState();
 }
 
-class _SettingsBoxState extends State<SettingsBox> {
-  late final double _screenBasedPixelWidth = widget.screenBasedPixelWidth;
-  late final double _screenBasedPixelHeight = widget.screenBasedPixelHeight;
-
-  late List<Widget> _settingsBoxChildren = widget.settingsBoxChildren;
-
-  late final String _settingsType = widget.settingsType;
+class _CustomBoxState extends State<CustomBox> {
+  late double _screenBasedPixelWidth;
+  late double _screenBasedPixelHeight;
+  late List<Widget> _settingsBoxChildren;
+  late String _settingsType;
 
   @override
-  void didUpdateWidget(SettingsBox oldWidget) {
-    if (oldWidget.settingsBoxChildren != widget.settingsBoxChildren) {
+  void didUpdateWidget(CustomBox oldWidget) {
+    if (oldWidget != widget) {
       setState(() {
+        _screenBasedPixelWidth = widget.screenBasedPixelWidth;
+        _screenBasedPixelHeight = widget.screenBasedPixelHeight;
         _settingsBoxChildren = widget.settingsBoxChildren;
+        _settingsType = widget.settingsType;
       });
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    _screenBasedPixelWidth = widget.screenBasedPixelWidth;
+    _screenBasedPixelHeight = widget.screenBasedPixelHeight;
+    _settingsBoxChildren = widget.settingsBoxChildren;
+    _settingsType = widget.settingsType;
+    super.initState();
   }
 
   @override
@@ -283,7 +323,21 @@ class _SettingsBoxState extends State<SettingsBox> {
                     fixedSize: 8, sizeDecidingVariable: _screenBasedPixelWidth),
               ),
               child: Column(
-                children: _settingsBoxChildren,
+                children: List<Widget>.generate(_settingsBoxChildren.length,
+                    (int index) {
+                  return Column(
+                    children: [
+                      _settingsBoxChildren[index],
+                      index != _settingsBoxChildren.length - 1
+                          ? SizedBox(
+                              height: widgetSizeProvider(
+                                  fixedSize: 8,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                            )
+                          : const SizedBox()
+                    ],
+                  );
+                }, growable: false),
               ),
             ),
           ],

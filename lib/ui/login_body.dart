@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
+import '../basicFunctionsAndWidgets/custom_elevated_button.dart';
 import '../basicFunctionsAndWidgets/direct_pop.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/stop_pop.dart';
@@ -614,7 +615,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    customElevatedButton(
+                                                    CustomElevatedButton(
                                                       onPressed: () {
                                                         setState(() {
                                                           _controller =
@@ -629,6 +630,16 @@ class _LoginSectionState extends State<LoginSection> {
                                                             .onClearUnamePasswd
                                                             .call(true);
                                                       },
+                                                      screenBasedPixelWidth:
+                                                          screenBasedPixelWidth,
+                                                      screenBasedPixelHeight:
+                                                          screenBasedPixelHeight,
+                                                      size: const Size(70, 50),
+                                                      borderRadius: 20,
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8,
+                                                          horizontal: 16),
                                                       child: Row(
                                                         children: [
                                                           Icon(
@@ -643,12 +654,47 @@ class _LoginSectionState extends State<LoginSection> {
                                                                 screenBasedPixelWidth *
                                                                     8,
                                                           ),
-                                                          Text(
+                                                          const Text(
                                                             "Clear",
                                                           )
                                                         ],
                                                       ),
                                                     ),
+                                                    // customElevatedButton(
+                                                    //   onPressed: () {
+                                                    //     setState(() {
+                                                    //       _controller =
+                                                    //           TextEditingController(
+                                                    //               text: "");
+                                                    //       _controller2 =
+                                                    //           TextEditingController(
+                                                    //               text: "");
+                                                    //     });
+                                                    //
+                                                    //     widget
+                                                    //         .onClearUnamePasswd
+                                                    //         .call(true);
+                                                    //   },
+                                                    //   child: Row(
+                                                    //     children: [
+                                                    //       Icon(
+                                                    //         Icons
+                                                    //             .close_outlined,
+                                                    //         size:
+                                                    //             screenBasedPixelWidth *
+                                                    //                 24.0,
+                                                    //       ),
+                                                    //       SizedBox(
+                                                    //         width:
+                                                    //             screenBasedPixelWidth *
+                                                    //                 8,
+                                                    //       ),
+                                                    //       Text(
+                                                    //         "Clear",
+                                                    //       )
+                                                    //     ],
+                                                    //   ),
+                                                    // ),
                                                   ],
                                                 ),
                                               ),
@@ -865,64 +911,9 @@ class _LoginSectionState extends State<LoginSection> {
                                           // Text("Document: $serializedDocument"),
                                         ),
                                         //Refresh captcha button.
-                                        SizedBox(
-                                          width: widgetSizeProvider(
-                                              fixedSize: 70,
-                                              sizeDecidingVariable: widget
-                                                  .arguments
-                                                  .screenBasedPixelWidth),
-                                          height: widgetSizeProvider(
-                                              fixedSize: 40,
-                                              sizeDecidingVariable: widget
-                                                  .arguments
-                                                  .screenBasedPixelWidth),
-                                          child: Tooltip(
+                                        Tooltip(
                                             message: "Refresh Captcha",
-                                            child: ElevatedButton(
-                                              style: ButtonStyle(
-                                                tapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap,
-                                                minimumSize:
-                                                    MaterialStateProperty.all<
-                                                        Size?>(
-                                                  Size.fromHeight(
-                                                    widgetSizeProvider(
-                                                        fixedSize: 56,
-                                                        sizeDecidingVariable:
-                                                            screenBasedPixelHeight),
-                                                  ),
-                                                ),
-                                                // backgroundColor: MaterialStateProperty.all(
-                                                //     const Color(0xff04294f)),
-                                                padding:
-                                                    MaterialStateProperty.all(
-                                                  EdgeInsets.only(
-                                                    left: widgetSizeProvider(
-                                                        fixedSize: 20,
-                                                        sizeDecidingVariable:
-                                                            screenBasedPixelWidth),
-                                                    right: widgetSizeProvider(
-                                                        fixedSize: 20,
-                                                        sizeDecidingVariable:
-                                                            screenBasedPixelWidth),
-                                                  ),
-                                                ),
-                                                textStyle:
-                                                    MaterialStateProperty.all(
-                                                  getDynamicTextStyle(
-                                                      sizeDecidingVariable:
-                                                          screenBasedPixelWidth,
-                                                      textStyle:
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyText1),
-                                                ),
-                                                shape: MaterialStateProperty
-                                                    .all<StadiumBorder>(
-                                                  const StadiumBorder(),
-                                                ),
-                                              ),
+                                            child: CustomElevatedButton(
                                               onPressed: widget.arguments
                                                           .refreshingCaptcha ==
                                                       false
@@ -950,9 +941,91 @@ class _LoginSectionState extends State<LoginSection> {
                                                         .screenBasedPixelWidth),
                                                 // color: Colors.blue,
                                               ),
+                                              screenBasedPixelHeight:
+                                                  screenBasedPixelHeight,
+                                              screenBasedPixelWidth:
+                                                  screenBasedPixelWidth,
+                                              size: const Size(45, 45),
+                                              borderRadius: 1000,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 8),
+                                            )
+                                            // ElevatedButton(
+                                            //   style: ButtonStyle(
+                                            //     tapTargetSize:
+                                            //         MaterialTapTargetSize
+                                            //             .shrinkWrap,
+                                            //     minimumSize:
+                                            //         MaterialStateProperty.all<
+                                            //             Size?>(
+                                            //       Size.fromHeight(
+                                            //         widgetSizeProvider(
+                                            //             fixedSize: 56,
+                                            //             sizeDecidingVariable:
+                                            //                 screenBasedPixelHeight),
+                                            //       ),
+                                            //     ),
+                                            //     // backgroundColor: MaterialStateProperty.all(
+                                            //     //     const Color(0xff04294f)),
+                                            //     padding:
+                                            //         MaterialStateProperty.all(
+                                            //       EdgeInsets.only(
+                                            //         left: widgetSizeProvider(
+                                            //             fixedSize: 20,
+                                            //             sizeDecidingVariable:
+                                            //                 screenBasedPixelWidth),
+                                            //         right: widgetSizeProvider(
+                                            //             fixedSize: 20,
+                                            //             sizeDecidingVariable:
+                                            //                 screenBasedPixelWidth),
+                                            //       ),
+                                            //     ),
+                                            //     textStyle:
+                                            //         MaterialStateProperty.all(
+                                            //       getDynamicTextStyle(
+                                            //           sizeDecidingVariable:
+                                            //               screenBasedPixelWidth,
+                                            //           textStyle:
+                                            //               Theme.of(context)
+                                            //                   .textTheme
+                                            //                   .bodyText1),
+                                            //     ),
+                                            //     shape: MaterialStateProperty
+                                            //         .all<StadiumBorder>(
+                                            //       const StadiumBorder(),
+                                            //     ),
+                                            //   ),
+                                            //   onPressed: widget.arguments
+                                            //               .refreshingCaptcha ==
+                                            //           false
+                                            //       ? () {
+                                            //           // _controller3 =
+                                            //           //     TextEditingController(text: "");
+                                            //           signInCredentialsMap = {
+                                            //             "uname":
+                                            //                 '${_controller?.value.text.toUpperCase()}',
+                                            //             "passwd":
+                                            //                 '${_controller2?.value.text}',
+                                            //             "refreshingCaptcha":
+                                            //                 true,
+                                            //           };
+                                            //           widget.onRefreshCaptcha?.call(
+                                            //               signInCredentialsMap);
+                                            //         }
+                                            //       : null,
+                                            //   child: Icon(
+                                            //     Icons.refresh,
+                                            //     size: widgetSizeProvider(
+                                            //         fixedSize: 24,
+                                            //         sizeDecidingVariable: widget
+                                            //             .arguments
+                                            //             .screenBasedPixelWidth),
+                                            //     // color: Colors.blue,
+                                            //   ),
+                                            // ),
                                             ),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -1050,149 +1123,289 @@ class _LoginSectionState extends State<LoginSection> {
                                 ),
                                 //Sign-in button.
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                    left: widgetSizeProvider(
-                                        fixedSize: 8,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                    right: widgetSizeProvider(
-                                        fixedSize: 8,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                    top: widgetSizeProvider(
-                                        fixedSize: 8,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                    bottom: widgetSizeProvider(
-                                        fixedSize: 8,
-                                        sizeDecidingVariable: widget
-                                            .arguments.screenBasedPixelWidth),
-                                  ),
-                                  child: customElevatedButton(
-                                    onPressed: widget
-                                                .arguments.refreshingCaptcha ==
-                                            false
-                                        ? () async {
-                                            // Validate returns true if the form is valid, or false otherwise.
-                                            FocusScopeNode currentFocus =
-                                                FocusScope.of(context);
-                                            if (!currentFocus.hasPrimaryFocus &&
-                                                currentFocus.focusedChild !=
-                                                    null) {
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                            }
-                                            if (_formKey.currentState!
-                                                .validate()) {
-                                              customDialogBox(
-                                                isDialogShowing:
-                                                    isFirstDialogShowing,
-                                                context: context,
-                                                onIsDialogShowing:
-                                                    (bool value) {
-                                                  setState(() {
-                                                    isFirstDialogShowing =
-                                                        value;
-                                                  });
-                                                },
-                                                dialogTitle: Text(
-                                                  'Sending login request',
-                                                  style: getDynamicTextStyle(
-                                                      textStyle: Theme.of(
-                                                              context)
-                                                          .textTheme
-                                                          .headline6
-                                                          ?.copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .onSurface
-                                                                  .withOpacity(
-                                                                      0.87)),
-                                                      sizeDecidingVariable:
-                                                          screenBasedPixelWidth),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                dialogChildren: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: widgetSizeProvider(
-                                                          fixedSize: 36,
-                                                          sizeDecidingVariable:
-                                                              widget.arguments
-                                                                  .screenBasedPixelWidth),
-                                                      width: widgetSizeProvider(
-                                                          fixedSize: 36,
-                                                          sizeDecidingVariable:
-                                                              widget.arguments
-                                                                  .screenBasedPixelWidth),
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        strokeWidth: widgetSizeProvider(
-                                                            fixedSize: 4,
+                                    padding: EdgeInsets.only(
+                                      left: widgetSizeProvider(
+                                          fixedSize: 8,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                      right: widgetSizeProvider(
+                                          fixedSize: 8,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                      top: widgetSizeProvider(
+                                          fixedSize: 8,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                      bottom: widgetSizeProvider(
+                                          fixedSize: 8,
+                                          sizeDecidingVariable: widget
+                                              .arguments.screenBasedPixelWidth),
+                                    ),
+                                    child: CustomElevatedButton(
+                                      onPressed: widget.arguments
+                                                      .refreshingCaptcha ==
+                                                  false ||
+                                              true
+                                          ? () async {
+                                              // Validate returns true if the form is valid, or false otherwise.
+                                              FocusScopeNode currentFocus =
+                                                  FocusScope.of(context);
+                                              if (!currentFocus
+                                                      .hasPrimaryFocus &&
+                                                  currentFocus.focusedChild !=
+                                                      null) {
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              }
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                customDialogBox(
+                                                  isDialogShowing:
+                                                      isFirstDialogShowing,
+                                                  context: context,
+                                                  onIsDialogShowing:
+                                                      (bool value) {
+                                                    setState(() {
+                                                      isFirstDialogShowing =
+                                                          value;
+                                                    });
+                                                  },
+                                                  dialogTitle: Text(
+                                                    'Sending login request',
+                                                    style: getDynamicTextStyle(
+                                                        textStyle: Theme.of(
+                                                                context)
+                                                            .textTheme
+                                                            .headline6
+                                                            ?.copyWith(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .onSurface
+                                                                    .withOpacity(
+                                                                        0.87)),
+                                                        sizeDecidingVariable:
+                                                            screenBasedPixelWidth),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  dialogChildren: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      SizedBox(
+                                                        height: widgetSizeProvider(
+                                                            fixedSize: 36,
                                                             sizeDecidingVariable:
                                                                 widget.arguments
                                                                     .screenBasedPixelWidth),
+                                                        width: widgetSizeProvider(
+                                                            fixedSize: 36,
+                                                            sizeDecidingVariable:
+                                                                widget.arguments
+                                                                    .screenBasedPixelWidth),
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          strokeWidth: widgetSizeProvider(
+                                                              fixedSize: 4,
+                                                              sizeDecidingVariable:
+                                                                  widget
+                                                                      .arguments
+                                                                      .screenBasedPixelWidth),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      'Please wait...',
-                                                      style: getDynamicTextStyle(
-                                                          textStyle: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .bodyText1
-                                                              ?.copyWith(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .onSurface
-                                                                      .withOpacity(
-                                                                          0.60)),
-                                                          sizeDecidingVariable:
-                                                              screenBasedPixelWidth),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  ],
-                                                ),
-                                                barrierDismissible: false,
-                                                screenBasedPixelHeight:
-                                                    screenBasedPixelHeight,
-                                                screenBasedPixelWidth:
-                                                    screenBasedPixelWidth,
-                                                onProcessingSomething:
-                                                    (bool value) {
-                                                  widget.onProcessingSomething
-                                                      .call(value);
-                                                },
-                                              ).then((_) =>
-                                                  isFirstDialogShowing = false);
-                                              debugPrint("dialogBox initiated");
-                                              signInCredentialsMap = {
-                                                "uname":
-                                                    '${_controller?.value.text.toUpperCase()}',
-                                                "passwd":
-                                                    '${_controller2?.value.text}',
-                                                "captchaCheck":
-                                                    '${_controller3?.value.text.toUpperCase()}',
-                                                "refreshingCaptcha": true,
-                                                "processingSomething": true,
-                                              };
-                                              widget.onPerformSignIn
-                                                  ?.call(signInCredentialsMap);
+                                                      Text(
+                                                        'Please wait...',
+                                                        style: getDynamicTextStyle(
+                                                            textStyle: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyText1
+                                                                ?.copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .onSurface
+                                                                        .withOpacity(
+                                                                            0.60)),
+                                                            sizeDecidingVariable:
+                                                                screenBasedPixelWidth),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  barrierDismissible: false,
+                                                  screenBasedPixelHeight:
+                                                      screenBasedPixelHeight,
+                                                  screenBasedPixelWidth:
+                                                      screenBasedPixelWidth,
+                                                  onProcessingSomething:
+                                                      (bool value) {
+                                                    widget.onProcessingSomething
+                                                        .call(value);
+                                                  },
+                                                ).then((_) =>
+                                                    isFirstDialogShowing =
+                                                        false);
+                                                debugPrint(
+                                                    "dialogBox initiated");
+                                                signInCredentialsMap = {
+                                                  "uname":
+                                                      '${_controller?.value.text.toUpperCase()}',
+                                                  "passwd":
+                                                      '${_controller2?.value.text}',
+                                                  "captchaCheck":
+                                                      '${_controller3?.value.text.toUpperCase()}',
+                                                  "refreshingCaptcha": true,
+                                                  "processingSomething": true,
+                                                };
+                                                widget.onPerformSignIn?.call(
+                                                    signInCredentialsMap);
+                                              }
                                             }
-                                          }
-                                        : null,
-                                    child: Text(
-                                      'Sign In',
+                                          : null,
+                                      screenBasedPixelWidth:
+                                          screenBasedPixelWidth,
+                                      screenBasedPixelHeight:
+                                          screenBasedPixelHeight,
+                                      size: const Size(70, 50),
+                                      borderRadius: 20,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: Text(
+                                        'Sign In',
+                                      ),
+                                    )
+                                    // customElevatedButton(
+                                    //                                 onPressed: widget
+                                    //                                             .arguments.refreshingCaptcha ==
+                                    //                                         false
+                                    //                                     ? () async {
+                                    //                                         // Validate returns true if the form is valid, or false otherwise.
+                                    //                                         FocusScopeNode currentFocus =
+                                    //                                             FocusScope.of(context);
+                                    //                                         if (!currentFocus.hasPrimaryFocus &&
+                                    //                                             currentFocus.focusedChild !=
+                                    //                                                 null) {
+                                    //                                           FocusManager.instance.primaryFocus
+                                    //                                               ?.unfocus();
+                                    //                                         }
+                                    //                                         if (_formKey.currentState!
+                                    //                                             .validate()) {
+                                    //                                           customDialogBox(
+                                    //                                             isDialogShowing:
+                                    //                                                 isFirstDialogShowing,
+                                    //                                             context: context,
+                                    //                                             onIsDialogShowing:
+                                    //                                                 (bool value) {
+                                    //                                               setState(() {
+                                    //                                                 isFirstDialogShowing =
+                                    //                                                     value;
+                                    //                                               });
+                                    //                                             },
+                                    //                                             dialogTitle: Text(
+                                    //                                               'Sending login request',
+                                    //                                               style: getDynamicTextStyle(
+                                    //                                                   textStyle: Theme.of(
+                                    //                                                           context)
+                                    //                                                       .textTheme
+                                    //                                                       .headline6
+                                    //                                                       ?.copyWith(
+                                    //                                                           color: Theme.of(
+                                    //                                                                   context)
+                                    //                                                               .colorScheme
+                                    //                                                               .onSurface
+                                    //                                                               .withOpacity(
+                                    //                                                                   0.87)),
+                                    //                                                   sizeDecidingVariable:
+                                    //                                                       screenBasedPixelWidth),
+                                    //                                               textAlign: TextAlign.center,
+                                    //                                             ),
+                                    //                                             dialogChildren: Column(
+                                    //                                               crossAxisAlignment:
+                                    //                                                   CrossAxisAlignment.center,
+                                    //                                               mainAxisAlignment:
+                                    //                                                   MainAxisAlignment.center,
+                                    //                                               children: [
+                                    //                                                 SizedBox(
+                                    //                                                   height: widgetSizeProvider(
+                                    //                                                       fixedSize: 36,
+                                    //                                                       sizeDecidingVariable:
+                                    //                                                           widget.arguments
+                                    //                                                               .screenBasedPixelWidth),
+                                    //                                                   width: widgetSizeProvider(
+                                    //                                                       fixedSize: 36,
+                                    //                                                       sizeDecidingVariable:
+                                    //                                                           widget.arguments
+                                    //                                                               .screenBasedPixelWidth),
+                                    //                                                   child:
+                                    //                                                       CircularProgressIndicator(
+                                    //                                                     strokeWidth: widgetSizeProvider(
+                                    //                                                         fixedSize: 4,
+                                    //                                                         sizeDecidingVariable:
+                                    //                                                             widget.arguments
+                                    //                                                                 .screenBasedPixelWidth),
+                                    //                                                   ),
+                                    //                                                 ),
+                                    //                                                 Text(
+                                    //                                                   'Please wait...',
+                                    //                                                   style: getDynamicTextStyle(
+                                    //                                                       textStyle: Theme.of(
+                                    //                                                               context)
+                                    //                                                           .textTheme
+                                    //                                                           .bodyText1
+                                    //                                                           ?.copyWith(
+                                    //                                                               color: Theme.of(
+                                    //                                                                       context)
+                                    //                                                                   .colorScheme
+                                    //                                                                   .onSurface
+                                    //                                                                   .withOpacity(
+                                    //                                                                       0.60)),
+                                    //                                                       sizeDecidingVariable:
+                                    //                                                           screenBasedPixelWidth),
+                                    //                                                   textAlign:
+                                    //                                                       TextAlign.center,
+                                    //                                                 ),
+                                    //                                               ],
+                                    //                                             ),
+                                    //                                             barrierDismissible: false,
+                                    //                                             screenBasedPixelHeight:
+                                    //                                                 screenBasedPixelHeight,
+                                    //                                             screenBasedPixelWidth:
+                                    //                                                 screenBasedPixelWidth,
+                                    //                                             onProcessingSomething:
+                                    //                                                 (bool value) {
+                                    //                                               widget.onProcessingSomething
+                                    //                                                   .call(value);
+                                    //                                             },
+                                    //                                           ).then((_) =>
+                                    //                                               isFirstDialogShowing = false);
+                                    //                                           debugPrint("dialogBox initiated");
+                                    //                                           signInCredentialsMap = {
+                                    //                                             "uname":
+                                    //                                                 '${_controller?.value.text.toUpperCase()}',
+                                    //                                             "passwd":
+                                    //                                                 '${_controller2?.value.text}',
+                                    //                                             "captchaCheck":
+                                    //                                                 '${_controller3?.value.text.toUpperCase()}',
+                                    //                                             "refreshingCaptcha": true,
+                                    //                                             "processingSomething": true,
+                                    //                                           };
+                                    //                                           widget.onPerformSignIn
+                                    //                                               ?.call(signInCredentialsMap);
+                                    //                                         }
+                                    //                                       }
+                                    //                                     : null,
+                                    //                                 child: Text(
+                                    //                                   'Sign In',
+                                    //                                 ),
+                                    //                               ),
                                     ),
-                                  ),
-                                ),
                                 //User note.
                                 Padding(
                                   padding: EdgeInsets.only(
@@ -1251,51 +1464,51 @@ class _LoginSectionState extends State<LoginSection> {
     );
   }
 
-  FittedBox customElevatedButton({
-    required void Function()? onPressed,
-    required Widget? child,
-  }) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: Alignment.center,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
-          padding: MaterialStateProperty.all(EdgeInsets.only(
-            top: widgetSizeProvider(
-                fixedSize: 16,
-                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-            bottom: widgetSizeProvider(
-                fixedSize: 16,
-                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-            left: widgetSizeProvider(
-                fixedSize: 30,
-                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-            right: widgetSizeProvider(
-                fixedSize: 30,
-                sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-          )),
-          textStyle: MaterialStateProperty.all(
-            getDynamicTextStyle(
-                textStyle: Theme.of(context).textTheme.button,
-                sizeDecidingVariable: screenBasedPixelWidth),
-          ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                widgetSizeProvider(
-                    fixedSize: 20,
-                    sizeDecidingVariable:
-                        widget.arguments.screenBasedPixelWidth),
-              ),
-            ),
-          ),
-        ),
-        onPressed: onPressed,
-        child: child,
-      ),
-    );
-  }
+  // FittedBox customElevatedButton({
+  //   required void Function()? onPressed,
+  //   required Widget? child,
+  // }) {
+  //   return FittedBox(
+  //     fit: BoxFit.scaleDown,
+  //     alignment: Alignment.center,
+  //     child: ElevatedButton(
+  //       style: ButtonStyle(
+  //         // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+  //         padding: MaterialStateProperty.all(EdgeInsets.only(
+  //           top: widgetSizeProvider(
+  //               fixedSize: 16,
+  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+  //           bottom: widgetSizeProvider(
+  //               fixedSize: 16,
+  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+  //           left: widgetSizeProvider(
+  //               fixedSize: 30,
+  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+  //           right: widgetSizeProvider(
+  //               fixedSize: 30,
+  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
+  //         )),
+  //         textStyle: MaterialStateProperty.all(
+  //           getDynamicTextStyle(
+  //               textStyle: Theme.of(context).textTheme.button,
+  //               sizeDecidingVariable: screenBasedPixelWidth),
+  //         ),
+  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+  //           RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(
+  //               widgetSizeProvider(
+  //                   fixedSize: 20,
+  //                   sizeDecidingVariable:
+  //                       widget.arguments.screenBasedPixelWidth),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       onPressed: onPressed,
+  //       child: child,
+  //     ),
+  //   );
+  // }
 
   TextFormField loginTextFormFields({
     required String labelText,

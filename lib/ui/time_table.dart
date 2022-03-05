@@ -477,7 +477,7 @@ class _TimeTableState extends State<TimeTable> {
                                   sizeDecidingVariable: screenBasedPixelWidth),
                             ),
                             child: BuildSemesterSelector(
-                              semesters: semesters,
+                              dropdownItems: semesters,
                               dropdownValue: dropdownValue,
                               onDropDownChanged: (String? newValue) {
                                 setState(() {

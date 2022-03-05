@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.mini_vtop">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -110,5 +112,18 @@
                android:resource="@xml/provider_paths"/>
        </provider>
        <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑-->
+       <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the open file plugin ↓↓↓↓↓↓↓↓↓↓↓↓-->
+       <provider
+           android:name="androidx.core.content.FileProvider"
+           android:authorities="${applicationId}.fileProvider"
+           android:exported="false"
+           android:grantUriPermissions="true"
+           tools:replace="android:authorities">
+           <meta-data
+               android:name="android.support.FILE_PROVIDER_PATHS"
+               android:resource="@xml/filepaths"
+               tools:replace="android:resource" />
+       </provider>
+       <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the open file plugin ↑↑↑↑↑↑↑↑↑↑↑↑-->
     </application>
 </manifest>

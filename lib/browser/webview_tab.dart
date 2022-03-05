@@ -145,6 +145,18 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
     initialOptions.ios.allowingReadAccessTo =
         Uri.parse('file://$webArchiveDir/');
 
+    // Store cookies to save user session for download
+    String cookiesString = '';
+
+    Future<void> updateCookies(Uri url) async {
+      List<Cookie> cookies = await CookieManager().getCookies(url: url);
+      cookiesString = '';
+      for (Cookie cookie in cookies) {
+        cookiesString += '${cookie.name}=${cookie.value};';
+      }
+      print(cookiesString);
+    }
+
     return InAppWebView(
       // initialUrlRequest: URLRequest(url: widget.webViewModel.url),
       initialUrlRequest:
@@ -182,6 +194,10 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
         }
       },
       onLoadStop: (controller, url) async {
+        if (url != null) {
+          await updateCookies(url);
+        }
+
         widget.webViewModel.url = url;
         widget.webViewModel.favicon = null;
         widget.webViewModel.loaded = true;
@@ -327,6 +343,11 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
         String fileName = path.substring(path.lastIndexOf('/') + 1);
         if (Platform.isAndroid) {
           final taskId = await FlutterDownloader.enqueue(
+            headers: {
+              // HttpHeaders.authorizationHeader: 'Basic ' + authToken,
+              HttpHeaders.connectionHeader: 'keep-alive',
+              HttpHeaders.cookieHeader: cookiesString,
+            },
             url: url.toString(),
             fileName: fileName,
             savedDir: (await getTemporaryDirectory()).path,

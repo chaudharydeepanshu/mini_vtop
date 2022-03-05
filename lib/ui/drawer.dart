@@ -308,11 +308,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                   ),
                 ),
-                (vtopCurrentStatusText != "Sign In" &&
-                        vtopCurrentStatusText != "Loading Screen")
-                    ? Column(
-                        children: [
-                          Padding(
+                Column(
+                  children: [
+                    (_currentStatus != "signInScreen" &&
+                            _currentStatus != "launchLoadingScreen")
+                        ? Padding(
                             padding: EdgeInsets.only(
                               top: widgetSizeProvider(
                                   fixedSize: 8,
@@ -396,8 +396,106 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 ],
                               ),
                             ),
+                          )
+                        : SizedBox(),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: widgetSizeProvider(
+                            fixedSize: 8,
+                            sizeDecidingVariable: screenBasedPixelWidth),
+                      ),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: MaterialStateProperty.all<Size?>(
+                            Size.fromHeight(
+                              widgetSizeProvider(
+                                  fixedSize: 56,
+                                  sizeDecidingVariable: screenBasedPixelHeight),
+                            ),
                           ),
-                          Padding(
+                          // backgroundColor: MaterialStateProperty.all(
+                          //     const Color(0xff04294f)),
+                          padding: MaterialStateProperty.all(
+                            EdgeInsets.only(
+                              left: widgetSizeProvider(
+                                  fixedSize: 20,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                              right: widgetSizeProvider(
+                                  fixedSize: 20,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                          ),
+                          textStyle: MaterialStateProperty.all(
+                            getDynamicTextStyle(
+                                sizeDecidingVariable: screenBasedPixelWidth,
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyText1),
+                          ),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                widgetSizeProvider(
+                                    fixedSize: 0,
+                                    sizeDecidingVariable:
+                                        screenBasedPixelWidth),
+                              ),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          // Update the state of the app
+                          // making a fake call to StudentProfileAllView so that
+                          // if the user gets logged out it will automatically restart the webview
+
+                          // Then close the drawer
+                          Navigator.pop(context);
+
+                          Navigator.pushNamed(
+                            context,
+                            PageRoutes.settings,
+                            arguments: SettingsArguments(
+                              currentStatus: widget.currentStatus,
+                              onWidgetDispose: (bool value) {
+                                debugPrint("settings disposed");
+                                WidgetsBinding.instance?.addPostFrameCallback(
+                                  (_) => widget.onLoggedUserStatus
+                                      .call("studentPortalScreen"),
+                                );
+                              },
+                              timeTableDocument: widget.timeTableDocument,
+                              screenBasedPixelHeight: screenBasedPixelHeight,
+                              screenBasedPixelWidth: screenBasedPixelWidth,
+                              semesterSubId: widget.semesterSubId,
+                              onSemesterSubIdChange: (String value) {},
+                              onProcessingSomething: (bool value) {
+                                widget.onProcessingSomething.call(value);
+                              },
+                              onUpdateDefaultSemesterId: (String value) {
+                                widget.onUpdateDefaultSemesterId.call(value);
+                              },
+                              vtopMode: widget.vtopMode,
+                              onUpdateDefaultVtopMode: (String value) {
+                                widget.onUpdateDefaultVtopMode.call(value);
+                              },
+                            ),
+                          );
+                          widget.onLoggedUserStatus.call("settings");
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'Settings',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    (_currentStatus != "signInScreen" &&
+                            _currentStatus != "launchLoadingScreen")
+                        ? Padding(
                             padding: EdgeInsets.only(
                               top: widgetSizeProvider(
                                   fixedSize: 8,
@@ -539,120 +637,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 ],
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: widgetSizeProvider(
-                                  fixedSize: 8,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all<Size?>(
-                                  Size.fromHeight(
-                                    widgetSizeProvider(
-                                        fixedSize: 56,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelHeight),
-                                  ),
-                                ),
-                                // backgroundColor: MaterialStateProperty.all(
-                                //     const Color(0xff04294f)),
-                                padding: MaterialStateProperty.all(
-                                  EdgeInsets.only(
-                                    left: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                    right: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
-                                ),
-                                textStyle: MaterialStateProperty.all(
-                                  getDynamicTextStyle(
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth,
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
-                                ),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      widgetSizeProvider(
-                                          fixedSize: 0,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                // Update the state of the app
-                                // making a fake call to StudentProfileAllView so that
-                                // if the user gets logged out it will automatically restart the webview
-
-                                // Then close the drawer
-                                Navigator.pop(context);
-
-                                if (widget.timeTableDocument != null) {
-                                  Navigator.pushNamed(
-                                    context,
-                                    PageRoutes.settings,
-                                    arguments: SettingsArguments(
-                                      currentStatus: widget.currentStatus,
-                                      onWidgetDispose: (bool value) {
-                                        debugPrint("settings disposed");
-                                        WidgetsBinding.instance
-                                            ?.addPostFrameCallback(
-                                          (_) => widget.onLoggedUserStatus
-                                              .call("studentPortalScreen"),
-                                        );
-                                      },
-                                      timeTableDocument:
-                                          widget.timeTableDocument,
-                                      screenBasedPixelHeight:
-                                          screenBasedPixelHeight,
-                                      screenBasedPixelWidth:
-                                          screenBasedPixelWidth,
-                                      semesterSubId: widget.semesterSubId,
-                                      onSemesterSubIdChange: (String value) {},
-                                      onProcessingSomething: (bool value) {
-                                        widget.onProcessingSomething
-                                            .call(value);
-                                      },
-                                      onUpdateDefaultSemesterId:
-                                          (String value) {
-                                        widget.onUpdateDefaultSemesterId
-                                            .call(value);
-                                      },
-                                      vtopMode: widget.vtopMode,
-                                      onUpdateDefaultVtopMode: (String value) {
-                                        widget.onUpdateDefaultVtopMode
-                                            .call(value);
-                                      },
-                                    ),
-                                  );
-                                  widget.onLoggedUserStatus.call("settings");
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Settings',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : const SizedBox(),
+                          )
+                        : SizedBox(),
+                  ],
+                ),
               ],
             ),
           ),

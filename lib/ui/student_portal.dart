@@ -38,7 +38,6 @@ class _StudentPortalState extends State<StudentPortal> {
   ScrollController controller = ScrollController();
   List<Map> studentPortalOptions = [];
   bool isDialogShowing = false;
-
   late StudentPortalArguments arguments;
 
   @override
@@ -46,7 +45,6 @@ class _StudentPortalState extends State<StudentPortal> {
     if (oldWidget.arguments != widget.arguments) {
       arguments = widget.arguments;
     }
-
     super.didUpdateWidget(oldWidget);
   }
 
@@ -222,13 +220,9 @@ class _StudentPortalState extends State<StudentPortal> {
   }
 
   final interval = const Duration(seconds: 1);
-
   int timerMaxSeconds = 0;
-
   int currentSeconds = 0;
-
   Timer? timer;
-
   String get timerText =>
       '${((timerMaxSeconds - currentSeconds) ~/ 60).toString().padLeft(2, '0')}: ${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
 
@@ -259,7 +253,7 @@ class _StudentPortalState extends State<StudentPortal> {
         // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
         //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
-        // timerMaxSeconds = 5;
+        // timerMaxSeconds = 10;
         if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
           WidgetsBinding.instance?.addPostFrameCallback((_) {
             widget.onProcessingSomething.call(true);

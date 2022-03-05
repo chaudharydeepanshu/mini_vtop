@@ -6,7 +6,7 @@ class BuildSemesterSelector extends StatefulWidget {
       {Key? key,
       required this.screenBasedPixelWidth,
       required this.screenBasedPixelHeight,
-      required this.semesters,
+      required this.dropdownItems,
       required this.dropdownValue,
       required this.onDropDownChanged})
       : super(key: key);
@@ -14,7 +14,7 @@ class BuildSemesterSelector extends StatefulWidget {
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
 
-  final List<Map<String, String>> semesters;
+  final List<Map<String, String>> dropdownItems;
 
   final ValueChanged<String?> onDropDownChanged;
 
@@ -30,7 +30,7 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
 
   late String _dropdownValue = widget.dropdownValue;
 
-  late final List<Map<String, String>> _semesters = widget.semesters;
+  late final List<Map<String, String>> _semesters = widget.dropdownItems;
 
   @override
   void didUpdateWidget(BuildSemesterSelector oldWidget) {
