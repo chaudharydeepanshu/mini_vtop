@@ -5,12 +5,10 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
-import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
-import 'AppTheme/lib_color_schemes.g.dart';
 
 class StudentPortal extends StatefulWidget {
   const StudentPortal({
@@ -66,7 +64,7 @@ class _StudentPortalState extends State<StudentPortal> {
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 widget.onProcessingSomething.call(
                     true); //then set processing something true for the new loading dialog
-                customDialogBox(
+                customAlertDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
                   onIsDialogShowing: (bool value) {
@@ -88,7 +86,8 @@ class _StudentPortalState extends State<StudentPortal> {
                         sizeDecidingVariable: screenBasedPixelWidth),
                     textAlign: TextAlign.center,
                   ),
-                  dialogChildren: Column(
+                  dialogContent: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -147,7 +146,7 @@ class _StudentPortalState extends State<StudentPortal> {
               WidgetsBinding.instance?.addPostFrameCallback((_) {
                 widget.onProcessingSomething.call(
                     true); //then set processing something true for the new loading dialog
-                customDialogBox(
+                customAlertDialogBox(
                   isDialogShowing: isDialogShowing,
                   context: context,
                   onIsDialogShowing: (bool value) {
@@ -169,7 +168,8 @@ class _StudentPortalState extends State<StudentPortal> {
                         sizeDecidingVariable: screenBasedPixelWidth),
                     textAlign: TextAlign.center,
                   ),
-                  dialogChildren: Column(
+                  dialogContent: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -257,7 +257,7 @@ class _StudentPortalState extends State<StudentPortal> {
         if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
           WidgetsBinding.instance?.addPostFrameCallback((_) {
             widget.onProcessingSomething.call(true);
-            customDialogBox(
+            customAlertDialogBox(
               isDialogShowing: isDialogShowing,
               context: context,
               onIsDialogShowing: (bool value) {
@@ -276,7 +276,8 @@ class _StudentPortalState extends State<StudentPortal> {
                     sizeDecidingVariable: screenBasedPixelWidth),
                 textAlign: TextAlign.center,
               ),
-              dialogChildren: Column(
+              dialogContent: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -401,103 +402,118 @@ class _StudentPortalState extends State<StudentPortal> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Hello,",
-                                  style: getDynamicTextStyle(
-                                      textStyle:
-                                          Theme.of(context).textTheme.headline6,
-                                      sizeDecidingVariable:
-                                          arguments.screenBasedPixelWidth),
-                                  // style: GoogleFonts.lato(
-                                  //   // color: Colors.white,
-                                  //   // textStyle: Theme.of(context).textTheme.headline1,
-                                  //   fontSize: widgetSizeProvider(
-                                  //       fixedSize: 17,
-                                  //       sizeDecidingVariable: widget
-                                  //           .arguments.screenBasedPixelWidth),
-                                  //   fontWeight: FontWeight.w700,
-                                  //   fontStyle: FontStyle.normal,
-                                  // ),
-                                ),
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    "${toBeginningOfSentenceCase(arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                            Flexible(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Hello,",
                                     style: getDynamicTextStyle(
                                         textStyle: Theme.of(context)
                                             .textTheme
-                                            .headline5,
+                                            .headline6,
                                         sizeDecidingVariable:
                                             arguments.screenBasedPixelWidth),
+                                    // style: GoogleFonts.lato(
+                                    //   // color: Colors.white,
+                                    //   // textStyle: Theme.of(context).textTheme.headline1,
+                                    //   fontSize: widgetSizeProvider(
+                                    //       fixedSize: 17,
+                                    //       sizeDecidingVariable: widget
+                                    //           .arguments.screenBasedPixelWidth),
+                                    //   fontWeight: FontWeight.w700,
+                                    //   fontStyle: FontStyle.normal,
+                                    // ),
                                   ),
-                                )
-                              ],
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondaryContainer,
-                                //border: Border.all(color: Colors.blue, width: 10),
-                                borderRadius: BorderRadius.circular(
-                                  widgetSizeProvider(
-                                      fixedSize: 20,
-                                      sizeDecidingVariable: widget
-                                          .arguments.screenBasedPixelWidth),
-                                ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      "${toBeginningOfSentenceCase(arguments.studentName?.split(' ')[0].trim().toLowerCase())} 👋",
+                                      style: getDynamicTextStyle(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
+                                          sizeDecidingVariable:
+                                              arguments.screenBasedPixelWidth),
+                                    ),
+                                  )
+                                ],
                               ),
-                              child: Padding(
-                                padding: EdgeInsets.all(
-                                  widgetSizeProvider(
-                                      fixedSize: 5,
-                                      sizeDecidingVariable: widget
-                                          .arguments.screenBasedPixelWidth),
+                            ),
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
+                                  //border: Border.all(color: Colors.blue, width: 10),
+                                  borderRadius: BorderRadius.circular(
+                                    widgetSizeProvider(
+                                        fixedSize: 20,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.timer,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      size: widgetSizeProvider(
-                                          fixedSize: 24,
-                                          sizeDecidingVariable: widget
-                                              .arguments.screenBasedPixelWidth),
-                                      // color: Colors.white,
+                                child: Padding(
+                                  padding: EdgeInsets.all(
+                                    widgetSizeProvider(
+                                        fixedSize: 5,
+                                        sizeDecidingVariable: widget
+                                            .arguments.screenBasedPixelWidth),
+                                  ),
+                                  child: FittedBox(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        FittedBox(
+                                          child: Icon(
+                                            Icons.timer,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: widgetSizeProvider(
+                                                fixedSize: 24,
+                                                sizeDecidingVariable: widget
+                                                    .arguments
+                                                    .screenBasedPixelWidth),
+                                            // color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: widgetSizeProvider(
+                                              fixedSize: 5,
+                                              sizeDecidingVariable: widget
+                                                  .arguments
+                                                  .screenBasedPixelWidth),
+                                        ),
+                                        SizedBox(
+                                          width: widgetSizeProvider(
+                                              fixedSize: 70,
+                                              sizeDecidingVariable: arguments
+                                                  .screenBasedPixelHeight),
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              timerText,
+                                              maxLines: 1,
+                                              style: getDynamicTextStyle(
+                                                  textStyle: Theme.of(context)
+                                                      .textTheme
+                                                      .headline6
+                                                      ?.copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                      ),
+                                                  sizeDecidingVariable: arguments
+                                                      .screenBasedPixelWidth),
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: widgetSizeProvider(
-                                          fixedSize: 5,
-                                          sizeDecidingVariable: widget
-                                              .arguments.screenBasedPixelWidth),
-                                    ),
-                                    SizedBox(
-                                      width: widgetSizeProvider(
-                                          fixedSize: 55,
-                                          sizeDecidingVariable: widget
-                                              .arguments.screenBasedPixelWidth),
-                                      child: Text(
-                                        timerText,
-                                        style: getDynamicTextStyle(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6
-                                                ?.copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                            sizeDecidingVariable: arguments
-                                                .screenBasedPixelWidth),
-                                      ),
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -577,12 +593,13 @@ class _StudentPortalState extends State<StudentPortal> {
                                     ),
                                     onPressed: () {
                                       widget.onProcessingSomething.call(true);
-                                      customDialogBox(
+                                      customAlertDialogBox(
                                         onIsDialogShowing: (bool value) {
                                           isDialogShowing = value;
                                         },
                                         isDialogShowing: isDialogShowing,
-                                        dialogChildren: Column(
+                                        dialogContent: Column(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: List.generate(
                                             studentPortalOptions[index]
                                                     ["internalOptionsMapList"]
@@ -696,6 +713,7 @@ class _StudentPortalState extends State<StudentPortal> {
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
                                       child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [

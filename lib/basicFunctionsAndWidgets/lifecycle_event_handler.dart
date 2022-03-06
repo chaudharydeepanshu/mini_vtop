@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-
 class LifecycleEventHandler extends WidgetsBindingObserver {
   final AsyncCallback? resumeCallBack;
   final AsyncCallback? suspendingCallBack;

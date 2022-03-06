@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctionsAndWidgets/dailog_box_for_leaving_app.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
-import '../coreFunctions/call_time_table.dart';
 import '../navigation/page_routes_model.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -274,7 +273,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       textStyle: MaterialStateProperty.all(
                         getDynamicTextStyle(
                             sizeDecidingVariable: screenBasedPixelWidth,
-                            textStyle: Theme.of(context).textTheme.bodyText1),
+                            textStyle: Theme.of(context).textTheme.button),
                       ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
@@ -347,9 +346,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   getDynamicTextStyle(
                                       sizeDecidingVariable:
                                           screenBasedPixelWidth,
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
+                                      textStyle:
+                                          Theme.of(context).textTheme.button),
                                 ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
@@ -397,7 +395,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               ),
                             ),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                     Padding(
                       padding: EdgeInsets.only(
                         top: widgetSizeProvider(
@@ -429,8 +427,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           textStyle: MaterialStateProperty.all(
                             getDynamicTextStyle(
                                 sizeDecidingVariable: screenBasedPixelWidth,
-                                textStyle:
-                                    Theme.of(context).textTheme.bodyText1),
+                                textStyle: Theme.of(context).textTheme.button),
                           ),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -484,7 +481,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           widget.onLoggedUserStatus.call("settings");
                         },
                         child: Row(
-                          children: [
+                          children: const [
                             Text(
                               'Settings',
                               textAlign: TextAlign.center,
@@ -530,9 +527,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   getDynamicTextStyle(
                                       sizeDecidingVariable:
                                           screenBasedPixelWidth,
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
+                                      textStyle:
+                                          Theme.of(context).textTheme.button),
                                 ),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
@@ -565,7 +561,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                     ?.addPostFrameCallback((_) {
                                   widget.onProcessingSomething.call(
                                       true); //then set processing something true for the new loading dialog
-                                  customDialogBox(
+                                  customAlertDialogBox(
                                     isDialogShowing: isDialogShowing,
                                     context: context,
                                     onIsDialogShowing: (bool value) {
@@ -583,7 +579,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
-                                    dialogChildren: Column(
+                                    dialogContent: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       mainAxisAlignment:
@@ -629,7 +626,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                 });
                               },
                               child: Row(
-                                children: [
+                                children: const [
                                   Text(
                                     'Logout',
                                     textAlign: TextAlign.center,
@@ -638,7 +635,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                               ),
                             ),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ],
                 ),
               ],

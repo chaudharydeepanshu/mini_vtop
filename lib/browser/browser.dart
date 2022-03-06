@@ -131,6 +131,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
         child: Scaffold(
           // appBar: const BrowserAppBar(),
           body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const BrowserAppBar(),
               Expanded(

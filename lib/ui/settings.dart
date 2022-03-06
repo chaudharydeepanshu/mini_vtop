@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-import '../basicFunctionsAndWidgets/build_semester_selector.dart';
-import '../basicFunctionsAndWidgets/build_update_checker.dart';
-import '../basicFunctionsAndWidgets/build_vtop_mode_selector.dart';
-import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget.dart';
+import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
+import '../basicFunctionsAndWidgets/build_vtop_mode_selector_widget.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class Settings extends StatefulWidget {
@@ -170,7 +169,7 @@ class _SettingsState extends State<Settings> {
                                         ),
                                       ],
                                     )
-                                  : SizedBox(),
+                                  : const SizedBox(),
                               CustomBox(
                                 settingsType: 'App Defaults',
                                 screenBasedPixelWidth: screenBasedPixelWidth,
@@ -199,7 +198,6 @@ class _SettingsState extends State<Settings> {
                                 screenBasedPixelHeight: screenBasedPixelHeight,
                                 settingsBoxChildren: [
                                   BuildUpdateChecker(
-                                    onPressedUpdate: (String? newValue) {},
                                     screenBasedPixelHeight:
                                         screenBasedPixelHeight,
                                     screenBasedPixelWidth:
@@ -208,6 +206,7 @@ class _SettingsState extends State<Settings> {
                                       widget.arguments.onProcessingSomething
                                           .call(value);
                                     },
+                                    shouldAutoCheckUpdateRun: false,
                                   ),
                                 ],
                               ),
@@ -247,7 +246,6 @@ class CustomBox extends StatefulWidget {
 
 class _CustomBoxState extends State<CustomBox> {
   late double _screenBasedPixelWidth;
-  late double _screenBasedPixelHeight;
   late List<Widget> _settingsBoxChildren;
   late String _settingsType;
 
@@ -256,7 +254,6 @@ class _CustomBoxState extends State<CustomBox> {
     if (oldWidget != widget) {
       setState(() {
         _screenBasedPixelWidth = widget.screenBasedPixelWidth;
-        _screenBasedPixelHeight = widget.screenBasedPixelHeight;
         _settingsBoxChildren = widget.settingsBoxChildren;
         _settingsType = widget.settingsType;
       });
@@ -267,7 +264,6 @@ class _CustomBoxState extends State<CustomBox> {
   @override
   void initState() {
     _screenBasedPixelWidth = widget.screenBasedPixelWidth;
-    _screenBasedPixelHeight = widget.screenBasedPixelHeight;
     _settingsBoxChildren = widget.settingsBoxChildren;
     _settingsType = widget.settingsType;
     super.initState();

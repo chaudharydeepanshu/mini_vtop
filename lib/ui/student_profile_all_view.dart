@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';

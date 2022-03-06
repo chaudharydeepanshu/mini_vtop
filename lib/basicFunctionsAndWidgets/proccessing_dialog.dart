@@ -5,13 +5,14 @@ import 'package:mini_vtop/basicFunctionsAndWidgets/stop_pop.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'direct_pop.dart';
 
-Future<void> customDialogBox({
+Future<void> customAlertDialogBox({
   required BuildContext context,
   required bool isDialogShowing,
   required ValueChanged<bool> onIsDialogShowing,
   required bool barrierDismissible,
   required Widget dialogTitle,
-  required Widget dialogChildren,
+  required Widget dialogContent,
+  List<Widget>? dialogActions,
   required double screenBasedPixelWidth,
   required double screenBasedPixelHeight,
   required ValueChanged<bool> onProcessingSomething,
@@ -26,7 +27,8 @@ Future<void> customDialogBox({
       return DialogBox(
         onProcessingSomething: onProcessingSomething,
         dialogTitle: dialogTitle,
-        dialogChildren: dialogChildren,
+        dialogContent: dialogContent,
+        dialogActions: dialogActions,
         isDialogShowing: isDialogShowing,
         barrierDismissible: barrierDismissible,
         screenBasedPixelWidth: screenBasedPixelWidth,
@@ -46,8 +48,9 @@ class DialogBox extends StatefulWidget {
     required this.dialogTitle,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
-    required this.dialogChildren,
+    required this.dialogContent,
     this.onSetState,
+    this.dialogActions,
   }) : super(key: key);
 
   final bool barrierDismissible;
@@ -57,7 +60,8 @@ class DialogBox extends StatefulWidget {
   final Widget dialogTitle;
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
-  final Widget dialogChildren;
+  final Widget dialogContent;
+  final List<Widget>? dialogActions;
   final ValueChanged<StateSetter>? onSetState;
 
   @override
@@ -93,7 +97,7 @@ class _DialogBoxState extends State<DialogBox> {
                 _widget.onProcessingSomething.call(value);
               });
       },
-      child: SimpleDialog(
+      child: AlertDialog(
         title: Center(child: _widget.dialogTitle),
         titlePadding: EdgeInsets.fromLTRB(
           widgetSizeProvider(
@@ -123,23 +127,16 @@ class _DialogBoxState extends State<DialogBox> {
               fixedSize: 16,
               sizeDecidingVariable: _widget.screenBasedPixelHeight),
         ),
-        insetPadding: EdgeInsets.fromLTRB(
-          widgetSizeProvider(
-              fixedSize: 0,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: widgetSizeProvider(
+              fixedSize: 40,
               sizeDecidingVariable: _widget.screenBasedPixelWidth),
-          widgetSizeProvider(
-              fixedSize: 12,
-              sizeDecidingVariable: _widget.screenBasedPixelHeight),
-          widgetSizeProvider(
-              fixedSize: 0,
+          vertical: widgetSizeProvider(
+              fixedSize: 24,
               sizeDecidingVariable: _widget.screenBasedPixelWidth),
-          widgetSizeProvider(
-              fixedSize: 16,
-              sizeDecidingVariable: _widget.screenBasedPixelHeight),
         ),
-        children: <Widget>[
-          _widget.dialogChildren,
-        ],
+        content: _widget.dialogContent,
+        actions: _widget.dialogActions,
       ),
     );
   }

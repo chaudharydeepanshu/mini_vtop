@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:ntp/ntp.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
+import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 import '../browser/browser.dart';
 import 'AppTheme/app_theme_data.dart';
 
@@ -16,6 +18,7 @@ class FullWebView extends StatefulWidget {
     required this.arguments,
     required this.onTimeTable,
     required this.onPerformSignOut,
+    required this.onProcessingSomething,
   }) : super(key: key);
 
   final String? loggedUserStatus;
@@ -23,6 +26,7 @@ class FullWebView extends StatefulWidget {
   final ValueChanged<bool>? onTimeTable;
   final FullWebViewArguments arguments;
   final ValueChanged<bool>? onPerformSignOut;
+  final ValueChanged<bool> onProcessingSomething;
 
   @override
   _FullWebViewState createState() => _FullWebViewState();
@@ -41,7 +45,7 @@ class _FullWebViewState extends State<FullWebView> {
 
   @override
   void initState() {
-    requestPermissions();
+    // requestPermissions();
     startTimeout();
     super.initState();
   }
@@ -83,7 +87,73 @@ class _FullWebViewState extends State<FullWebView> {
         // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
         //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
+        // timerMaxSeconds = 10;
         if (timer.tick >= timerMaxSeconds || timerMaxSeconds <= 0) {
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            widget.onProcessingSomething.call(true);
+            customAlertDialogBox(
+              isDialogShowing: isDialogShowing,
+              context: context,
+              onIsDialogShowing: (bool value) {
+                setState(() {
+                  isDialogShowing = value;
+                });
+              },
+              dialogTitle: Text(
+                'You logged out',
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.87)),
+                    sizeDecidingVariable: screenBasedPixelWidth),
+                textAlign: TextAlign.center,
+              ),
+              dialogContent: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: widgetSizeProvider(
+                        fixedSize: 36,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    width: widgetSizeProvider(
+                        fixedSize: 36,
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    child: CircularProgressIndicator(
+                      strokeWidth: widgetSizeProvider(
+                          fixedSize: 4,
+                          sizeDecidingVariable: screenBasedPixelWidth),
+                    ),
+                  ),
+                  Text(
+                    'So, re-requesting login page please wait...',
+                    style: getDynamicTextStyle(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.60)),
+                        sizeDecidingVariable: screenBasedPixelWidth),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              barrierDismissible: false,
+              screenBasedPixelHeight: screenBasedPixelHeight,
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              onProcessingSomething: (bool value) {
+                setState(() {
+                  widget.onProcessingSomething.call(value);
+                });
+              },
+            ).then((_) => isDialogShowing = false);
+          });
           widget.onPerformSignOut?.call(true);
           timer.cancel();
         }

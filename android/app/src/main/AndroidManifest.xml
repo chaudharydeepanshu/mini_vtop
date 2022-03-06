@@ -121,7 +121,7 @@
            tools:replace="android:authorities">
            <meta-data
                android:name="android.support.FILE_PROVIDER_PATHS"
-               android:resource="@xml/filepaths"
+               android:resource="@xml/file_paths"
                tools:replace="android:resource" />
        </provider>
        <!--↑↑↑↑↑↑↑↑↑↑↑↑ For the open file plugin ↑↑↑↑↑↑↑↑↑↑↑↑-->

@@ -1,4 +1,5 @@
 //todo: use local google fonts
+//todo: add overflow ellipses property to texts
 //todo: fix text field helper text size on smaller devices
 //todo: fix widget popping on refreshing captcha after session end
 //todo: create a settings section in app drawer which have the settings to disable battery optimization and run in background
@@ -7,6 +8,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:html/dom.dart' as dom;
@@ -26,11 +28,14 @@ import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:version/version.dart';
+import 'basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import 'basicFunctionsAndWidgets/dismiss_keyboard.dart';
+import 'basicFunctionsAndWidgets/package_info_calc.dart';
 import 'basicFunctionsAndWidgets/print_wrapped.dart';
 import 'basicFunctionsAndWidgets/proccessing_dialog.dart';
+import 'basicFunctionsAndWidgets/update/update_check_requester.dart';
 import 'basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
@@ -115,11 +120,8 @@ Future main() async {
         ),
       ],
       // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
-      child: MediaQuery(
-        data: const MediaQueryData(),
-        child: MyApp(
-          savedThemeMode: savedThemeMode,
-        ),
+      child: MyApp(
+        savedThemeMode: savedThemeMode,
       ),
     ),
   );
@@ -520,6 +522,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    screenBasedPixelWidth = MediaQuery.of(context).size.width * 0.0027625;
+    screenBasedPixelHeight = MediaQuery.of(context).size.height * 0.00169;
+    super.didChangeDependencies();
+  }
+
+  @override
   void initState() {
     inActivityOrStatusNot200Response(
         {required String dialogTitle, required String dialogChildrenText}) {
@@ -539,7 +548,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         processingSomething = true;
-        customDialogBox(
+        customAlertDialogBox(
           isDialogShowing: isDialogShowing,
           context: context,
           onIsDialogShowing: (bool value) {
@@ -555,7 +564,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             ),
             textAlign: TextAlign.center,
           ),
-          dialogChildren: Column(
+          dialogContent: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1810,9 +1820,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     debugPrint("vtopLoginErrorType: $vtopLoginErrorType");
     debugPrint("vtopMode: $vtopMode");
 
-    screenBasedPixelWidth = MediaQuery.of(context).size.width * 0.0027625;
-    screenBasedPixelHeight = MediaQuery.of(context).size.height * 0.00169;
-
     chooseCorrectBody(
       onBody: (Widget value) {
         body = value;
@@ -2138,19 +2145,32 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               },
               child: appbar),
         ),
-        body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            switchInCurve: Curves.easeIn,
-            switchOutCurve: Curves.easeOut,
-            transitionBuilder: (child, animation) {
-              return SlideTransition(
-                position: Tween<Offset>(
-                        begin: const Offset(1.0, 0), end: const Offset(0, 0))
-                    .animate(animation),
-                child: child,
-              );
-            },
-            child: body),
+        body: Stack(
+          children: [
+            AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                transitionBuilder: (child, animation) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                            begin: const Offset(1.0, 0),
+                            end: const Offset(0, 0))
+                        .animate(animation),
+                    child: child,
+                  );
+                },
+                child: body),
+            BuildUpdateChecker(
+              screenBasedPixelHeight: screenBasedPixelHeight,
+              screenBasedPixelWidth: screenBasedPixelWidth,
+              onProcessingSomething: (bool value) {
+                processingSomething = value;
+              },
+              shouldAutoCheckUpdateRun: true,
+            ),
+          ],
+        ),
         drawer: Padding(
           padding: EdgeInsets.only(
             right: widgetSizeProvider(

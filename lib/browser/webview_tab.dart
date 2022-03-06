@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:internet_file/storage_io.dart';
 import 'package:mini_vtop/browser/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +13,6 @@ import 'javascript_console_result.dart';
 import 'long_press_alert_dialog.dart';
 import 'models/browser_model.dart';
 import 'models/webview_model.dart';
-import 'package:internet_file/internet_file.dart';
 
 class WebViewTab extends StatefulWidget {
   // @override
@@ -154,7 +151,7 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
       for (Cookie cookie in cookies) {
         cookiesString += '${cookie.name}=${cookie.value};';
       }
-      print(cookiesString);
+      debugPrint(cookiesString);
     }
 
     return InAppWebView(

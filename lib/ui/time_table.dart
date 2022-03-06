@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:mini_vtop/ui/settings.dart';
 
-import '../basicFunctionsAndWidgets/build_semester_selector.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget.dart';
 import '../basicFunctionsAndWidgets/measure_size_of_widget.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
@@ -486,7 +484,7 @@ class _TimeTableState extends State<TimeTable> {
                                       ?.addPostFrameCallback((_) {
                                     widget.arguments.onProcessingSomething.call(
                                         true); //then set processing something true for the new loading dialog
-                                    customDialogBox(
+                                    customAlertDialogBox(
                                       isDialogShowing: isDialogShowing,
                                       context: context,
                                       onIsDialogShowing: (bool value) {
@@ -509,7 +507,8 @@ class _TimeTableState extends State<TimeTable> {
                                                 screenBasedPixelWidth),
                                         textAlign: TextAlign.center,
                                       ),
-                                      dialogChildren: Column(
+                                      dialogContent: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         mainAxisAlignment:
@@ -642,7 +641,7 @@ class _TimeTableState extends State<TimeTable> {
                           )
                         : Column(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.error,
                               ),
                               Text(

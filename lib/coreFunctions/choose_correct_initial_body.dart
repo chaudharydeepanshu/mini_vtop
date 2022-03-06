@@ -96,6 +96,9 @@ chooseCorrectBody(
           screenBasedPixelWidth: screenBasedPixelWidth,
           screenBasedPixelHeight: screenBasedPixelHeight,
           vtopConnectionStatusErrorType: vtopConnectionStatusErrorType,
+          onProcessingSomething: (bool value) {
+            onProcessingSomething.call(value);
+          },
         ),
         onRetryOnError: (bool value) {
           onRetryOnError.call(value);
@@ -318,6 +321,9 @@ chooseCorrectBody(
               onError.call(value);
             },
           );
+        },
+        onProcessingSomething: (bool value) {
+          onProcessingSomething.call(value);
         },
       ),
     );

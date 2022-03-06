@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class LaunchLoadingScreen extends StatefulWidget {
@@ -324,8 +323,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
             widget.onRetryOnError.call(true);
           },
           child: Row(
-            children: [
-              const Icon(Icons.refresh),
+            children: const [
+              Icon(Icons.refresh),
               Text(
                 "Retry",
               )
@@ -405,8 +404,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
             widget.onRetryOnError.call(true);
           },
           child: Row(
-            children: [
-              const Icon(Icons.refresh),
+            children: const [
+              Icon(Icons.refresh),
               Text(
                 "Retry",
               )
@@ -527,6 +526,7 @@ class LaunchLoadingScreenArguments {
   HeadlessInAppWebView? headlessWebView;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
+  ValueChanged<bool> onProcessingSomething;
 
   LaunchLoadingScreenArguments({
     required this.vtopConnectionStatusType,
@@ -534,5 +534,6 @@ class LaunchLoadingScreenArguments {
     required this.headlessWebView,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
+    required this.onProcessingSomething,
   });
 }
