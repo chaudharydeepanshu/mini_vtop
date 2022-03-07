@@ -11,7 +11,7 @@ These two modes can be inter-switched instantly using the app drawer "VTOP Mode"
 Please be informed of these points:-
 1. This project is created only for educational purpose and my personal use.
 2. This project has no direct or indirect connections or affilations with VIT (Vellore Institute of Technology).
-3. The project developer, copyright owner and contributors cannot be help liable or responsible for any kind of damage from this project.
+3. The project developer, copyright owner and contributors cannot be held liable or responsible for any kind of damage from this project.
 
 ## Getting Started
 
