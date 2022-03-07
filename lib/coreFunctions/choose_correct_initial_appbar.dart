@@ -48,18 +48,18 @@ chooseCorrectAppbar({
         title: Text(
           "VIT Bhopal - VTOP",
           style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all(
-                Theme.of(context).textTheme.button,
+                getDynamicTextStyle(
+                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
               side: MaterialStateProperty.all<BorderSide>(
                   const BorderSide(color: Colors.transparent)),
@@ -87,19 +87,19 @@ chooseCorrectAppbar({
         title: Text(
           "Student Sign-In",
           style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
 
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all(
-                Theme.of(context).textTheme.button,
+                getDynamicTextStyle(
+                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
               side: MaterialStateProperty.all<BorderSide>(
                   const BorderSide(color: Colors.transparent)),
@@ -126,18 +126,18 @@ chooseCorrectAppbar({
         title: Text(
           "Student Portal",
           style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all(
-                Theme.of(context).textTheme.button,
+                getDynamicTextStyle(
+                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
               side: MaterialStateProperty.all<BorderSide>(
                   const BorderSide(color: Colors.transparent)),
@@ -199,18 +199,18 @@ chooseCorrectAppbar({
         title: Text(
           "Original VTOP",
           style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all(
-                Theme.of(context).textTheme.button,
+                getDynamicTextStyle(
+                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
               side: MaterialStateProperty.all<BorderSide>(
                   const BorderSide(color: Colors.transparent)),

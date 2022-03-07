@@ -564,7 +564,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             });
           },
           dialogTitle: Text(
-            'Session ended',
+            dialogTitle,
             style: TextStyle(
               fontSize: widgetSizeProvider(
                   fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
@@ -588,7 +588,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 ),
               ),
               Text(
-                'Starting new session\nplease wait...',
+                dialogChildrenText,
                 style: TextStyle(
                   fontSize: widgetSizeProvider(
                       fixedSize: 20,

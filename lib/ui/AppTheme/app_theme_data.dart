@@ -15,32 +15,34 @@ class AppThemeData {
 
   static ThemeData themeData(ColorScheme colorScheme, Color focusColor) {
     return ThemeData(
-        colorScheme: colorScheme,
-        textTheme: _textTheme,
-        // Matches manifest.json colors and background color.
-        primaryColor: colorScheme.primary,
-        appBarTheme: AppBarTheme(
-          backgroundColor: colorScheme.background,
-          elevation: 0,
-          iconTheme: IconThemeData(color: colorScheme.primary),
-        ),
-        tabBarTheme: TabBarTheme(
-          labelColor: colorScheme.primary,
-        ),
+      colorScheme: colorScheme,
+      textTheme: _textTheme,
+      // Matches manifest.json colors and background color.
+      primaryColor: colorScheme.primary,
+      appBarTheme: AppBarTheme(
+        backgroundColor: colorScheme.background,
+        elevation: 0,
         iconTheme: IconThemeData(color: colorScheme.primary),
-        canvasColor: colorScheme.background,
-        scaffoldBackgroundColor: colorScheme.background,
-        highlightColor: Colors.transparent,
-        focusColor: focusColor,
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Color.alphaBlend(
-            _lightFillColor.withOpacity(0.80),
-            _darkFillColor,
-          ),
-          contentTextStyle: _textTheme.subtitle1!.apply(color: _darkFillColor),
+        titleTextStyle: _textTheme.headline6!.apply(color: colorScheme.primary),
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: colorScheme.primary,
+      ),
+      iconTheme: IconThemeData(color: colorScheme.primary),
+      canvasColor: colorScheme.background,
+      scaffoldBackgroundColor: colorScheme.background,
+      highlightColor: Colors.transparent,
+      focusColor: focusColor,
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Color.alphaBlend(
+          _lightFillColor.withOpacity(0.80),
+          _darkFillColor,
         ),
-        backgroundColor: colorScheme.background);
+        contentTextStyle: _textTheme.subtitle1!.apply(color: _darkFillColor),
+      ),
+      backgroundColor: colorScheme.background,
+    );
   }
 
   static const _light = FontWeight.w300;

@@ -406,18 +406,18 @@ class _TimeTableState extends State<TimeTable> {
         title: Text(
           "Tables",
           style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all(
-                Theme.of(context).textTheme.button,
+                getDynamicTextStyle(
+                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
               side: MaterialStateProperty.all<BorderSide>(
                   const BorderSide(color: Colors.transparent)),
