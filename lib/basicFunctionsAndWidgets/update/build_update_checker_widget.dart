@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/package_info_calc.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/stop_pop.dart';
 import 'package:flutter/material.dart';
@@ -83,19 +84,22 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
       currentVersion = Version.parse(
           PackageInfoCalc.version! + "+" + PackageInfoCalc.buildNumber!);
       UpdateCheckRequester().makeGetRequest(context).whenComplete(() {
-        latestVersion = UpdateCheckRequester.latestVersion;
-        releaseDescription = UpdateCheckRequester.releaseDescription;
-        releaseDownloadUrl = UpdateCheckRequester.releaseDownloadUrl;
-        releaseFileName = UpdateCheckRequester.releaseFileName;
-        downloadSavePath();
+        if (UpdateCheckRequester.latestVersion != null) {
+          latestVersion =
+              Version.parse("${UpdateCheckRequester.latestVersion}");
+          releaseDescription = UpdateCheckRequester.releaseDescription;
+          releaseDownloadUrl = UpdateCheckRequester.releaseDownloadUrl;
+          releaseFileName = UpdateCheckRequester.releaseFileName;
+          downloadSavePath();
 
-        if (autoCheckUpdateRan == false && shouldAutoCheckUpdateRun == true) {
-          debugPrint("autoCheckUpdateRan");
-          currentVersion != null
-              ? WidgetsBinding.instance
-                  ?.addPostFrameCallback((_) => updateAction())
-              : null;
-          autoCheckUpdateRan = true;
+          if (autoCheckUpdateRan == false && shouldAutoCheckUpdateRun == true) {
+            debugPrint("autoCheckUpdateRan");
+            currentVersion != null
+                ? WidgetsBinding.instance
+                    ?.addPostFrameCallback((_) => updateAction())
+                : null;
+            autoCheckUpdateRan = true;
+          }
         }
       });
     });
@@ -759,6 +763,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
   }
 
   Future updateAction() async {
+    print("releaseDescription: $releaseDescription");
     installPackagesPermissionPermanentlyDenied =
         false; //for disabling permission check
     if (installPackagesPermissionPermanentlyDenied ==
@@ -824,31 +829,99 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomBox(
-                        settingsType: 'Description',
+                        settingsType: 'Update description',
                         screenBasedPixelWidth: _screenBasedPixelWidth,
                         screenBasedPixelHeight: _screenBasedPixelHeight,
                         settingsBoxChildren: [
                           SizedBox(
-                            height: 80,
+                            height: 60,
                             child: SingleChildScrollView(
                               child: Row(
                                 children: [
-                                  Text(
-                                    releaseDescription!,
-                                    style: getDynamicTextStyle(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1
-                                            ?.copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface
-                                                    .withOpacity(0.60)),
-                                        sizeDecidingVariable:
-                                            _screenBasedPixelWidth),
+                                  Flexible(
+                                    child: Markdown(
+                                      padding: const EdgeInsets.all(0),
+                                      styleSheet: MarkdownStyleSheet(
+                                        h3: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: widgetSizeProvider(
+                                              fixedSize: 16,
+                                              sizeDecidingVariable:
+                                                  _screenBasedPixelWidth),
+                                        ),
+                                        p: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: widgetSizeProvider(
+                                              fixedSize: 14,
+                                              sizeDecidingVariable:
+                                                  _screenBasedPixelWidth),
+                                        ),
+                                      ),
+                                      shrinkWrap: true,
+                                      // controller: controller,
+                                      selectable: false,
+                                      data: releaseDescription! == ""
+                                          ? "No description 🦥"
+                                          : releaseDescription!,
+                                    ),
+                                    // Text(
+                                    //   releaseDescription!,
+                                    //   style: getDynamicTextStyle(
+                                    //       textStyle: Theme.of(context)
+                                    //           .textTheme
+                                    //           .bodyText1
+                                    //           ?.copyWith(
+                                    //               color: Theme.of(context)
+                                    //                   .colorScheme
+                                    //                   .onSurface
+                                    //                   .withOpacity(0.60)),
+                                    //       sizeDecidingVariable:
+                                    //           _screenBasedPixelWidth),
+                                    // ),
                                   ),
                                 ],
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      CustomBox(
+                        settingsType: 'Update version',
+                        screenBasedPixelWidth: _screenBasedPixelWidth,
+                        screenBasedPixelHeight: _screenBasedPixelHeight,
+                        settingsBoxChildren: [
+                          SingleChildScrollView(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Markdown(
+                                    padding: const EdgeInsets.all(0),
+                                    styleSheet: MarkdownStyleSheet(
+                                      h3: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 16,
+                                            sizeDecidingVariable:
+                                                _screenBasedPixelWidth),
+                                      ),
+                                      p: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: widgetSizeProvider(
+                                            fixedSize: 14,
+                                            sizeDecidingVariable:
+                                                _screenBasedPixelWidth),
+                                      ),
+                                    ),
+                                    shrinkWrap: true,
+                                    // controller: controller,
+                                    selectable: false,
+                                    data: UpdateCheckRequester.latestVersion ==
+                                            null
+                                        ? "No version tag 🦥"
+                                        : "v${UpdateCheckRequester.latestVersion}",
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -912,6 +985,15 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                   context: context,
                 ));
             }
+          } else {
+            debugPrint("No information available about latest version");
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(customSnackBar(
+                snackBarText: "Sorry no info available about update.",
+                screenBasedPixelWidth: _screenBasedPixelWidth,
+                context: context,
+              ));
           }
           return null;
         } else if (statusOfInstallPackagesPermission ==
@@ -1099,26 +1181,33 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Check Update",
-                style: getDynamicTextStyle(
-                    textStyle: Theme.of(context).textTheme.bodyText1,
-                    sizeDecidingVariable: _screenBasedPixelWidth),
+              Flexible(
+                flex: 1,
+                child: Text(
+                  "Check Update",
+                  overflow: TextOverflow.ellipsis,
+                  style: getDynamicTextStyle(
+                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      sizeDecidingVariable: _screenBasedPixelWidth),
+                ),
               ),
-              SizedBox(
-                width: widgetSizeProvider(
-                    fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-              ),
-              CustomElevatedButton(
-                onPressed: currentVersion != null ? updateAction : null,
-                screenBasedPixelWidth: _screenBasedPixelWidth,
-                screenBasedPixelHeight: _screenBasedPixelHeight,
-                size: const Size(70, 50),
-                borderRadius: 20,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: const Text(
-                  'Update',
+              // SizedBox(
+              //   width: widgetSizeProvider(
+              //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
+              // ),
+              Flexible(
+                flex: 1,
+                child: CustomElevatedButton(
+                  onPressed: currentVersion != null ? updateAction : null,
+                  screenBasedPixelWidth: _screenBasedPixelWidth,
+                  screenBasedPixelHeight: _screenBasedPixelHeight,
+                  size: const Size(70, 50),
+                  borderRadius: 20,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: const Text(
+                    'Update',
+                  ),
                 ),
               ),
             ],

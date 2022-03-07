@@ -63,6 +63,18 @@ class AppThemeData {
   // textAppearanceButton	Medium all caps 14sp
   // textAppearanceOverline	Regular all caps 10sp
 
+//       {
+//   FontWeight.w100: 'Thin',
+//   FontWeight.w200: 'ExtraLight',
+//   FontWeight.w300: 'Light',
+//   FontWeight.w400: 'Regular',
+//   FontWeight.w500: 'Medium',
+//   FontWeight.w600: 'SemiBold',
+//   FontWeight.w700: 'Bold',
+//   FontWeight.w800: 'ExtraBold',
+//   FontWeight.w900: 'Black',
+// }
+
   static final TextTheme _textTheme = TextTheme(
     headline1: GoogleFonts.montserrat(
       fontWeight: _light,

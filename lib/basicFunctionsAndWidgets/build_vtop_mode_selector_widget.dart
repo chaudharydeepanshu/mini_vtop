@@ -47,108 +47,116 @@ class _BuildVtopModeSelectorState extends State<BuildVtopModeSelector> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          "VTOP Mode",
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.bodyText1,
-              sizeDecidingVariable: _screenBasedPixelWidth),
-        ),
-        SizedBox(
-          width: widgetSizeProvider(
-              fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(
-                widgetSizeProvider(
-                    fixedSize: 10,
-                    sizeDecidingVariable: _screenBasedPixelWidth),
-              ),
-              topRight: Radius.circular(
-                widgetSizeProvider(
-                    fixedSize: 10,
-                    sizeDecidingVariable: _screenBasedPixelWidth),
-              ),
-            ),
+        Flexible(
+          flex: 1,
+          child: Text(
+            "VTOP Mode",
+            overflow: TextOverflow.ellipsis,
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.bodyText1,
+                sizeDecidingVariable: _screenBasedPixelWidth),
           ),
-          child: DropdownButton<String>(
-            // itemHeight: kMinInteractiveDimension,
-            dropdownColor: Theme.of(context).colorScheme.primaryContainer,
-            value: _dropdownValue,
-            // isExpanded: true,
-            icon: Icon(
-              Icons.arrow_downward,
-              size: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: _screenBasedPixelWidth),
-              color: Theme.of(context).colorScheme.onPrimary,
-              // color: Colors.white,
+        ),
+        // SizedBox(
+        //   width: widgetSizeProvider(
+        //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
+        // ),
+        Flexible(
+          flex: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(
+                  widgetSizeProvider(
+                      fixedSize: 10,
+                      sizeDecidingVariable: _screenBasedPixelWidth),
+                ),
+                topRight: Radius.circular(
+                  widgetSizeProvider(
+                      fixedSize: 10,
+                      sizeDecidingVariable: _screenBasedPixelWidth),
+                ),
+              ),
             ),
-            elevation: 16,
-            // style: const TextStyle(color: Colors.deepPurple),
-            underline: Container(
-              height: widgetSizeProvider(
-                  fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
-              // color: Colors.deepPurpleAccent,
-            ),
-            onChanged: (String? newValue) {
-              widget.onDropDownChanged.call(newValue);
-            },
-            items: _semesters.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Container(
-                  // height: value == _dropdownValue
-                  //     ? kMinInteractiveDimension
-                  //     : null,
-                  // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
-                  decoration: BoxDecoration(
-                    color: value == _dropdownValue
-                        ? Theme.of(context).colorScheme.primary
-                        : null,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(
-                        widgetSizeProvider(
-                            fixedSize: 10,
-                            sizeDecidingVariable: _screenBasedPixelWidth),
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(
+            child: DropdownButton<String>(
+              // itemHeight: kMinInteractiveDimension,
+              dropdownColor: Theme.of(context).colorScheme.primaryContainer,
+              value: _dropdownValue,
+              isExpanded: true,
+              icon: Icon(
+                Icons.arrow_downward,
+                size: widgetSizeProvider(
+                    fixedSize: 24,
+                    sizeDecidingVariable: _screenBasedPixelWidth),
+                color: Theme.of(context).colorScheme.onPrimary,
+                // color: Colors.white,
+              ),
+              elevation: 16,
+              // style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: widgetSizeProvider(
+                    fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
+                // color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String? newValue) {
+                widget.onDropDownChanged.call(newValue);
+              },
+              items: _semesters.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Container(
+                    // height: value == _dropdownValue
+                    //     ? kMinInteractiveDimension
+                    //     : null,
+                    // color: value["semesterCode"] == dropdownValue ? const Color(0xff04294f) : null,
+                    decoration: BoxDecoration(
+                      color: value == _dropdownValue
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(
                           widgetSizeProvider(
-                              fixedSize: 8,
+                              fixedSize: 10,
                               sizeDecidingVariable: _screenBasedPixelWidth),
                         ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            value,
-                            style: getDynamicTextStyle(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .button
-                                    ?.copyWith(
-                                      color: value == _dropdownValue
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryContainer,
-                                    ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(
+                            widgetSizeProvider(
+                                fixedSize: 8,
                                 sizeDecidingVariable: _screenBasedPixelWidth),
                           ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              value,
+                              style: getDynamicTextStyle(
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .button
+                                      ?.copyWith(
+                                        color: value == _dropdownValue
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer,
+                                      ),
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ],

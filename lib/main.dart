@@ -1,4 +1,5 @@
-//todo: use local google fonts
+//todo: decrease animation size
+//todo: use predefined themes for text everywhere
 //todo: add overflow ellipses property to texts
 //todo: fix text field helper text size on smaller devices
 //todo: fix widget popping on refreshing captcha after session end
@@ -69,6 +70,12 @@ class TestClass {
 // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
 Future main() async {
+  LicenseRegistry.addLicense(() async* {
+    final license =
+        await rootBundle.loadString('assets/google_fonts/montserrat/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+
   WidgetsFlutterBinding.ensureInitialized();
   int? retrieveSavedThemeModeIndex = await retrieveSavedThemeMode();
   final ThemeMode savedThemeMode = retrieveSavedThemeModeIndex == 0
@@ -859,12 +866,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     _saveSessionDateTime();
                     debugPrint(
                         'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
-                    declareManageUserSessionConstants(
-                        onCurrentFullUrl: (String value) {
-                          currentFullUrl = value;
-                        },
-                        headlessWebView: headlessWebView,
-                        context: context);
+                    // declareManageUserSessionConstants(
+                    //     onCurrentFullUrl: (String value) {
+                    //       currentFullUrl = value;
+                    //     },
+                    //     headlessWebView: headlessWebView,
+                    //     context: context);
                     manageUserSession(
                       context: context,
                       headlessWebView: headlessWebView,
@@ -872,6 +879,33 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         setState(() {
                           currentFullUrl = value;
                         });
+                      },
+                      onProcessingSomething: (bool value) {
+                        setState(() {
+                          processingSomething = value;
+                        });
+                      },
+                      onRequestType: (String value) {
+                        setState(() {
+                          requestType = value;
+                        });
+                      },
+                      onError: (String value) {
+                        debugPrint("Updating Ui based on the error received");
+                        if (processingSomething == true) {
+                          Navigator.of(context).pop();
+                          processingSomething = false;
+                        }
+                        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                          debugPrint(
+                              "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                          setState(() {
+                            currentStatus = "launchLoadingScreen";
+                            vtopConnectionStatusErrorType =
+                                "net::ERR_INTERNET_DISCONNECTED";
+                            vtopConnectionStatusType = "Error";
+                          });
+                        }
                       },
                     );
                     openStudentProfileAllView(forXAction: 'New login');
@@ -1071,12 +1105,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
-              declareManageUserSessionConstants(
-                  onCurrentFullUrl: (String value) {
-                    currentFullUrl = value;
-                  },
-                  headlessWebView: headlessWebView,
-                  context: context);
+              // declareManageUserSessionConstants(
+              //     onCurrentFullUrl: (String value) {
+              //       currentFullUrl = value;
+              //     },
+              //     headlessWebView: headlessWebView,
+              //     context: context);
               manageUserSession(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -1084,6 +1118,33 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     currentFullUrl = value;
                   });
+                },
+                onProcessingSomething: (bool value) {
+                  setState(() {
+                    processingSomething = value;
+                  });
+                },
+                onRequestType: (String value) {
+                  setState(() {
+                    requestType = value;
+                  });
+                },
+                onError: (String value) {
+                  debugPrint("Updating Ui based on the error received");
+                  if (processingSomething == true) {
+                    Navigator.of(context).pop();
+                    processingSomething = false;
+                  }
+                  if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                    debugPrint(
+                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                    setState(() {
+                      currentStatus = "launchLoadingScreen";
+                      vtopConnectionStatusErrorType =
+                          "net::ERR_INTERNET_DISCONNECTED";
+                      vtopConnectionStatusType = "Error";
+                    });
+                  }
                 },
               );
               setState(() {

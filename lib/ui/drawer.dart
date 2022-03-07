@@ -448,7 +448,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
                           // Then close the drawer
                           Navigator.pop(context);
-
+                          widget.onShowStudentProfileAllView?.call(true);
                           Navigator.pushNamed(
                             context,
                             PageRoutes.settings,

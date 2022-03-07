@@ -1335,7 +1335,7 @@ class _LoginSectionState extends State<LoginSection> {
       // maxLength: 20,
       decoration: InputDecoration(
         filled: true,
-        // fillColor: Color(0xff04294f),
+        // fillColor: Color(0x0DFFFFFF),
         // icon: const Icon(Icons.favorite),
         labelText: labelText,
         labelStyle: getDynamicTextStyle(
@@ -1344,7 +1344,13 @@ class _LoginSectionState extends State<LoginSection> {
                       height: 1.0,
                     ),
             sizeDecidingVariable: screenBasedPixelWidth),
-
+        disabledBorder: enabled!
+            ? null
+            : UnderlineInputBorder(
+                borderSide:
+                    const BorderSide(color: Colors.transparent, width: 2.0),
+                borderRadius: BorderRadius.circular(0),
+              ),
         isDense: true,
         contentPadding: EdgeInsets.symmetric(
           vertical: widgetSizeProvider(
