@@ -763,6 +763,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
   }
 
   Future updateAction() async {
+    ScrollController? controller = ScrollController();
     print("releaseDescription: $releaseDescription");
     installPackagesPermissionPermanentlyDenied =
         false; //for disabling permission check
@@ -858,7 +859,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                                         ),
                                       ),
                                       shrinkWrap: true,
-                                      // controller: controller,
+                                      controller: controller,
                                       selectable: false,
                                       data: releaseDescription! == ""
                                           ? "No description 🦥"
@@ -913,7 +914,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                                       ),
                                     ),
                                     shrinkWrap: true,
-                                    // controller: controller,
+                                    controller: controller,
                                     selectable: false,
                                     data: UpdateCheckRequester.latestVersion ==
                                             null
