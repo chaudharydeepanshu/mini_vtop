@@ -205,7 +205,7 @@ packages:
       name: flutter_native_splash
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.1.0"
   flutter_svg:
     dependency: transitive
     description:
