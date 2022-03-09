@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 
@@ -8,7 +10,7 @@ class CustomElevatedButton extends StatefulWidget {
     required this.child,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
-    required this.size,
+    this.size,
     required this.borderRadius,
     required this.padding,
   }) : super(key: key);
@@ -17,7 +19,7 @@ class CustomElevatedButton extends StatefulWidget {
   final Widget child;
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
-  final Size size;
+  final Size? size;
   final double borderRadius;
   final EdgeInsets padding;
 
@@ -32,52 +34,56 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
       // width: widgetSizeProvider(
       //     fixedSize: widget.size.width + 50,
       //     sizeDecidingVariable: widget.screenBasedPixelWidth),
-      height: widgetSizeProvider(
-          fixedSize: widget.size.height,
-          sizeDecidingVariable: widget.screenBasedPixelWidth),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        alignment: Alignment.center,
-        child: ElevatedButton(
-          style: ButtonStyle(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            minimumSize: MaterialStateProperty.all<Size?>(
-              Size(
-                widgetSizeProvider(
-                    fixedSize: widget.size.width,
-                    sizeDecidingVariable: widget.screenBasedPixelWidth),
-                widgetSizeProvider(
-                    fixedSize: widget.size.height,
-                    sizeDecidingVariable: widget.screenBasedPixelHeight),
-              ),
-            ),
-            // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
-            padding: MaterialStateProperty.all(EdgeInsets.symmetric(
-              vertical: widgetSizeProvider(
-                  fixedSize: widget.padding.vertical,
-                  sizeDecidingVariable: widget.screenBasedPixelWidth),
-              horizontal: widgetSizeProvider(
-                  fixedSize: widget.padding.horizontal,
-                  sizeDecidingVariable: widget.screenBasedPixelWidth),
-            )),
-            textStyle: MaterialStateProperty.all(
-              getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.button,
-                  sizeDecidingVariable: widget.screenBasedPixelWidth),
-            ),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius
-                    // widgetSizeProvider(
-                    //     fixedSize: 20,
-                    //     sizeDecidingVariable: widget.screenBasedPixelWidth),
-                    ),
-              ),
+      height: widget.size != null
+          ? widgetSizeProvider(
+              fixedSize: (widget.size?.height)!,
+              sizeDecidingVariable: widget.screenBasedPixelWidth)
+          : null,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          minimumSize: MaterialStateProperty.all<Size?>(
+            widget.size != null
+                ? Size(
+                    widgetSizeProvider(
+                        fixedSize: (widget.size?.height)!,
+                        sizeDecidingVariable: widget.screenBasedPixelWidth),
+                    widgetSizeProvider(
+                        fixedSize: (widget.size?.height)!,
+                        sizeDecidingVariable: widget.screenBasedPixelHeight),
+                  )
+                : Size.fromHeight(
+                    widgetSizeProvider(
+                        fixedSize: 56,
+                        sizeDecidingVariable: widget.screenBasedPixelHeight),
+                  ),
+          ),
+          // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
+          padding: MaterialStateProperty.all(EdgeInsets.symmetric(
+            vertical: widgetSizeProvider(
+                fixedSize: widget.padding.vertical,
+                sizeDecidingVariable: widget.screenBasedPixelWidth),
+            horizontal: widgetSizeProvider(
+                fixedSize: widget.padding.horizontal,
+                sizeDecidingVariable: widget.screenBasedPixelWidth),
+          )),
+          textStyle: MaterialStateProperty.all(
+            getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.button,
+                sizeDecidingVariable: widget.screenBasedPixelWidth),
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(widget.borderRadius
+                  // widgetSizeProvider(
+                  //     fixedSize: 20,
+                  //     sizeDecidingVariable: widget.screenBasedPixelWidth),
+                  ),
             ),
           ),
-          onPressed: widget.onPressed,
-          child: widget.child,
         ),
+        onPressed: widget.onPressed,
+        child: widget.child,
       ),
     );
   }

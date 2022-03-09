@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mini_vtop/basicFunctionsAndWidgets/custom_elevated_button.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
 import 'package:mini_vtop/ui/settings.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -245,46 +246,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         fixedSize: 8,
                         sizeDecidingVariable: screenBasedPixelHeight),
                   ),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: MaterialStateProperty.all<Size?>(
-                        Size.fromHeight(
-                          widgetSizeProvider(
-                              fixedSize: 56,
-                              sizeDecidingVariable: screenBasedPixelHeight),
-                        ),
-                      ),
-                      // maximumSize: MaterialStateProperty.all<Size?>(
-                      //   const Size.fromHeight(56),
-                      // ),
-                      // backgroundColor:
-                      //     MaterialStateProperty.all(const Color(0xff04294f)),
-                      padding: MaterialStateProperty.all(
-                        EdgeInsets.only(
-                          left: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                          right: widgetSizeProvider(
-                              fixedSize: 20,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      textStyle: MaterialStateProperty.all(
-                        getDynamicTextStyle(
-                            sizeDecidingVariable: screenBasedPixelWidth,
-                            textStyle: Theme.of(context).textTheme.button),
-                      ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            widgetSizeProvider(
-                                fixedSize: screenBasedPixelWidth,
-                                sizeDecidingVariable: 0),
-                          ),
-                        ),
-                      ),
-                    ),
+                  child: CustomElevatedButton(
                     onPressed: () {
                       // toggling the theme mode in this sequence system -> light -> dark
                       if (widget.themeMode == ThemeMode.light) {
@@ -305,6 +267,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         ),
                       ],
                     ),
+                    screenBasedPixelWidth: screenBasedPixelWidth,
+                    screenBasedPixelHeight: screenBasedPixelHeight,
+                    borderRadius: 0,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                   ),
                 ),
                 Column(
@@ -317,50 +284,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   fixedSize: 8,
                                   sizeDecidingVariable: screenBasedPixelWidth),
                             ),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all<Size?>(
-                                  Size.fromHeight(
-                                    widgetSizeProvider(
-                                        fixedSize: 56,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelHeight),
-                                  ),
-                                ),
-                                // backgroundColor: MaterialStateProperty.all(
-                                //     const Color(0xff04294f)),
-                                padding: MaterialStateProperty.all(
-                                  EdgeInsets.only(
-                                    left: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                    right: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
-                                ),
-                                textStyle: MaterialStateProperty.all(
-                                  getDynamicTextStyle(
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth,
-                                      textStyle:
-                                          Theme.of(context).textTheme.button),
-                                ),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      widgetSizeProvider(
-                                          fixedSize: 0,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            child: CustomElevatedButton(
                               onPressed: () {
                                 // Update the state of the app
                                 if (vtopCurrentStatusText == "Mini VTOP") {
@@ -393,6 +317,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   ),
                                 ],
                               ),
+                              screenBasedPixelWidth: screenBasedPixelWidth,
+                              screenBasedPixelHeight: screenBasedPixelHeight,
+                              borderRadius: 0,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 10),
                             ),
                           )
                         : const SizedBox(),
@@ -402,45 +331,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             fixedSize: 8,
                             sizeDecidingVariable: screenBasedPixelWidth),
                       ),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          minimumSize: MaterialStateProperty.all<Size?>(
-                            Size.fromHeight(
-                              widgetSizeProvider(
-                                  fixedSize: 56,
-                                  sizeDecidingVariable: screenBasedPixelHeight),
-                            ),
-                          ),
-                          // backgroundColor: MaterialStateProperty.all(
-                          //     const Color(0xff04294f)),
-                          padding: MaterialStateProperty.all(
-                            EdgeInsets.only(
-                              left: widgetSizeProvider(
-                                  fixedSize: 20,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                              right: widgetSizeProvider(
-                                  fixedSize: 20,
-                                  sizeDecidingVariable: screenBasedPixelWidth),
-                            ),
-                          ),
-                          textStyle: MaterialStateProperty.all(
-                            getDynamicTextStyle(
-                                sizeDecidingVariable: screenBasedPixelWidth,
-                                textStyle: Theme.of(context).textTheme.button),
-                          ),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                widgetSizeProvider(
-                                    fixedSize: 0,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                              ),
-                            ),
-                          ),
-                        ),
+                      child: CustomElevatedButton(
                         onPressed: () {
                           // Update the state of the app
                           // making a fake call to StudentProfileAllView so that
@@ -488,6 +379,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             ),
                           ],
                         ),
+                        screenBasedPixelWidth: screenBasedPixelWidth,
+                        screenBasedPixelHeight: screenBasedPixelHeight,
+                        borderRadius: 0,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 10),
                       ),
                     ),
                     (_currentStatus != "signInScreen" &&
@@ -498,50 +394,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   fixedSize: 8,
                                   sizeDecidingVariable: screenBasedPixelWidth),
                             ),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all<Size?>(
-                                  Size.fromHeight(
-                                    widgetSizeProvider(
-                                        fixedSize: 56,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelHeight),
-                                  ),
-                                ),
-                                // backgroundColor: MaterialStateProperty.all(
-                                //     const Color(0xff04294f)),
-                                padding: MaterialStateProperty.all(
-                                  EdgeInsets.only(
-                                    left: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                    right: widgetSizeProvider(
-                                        fixedSize: 20,
-                                        sizeDecidingVariable:
-                                            screenBasedPixelWidth),
-                                  ),
-                                ),
-                                textStyle: MaterialStateProperty.all(
-                                  getDynamicTextStyle(
-                                      sizeDecidingVariable:
-                                          screenBasedPixelWidth,
-                                      textStyle:
-                                          Theme.of(context).textTheme.button),
-                                ),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      widgetSizeProvider(
-                                          fixedSize: 0,
-                                          sizeDecidingVariable:
-                                              screenBasedPixelWidth),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            child: CustomElevatedButton(
                               onPressed: () {
                                 widget.onTryAutoLoginStatus?.call(false);
                                 performSignOut(
@@ -633,6 +486,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   ),
                                 ],
                               ),
+                              screenBasedPixelWidth: screenBasedPixelWidth,
+                              screenBasedPixelHeight: screenBasedPixelHeight,
+                              borderRadius: 0,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 10),
                             ),
                           )
                         : const SizedBox(),
@@ -641,66 +499,61 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ],
             ),
           ),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: widgetSizeProvider(
-                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-                right: widgetSizeProvider(
-                    fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              child: Column(
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      text: 'Privacy Policy',
-                      style: getDynamicTextStyle(
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                          sizeDecidingVariable: screenBasedPixelWidth),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          leavingAppDialogBox(
-                              actionButtonsList:
-                                  dialogActionButtonsListForLeavingApp,
-                              text: dialogTextForForLeavingApp,
-                              context: context);
-                        },
-                    ),
-                  ),
-                  packageInfo != null
-                      ? Padding(
-                          padding: EdgeInsets.only(
-                            bottom: widgetSizeProvider(
-                                fixedSize: 8,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                            top: widgetSizeProvider(
-                                fixedSize: 8,
-                                sizeDecidingVariable: screenBasedPixelWidth),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "App Version - $version+$buildNumber",
-                                style: getDynamicTextStyle(
-                                    textStyle:
-                                        Theme.of(context).textTheme.bodyText2,
-                                    sizeDecidingVariable:
-                                        screenBasedPixelWidth),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Container(),
-                ],
-              ),
+          Padding(
+            padding: EdgeInsets.only(
+              left: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+              right: widgetSizeProvider(
+                  fixedSize: 8, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+            child: Column(
+              children: [
+                // RichText(
+                //   text: TextSpan(
+                //     text: 'Privacy Policy',
+                //     style: getDynamicTextStyle(
+                //         textStyle: Theme.of(context)
+                //             .textTheme
+                //             .bodyText1
+                //             ?.copyWith(
+                //               color: Theme.of(context).colorScheme.secondary,
+                //             ),
+                //         sizeDecidingVariable: screenBasedPixelWidth),
+                //     recognizer: TapGestureRecognizer()
+                //       ..onTap = () {
+                //         leavingAppDialogBox(
+                //             actionButtonsList:
+                //                 dialogActionButtonsListForLeavingApp,
+                //             text: dialogTextForForLeavingApp,
+                //             context: context);
+                //       },
+                //   ),
+                // ),
+                packageInfo != null
+                    ? Padding(
+                        padding: EdgeInsets.only(
+                          bottom: widgetSizeProvider(
+                              fixedSize: 8,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                          top: widgetSizeProvider(
+                              fixedSize: 8,
+                              sizeDecidingVariable: screenBasedPixelWidth),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "App Version - $version+$buildNumber",
+                              style: getDynamicTextStyle(
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodyText2,
+                                  sizeDecidingVariable: screenBasedPixelWidth),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(),
+              ],
             ),
           ),
         ],

@@ -1,6 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:mini_vtop/basicFunctionsAndWidgets/build_credit_row.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctionsAndWidgets/build_semester_selector_widget.dart';
+import '../basicFunctionsAndWidgets/custom_elevated_button.dart';
+import '../basicFunctionsAndWidgets/dailog_box_for_leaving_app.dart';
+import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import '../basicFunctionsAndWidgets/build_vtop_mode_selector_widget.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
@@ -19,11 +25,61 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
+enum CreditsProperties { creditFor, creditToText, creditUrl }
+
 class _SettingsState extends State<Settings> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+
+  String dialogTextForForLeavingApp =
+      'Do you want to leave the app to open the url?';
+  List<Widget> dialogActionButtonsListForLeavingApp(
+      {required String launchUrl, required BuildContext context}) {
+    return [
+      CustomTextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        size: const Size(20, 50),
+        borderRadius: 20,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: const Text(
+          'No',
+        ),
+      ),
+      CustomTextButton(
+        onPressed: () {
+          Navigator.pop(context);
+          launch(launchUrl);
+        },
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        size: const Size(20, 50),
+        borderRadius: 20,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: const Text(
+          'Yes',
+        ),
+      ),
+    ];
+  }
+
+  List<Map<CreditsProperties, String>> creditsMapList = [
+    {
+      CreditsProperties.creditFor: "Animations",
+      CreditsProperties.creditToText: "Icons8",
+      CreditsProperties.creditUrl: "https://icons8.com",
+    },
+    {
+      CreditsProperties.creditFor: "Auto Captcha",
+      CreditsProperties.creditToText: "Priyansh Jain",
+      CreditsProperties.creditUrl: "https://github.com/Presto412",
+    },
+  ];
 
   @override
   void initState() {
@@ -209,6 +265,31 @@ class _SettingsState extends State<Settings> {
                                     shouldAutoCheckUpdateRun: false,
                                   ),
                                 ],
+                              ),
+                              CustomBox(
+                                settingsType: 'Credits & Special Thanks',
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                settingsBoxChildren: List<Widget>.generate(
+                                    creditsMapList.length,
+                                    (int index) => BuildCreditRow(
+                                          screenBasedPixelWidth:
+                                              screenBasedPixelWidth,
+                                          screenBasedPixelHeight:
+                                              screenBasedPixelHeight,
+                                          onProcessingSomething: (bool value) {
+                                            widget
+                                                .arguments.onProcessingSomething
+                                                .call(value);
+                                          },
+                                          creditFor: (creditsMapList[index]
+                                              [CreditsProperties.creditFor])!,
+                                          creditToText: (creditsMapList[index][
+                                              CreditsProperties.creditToText])!,
+                                          creditUrl: (creditsMapList[index]
+                                              [CreditsProperties.creditUrl])!,
+                                        ),
+                                    growable: true),
                               ),
                             ],
                           ),

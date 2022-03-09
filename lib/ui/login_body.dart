@@ -949,7 +949,7 @@ class _LoginSectionState extends State<LoginSection> {
                                             size: const Size(45, 45),
                                             borderRadius: 1000,
                                             padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 8),
+                                                vertical: 0, horizontal: 0),
                                           ),
                                         ),
                                       ],
