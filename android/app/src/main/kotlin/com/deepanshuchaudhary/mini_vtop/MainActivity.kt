@@ -1,4 +1,4 @@
-package com.example.mini_vtop
+package com.deepanshuchaudhary.mini_vtop
 // <!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
 import android.app.SearchManager
 import android.content.Intent
