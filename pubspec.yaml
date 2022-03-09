@@ -108,10 +108,6 @@ flutter:
     - assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Success_transparent_by_Icons8.gif
     - assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8/Flame_Sign_In_transparent_by_Icons8.gif
 
-    #For fonts
-    - assets/google_fonts/montserrat/
-    - assets/google_fonts/oswald/
-
     #<!--↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓-->
     - assets/browserImages/images/google_logo.png
     - assets/browserImages/images/yahoo_logo.png
@@ -163,3 +159,20 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/google_fonts/montserrat/Montserrat-Light.ttf
+          weight: 300
+        - asset: assets/google_fonts/montserrat/Montserrat-Medium.ttf
+          weight: 500
+        - asset: assets/google_fonts/montserrat/Montserrat-Regular.ttf
+          weight: 400
+
+    - family: Oswald
+      fonts:
+        - asset: assets/google_fonts/oswald/Oswald-Medium.ttf
+          weight: 500
+        - asset: assets/google_fonts/oswald/Oswald-Regular.ttf
+          weight: 400

@@ -41,228 +41,93 @@ chooseCorrectAppbar({
     );
   } else if (currentStatus == "launchLoadingScreen") {
     onAppbar.call(
-      AppBar(
-        key: const ValueKey<int>(0),
-        // elevation: 5,
-        centerTitle: true,
-        title: Text(
-          "VIT Bhopal - VTOP",
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-              sizeDecidingVariable: screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
-        // backgroundColor: Theme.of(context).colorScheme.surface,
-        leading: Builder(
-          builder: (context) => OutlinedButton(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all(
-                getDynamicTextStyle(
-                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-                    sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              side: MaterialStateProperty.all<BorderSide>(
-                  const BorderSide(color: Colors.transparent)),
-              shape: MaterialStateProperty.all<StadiumBorder>(
-                  const StadiumBorder()),
-            ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: Icon(
-              Icons.menu,
-              size: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-          ),
-        ),
+      CustomMainScreenAppBar(
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        appBarTitleText: "VIT Bhopal - VTOP",
+        appBarValueKey: const ValueKey<int>(0),
       ),
     );
   } else if (currentStatus == "signInScreen") {
     onAppbar.call(
-      AppBar(
-        key: const ValueKey<int>(1),
-        // elevation: 0,
-        centerTitle: true,
-        title: Text(
-          "Student Sign-In",
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-              sizeDecidingVariable: screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
-        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-
-        leading: Builder(
-          builder: (context) => OutlinedButton(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all(
-                getDynamicTextStyle(
-                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-                    sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              side: MaterialStateProperty.all<BorderSide>(
-                  const BorderSide(color: Colors.transparent)),
-              shape: MaterialStateProperty.all<StadiumBorder>(
-                  const StadiumBorder()),
-            ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: Icon(
-              Icons.menu,
-              size: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-          ),
-        ),
+      CustomMainScreenAppBar(
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        appBarTitleText: "Student Portal",
+        appBarValueKey: const ValueKey<int>(1),
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
     onAppbar.call(
-      AppBar(
-        // toolbarHeight: screenBasedPixelHeight * 56,
-        centerTitle: true,
-        title: Text(
-          "Student Portal",
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-              sizeDecidingVariable: screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
-        // backgroundColor: Theme.of(context).colorScheme.surface,
-        leading: Builder(
-          builder: (context) => OutlinedButton(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all(
-                getDynamicTextStyle(
-                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-                    sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              side: MaterialStateProperty.all<BorderSide>(
-                  const BorderSide(color: Colors.transparent)),
-              shape: MaterialStateProperty.all<StadiumBorder>(
-                  const StadiumBorder()),
-            ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: Icon(
-              Icons.menu,
-              size: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-          ),
-        ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
-        //     child: SizedBox(
-        //       width: 51,
-        //       height: 40,
-        //       child: Material(
-        //         color: Colors.transparent,
-        //         shape: const StadiumBorder(),
-        //         child: Tooltip(
-        //           message: "Logout",
-        //           child: InkWell(
-        //             onTap: () {
-        //               performSignOut(
-        //                   context: context,
-        //                   headlessWebView: headlessWebView,
-        //                   onCurrentFullUrl: (String value) {
-        //                     onCurrentFullUrl.call(value);
-        //                   });
-        //             },
-        //             customBorder: const StadiumBorder(),
-        //             focusColor: Colors.white.withOpacity(0.1),
-        //             highlightColor: Colors.white.withOpacity(0.1),
-        //             splashColor: Colors.white.withOpacity(0.1),
-        //             hoverColor: Colors.white.withOpacity(0.1),
-        //             child: const Icon(
-        //               Icons.logout,
-        //               size: 24,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   )
-        // ],
+      CustomMainScreenAppBar(
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        appBarTitleText: "Student Sign-In",
+        // appBarValueKey: const ValueKey<int>(2),
       ),
     );
   } else if (currentStatus == "originalVTOP") {
     onAppbar.call(
-      AppBar(
-        centerTitle: true,
-        title: Text(
-          "Original VTOP",
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-              sizeDecidingVariable: screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
-        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        leading: Builder(
-          builder: (context) => OutlinedButton(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all(
-                getDynamicTextStyle(
-                    textStyle: Theme.of(context).appBarTheme.titleTextStyle,
-                    sizeDecidingVariable: screenBasedPixelWidth),
-              ),
-              side: MaterialStateProperty.all<BorderSide>(
-                  const BorderSide(color: Colors.transparent)),
-              shape: MaterialStateProperty.all<StadiumBorder>(
-                  const StadiumBorder()),
+      CustomMainScreenAppBar(
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        appBarTitleText: "Original VTOP",
+        // appBarValueKey: const ValueKey<int>(3),
+      ),
+    );
+  }
+}
+
+class CustomMainScreenAppBar extends StatelessWidget {
+  const CustomMainScreenAppBar({
+    Key? key,
+    required this.screenBasedPixelWidth,
+    required this.screenBasedPixelHeight,
+    required this.appBarTitleText,
+    this.appBarValueKey,
+  }) : super(key: key);
+
+  final double screenBasedPixelWidth;
+  final double screenBasedPixelHeight;
+  final String appBarTitleText;
+  final ValueKey? appBarValueKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      key: appBarValueKey,
+      // elevation: 5,
+      centerTitle: true,
+      title: Text(
+        appBarTitleText,
+        style: getDynamicTextStyle(
+            textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+            sizeDecidingVariable: screenBasedPixelWidth),
+        textAlign: TextAlign.center,
+      ),
+      // backgroundColor: Theme.of(context).colorScheme.surface,
+      leading: Builder(
+        builder: (context) => OutlinedButton(
+          style: ButtonStyle(
+            textStyle: MaterialStateProperty.all(
+              getDynamicTextStyle(
+                  textStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                  sizeDecidingVariable: screenBasedPixelWidth),
             ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: Icon(
-              Icons.menu,
-              size: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
+            side: MaterialStateProperty.all<BorderSide>(
+                const BorderSide(color: Colors.transparent)),
+            shape:
+                MaterialStateProperty.all<StadiumBorder>(const StadiumBorder()),
+          ),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+          child: Icon(
+            Icons.menu,
+            size: widgetSizeProvider(
+                fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
           ),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 5, top: 8, bottom: 8),
-        //     child: SizedBox(
-        //       width: 51,
-        //       height: 40,
-        //       child: Material(
-        //         color: Colors.transparent,
-        //         shape: const StadiumBorder(),
-        //         child: Tooltip(
-        //           message: "Logout",
-        //           child: InkWell(
-        //             onTap: () {
-        //               performSignOut(
-        //                   context: context,
-        //                   headlessWebView: headlessWebView,
-        //                   onCurrentFullUrl: (String value) {
-        //                     onCurrentFullUrl.call(value);
-        //                   });
-        //             },
-        //             customBorder: const StadiumBorder(),
-        //             focusColor: Colors.white.withOpacity(0.1),
-        //             highlightColor: Colors.white.withOpacity(0.1),
-        //             splashColor: Colors.white.withOpacity(0.1),
-        //             hoverColor: Colors.white.withOpacity(0.1),
-        //             child: const Icon(
-        //               Icons.logout,
-        //               size: 24,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   )
-        // ],
       ),
     );
   }

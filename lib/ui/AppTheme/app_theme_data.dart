@@ -77,56 +77,69 @@ class AppThemeData {
 //   FontWeight.w900: 'Black',
 // }
 
-  static final TextTheme _textTheme = TextTheme(
-    headline1: GoogleFonts.montserrat(
+  static const TextTheme _textTheme = TextTheme(
+    headline1: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _light,
       fontSize: 96.0,
     ),
-    headline2: GoogleFonts.montserrat(
+    headline2: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _light,
       fontSize: 60.0,
     ),
-    headline3: GoogleFonts.montserrat(
+    headline3: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 48.0,
     ),
-    headline4: GoogleFonts.montserrat(
+    headline4: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 34.0,
     ),
-    headline5: GoogleFonts.montserrat(
+    headline5: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 24.0,
     ),
-    headline6: GoogleFonts.oswald(
+    headline6: TextStyle(
+      fontFamily: 'Oswald',
       fontWeight: _medium,
       fontSize: 20.0,
     ),
-    subtitle1: GoogleFonts.montserrat(
+    subtitle1: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 16.0,
     ),
-    subtitle2: GoogleFonts.montserrat(
+    subtitle2: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _medium,
       fontSize: 14.0,
     ),
-    bodyText1: GoogleFonts.montserrat(
+    bodyText1: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 16.0,
     ),
-    bodyText2: GoogleFonts.montserrat(
+    bodyText2: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 14.0,
     ),
-    caption: GoogleFonts.oswald(
+    caption: TextStyle(
+      fontFamily: 'Oswald',
       fontWeight: _regular,
       fontSize: 12.0,
     ),
-    button: GoogleFonts.montserrat(
+    button: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _medium,
       fontSize: 14.0,
     ),
-    overline: GoogleFonts.montserrat(
+    overline: TextStyle(
+      fontFamily: 'Montserrat',
       fontWeight: _regular,
       fontSize: 10.0,
     ),
