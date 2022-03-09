@@ -1,3 +1,4 @@
+//todo: Clear old apks from app cache at start
 //todo: decrease animation size
 //todo: use predefined themes for text everywhere
 //todo: add overflow ellipses property to texts
@@ -20,10 +21,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:mini_vtop/coreFunctions/call_class_attendance.dart';
 import 'package:mini_vtop/coreFunctions/choose_correct_initial_appbar.dart';
 import 'package:mini_vtop/coreFunctions/manage_user_session.dart';
 import 'package:mini_vtop/sharedPreferences/app_theme_shared_preferences.dart';
 import 'package:mini_vtop/ui/AppTheme/app_theme_data.dart';
+import 'package:mini_vtop/ui/class_attendance.dart';
 import 'package:mini_vtop/ui/settings.dart';
 import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
@@ -193,6 +196,10 @@ class _MyAppState extends State<MyApp> {
                 arguments: ModalRoute.of(context)!.settings.arguments
                     as SettingsArguments,
               ),
+          PageRoutes.classAttendance: (context) => ClassAttendance(
+                arguments: ModalRoute.of(context)!.settings.arguments
+                    as ClassAttendanceArguments,
+              ),
         },
       ),
     );
@@ -343,6 +350,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   dom.Document?
       timeTableDocument; // Used to store and get website processViewTimeTable ajax request html document which holds current selected semester id timetable and subject detail.
+
+  dom.Document?
+      classAttendanceDocument; // Used to store and get website processViewStudentAttendance ajax request html document which holds current selected semester id class attendance detail.
 
   bool tryAutoLoginStatus =
       false; // Used to store and get the status if a user wants to AutoLogin enabled or not.
@@ -1541,71 +1551,251 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     loggedUserStatus = "timeTable";
                   });
-                  // Navigator.pushReplacementNamed(
-                  //   context,
-                  //   PageRoutes.timeTable,
-                  //   arguments: TimeTableArguments(
-                  //     currentStatus: currentStatus,
-                  //     onTimeTableDocumentDispose: (bool value) {
-                  //       debugPrint("timeTable disposed");
-                  //       WidgetsBinding.instance
-                  //           ?.addPostFrameCallback((_) => setState(() {
-                  //                 loggedUserStatus = "studentPortalScreen";
-                  //               }));
-                  //     },
-                  //     timeTableDocument: timeTableDocument,
-                  //     screenBasedPixelHeight: screenBasedPixelHeight,
-                  //     screenBasedPixelWidth: screenBasedPixelWidth,
-                  //     semesterSubId: semesterSubId,
-                  //     onSemesterSubIdChange: (String value) {
-                  //       setState(() {
-                  //         semesterSubId = value;
-                  //         requestType = "Update";
-                  //         callTimeTable(
-                  //           context: context,
-                  //           headlessWebView: headlessWebView,
-                  //           onCurrentFullUrl: (String value) {
-                  //             currentFullUrl = value;
-                  //           },
-                  //           processingSomething: true,
-                  //           onProcessingSomething: (bool value) {
-                  //             processingSomething = true;
-                  //           },
-                  //           onError: (String value) {
-                  //             debugPrint(
-                  //                 "Updating Ui based on the error received");
-                  //             if (processingSomething == true) {
-                  //               Navigator.of(context).pop();
-                  //               setState(() {
-                  //                 processingSomething = false;
-                  //               });
-                  //             }
-                  //             if (value == "net::ERR_INTERNET_DISCONNECTED") {
-                  //               debugPrint(
-                  //                   "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-                  //               setState(() {
-                  //                 currentStatus = "launchLoadingScreen";
-                  //                 vtopConnectionStatusErrorType =
-                  //                     "net::ERR_INTERNET_DISCONNECTED";
-                  //                 vtopConnectionStatusType = "Error";
-                  //               });
-                  //             }
-                  //           },
-                  //         );
-                  //       });
-                  //     },
-                  //     onProcessingSomething: (bool value) {
-                  //       setState(() {
-                  //         processingSomething = value;
-                  //       });
-                  //     },
-                  //   ),
-                  // );
+                } else if (requestType == "Fake") {}
+              });
+            } else if (ajaxRequest.responseText!.contains(
+                    "You are logged out due to inactivity for more than 15 minutes") ||
+                ajaxRequest.responseText!
+                    .contains("You have been successfully logged out")) {
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Session ended',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
+            } else if (ajaxRequest.status != 200) {
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Request Status != 200',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
+            }
+          } else if (ajaxRequest.url.toString() ==
+              "academics/common/StudentAttendance") {
+            // debugPrint("ajaxRequest: $ajaxRequest");
 
-                } else if (requestType == "Fake") {
-                  // semesterSubId = await _justRetrieveSemesterSubId();
+            if (ajaxRequest.status == 200) {
+              bool waitStatus = true;
+              while (waitStatus == true) {
+                await headlessWebView?.webViewController
+                    .evaluateJavascript(
+                        source:
+                            "new XMLSerializer().serializeToString(document);")
+                    .then((value) async {
+                  if (value.contains("Please wait")) {
+                    // waitStatus = true;
+                  } else {
+                    if (requestType == "Real") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    } else if (requestType == "Update") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "$semesterSubId";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    } else if (requestType == "Fake") {
+                      debugPrint("new semesterSubId: $semesterSubId");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    }
+                  }
+                });
+              }
+            } else if (ajaxRequest.responseText!.contains(
+                    "You are logged out due to inactivity for more than 15 minutes") ||
+                ajaxRequest.responseText!
+                    .contains("You have been successfully logged out")) {
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Session ended',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
+            } else if (ajaxRequest.status != 200) {
+              inActivityOrStatusNot200Response(
+                  dialogTitle: 'Request Status != 200',
+                  dialogChildrenText: 'Starting new session\nplease wait...');
+            }
+          } else if (ajaxRequest.url.toString() ==
+              "processViewStudentAttendance") {
+            // debugPrint("ajaxRequest: $ajaxRequest");
 
+            if (ajaxRequest.status == 200) {
+              await headlessWebView?.webViewController
+                  .evaluateJavascript(
+                      source:
+                          "new XMLSerializer().serializeToString(document);")
+                  .then((value) async {
+                var document = parse('$value');
+                setState(() {
+                  classAttendanceDocument = document;
+                });
+                if (processingSomething == true) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    processingSomething = false;
+                  });
                 }
+                if (requestType == "Real") {
+                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  Navigator.pushNamed(
+                    context,
+                    PageRoutes.classAttendance,
+                    arguments: ClassAttendanceArguments(
+                      currentStatus: currentStatus,
+                      onWidgetDispose: (bool value) {
+                        debugPrint("classAttendance disposed");
+                        WidgetsBinding.instance
+                            ?.addPostFrameCallback((_) => setState(() {
+                                  loggedUserStatus = "studentPortalScreen";
+                                }));
+                      },
+                      classAttendanceDocument: classAttendanceDocument,
+                      screenBasedPixelHeight: screenBasedPixelHeight,
+                      screenBasedPixelWidth: screenBasedPixelWidth,
+                      semesterSubId: await _justRetrieveSemesterSubId(),
+                      onSemesterSubIdChange: (String value) {
+                        setState(() {
+                          semesterSubId = value;
+                          requestType = "Update";
+                          callClassAttendance(
+                            context: context,
+                            headlessWebView: headlessWebView,
+                            onCurrentFullUrl: (String value) {
+                              currentFullUrl = value;
+                            },
+                            processingSomething: true,
+                            onProcessingSomething: (bool value) {
+                              processingSomething = true;
+                            },
+                            onError: (String value) {
+                              debugPrint(
+                                  "Updating Ui based on the error received");
+                              if (processingSomething == true) {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  processingSomething = false;
+                                });
+                              }
+                              if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                                debugPrint(
+                                    "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                setState(() {
+                                  currentStatus = "launchLoadingScreen";
+                                  vtopConnectionStatusErrorType =
+                                      "net::ERR_INTERNET_DISCONNECTED";
+                                  vtopConnectionStatusType = "Error";
+                                });
+                              }
+                            },
+                          );
+                        });
+                      },
+                      onProcessingSomething: (bool value) {
+                        setState(() {
+                          processingSomething = value;
+                        });
+                      },
+                    ),
+                  );
+                  setState(() {
+                    loggedUserStatus = "classAttendance";
+                  });
+                } else if (requestType == "Update") {
+                  debugPrint("Table Update Ran");
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (buildContext, animation1, animation2) =>
+                          ClassAttendance(
+                        arguments: ClassAttendanceArguments(
+                          currentStatus: currentStatus,
+                          onWidgetDispose: (bool value) {
+                            debugPrint("ClassAttendance disposed");
+                            WidgetsBinding.instance
+                                ?.addPostFrameCallback((_) => setState(() {
+                                      loggedUserStatus = "studentPortalScreen";
+                                    }));
+                          },
+                          classAttendanceDocument: classAttendanceDocument,
+                          screenBasedPixelHeight: screenBasedPixelHeight,
+                          screenBasedPixelWidth: screenBasedPixelWidth,
+                          semesterSubId: semesterSubId,
+                          onSemesterSubIdChange: (String value) {
+                            setState(() {
+                              semesterSubId = value;
+                              requestType = "Update";
+                              callClassAttendance(
+                                context: context,
+                                headlessWebView: headlessWebView,
+                                onCurrentFullUrl: (String value) {
+                                  currentFullUrl = value;
+                                },
+                                processingSomething: true,
+                                onProcessingSomething: (bool value) {
+                                  processingSomething = true;
+                                },
+                                onError: (String value) {
+                                  debugPrint(
+                                      "Updating Ui based on the error received");
+                                  if (processingSomething == true) {
+                                    Navigator.of(context).pop();
+                                    setState(() {
+                                      processingSomething = false;
+                                    });
+                                  }
+                                  if (value ==
+                                      "net::ERR_INTERNET_DISCONNECTED") {
+                                    debugPrint(
+                                        "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                                    setState(() {
+                                      currentStatus = "launchLoadingScreen";
+                                      vtopConnectionStatusErrorType =
+                                          "net::ERR_INTERNET_DISCONNECTED";
+                                      vtopConnectionStatusType = "Error";
+                                    });
+                                  }
+                                },
+                              );
+                            });
+                          },
+                          onProcessingSomething: (bool value) {
+                            setState(() {
+                              processingSomething = value;
+                            });
+                          },
+                        ),
+                      ),
+                      // transitionsBuilder:
+                      //     (context, animation, secondaryAnimation, child) =>
+                      //         FadeTransition(opacity: animation, child: child),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                      transitionDuration: Duration.zero,
+                      // reverseTransitionDuration:
+                      //     // const Duration(milliseconds: 2000),
+                    ),
+                  );
+                  setState(() {
+                    loggedUserStatus = "classAttendance";
+                  });
+                } else if (requestType == "Fake") {}
               });
             } else if (ajaxRequest.responseText!.contains(
                     "You are logged out due to inactivity for more than 15 minutes") ||

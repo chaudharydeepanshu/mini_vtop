@@ -19,11 +19,13 @@ class StudentPortal extends StatefulWidget {
     required this.onTimeTable,
     required this.onPerformSignOut,
     required this.onProcessingSomething,
+    required this.onClassAttendance,
   }) : super(key: key);
 
   final String? loggedUserStatus;
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTimeTable;
+  final ValueChanged<bool>? onClassAttendance;
   final StudentPortalArguments arguments;
   final ValueChanged<bool>? onPerformSignOut;
   final ValueChanged<bool> onProcessingSomething;
@@ -46,6 +48,67 @@ class _StudentPortalState extends State<StudentPortal> {
     super.didUpdateWidget(oldWidget);
   }
 
+  runRequestingDataDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      widget.onProcessingSomething.call(
+          true); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: Text(
+          'Requesting Data',
+          style: getDynamicTextStyle(
+              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.87)),
+              sizeDecidingVariable: screenBasedPixelWidth),
+          textAlign: TextAlign.center,
+        ),
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: widgetSizeProvider(
+                  fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+              width: widgetSizeProvider(
+                  fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+              child: CircularProgressIndicator(
+                strokeWidth: widgetSizeProvider(
+                    fixedSize: 4, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+            ),
+            Text(
+              'Please wait...',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          widget.onProcessingSomething.call(value);
+        },
+      ).then((_) => isDialogShowing = false);
+    });
+  }
+
   @override
   void initState() {
     arguments = widget.arguments;
@@ -61,73 +124,7 @@ class _StudentPortalState extends State<StudentPortal> {
               // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                widget.onProcessingSomething.call(
-                    true); //then set processing something true for the new loading dialog
-                customAlertDialogBox(
-                  isDialogShowing: isDialogShowing,
-                  context: context,
-                  onIsDialogShowing: (bool value) {
-                    setState(() {
-                      isDialogShowing = value;
-                    });
-                  },
-                  dialogTitle: Text(
-                    'Requesting Data',
-                    style: getDynamicTextStyle(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.87)),
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    textAlign: TextAlign.center,
-                  ),
-                  dialogContent: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        width: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        child: CircularProgressIndicator(
-                          strokeWidth: widgetSizeProvider(
-                              fixedSize: 4,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      Text(
-                        'Please wait...',
-                        style: getDynamicTextStyle(
-                            textStyle: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.60)),
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: true,
-                  screenBasedPixelHeight: screenBasedPixelHeight,
-                  screenBasedPixelWidth: screenBasedPixelWidth,
-                  onProcessingSomething: (bool value) {
-                    widget.onProcessingSomething.call(value);
-                  },
-                ).then((_) => isDialogShowing = false);
-              });
+              runRequestingDataDialogBox();
             },
           },
         ],
@@ -143,73 +140,17 @@ class _StudentPortalState extends State<StudentPortal> {
               // startTimeout();
               widget.onTimeTable?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                widget.onProcessingSomething.call(
-                    true); //then set processing something true for the new loading dialog
-                customAlertDialogBox(
-                  isDialogShowing: isDialogShowing,
-                  context: context,
-                  onIsDialogShowing: (bool value) {
-                    setState(() {
-                      isDialogShowing = value;
-                    });
-                  },
-                  dialogTitle: Text(
-                    'Requesting Data',
-                    style: getDynamicTextStyle(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.87)),
-                        sizeDecidingVariable: screenBasedPixelWidth),
-                    textAlign: TextAlign.center,
-                  ),
-                  dialogContent: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        width: widgetSizeProvider(
-                            fixedSize: 36,
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        child: CircularProgressIndicator(
-                          strokeWidth: widgetSizeProvider(
-                              fixedSize: 4,
-                              sizeDecidingVariable: screenBasedPixelWidth),
-                        ),
-                      ),
-                      Text(
-                        'Please wait...',
-                        style: getDynamicTextStyle(
-                            textStyle: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.60)),
-                            sizeDecidingVariable: screenBasedPixelWidth),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: true,
-                  screenBasedPixelHeight: screenBasedPixelHeight,
-                  screenBasedPixelWidth: screenBasedPixelWidth,
-                  onProcessingSomething: (bool value) {
-                    widget.onProcessingSomething.call(value);
-                  },
-                ).then((_) => isDialogShowing = false);
-              });
+              runRequestingDataDialogBox();
+            },
+          },
+          {
+            "name": "Class Attendance",
+            "action": () {
+              // timer.cancel();
+              // startTimeout();
+              widget.onClassAttendance?.call(true);
+              Navigator.of(context).pop(); // pop the option selection dialog
+              runRequestingDataDialogBox();
             },
           },
         ],

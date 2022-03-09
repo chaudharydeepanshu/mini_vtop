@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:mini_vtop/coreFunctions/call_class_attendance.dart';
 import 'package:mini_vtop/coreFunctions/call_time_table.dart';
 import 'package:mini_vtop/coreFunctions/sign_in.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
@@ -196,6 +197,7 @@ chooseCorrectBody(
   } else if (currentStatus == "userLoggedIn") {
     onBody.call(
       StudentPortal(
+        key: const ValueKey<int>(2),
         loggedUserStatus: loggedUserStatus,
         onShowStudentProfileAllView: (bool value) {
           onRequestType.call("Real");
@@ -217,6 +219,23 @@ chooseCorrectBody(
         onTimeTable: (bool value) {
           onRequestType.call("Real");
           callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
+        },
+        onClassAttendance: (bool value) {
+          onRequestType.call("Real");
+          callClassAttendance(
             context: context,
             headlessWebView: headlessWebView,
             onCurrentFullUrl: (String value) {
@@ -261,6 +280,7 @@ chooseCorrectBody(
   } else if (currentStatus == "originalVTOP") {
     onBody.call(
       FullWebView(
+        key: const ValueKey<int>(3),
         loggedUserStatus: loggedUserStatus,
         onShowStudentProfileAllView: (bool value) {
           onRequestType.call("Real");
