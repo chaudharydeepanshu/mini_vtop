@@ -824,110 +824,126 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                 ),
                 dialogContent: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomBox(
-                        settingsType: 'Update description',
-                        screenBasedPixelWidth: _screenBasedPixelWidth,
-                        screenBasedPixelHeight: _screenBasedPixelHeight,
-                        settingsBoxChildren: [
-                          SizedBox(
-                            height: 60,
-                            child: SingleChildScrollView(
-                              child: Row(
-                                children: [
-                                  Flexible(
-                                    child: Markdown(
-                                      padding: const EdgeInsets.all(0),
-                                      styleSheet: MarkdownStyleSheet(
-                                        h3: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: widgetSizeProvider(
-                                              fixedSize: 16,
-                                              sizeDecidingVariable:
-                                                  _screenBasedPixelWidth),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomBox(
+                          settingsType: 'Update description',
+                          screenBasedPixelWidth: _screenBasedPixelWidth,
+                          screenBasedPixelHeight: _screenBasedPixelHeight,
+                          settingsBoxChildren: [
+                            SizedBox(
+                              height: widgetSizeProvider(
+                                  fixedSize: 60,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                              width: widgetSizeProvider(
+                                  fixedSize: double.maxFinite,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                              child: SingleChildScrollView(
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Markdown(
+                                        padding: const EdgeInsets.all(0),
+                                        styleSheet: MarkdownStyleSheet(
+                                          h3: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 16,
+                                                sizeDecidingVariable:
+                                                    _screenBasedPixelWidth),
+                                          ),
+                                          p: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 14,
+                                                sizeDecidingVariable:
+                                                    _screenBasedPixelWidth),
+                                          ),
                                         ),
-                                        p: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: widgetSizeProvider(
-                                              fixedSize: 14,
-                                              sizeDecidingVariable:
-                                                  _screenBasedPixelWidth),
-                                        ),
+                                        shrinkWrap: true,
+                                        controller: controller,
+                                        selectable: false,
+                                        data: releaseDescription! == ""
+                                            ? "No description 🦥"
+                                            : releaseDescription!,
                                       ),
-                                      shrinkWrap: true,
-                                      controller: controller,
-                                      selectable: false,
-                                      data: releaseDescription! == ""
-                                          ? "No description 🦥"
-                                          : releaseDescription!,
+                                      // Text(
+                                      //   releaseDescription!,
+                                      //   style: getDynamicTextStyle(
+                                      //       textStyle: Theme.of(context)
+                                      //           .textTheme
+                                      //           .bodyText1
+                                      //           ?.copyWith(
+                                      //               color: Theme.of(context)
+                                      //                   .colorScheme
+                                      //                   .onSurface
+                                      //                   .withOpacity(0.60)),
+                                      //       sizeDecidingVariable:
+                                      //           _screenBasedPixelWidth),
+                                      // ),
                                     ),
-                                    // Text(
-                                    //   releaseDescription!,
-                                    //   style: getDynamicTextStyle(
-                                    //       textStyle: Theme.of(context)
-                                    //           .textTheme
-                                    //           .bodyText1
-                                    //           ?.copyWith(
-                                    //               color: Theme.of(context)
-                                    //                   .colorScheme
-                                    //                   .onSurface
-                                    //                   .withOpacity(0.60)),
-                                    //       sizeDecidingVariable:
-                                    //           _screenBasedPixelWidth),
-                                    // ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      CustomBox(
-                        settingsType: 'Update version',
-                        screenBasedPixelWidth: _screenBasedPixelWidth,
-                        screenBasedPixelHeight: _screenBasedPixelHeight,
-                        settingsBoxChildren: [
-                          SingleChildScrollView(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Markdown(
-                                    padding: const EdgeInsets.all(0),
-                                    styleSheet: MarkdownStyleSheet(
-                                      h3: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 16,
-                                            sizeDecidingVariable:
-                                                _screenBasedPixelWidth),
-                                      ),
-                                      p: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 14,
-                                            sizeDecidingVariable:
-                                                _screenBasedPixelWidth),
+                          ],
+                        ),
+                        CustomBox(
+                          settingsType: 'Update version',
+                          screenBasedPixelWidth: _screenBasedPixelWidth,
+                          screenBasedPixelHeight: _screenBasedPixelHeight,
+                          settingsBoxChildren: [
+                            SizedBox(
+                              height: widgetSizeProvider(
+                                  fixedSize: 20,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                              width: widgetSizeProvider(
+                                  fixedSize: double.maxFinite,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                              child: SingleChildScrollView(
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Markdown(
+                                        padding: const EdgeInsets.all(0),
+                                        styleSheet: MarkdownStyleSheet(
+                                          h3: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 16,
+                                                sizeDecidingVariable:
+                                                    _screenBasedPixelWidth),
+                                          ),
+                                          p: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: widgetSizeProvider(
+                                                fixedSize: 14,
+                                                sizeDecidingVariable:
+                                                    _screenBasedPixelWidth),
+                                          ),
+                                        ),
+                                        shrinkWrap: true,
+                                        controller: controller,
+                                        selectable: false,
+                                        data: UpdateCheckRequester
+                                                    .latestVersion ==
+                                                null
+                                            ? "No version tag 🦥"
+                                            : "v${UpdateCheckRequester.latestVersion}",
                                       ),
                                     ),
-                                    shrinkWrap: true,
-                                    controller: controller,
-                                    selectable: false,
-                                    data: UpdateCheckRequester.latestVersion ==
-                                            null
-                                        ? "No version tag 🦥"
-                                        : "v${UpdateCheckRequester.latestVersion}",
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 barrierDismissible: true,
@@ -1208,6 +1224,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: const Text(
                     'Update',
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

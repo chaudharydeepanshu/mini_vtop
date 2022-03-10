@@ -22,7 +22,7 @@ Future<void> downloadFile({
   required ValueChanged<String> onOpenResult,
   required ValueChanged<bool> onIsDialogBoxShowing,
 }) async {
-  print(isDialogShowing);
+  debugPrint("isDialogShowing: $isDialogShowing");
   final targetFile = Directory(releaseSavePath!);
   if (targetFile.existsSync()) {
     targetFile.deleteSync(recursive: true);

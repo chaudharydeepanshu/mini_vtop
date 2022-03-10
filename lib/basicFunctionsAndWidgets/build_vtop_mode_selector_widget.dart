@@ -122,36 +122,41 @@ class _BuildVtopModeSelectorState extends State<BuildVtopModeSelector> {
                         ),
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(
-                            widgetSizeProvider(
-                                fixedSize: 8,
-                                sizeDecidingVariable: _screenBasedPixelWidth),
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              value,
-                              style: getDynamicTextStyle(
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .button
-                                      ?.copyWith(
-                                        color: value == _dropdownValue
-                                            ? Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryContainer,
-                                      ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(
+                              widgetSizeProvider(
+                                  fixedSize: 8,
                                   sizeDecidingVariable: _screenBasedPixelWidth),
                             ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                value,
+                                overflow: TextOverflow.ellipsis,
+                                style: getDynamicTextStyle(
+                                    textStyle: Theme.of(context)
+                                        .textTheme
+                                        .button
+                                        ?.copyWith(
+                                          color: value == _dropdownValue
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                        ),
+                                    sizeDecidingVariable:
+                                        _screenBasedPixelWidth),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
