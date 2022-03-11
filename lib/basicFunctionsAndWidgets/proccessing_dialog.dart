@@ -10,7 +10,7 @@ Future<void> customAlertDialogBox({
   required bool isDialogShowing,
   required ValueChanged<bool> onIsDialogShowing,
   required bool barrierDismissible,
-  required Widget dialogTitle,
+  required String dialogTitle,
   required Widget dialogContent,
   List<Widget>? dialogActions,
   required double screenBasedPixelWidth,
@@ -34,6 +34,7 @@ Future<void> customAlertDialogBox({
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
         onSetState: onSetState,
+        context: context,
       );
     },
   );
@@ -51,13 +52,14 @@ class DialogBox extends StatefulWidget {
     required this.dialogContent,
     this.onSetState,
     this.dialogActions,
+    required this.context,
   }) : super(key: key);
 
   final bool barrierDismissible;
   final bool isDialogShowing;
   final ValueChanged<bool> onProcessingSomething;
-
-  final Widget dialogTitle;
+  final BuildContext context;
+  final String dialogTitle;
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
   final Widget dialogContent;
@@ -98,7 +100,19 @@ class _DialogBoxState extends State<DialogBox> {
               });
       },
       child: AlertDialog(
-        title: Center(child: _widget.dialogTitle),
+        title: Center(
+          child: Text(
+            _widget.dialogTitle,
+            style: getDynamicTextStyle(
+                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.87)),
+                sizeDecidingVariable: _widget.screenBasedPixelWidth),
+            textAlign: TextAlign.center,
+          ),
+        ),
         titlePadding: EdgeInsets.fromLTRB(
           widgetSizeProvider(
               fixedSize: 24,

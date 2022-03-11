@@ -60,17 +60,7 @@ class _StudentPortalState extends State<StudentPortal> {
             isDialogShowing = value;
           });
         },
-        dialogTitle: Text(
-          'Requesting Data',
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withOpacity(0.87)),
-              sizeDecidingVariable: screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
+        dialogTitle: 'Requesting Data',
         dialogContent: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -206,17 +196,7 @@ class _StudentPortalState extends State<StudentPortal> {
                   isDialogShowing = value;
                 });
               },
-              dialogTitle: Text(
-                'You logged out',
-                style: getDynamicTextStyle(
-                    textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.87)),
-                    sizeDecidingVariable: screenBasedPixelWidth),
-                textAlign: TextAlign.center,
-              ),
+              dialogTitle: 'You logged out',
               dialogContent: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -626,20 +606,8 @@ class _StudentPortalState extends State<StudentPortal> {
                                           ),
                                         ),
                                         context: context,
-                                        dialogTitle: Text(
-                                          studentPortalOptions[index]["name"],
-                                          style: GoogleFonts.lato(
-                                            // color: Colors.white,
-                                            // textStyle: Theme.of(context).textTheme.headline1,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 20,
-                                                sizeDecidingVariable: widget
-                                                    .arguments
-                                                    .screenBasedPixelWidth),
-                                            fontWeight: FontWeight.w700,
-                                            fontStyle: FontStyle.normal,
-                                          ),
-                                        ),
+                                        dialogTitle: studentPortalOptions[index]
+                                            ["name"],
                                         barrierDismissible: true,
                                         screenBasedPixelHeight:
                                             screenBasedPixelHeight,

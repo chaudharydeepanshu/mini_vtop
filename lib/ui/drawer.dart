@@ -422,16 +422,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                         isDialogShowing = value;
                                       });
                                     },
-                                    dialogTitle: Text(
-                                      'Processing logout',
-                                      style: TextStyle(
-                                        fontSize: widgetSizeProvider(
-                                            fixedSize: 24,
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    dialogTitle: 'Processing logout',
                                     dialogContent: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:

@@ -127,7 +127,7 @@ manageUserSession({
             onCurrentFullUrl: (String value) {
               onCurrentFullUrl.call(value);
             },
-            processingSomething: value,
+            processingSomething: false,
             onProcessingSomething: (bool value) {
               onProcessingSomething.call(value);
             },

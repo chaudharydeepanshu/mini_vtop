@@ -99,17 +99,7 @@ class _FullWebViewState extends State<FullWebView> {
                   isDialogShowing = value;
                 });
               },
-              dialogTitle: Text(
-                'You logged out',
-                style: getDynamicTextStyle(
-                    textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.87)),
-                    sizeDecidingVariable: screenBasedPixelWidth),
-                textAlign: TextAlign.center,
-              ),
+              dialogTitle: 'You logged out',
               dialogContent: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,

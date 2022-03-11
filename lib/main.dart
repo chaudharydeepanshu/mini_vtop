@@ -1,3 +1,4 @@
+//todo: choose correct asset type and make the default fat apk by selecting asset with name minivtop-$version-release.apk and will move to more complicated apks in future
 //todo: Clear old apks from app cache at start
 //todo: decrease animation size
 //todo: use predefined themes for text everywhere
@@ -573,14 +574,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               isDialogShowing = value;
             });
           },
-          dialogTitle: Text(
-            dialogTitle,
-            style: TextStyle(
-              fontSize: widgetSizeProvider(
-                  fixedSize: 24, sizeDecidingVariable: screenBasedPixelWidth),
-            ),
-            textAlign: TextAlign.center,
-          ),
+          dialogTitle: dialogTitle,
           dialogContent: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/package_info_calc.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/stop_pop.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,10 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
   Version? currentVersion;
   Version? latestVersion;
   String? releaseDescription;
+  List<Map<UpdatesProperties, String>>? updatesMapList = [];
+  List<Map<UpdatesProperties, String>>? newUpdatesMapListOf = [];
+  List<Map<UpdatesProperties, String>>? currentUpdatesMapListOf = [];
+  List<Map<UpdatesProperties, String>>? oldUpdatesMapListOf = [];
   String? releaseDownloadUrl;
   double? downloadProgress;
   String? releaseFileName;
@@ -77,20 +83,82 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
     super.didUpdateWidget(oldWidget);
   }
 
+  final changelogsContentScrollController = ScrollController();
+  final changelogsScrollController = ScrollController();
+
+  void _scrollDown() {
+    changelogsScrollController.animateTo(
+      changelogsScrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  void _scrollUp() {
+    changelogsScrollController.animateTo(
+      changelogsScrollController.position.minScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
   @override
   void initState() {
+    super.initState();
+
+    // Setup the changelogsContentScrollController listener.
+    changelogsContentScrollController.addListener(() {
+      if (changelogsContentScrollController.position.atEdge) {
+        bool isTop = changelogsContentScrollController.position.pixels == 0;
+        if (isTop) {
+          debugPrint('At the top');
+          _scrollUp();
+        } else {
+          debugPrint('At the bottom');
+          _scrollDown();
+        }
+      } else {
+        // debugPrint('Not at bottom not at top');
+      }
+    });
+
     shouldAutoCheckUpdateRun = widget.shouldAutoCheckUpdateRun;
     PackageInfoCalc().init(context).whenComplete(() {
       currentVersion = Version.parse(
           PackageInfoCalc.version! + "+" + PackageInfoCalc.buildNumber!);
-      UpdateCheckRequester().makeGetRequest(context).whenComplete(() {
-        if (UpdateCheckRequester.latestVersion != null) {
-          latestVersion =
-              Version.parse("${UpdateCheckRequester.latestVersion}");
-          releaseDescription = UpdateCheckRequester.releaseDescription;
-          releaseDownloadUrl = UpdateCheckRequester.releaseDownloadUrl;
-          releaseFileName = UpdateCheckRequester.releaseFileName;
-          downloadSavePath();
+      if (autoCheckUpdateRan == false && shouldAutoCheckUpdateRun == true) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(customSnackBar(
+            snackBarText: "Checking for updates. Please Wait.",
+            screenBasedPixelWidth: _screenBasedPixelWidth,
+            context: context,
+          ));
+        UpdateCheckRequester().makeGetRequest(context).whenComplete(() {
+          if (UpdateCheckRequester.latestVersion != null &&
+              UpdateCheckRequester.releaseDownloadUrl != null) {
+            latestVersion =
+                Version.parse("${UpdateCheckRequester.latestVersion}");
+            releaseDescription = UpdateCheckRequester.releaseDescription;
+            releaseDownloadUrl = UpdateCheckRequester.releaseDownloadUrl;
+            releaseFileName = UpdateCheckRequester.releaseFileName;
+            updatesMapList = UpdateCheckRequester.updatesMapList;
+            newUpdatesMapListOf = [];
+            currentUpdatesMapListOf = [];
+            oldUpdatesMapListOf = [];
+            for (int i = 0; i < updatesMapList!.length; i++) {
+              String? updateVersion =
+                  updatesMapList![i][UpdatesProperties.version];
+              if (currentVersion! < Version.parse(updateVersion)) {
+                newUpdatesMapListOf?.add(updatesMapList![i]);
+              } else if (currentVersion == Version.parse(updateVersion)) {
+                currentUpdatesMapListOf?.add(updatesMapList![i]);
+              } else {
+                oldUpdatesMapListOf?.add(updatesMapList![i]);
+              }
+            }
+            downloadSavePath();
+          }
 
           if (autoCheckUpdateRan == false && shouldAutoCheckUpdateRun == true) {
             debugPrint("autoCheckUpdateRan");
@@ -100,8 +168,8 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                 : null;
             autoCheckUpdateRan = true;
           }
-        }
-      });
+        });
+      }
     });
     if (installPackagesPermissionFirstRun) {
       WidgetsBinding.instance!.addPostFrameCallback((_) async {
@@ -536,7 +604,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      "Downloading app-release.apk",
+                                      "Downloading $releaseFileName",
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                       style: getDynamicTextStyle(
@@ -631,17 +699,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
           },
           screenBasedPixelWidth: _screenBasedPixelWidth,
           context: context,
-          dialogTitle: Text(
-            'Need Permission',
-            style: getDynamicTextStyle(
-                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.87)),
-                sizeDecidingVariable: _screenBasedPixelWidth),
-            textAlign: TextAlign.center,
-          ),
+          dialogTitle: 'Need Permission',
           dialogActions: dialogActionButtonsListForDeniedStoragePermission,
         ).then((_) => isDialogShowing = false);
       } else if (statusOfStoragePermission ==
@@ -694,17 +752,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
           },
           screenBasedPixelWidth: _screenBasedPixelWidth,
           context: context,
-          dialogTitle: Text(
-            'Need Permission',
-            style: getDynamicTextStyle(
-                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.87)),
-                sizeDecidingVariable: _screenBasedPixelWidth),
-            textAlign: TextAlign.center,
-          ),
+          dialogTitle: 'Need Permission',
           dialogActions:
               dialogActionButtonsListForPermanentlyDeniedStoragePermission,
         ).then((_) => isDialogShowing = false);
@@ -745,17 +793,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
         },
         screenBasedPixelWidth: _screenBasedPixelWidth,
         context: context,
-        dialogTitle: Text(
-          'Need Permission',
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withOpacity(0.87)),
-              sizeDecidingVariable: _screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
+        dialogTitle: 'Need Permission',
         dialogActions:
             dialogActionButtonsListForPermanentlyDeniedStoragePermission,
       ).then((_) => isDialogShowing = false);
@@ -764,7 +802,8 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
 
   Future updateAction() async {
     ScrollController? controller = ScrollController();
-    print("releaseDescription: $releaseDescription");
+    debugPrint("releaseDescription: $releaseDescription");
+    debugPrint("AllUpdatesMapList: $updatesMapList");
     installPackagesPermissionPermanentlyDenied =
         false; //for disabling permission check
     if (installPackagesPermissionPermanentlyDenied ==
@@ -780,13 +819,13 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
         //             .request()
         //         : PermissionStatus.granted;
         if (statusOfInstallPackagesPermission == PermissionStatus.granted) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(customSnackBar(
-              snackBarText: "Checking for updates. Please Wait.",
-              screenBasedPixelWidth: _screenBasedPixelWidth,
-              context: context,
-            ));
+          // ScaffoldMessenger.of(context)
+          //   ..hideCurrentSnackBar()
+          //   ..showSnackBar(customSnackBar(
+          //     snackBarText: "Checking for updates. Please Wait.",
+          //     screenBasedPixelWidth: _screenBasedPixelWidth,
+          //     context: context,
+          //   ));
 
           if (latestVersion != null) {
             if (latestVersion! > currentVersion) {
@@ -808,140 +847,114 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                     isDialogShowing = value;
                   });
                 },
-                dialogTitle: Text(
-                  'Update available',
-                  style: getDynamicTextStyle(
-                      textStyle: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.87)),
-                      sizeDecidingVariable: _screenBasedPixelWidth),
-                  textAlign: TextAlign.center,
-                ),
+                dialogTitle: "Update Available",
                 dialogContent: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SingleChildScrollView(
+                    controller: changelogsScrollController,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CustomBox(
-                          settingsType: 'Update description',
+                          settingsType: 'Changelogs',
                           screenBasedPixelWidth: _screenBasedPixelWidth,
                           screenBasedPixelHeight: _screenBasedPixelHeight,
                           settingsBoxChildren: [
                             SizedBox(
                               height: widgetSizeProvider(
-                                  fixedSize: 60,
+                                  fixedSize: 110,
                                   sizeDecidingVariable: _screenBasedPixelWidth),
                               width: widgetSizeProvider(
                                   fixedSize: double.maxFinite,
                                   sizeDecidingVariable: _screenBasedPixelWidth),
-                              child: SingleChildScrollView(
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      child: Markdown(
-                                        padding: const EdgeInsets.all(0),
-                                        styleSheet: MarkdownStyleSheet(
-                                          h3: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 16,
-                                                sizeDecidingVariable:
-                                                    _screenBasedPixelWidth),
-                                          ),
-                                          p: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 14,
-                                                sizeDecidingVariable:
-                                                    _screenBasedPixelWidth),
-                                          ),
-                                        ),
-                                        shrinkWrap: true,
-                                        controller: controller,
-                                        selectable: false,
-                                        data: releaseDescription! == ""
-                                            ? "No description 🦥"
-                                            : releaseDescription!,
-                                      ),
-                                      // Text(
-                                      //   releaseDescription!,
-                                      //   style: getDynamicTextStyle(
-                                      //       textStyle: Theme.of(context)
-                                      //           .textTheme
-                                      //           .bodyText1
-                                      //           ?.copyWith(
-                                      //               color: Theme.of(context)
-                                      //                   .colorScheme
-                                      //                   .onSurface
-                                      //                   .withOpacity(0.60)),
-                                      //       sizeDecidingVariable:
-                                      //           _screenBasedPixelWidth),
-                                      // ),
-                                    ),
-                                  ],
-                                ),
+                              child: ListView(
+                                controller: changelogsContentScrollController,
+                                children: [
+                                  newUpdatesMapListOf!.isNotEmpty
+                                      ? UpdateDescriptionContent(
+                                          updatesMapListOf: newUpdatesMapListOf,
+                                          screenBasedPixelWidth:
+                                              _screenBasedPixelWidth,
+                                          currentVersion: currentVersion,
+                                          controller: controller,
+                                          updateTypeTag: "New")
+                                      : const SizedBox(),
+                                  currentUpdatesMapListOf!.isNotEmpty
+                                      ? UpdateDescriptionContent(
+                                          updatesMapListOf:
+                                              currentUpdatesMapListOf,
+                                          screenBasedPixelWidth:
+                                              _screenBasedPixelWidth,
+                                          currentVersion: currentVersion,
+                                          controller: controller,
+                                          updateTypeTag: "Current")
+                                      : const SizedBox(),
+                                  oldUpdatesMapListOf!.isNotEmpty
+                                      ? UpdateDescriptionContent(
+                                          updatesMapListOf: oldUpdatesMapListOf,
+                                          screenBasedPixelWidth:
+                                              _screenBasedPixelWidth,
+                                          currentVersion: currentVersion,
+                                          controller: controller,
+                                          updateTypeTag: "Old")
+                                      : const SizedBox(),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                        CustomBox(
-                          settingsType: 'Update version',
-                          screenBasedPixelWidth: _screenBasedPixelWidth,
-                          screenBasedPixelHeight: _screenBasedPixelHeight,
-                          settingsBoxChildren: [
-                            SizedBox(
-                              height: widgetSizeProvider(
-                                  fixedSize: 20,
-                                  sizeDecidingVariable: _screenBasedPixelWidth),
-                              width: widgetSizeProvider(
-                                  fixedSize: double.maxFinite,
-                                  sizeDecidingVariable: _screenBasedPixelWidth),
-                              child: SingleChildScrollView(
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      child: Markdown(
-                                        padding: const EdgeInsets.all(0),
-                                        styleSheet: MarkdownStyleSheet(
-                                          h3: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 16,
-                                                sizeDecidingVariable:
-                                                    _screenBasedPixelWidth),
-                                          ),
-                                          p: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: widgetSizeProvider(
-                                                fixedSize: 14,
-                                                sizeDecidingVariable:
-                                                    _screenBasedPixelWidth),
-                                          ),
-                                        ),
-                                        shrinkWrap: true,
-                                        controller: controller,
-                                        selectable: false,
-                                        data: UpdateCheckRequester
-                                                    .latestVersion ==
-                                                null
-                                            ? "No version tag 🦥"
-                                            : "v${UpdateCheckRequester.latestVersion}",
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // CustomBox(
+                        //   settingsType: 'Update version',
+                        //   screenBasedPixelWidth: _screenBasedPixelWidth,
+                        //   screenBasedPixelHeight: _screenBasedPixelHeight,
+                        //   settingsBoxChildren: [
+                        //     SizedBox(
+                        //       height: widgetSizeProvider(
+                        //           fixedSize: 20,
+                        //           sizeDecidingVariable: _screenBasedPixelWidth),
+                        //       width: widgetSizeProvider(
+                        //           fixedSize: double.maxFinite,
+                        //           sizeDecidingVariable: _screenBasedPixelWidth),
+                        //       child: SingleChildScrollView(
+                        //         child: Row(
+                        //           children: [
+                        //             Flexible(
+                        //               child: Markdown(
+                        //                 padding: const EdgeInsets.all(0),
+                        //                 styleSheet: MarkdownStyleSheet(
+                        //                   h3: TextStyle(
+                        //                     fontWeight: FontWeight.bold,
+                        //                     fontSize: widgetSizeProvider(
+                        //                         fixedSize: 16,
+                        //                         sizeDecidingVariable:
+                        //                             _screenBasedPixelWidth),
+                        //                   ),
+                        //                   p: TextStyle(
+                        //                     fontWeight: FontWeight.bold,
+                        //                     fontSize: widgetSizeProvider(
+                        //                         fixedSize: 14,
+                        //                         sizeDecidingVariable:
+                        //                             _screenBasedPixelWidth),
+                        //                   ),
+                        //                 ),
+                        //                 shrinkWrap: true,
+                        //                 controller: controller,
+                        //                 selectable: false,
+                        //                 data: UpdateCheckRequester
+                        //                             .latestVersion ==
+                        //                         null
+                        //                     ? "No version tag 🦥"
+                        //                     : "v${UpdateCheckRequester.latestVersion}",
+                        //               ),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
@@ -1055,17 +1068,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
             },
             screenBasedPixelWidth: _screenBasedPixelWidth,
             context: context,
-            dialogTitle: Text(
-              'Need Permission',
-              style: getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.87)),
-                  sizeDecidingVariable: _screenBasedPixelWidth),
-              textAlign: TextAlign.center,
-            ),
+            dialogTitle: 'Need Permission',
             dialogActions:
                 dialogActionButtonsListForDeniedInstallPackagesPermission,
           ).then((_) => isDialogShowing = false);
@@ -1120,17 +1123,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
             },
             screenBasedPixelWidth: _screenBasedPixelWidth,
             context: context,
-            dialogTitle: Text(
-              'Need Permission',
-              style: getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.87)),
-                  sizeDecidingVariable: _screenBasedPixelWidth),
-              textAlign: TextAlign.center,
-            ),
+            dialogTitle: 'Need Permission',
             dialogActions:
                 dialogActionButtonsListForPermanentlyDeniedInstallPackagesPermission,
           ).then((_) => isDialogShowing = false);
@@ -1174,17 +1167,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
         },
         screenBasedPixelWidth: _screenBasedPixelWidth,
         context: context,
-        dialogTitle: Text(
-          'Need Permission',
-          style: getDynamicTextStyle(
-              textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withOpacity(0.87)),
-              sizeDecidingVariable: _screenBasedPixelWidth),
-          textAlign: TextAlign.center,
-        ),
+        dialogTitle: 'Need Permission',
         dialogActions:
             dialogActionButtonsListForPermanentlyDeniedInstallPackagesPermission,
       ).then((_) => isDialogShowing = false);
@@ -1215,7 +1198,57 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
               Flexible(
                 flex: 1,
                 child: CustomElevatedButton(
-                  onPressed: currentVersion != null ? updateAction : null,
+                  onPressed: currentVersion != null
+                      ? () {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(customSnackBar(
+                              snackBarText:
+                                  "Checking for updates. Please Wait.",
+                              screenBasedPixelWidth: _screenBasedPixelWidth,
+                              context: context,
+                            ));
+                          UpdateCheckRequester()
+                              .makeGetRequest(context)
+                              .whenComplete(() {
+                            if (UpdateCheckRequester.latestVersion != null &&
+                                UpdateCheckRequester.releaseDownloadUrl !=
+                                    null) {
+                              latestVersion = Version.parse(
+                                  "${UpdateCheckRequester.latestVersion}");
+                              releaseDescription =
+                                  UpdateCheckRequester.releaseDescription;
+                              releaseDownloadUrl =
+                                  UpdateCheckRequester.releaseDownloadUrl;
+                              releaseFileName =
+                                  UpdateCheckRequester.releaseFileName;
+                              updatesMapList =
+                                  UpdateCheckRequester.updatesMapList;
+                              updatesMapList =
+                                  UpdateCheckRequester.updatesMapList;
+                              newUpdatesMapListOf = [];
+                              currentUpdatesMapListOf = [];
+                              oldUpdatesMapListOf = [];
+                              for (int i = 0; i < updatesMapList!.length; i++) {
+                                String? updateVersion = updatesMapList![i]
+                                    [UpdatesProperties.version];
+                                if (currentVersion! <
+                                    Version.parse(updateVersion)) {
+                                  newUpdatesMapListOf?.add(updatesMapList![i]);
+                                } else if (currentVersion ==
+                                    Version.parse(updateVersion)) {
+                                  currentUpdatesMapListOf
+                                      ?.add(updatesMapList![i]);
+                                } else {
+                                  oldUpdatesMapListOf?.add(updatesMapList![i]);
+                                }
+                              }
+                              downloadSavePath();
+                            }
+                            updateAction();
+                          });
+                        }
+                      : null,
                   screenBasedPixelWidth: _screenBasedPixelWidth,
                   screenBasedPixelHeight: _screenBasedPixelHeight,
                   size: const Size(70, 50),
@@ -1231,6 +1264,203 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
             ],
           )
         : const SizedBox();
+  }
+}
+
+class UpdateDescriptionContent extends StatelessWidget {
+  const UpdateDescriptionContent({
+    Key? key,
+    required this.updatesMapListOf,
+    required double screenBasedPixelWidth,
+    required this.currentVersion,
+    required this.controller,
+    // required this.updateDescription,
+    required this.updateTypeTag,
+  })  : _screenBasedPixelWidth = screenBasedPixelWidth,
+        super(key: key);
+
+  final List<Map<UpdatesProperties, String>>? updatesMapListOf;
+  final double _screenBasedPixelWidth;
+  final Version? currentVersion;
+  final ScrollController? controller;
+  // final String? updateDescription;
+  final String updateTypeTag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 12.5, bottom: 8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 2.0, right: 2.0, top: 15),
+              child: Column(
+                children: List<Widget>.generate(updatesMapListOf!.length,
+                    (int index) {
+                  String? updateVersion =
+                      updatesMapListOf![index][UpdatesProperties.version];
+                  DateTime? updateDateInIsoFormat = DateTime.parse(
+                      '${updatesMapListOf![index][UpdatesProperties.date]}');
+                  String updateDate =
+                      DateFormat('dd MMMM yyyy').format(updateDateInIsoFormat);
+                  String? updateDescription =
+                      updatesMapListOf![index][UpdatesProperties.description];
+                  // String updateTypeTag;
+                  if (index == 0 ||
+                      currentVersion! < Version.parse(updateVersion)) {
+                    // updateTypeTag = "New";
+                  } else if (currentVersion == Version.parse(updateVersion)) {
+                    // updateTypeTag = "Current";
+                  } else {
+                    // updateTypeTag = "Old";
+                  }
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: CustomChips(
+                              chipText: "v" + updateVersion!,
+                              screenBasedPixelWidth: _screenBasedPixelWidth,
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: CustomChips(
+                              chipText: updateDate,
+                              screenBasedPixelWidth: _screenBasedPixelWidth,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, bottom: 8.0, top: 8.0),
+                        child: Markdown(
+                          padding: const EdgeInsets.all(0),
+                          styleSheet: MarkdownStyleSheet(
+                            h3: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: widgetSizeProvider(
+                                  fixedSize: 14,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                            ),
+                            p: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: widgetSizeProvider(
+                                  fixedSize: 12,
+                                  sizeDecidingVariable: _screenBasedPixelWidth),
+                            ),
+                          ),
+                          shrinkWrap: true,
+                          controller: controller,
+                          selectable: false,
+                          data: updateDescription == null ||
+                                  updateDescription == ""
+                              ? "No description 🦥"
+                              : updateDescription,
+                        ),
+                      ),
+                    ],
+                  );
+                }, growable: false),
+              ),
+            ),
+          ),
+        ),
+        CustomChips(
+          chipText: updateTypeTag,
+          screenBasedPixelWidth: _screenBasedPixelWidth,
+        ),
+      ],
+    );
+    // Stack(
+    //   alignment: Alignment.topCenter,
+    //   children: [
+    //     Padding(
+    //       padding: const EdgeInsets.only(top: 12.5, bottom: 8.0),
+    //       child: Container(
+    //         decoration: BoxDecoration(
+    //           border: Border.all(
+    //               color: Theme.of(context).colorScheme.onPrimaryContainer,
+    //               width: 1),
+    //           borderRadius: const BorderRadius.all(Radius.circular(10)),
+    //         ),
+    //         child: Padding(
+    //           padding: const EdgeInsets.only(left: 2.0, right: 2.0, top: 15),
+    //           child: Column(
+    //             mainAxisAlignment: MainAxisAlignment.start,
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: [
+    //                   Flexible(
+    //                     flex: 1,
+    //                     child: CustomChips(
+    //                       chipText: "v" + updateVersion!,
+    //                       screenBasedPixelWidth: _screenBasedPixelWidth,
+    //                     ),
+    //                   ),
+    //                   Flexible(
+    //                     flex: 2,
+    //                     child: CustomChips(
+    //                       chipText: updateDate,
+    //                       screenBasedPixelWidth: _screenBasedPixelWidth,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //               Padding(
+    //                 padding:
+    //                     const EdgeInsets.only(left: 8.0, bottom: 8.0, top: 8.0),
+    //                 child: Markdown(
+    //                   padding: const EdgeInsets.all(0),
+    //                   styleSheet: MarkdownStyleSheet(
+    //                     h3: TextStyle(
+    //                       fontWeight: FontWeight.bold,
+    //                       fontSize: widgetSizeProvider(
+    //                           fixedSize: 14,
+    //                           sizeDecidingVariable: _screenBasedPixelWidth),
+    //                     ),
+    //                     p: TextStyle(
+    //                       fontWeight: FontWeight.bold,
+    //                       fontSize: widgetSizeProvider(
+    //                           fixedSize: 12,
+    //                           sizeDecidingVariable: _screenBasedPixelWidth),
+    //                     ),
+    //                   ),
+    //                   shrinkWrap: true,
+    //                   controller: controller,
+    //                   selectable: false,
+    //                   data: updateDescription == null || updateDescription == ""
+    //                       ? "No description 🦥"
+    //                       : updateDescription!,
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     CustomChips(
+    //       chipText: updateTypeTag,
+    //       screenBasedPixelWidth: _screenBasedPixelWidth,
+    //     ),
+    //   ],
+    // );
   }
 }
 
@@ -1290,6 +1520,69 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     return Center(
       child: LinearProgressIndicator(
         value: _downloadProgress,
+      ),
+    );
+  }
+}
+
+class CustomChips extends StatefulWidget {
+  const CustomChips(
+      {Key? key, required this.screenBasedPixelWidth, required this.chipText})
+      : super(key: key);
+
+  final double screenBasedPixelWidth;
+  final String chipText;
+
+  @override
+  _CustomChipsState createState() => _CustomChipsState();
+}
+
+class _CustomChipsState extends State<CustomChips> {
+  late double _screenBasedPixelWidth;
+  late String _chipText;
+
+  @override
+  void didUpdateWidget(CustomChips oldWidget) {
+    if (oldWidget != widget) {
+      setState(() {
+        _screenBasedPixelWidth = widget.screenBasedPixelWidth;
+        _chipText = widget.chipText;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    _screenBasedPixelWidth = widget.screenBasedPixelWidth;
+    _chipText = widget.chipText;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        // border: Border.all(),
+        borderRadius: const BorderRadius.all(Radius.circular(1000)),
+        color: Theme.of(context).colorScheme.tertiary,
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(
+          widgetSizeProvider(
+              fixedSize: 4, sizeDecidingVariable: _screenBasedPixelWidth),
+        ),
+        child: Text(
+          _chipText,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onTertiary,
+            fontWeight: FontWeight.bold,
+            fontSize: widgetSizeProvider(
+                fixedSize: 14, sizeDecidingVariable: _screenBasedPixelWidth),
+          ),
+        ),
       ),
     );
   }

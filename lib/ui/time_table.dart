@@ -492,21 +492,7 @@ class _TimeTableState extends State<TimeTable> {
                                           isDialogShowing = value;
                                         });
                                       },
-                                      dialogTitle: Text(
-                                        'Requesting Data',
-                                        style: getDynamicTextStyle(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6
-                                                ?.copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface
-                                                        .withOpacity(0.87)),
-                                            sizeDecidingVariable:
-                                                screenBasedPixelWidth),
-                                        textAlign: TextAlign.center,
-                                      ),
+                                      dialogTitle: 'Requesting Data',
                                       dialogContent: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:

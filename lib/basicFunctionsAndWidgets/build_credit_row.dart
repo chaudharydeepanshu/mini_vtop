@@ -121,20 +121,7 @@ class _BuildCreditRowState extends State<BuildCreditRow> {
                       });
                     },
                     barrierDismissible: true,
-                    dialogTitle: Text(
-                      'Leave App',
-                      style: getDynamicTextStyle(
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.87)),
-                          sizeDecidingVariable: _screenBasedPixelWidth),
-                      textAlign: TextAlign.center,
-                    ),
+                    dialogTitle: 'Leave App',
                     dialogContent: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(

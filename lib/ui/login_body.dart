@@ -124,17 +124,7 @@ class _LoginSectionState extends State<LoginSection> {
                 isFirstDialogShowing = value;
               });
             },
-            dialogTitle: Text(
-              'Sending login request',
-              style: getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.87)),
-                  sizeDecidingVariable: screenBasedPixelWidth),
-              textAlign: TextAlign.center,
-            ),
+            dialogTitle: 'Sending login request',
             dialogContent: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -228,17 +218,7 @@ class _LoginSectionState extends State<LoginSection> {
               isSecondDialogShowing = value;
             });
           },
-          dialogTitle: Text(
-            'Sign-in Failed',
-            style: getDynamicTextStyle(
-                textStyle: Theme.of(context).textTheme.headline6?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.87)),
-                sizeDecidingVariable: screenBasedPixelWidth),
-            textAlign: TextAlign.center,
-          ),
+          dialogTitle: 'Sign-in Failed',
           dialogContent: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -640,7 +620,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                       borderRadius: 20,
                                                       padding: const EdgeInsets
                                                               .symmetric(
-                                                          vertical: 8,
+                                                          vertical: 0,
                                                           horizontal: 16),
                                                       child: Row(
                                                         children: [
@@ -1094,24 +1074,8 @@ class _LoginSectionState extends State<LoginSection> {
                                                         value;
                                                   });
                                                 },
-                                                dialogTitle: Text(
-                                                  'Sending login request',
-                                                  style: getDynamicTextStyle(
-                                                      textStyle: Theme.of(
-                                                              context)
-                                                          .textTheme
-                                                          .headline6
-                                                          ?.copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .onSurface
-                                                                  .withOpacity(
-                                                                      0.87)),
-                                                      sizeDecidingVariable:
-                                                          screenBasedPixelWidth),
-                                                  textAlign: TextAlign.center,
-                                                ),
+                                                dialogTitle:
+                                                    'Sending login request',
                                                 dialogContent: Column(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
