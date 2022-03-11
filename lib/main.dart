@@ -559,7 +559,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           processingSomething = false;
         });
       }
-      if (loggedUserStatus != "studentPortalScreen") {
+      if (loggedUserStatus != "studentPortalScreen" &&
+          loggedUserStatus != null) {
         debugPrint("closing open gages on auto logout on session time end");
         Navigator.of(context).pop();
       }
@@ -1290,7 +1291,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 processingSomething = false;
               });
             }
-            if (loggedUserStatus != "studentPortalScreen") {
+            if (loggedUserStatus != "studentPortalScreen" &&
+                loggedUserStatus != null) {
               debugPrint(
                   "closing open gages on auto logout on session time end");
               Navigator.of(context).pop();
