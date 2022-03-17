@@ -358,8 +358,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   bool tryAutoLoginStatus =
       false; // Used to store and get the status if a user wants to AutoLogin enabled or not.
 
-  String semesterSubId =
-      "BL20212210"; // Used to store and get the user semester sub id.
+  String semesterSubIdForTimeTable =
+      "BL20212210"; // Used to store and get the user semester sub id for TimeTable.
+
+  String semesterSubIdForAttendance =
+      "BL20212211"; // Used to store and get the user semester sub id for Attendance.
 
   String vtopMode = "Mini VTOP"; // Used to store and get the user vtop mode.
 
@@ -425,30 +428,57 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _retrieveSemesterSubId() async {
+  Future<void> _retrieveSemesterSubIdForAttendance() async {
     final prefs = await SharedPreferences.getInstance();
 
     // Check where the name is saved before or not
-    if (!prefs.containsKey('semesterSubId')) {
+    if (!prefs.containsKey('semesterSubIdForAttendance')) {
       return;
     }
 
     setState(() {
-      semesterSubId = prefs.getString('semesterSubId')!;
+      semesterSubIdForAttendance =
+          prefs.getString('semesterSubIdForAttendance')!;
     });
   }
 
-  Future<String> _justRetrieveSemesterSubId() async {
+  Future<String> _justRetrieveSemesterSubIdForAttendance() async {
     final prefs = await SharedPreferences.getInstance();
 
     // Check where the name is saved before or not
-    if (!prefs.containsKey('semesterSubId')) {
-      semesterSubId = "BL20212210";
+    if (!prefs.containsKey('semesterSubIdForAttendance')) {
+      semesterSubIdForAttendance = "BL20212211";
+      return "BL20212211";
+    }
+
+    semesterSubIdForAttendance = prefs.getString('semesterSubIdForAttendance')!;
+    return prefs.getString('semesterSubIdForAttendance')!;
+  }
+
+  Future<void> _retrieveSemesterSubIdForTimeTable() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('semesterSubIdForTimeTable')) {
+      return;
+    }
+
+    setState(() {
+      semesterSubIdForTimeTable = prefs.getString('semesterSubIdForTimeTable')!;
+    });
+  }
+
+  Future<String> _justRetrieveSemesterSubIdForTimeTable() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check where the name is saved before or not
+    if (!prefs.containsKey('semesterSubIdForTimeTable')) {
+      semesterSubIdForTimeTable = "BL20212210";
       return "BL20212210";
     }
 
-    semesterSubId = prefs.getString('semesterSubId')!;
-    return prefs.getString('semesterSubId')!;
+    semesterSubIdForTimeTable = prefs.getString('semesterSubIdForTimeTable')!;
+    return prefs.getString('semesterSubIdForTimeTable')!;
   }
 
   Future<String> _justRetrieveVtopMode() async {
@@ -469,9 +499,16 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     prefs.setString('sessionDateTime', sessionDateTime.toString());
   }
 
-  Future<void> _saveSemesterSubId() async {
+  Future<void> _saveSemesterSubIdForAttendance() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('semesterSubId', semesterSubId.toString());
+    prefs.setString(
+        'semesterSubIdForAttendance', semesterSubIdForAttendance.toString());
+  }
+
+  Future<void> _saveSemesterSubIdForTimeTable() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(
+        'semesterSubIdForTimeTable', semesterSubIdForTimeTable.toString());
   }
 
   Future<void> _saveVtopMode() async {
@@ -661,7 +698,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _credentialsFound();
     _retrieveSessionDateTime();
     _retrieveTryAutoLoginStatus();
-    _retrieveSemesterSubId();
+    _retrieveSemesterSubIdForAttendance();
+    _retrieveSemesterSubIdForTimeTable();
     _justRetrieveVtopMode();
 
     headlessWebView = HeadlessInAppWebView(
@@ -1334,27 +1372,30 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     // waitStatus = true;
                   } else {
                     if (requestType == "Real") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForTimeTable: $semesterSubIdForTimeTable");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForTimeTable()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     } else if (requestType == "Update") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForTimeTable: $semesterSubIdForTimeTable");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "$semesterSubId";
+             document.getElementById('semesterSubId').value = "$semesterSubIdForTimeTable";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     } else if (requestType == "Fake") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForTimeTable: $semesterSubIdForTimeTable");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForTimeTable()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     }
@@ -1409,10 +1450,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       timeTableDocument: timeTableDocument,
                       screenBasedPixelHeight: screenBasedPixelHeight,
                       screenBasedPixelWidth: screenBasedPixelWidth,
-                      semesterSubId: await _justRetrieveSemesterSubId(),
+                      semesterSubIdForTimeTable:
+                          await _justRetrieveSemesterSubIdForTimeTable(),
                       onSemesterSubIdChange: (String value) {
                         setState(() {
-                          semesterSubId = value;
+                          semesterSubIdForTimeTable = value;
                           requestType = "Update";
                           callTimeTable(
                             context: context,
@@ -1476,10 +1518,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           timeTableDocument: timeTableDocument,
                           screenBasedPixelHeight: screenBasedPixelHeight,
                           screenBasedPixelWidth: screenBasedPixelWidth,
-                          semesterSubId: semesterSubId,
+                          semesterSubIdForTimeTable: semesterSubIdForTimeTable,
                           onSemesterSubIdChange: (String value) {
                             setState(() {
-                              semesterSubId = value;
+                              semesterSubIdForTimeTable = value;
                               requestType = "Update";
                               callTimeTable(
                                 context: context,
@@ -1577,27 +1619,31 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     // waitStatus = true;
                   } else {
                     if (requestType == "Real") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForAttendance: $semesterSubIdForAttendance");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForAttendance()}";
              document.querySelectorAll('[type=submit]')[0].click();
+          
                                 ''');
                     } else if (requestType == "Update") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForAttendance: $semesterSubIdForAttendance");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "$semesterSubId";
+             document.getElementById('semesterSubId').value = "$semesterSubIdForAttendance";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     } else if (requestType == "Fake") {
-                      debugPrint("new semesterSubId: $semesterSubId");
+                      debugPrint(
+                          "new semesterSubIdForAttendance: $semesterSubIdForAttendance");
                       waitStatus = false;
                       await headlessWebView?.webViewController
                           .evaluateJavascript(source: '''
-             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubId()}";
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForAttendance()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     }
@@ -1618,7 +1664,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             }
           } else if (ajaxRequest.url.toString() ==
               "processViewStudentAttendance") {
-            // debugPrint("ajaxRequest: $ajaxRequest");
+            debugPrint("ajaxRequest: $ajaxRequest");
 
             if (ajaxRequest.status == 200) {
               await headlessWebView?.webViewController
@@ -1637,7 +1683,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 }
                 if (requestType == "Real") {
-                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  // semesterSubIdForAttendance = await _justRetrieveSemesterSubIdForAttendance();
                   Navigator.pushNamed(
                     context,
                     PageRoutes.classAttendance,
@@ -1653,10 +1699,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       classAttendanceDocument: classAttendanceDocument,
                       screenBasedPixelHeight: screenBasedPixelHeight,
                       screenBasedPixelWidth: screenBasedPixelWidth,
-                      semesterSubId: await _justRetrieveSemesterSubId(),
+                      semesterSubIdForAttendance:
+                          await _justRetrieveSemesterSubIdForAttendance(),
                       onSemesterSubIdChange: (String value) {
                         setState(() {
-                          semesterSubId = value;
+                          semesterSubIdForAttendance = value;
                           requestType = "Update";
                           callClassAttendance(
                             context: context,
@@ -1720,10 +1767,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           classAttendanceDocument: classAttendanceDocument,
                           screenBasedPixelHeight: screenBasedPixelHeight,
                           screenBasedPixelWidth: screenBasedPixelWidth,
-                          semesterSubId: semesterSubId,
+                          semesterSubIdForAttendance:
+                              semesterSubIdForAttendance,
                           onSemesterSubIdChange: (String value) {
                             setState(() {
-                              semesterSubId = value;
+                              semesterSubIdForAttendance = value;
                               requestType = "Update";
                               callClassAttendance(
                                 context: context,
@@ -2327,12 +2375,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         }
       },
       timeTableDocument: timeTableDocument,
-      semesterSubId: semesterSubId,
+      semesterSubIdForTimeTable: semesterSubIdForTimeTable,
       onUpdateDefaultSemesterId: (String value) {
         setState(() {
-          semesterSubId = value;
+          semesterSubIdForTimeTable = value;
         });
-        _saveSemesterSubId();
+        _saveSemesterSubIdForTimeTable();
       },
       onUpdateVtopMode: (String value) {
         setState(() {

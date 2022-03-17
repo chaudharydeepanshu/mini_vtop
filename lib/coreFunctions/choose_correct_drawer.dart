@@ -20,7 +20,7 @@ chooseCorrectDrawer({
   required String currentFullUrl,
   required ThemeMode? themeMode,
   required dom.Document? timeTableDocument,
-  required String semesterSubId,
+  required String semesterSubIdForTimeTable,
   required String vtopMode,
   required ValueChanged<bool> onTryAutoLoginStatus,
   required ValueChanged<String> onRequestType,
@@ -66,7 +66,7 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubId,
+        semesterSubId: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
@@ -110,7 +110,7 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubId,
+        semesterSubId: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
@@ -176,7 +176,7 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubId,
+        semesterSubId: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
@@ -240,7 +240,7 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubId,
+        semesterSubId: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },

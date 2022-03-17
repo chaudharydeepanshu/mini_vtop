@@ -381,7 +381,7 @@ class _TimeTableState extends State<TimeTable> {
       }
     }
     debugPrint("semesters: $semesters");
-    dropdownValue = (widget.arguments.semesterSubId);
+    dropdownValue = (widget.arguments.semesterSubIdForTimeTable);
   }
 
   @override
@@ -859,7 +859,7 @@ class TimeTableArguments {
   ValueChanged<bool>? onWidgetDispose;
   dom.Document? timeTableDocument;
   ValueChanged<String>? onSemesterSubIdChange;
-  String semesterSubId;
+  String semesterSubIdForTimeTable;
   ValueChanged<bool> onProcessingSomething;
   // String userEnteredUname;
   // String userEnteredPasswd;
@@ -873,7 +873,7 @@ class TimeTableArguments {
     required this.onWidgetDispose,
     required this.timeTableDocument,
     required this.onSemesterSubIdChange,
-    required this.semesterSubId,
+    required this.semesterSubIdForTimeTable,
     required this.onProcessingSomething,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,

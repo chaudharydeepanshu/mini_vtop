@@ -261,7 +261,7 @@ class _ClassAttendanceState extends State<ClassAttendance> {
       }
     }
     debugPrint("semesters: $semesters");
-    dropdownValue = (widget.arguments.semesterSubId);
+    dropdownValue = (widget.arguments.semesterSubIdForAttendance);
   }
 
   @override
@@ -689,7 +689,7 @@ class ClassAttendanceArguments {
   ValueChanged<bool>? onWidgetDispose;
   dom.Document? classAttendanceDocument;
   ValueChanged<String>? onSemesterSubIdChange;
-  String semesterSubId;
+  String semesterSubIdForAttendance;
   ValueChanged<bool> onProcessingSomething;
   // String userEnteredUname;
   // String userEnteredPasswd;
@@ -703,7 +703,7 @@ class ClassAttendanceArguments {
     required this.onWidgetDispose,
     required this.classAttendanceDocument,
     required this.onSemesterSubIdChange,
-    required this.semesterSubId,
+    required this.semesterSubIdForAttendance,
     required this.onProcessingSomething,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,
