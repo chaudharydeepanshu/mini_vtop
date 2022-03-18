@@ -4,13 +4,10 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/custom_elevated_button.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
-import 'package:mini_vtop/ui/settings.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../basicFunctionsAndWidgets/dailog_box_for_leaving_app.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
-import '../navigation/page_routes_model.dart';
 import 'package:html/dom.dart' as dom;
 
 class CustomDrawer extends StatefulWidget {
@@ -26,6 +23,7 @@ class CustomDrawer extends StatefulWidget {
     required this.onThemeMode,
     this.onShowStudentProfileAllView,
     this.onTryAutoLoginStatus,
+    required this.processingSomething,
     required this.onError,
     required this.onProcessingSomething,
     required this.timeTableDocument,
@@ -37,6 +35,7 @@ class CustomDrawer extends StatefulWidget {
     required this.vtopMode,
     required this.loggedUserStatus,
     required this.onLoggedUserStatus,
+    required this.onTimeTableAndAttendance,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -48,6 +47,8 @@ class CustomDrawer extends StatefulWidget {
   final ValueChanged<String> onCurrentFullUrl;
   final double screenBasedPixelWidth;
   final double screenBasedPixelHeight;
+  final bool processingSomething;
+  final ValueChanged<bool>? onTimeTableAndAttendance;
   final ValueChanged<bool>? onShowStudentProfileAllView;
   final ValueChanged<bool>? onTryAutoLoginStatus;
   final ValueChanged<String> onError;
@@ -78,6 +79,57 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
 
     super.didUpdateWidget(oldWidget);
+  }
+
+  runRequestingSettingsDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      widget.onProcessingSomething.call(
+          true); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: 'Preparing Settings',
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: widgetSizeProvider(
+                  fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+              width: widgetSizeProvider(
+                  fixedSize: 36, sizeDecidingVariable: screenBasedPixelWidth),
+              child: CircularProgressIndicator(
+                strokeWidth: widgetSizeProvider(
+                    fixedSize: 4, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+            ),
+            Text(
+              'Please wait...',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          widget.onProcessingSomething.call(value);
+        },
+      ).then((_) => isDialogShowing = false);
+    });
   }
 
   vtopModeButtonTextCalc() async {
@@ -339,37 +391,41 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
                           // Then close the drawer
                           Navigator.pop(context);
-                          widget.onShowStudentProfileAllView?.call(true);
-                          Navigator.pushNamed(
-                            context,
-                            PageRoutes.settings,
-                            arguments: SettingsArguments(
-                              currentStatus: widget.currentStatus,
-                              onWidgetDispose: (bool value) {
-                                debugPrint("settings disposed");
-                                WidgetsBinding.instance?.addPostFrameCallback(
-                                  (_) => widget.onLoggedUserStatus
-                                      .call("studentPortalScreen"),
-                                );
-                              },
-                              timeTableDocument: widget.timeTableDocument,
-                              screenBasedPixelHeight: screenBasedPixelHeight,
-                              screenBasedPixelWidth: screenBasedPixelWidth,
-                              semesterSubId: widget.semesterSubId,
-                              onSemesterSubIdChange: (String value) {},
-                              onProcessingSomething: (bool value) {
-                                widget.onProcessingSomething.call(value);
-                              },
-                              onUpdateDefaultSemesterId: (String value) {
-                                widget.onUpdateDefaultSemesterId.call(value);
-                              },
-                              vtopMode: widget.vtopMode,
-                              onUpdateDefaultVtopMode: (String value) {
-                                widget.onUpdateDefaultVtopMode.call(value);
-                              },
-                            ),
-                          );
-                          widget.onLoggedUserStatus.call("settings");
+                          // widget.onShowStudentProfileAllView?.call(true);
+                          widget.onTimeTableAndAttendance?.call(true);
+                          runRequestingSettingsDialogBox();
+                          // Navigator.pushNamed(
+                          //   context,
+                          //   PageRoutes.settings,
+                          //   arguments: SettingsArguments(
+                          //     currentStatus: widget.currentStatus,
+                          //     onWidgetDispose: (bool value) {
+                          //       debugPrint("settings disposed");
+                          //       WidgetsBinding.instance?.addPostFrameCallback(
+                          //         (_) => widget.onLoggedUserStatus
+                          //             .call("studentPortalScreen"),
+                          //       );
+                          //     },
+                          //     timeTableDocument: widget.timeTableDocument,
+                          //     screenBasedPixelHeight: screenBasedPixelHeight,
+                          //     screenBasedPixelWidth: screenBasedPixelWidth,
+                          //     semesterSubId: widget.semesterSubId,
+                          //     onSemesterSubIdChange: (String value) {},
+                          //     onProcessingSomething: (bool value) {
+                          //       widget.onProcessingSomething.call(value);
+                          //     },
+                          //     onUpdateDefaultSemesterId: (String value) {
+                          //       widget.onUpdateDefaultSemesterId.call(value);
+                          //     },
+                          //     vtopMode: widget.vtopMode,
+                          //     onUpdateDefaultVtopMode: (String value) {
+                          //       widget.onUpdateDefaultVtopMode.call(value);
+                          //     },
+                          //     headlessWebView: widget.headlessWebView,
+                          //     processingSomething: widget.processingSomething,
+                          //   ),
+                          // );
+                          // widget.onLoggedUserStatus.call("settings");
                         },
                         child: Row(
                           children: const [

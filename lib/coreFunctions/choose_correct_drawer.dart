@@ -5,6 +5,8 @@ import 'package:mini_vtop/ui/drawer.dart';
 import 'call_student_profile_all_view.dart';
 import 'package:html/dom.dart' as dom;
 
+import 'call_time_table.dart';
+
 chooseCorrectDrawer({
   required BuildContext context,
   required double screenBasedPixelWidth,
@@ -84,6 +86,24 @@ chooseCorrectDrawer({
         onLoggedUserStatus: (String value) {
           onLoggedUserStatus.call(value);
         },
+        processingSomething: processingSomething,
+        onTimeTableAndAttendance: (bool value) {
+          onRequestType.call("ForDrawer");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
+        },
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -127,6 +147,24 @@ chooseCorrectDrawer({
         loggedUserStatus: loggedUserStatus,
         onLoggedUserStatus: (String value) {
           onLoggedUserStatus.call(value);
+        },
+        processingSomething: processingSomething,
+        onTimeTableAndAttendance: (bool value) {
+          onRequestType.call("ForDrawer");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
         },
       ),
     );
@@ -194,6 +232,24 @@ chooseCorrectDrawer({
         onLoggedUserStatus: (String value) {
           onLoggedUserStatus.call(value);
         },
+        processingSomething: processingSomething,
+        onTimeTableAndAttendance: (bool value) {
+          onRequestType.call("ForDrawer");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
+        },
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -257,6 +313,24 @@ chooseCorrectDrawer({
         loggedUserStatus: loggedUserStatus,
         onLoggedUserStatus: (String value) {
           onLoggedUserStatus.call(value);
+        },
+        processingSomething: processingSomething,
+        onTimeTableAndAttendance: (bool value) {
+          onRequestType.call("ForDrawer");
+          callTimeTable(
+            context: context,
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              onCurrentFullUrl.call(value);
+            },
+            processingSomething: value,
+            onProcessingSomething: (bool value) {
+              onProcessingSomething.call(value);
+            },
+            onError: (String value) {
+              onError.call(value);
+            },
+          );
         },
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 
-class BuildSemesterSelector extends StatefulWidget {
-  const BuildSemesterSelector(
+class BuildSemesterSelectorForTimeTable extends StatefulWidget {
+  const BuildSemesterSelectorForTimeTable(
       {Key? key,
       required this.screenBasedPixelWidth,
       required this.screenBasedPixelHeight,
@@ -21,10 +21,12 @@ class BuildSemesterSelector extends StatefulWidget {
   final String dropdownValue;
 
   @override
-  _BuildSemesterSelectorState createState() => _BuildSemesterSelectorState();
+  _BuildSemesterSelectorForTimeTableState createState() =>
+      _BuildSemesterSelectorForTimeTableState();
 }
 
-class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
+class _BuildSemesterSelectorForTimeTableState
+    extends State<BuildSemesterSelectorForTimeTable> {
   late final double _screenBasedPixelWidth = widget.screenBasedPixelWidth;
 
   late String _dropdownValue = widget.dropdownValue;
@@ -32,7 +34,7 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
   late final List<Map<String, String>> _semesters = widget.dropdownItems;
 
   @override
-  void didUpdateWidget(BuildSemesterSelector oldWidget) {
+  void didUpdateWidget(BuildSemesterSelectorForTimeTable oldWidget) {
     if (oldWidget.dropdownValue != widget.dropdownValue) {
       setState(() {
         _dropdownValue = widget.dropdownValue;
@@ -50,7 +52,7 @@ class _BuildSemesterSelectorState extends State<BuildSemesterSelector> {
         Flexible(
           flex: 1,
           child: Text(
-            "Semester",
+            "TimeTable",
             overflow: TextOverflow.ellipsis,
             style: getDynamicTextStyle(
                 textStyle: Theme.of(context).textTheme.bodyText1,

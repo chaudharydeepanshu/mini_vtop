@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 
-import '../basicFunctionsAndWidgets/build_semester_selector_widget.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_timetable.dart';
 import '../basicFunctionsAndWidgets/measure_size_of_widget.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
@@ -474,7 +474,7 @@ class _TimeTableState extends State<TimeTable> {
                                   fixedSize: 8,
                                   sizeDecidingVariable: screenBasedPixelWidth),
                             ),
-                            child: BuildSemesterSelector(
+                            child: BuildSemesterSelectorForTimeTable(
                               dropdownItems: semesters,
                               dropdownValue: dropdownValue,
                               onDropDownChanged: (String? newValue) {

@@ -1,12 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:mini_vtop/basicFunctionsAndWidgets/build_credit_row.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../basicFunctionsAndWidgets/build_semester_selector_widget.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_Attendance.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_timetable.dart';
 import '../basicFunctionsAndWidgets/custom_elevated_button.dart';
-import '../basicFunctionsAndWidgets/dailog_box_for_leaving_app.dart';
-import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import '../basicFunctionsAndWidgets/build_vtop_mode_selector_widget.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
@@ -87,27 +87,54 @@ class _SettingsState extends State<Settings> {
     screenBasedPixelWidth = (widget.arguments.screenBasedPixelWidth);
     screenBasedPixelHeight = (widget.arguments.screenBasedPixelHeight);
 
-    for (int i = 0; i < semestersHtmlForm.length; i++) {
-      if (semestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' ') !=
+    for (int i = 0; i < timeTableSemestersHtmlForm.length; i++) {
+      if (timeTableSemestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' ') !=
               "-- Choose Semester --" ||
-          semestersHtmlForm[i]
+          timeTableSemestersHtmlForm[i]
                   .attributes["value"]
                   .toString()
                   .replaceAll(RegExp('\\s+'), ' ') !=
               "") {
         Map<String, String> semesterDetail = {
-          "semesterName":
-              semestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' '),
-          "semesterCode": semestersHtmlForm[i]
+          "semesterName": timeTableSemestersHtmlForm[i]
+              .text
+              .replaceAll(RegExp('\\s+'), ' '),
+          "semesterCode": timeTableSemestersHtmlForm[i]
               .attributes["value"]
               .toString()
               .replaceAll(RegExp('\\s+'), ' '),
         };
-        semesters.add(semesterDetail);
+        timeTableSemesters.add(semesterDetail);
       }
     }
-    debugPrint("semesters: $semesters");
-    semesterIdDropdownValue = (widget.arguments.semesterSubId);
+    debugPrint("semesters: $timeTableSemesters");
+    timeTableSemesterIdDropdownValue =
+        (widget.arguments.semesterSubIdForTimeTable);
+
+    for (int i = 0; i < attendanceSemestersHtmlForm.length; i++) {
+      if (attendanceSemestersHtmlForm[i].text.replaceAll(RegExp('\\s+'), ' ') !=
+              "-- Choose Semester --" ||
+          attendanceSemestersHtmlForm[i]
+                  .attributes["value"]
+                  .toString()
+                  .replaceAll(RegExp('\\s+'), ' ') !=
+              "") {
+        Map<String, String> semesterDetail = {
+          "semesterName": attendanceSemestersHtmlForm[i]
+              .text
+              .replaceAll(RegExp('\\s+'), ' '),
+          "semesterCode": attendanceSemestersHtmlForm[i]
+              .attributes["value"]
+              .toString()
+              .replaceAll(RegExp('\\s+'), ' '),
+        };
+        attendanceSemesters.add(semesterDetail);
+      }
+    }
+    debugPrint("semesters: $attendanceSemesters");
+    attendanceSemesterIdDropdownValue =
+        (widget.arguments.semesterSubIdForAttendance);
+
     vtopModeDropdownValue = (widget.arguments.vtopMode);
   }
 
@@ -120,17 +147,26 @@ class _SettingsState extends State<Settings> {
   late double screenBasedPixelWidth;
   late double screenBasedPixelHeight;
 
-  late String semesterIdDropdownValue;
+  late String timeTableSemesterIdDropdownValue;
+  late String attendanceSemesterIdDropdownValue;
   late String vtopModeDropdownValue;
 
   bool isDialogShowing = false;
 
-  late List semestersHtmlForm = widget.arguments.timeTableDocument
+  late List timeTableSemestersHtmlForm = widget.arguments.timeTableDocument
           ?.getElementById('semesterSubId')
           ?.children ??
       [];
 
-  List<Map<String, String>> semesters = [];
+  List<Map<String, String>> timeTableSemesters = [];
+
+  late List attendanceSemestersHtmlForm = widget
+          .arguments.classAttendanceDocument
+          ?.getElementById('semesterSubId')
+          ?.children ??
+      [];
+
+  List<Map<String, String>> attendanceSemesters = [];
 
   List<String> vtopModes = ['Mini VTOP', 'Full VTOP'];
 
@@ -204,18 +240,37 @@ class _SettingsState extends State<Settings> {
                                       screenBasedPixelHeight:
                                           screenBasedPixelHeight,
                                       settingsBoxChildren: [
-                                        BuildSemesterSelector(
-                                          dropdownItems: semesters,
+                                        BuildSemesterSelectorForTimeTable(
+                                          dropdownItems: timeTableSemesters,
                                           dropdownValue:
-                                              semesterIdDropdownValue,
+                                              timeTableSemesterIdDropdownValue,
                                           onDropDownChanged:
                                               (String? newValue) {
                                             setState(() {
-                                              semesterIdDropdownValue =
+                                              timeTableSemesterIdDropdownValue =
                                                   newValue!;
                                             });
                                             widget.arguments
-                                                .onUpdateDefaultSemesterId
+                                                .onUpdateDefaultTimeTableSemesterId
+                                                .call(newValue!);
+                                          },
+                                          screenBasedPixelHeight:
+                                              screenBasedPixelHeight,
+                                          screenBasedPixelWidth:
+                                              screenBasedPixelWidth,
+                                        ),
+                                        BuildSemesterSelectorForAttendance(
+                                          dropdownItems: attendanceSemesters,
+                                          dropdownValue:
+                                              attendanceSemesterIdDropdownValue,
+                                          onDropDownChanged:
+                                              (String? newValue) {
+                                            setState(() {
+                                              attendanceSemesterIdDropdownValue =
+                                                  newValue!;
+                                            });
+                                            widget.arguments
+                                                .onUpdateDefaultAttendanceSemesterId
                                                 .call(newValue!);
                                           },
                                           screenBasedPixelHeight:
@@ -428,11 +483,17 @@ class SettingsArguments {
   String? currentStatus;
   ValueChanged<bool>? onWidgetDispose;
   dom.Document? timeTableDocument;
-  ValueChanged<String>? onSemesterSubIdChange;
-  String semesterSubId;
+  dom.Document? classAttendanceDocument;
+  ValueChanged<String>? onSemesterSubIdForTimeTableChange;
+  ValueChanged<String>? onSemesterSubIdForAttendanceChange;
+  String semesterSubIdForTimeTable;
+  String semesterSubIdForAttendance;
   String vtopMode;
+  bool processingSomething;
+  HeadlessInAppWebView? headlessWebView;
   ValueChanged<bool> onProcessingSomething;
-  ValueChanged<String> onUpdateDefaultSemesterId;
+  ValueChanged<String> onUpdateDefaultTimeTableSemesterId;
+  ValueChanged<String> onUpdateDefaultAttendanceSemesterId;
   ValueChanged<String> onUpdateDefaultVtopMode;
 
   // String userEnteredUname;
@@ -446,11 +507,17 @@ class SettingsArguments {
     required this.currentStatus,
     required this.onWidgetDispose,
     required this.timeTableDocument,
-    required this.onSemesterSubIdChange,
-    required this.semesterSubId,
+    required this.classAttendanceDocument,
+    required this.onSemesterSubIdForTimeTableChange,
+    required this.onSemesterSubIdForAttendanceChange,
+    required this.semesterSubIdForTimeTable,
+    required this.semesterSubIdForAttendance,
     required this.vtopMode,
+    required this.processingSomething,
+    required this.headlessWebView,
     required this.onProcessingSomething,
-    required this.onUpdateDefaultSemesterId,
+    required this.onUpdateDefaultTimeTableSemesterId,
+    required this.onUpdateDefaultAttendanceSemesterId,
     required this.onUpdateDefaultVtopMode,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,

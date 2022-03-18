@@ -359,7 +359,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       false; // Used to store and get the status if a user wants to AutoLogin enabled or not.
 
   String semesterSubIdForTimeTable =
-      "BL20212210"; // Used to store and get the user semester sub id for TimeTable.
+      "BL20212211"; // Used to store and get the user semester sub id for TimeTable.
 
   String semesterSubIdForAttendance =
       "BL20212211"; // Used to store and get the user semester sub id for Attendance.
@@ -473,8 +473,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     // Check where the name is saved before or not
     if (!prefs.containsKey('semesterSubIdForTimeTable')) {
-      semesterSubIdForTimeTable = "BL20212210";
-      return "BL20212210";
+      semesterSubIdForTimeTable = "BL20212211";
+      return "BL20212211";
     }
 
     semesterSubIdForTimeTable = prefs.getString('semesterSubIdForTimeTable')!;
@@ -1144,7 +1144,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
                   processingSomething = false;
                 });
-                initialiseTimeTableHtmlDocument();
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
@@ -1223,7 +1222,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
                     loggedUserStatus = "studentPortalScreen";
                   });
-                  initialiseTimeTableHtmlDocument();
                 });
               });
             } else if (requestType == "Fake") {
@@ -1398,6 +1396,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
              document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForTimeTable()}";
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
+                    } else if (requestType == "ForDrawer") {
+                      debugPrint(
+                          "new semesterSubIdForTimeTable: $semesterSubIdForTimeTable");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForTimeTable()}";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
                     }
                   }
                 });
@@ -1427,7 +1434,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 setState(() {
                   timeTableDocument = document;
                 });
-                if (processingSomething == true) {
+                if (processingSomething == true && requestType != "ForDrawer") {
                   Navigator.of(context).pop();
                   setState(() {
                     processingSomething = false;
@@ -1589,7 +1596,48 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     loggedUserStatus = "timeTable";
                   });
-                } else if (requestType == "Fake") {}
+                } else if (requestType == "Fake") {
+                } else if (requestType == "ForDrawer") {
+                  print("Request For Drawer");
+                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  setState(() {
+                    requestType = "ForDrawer";
+                  });
+                  callClassAttendance(
+                    context: context,
+                    headlessWebView: headlessWebView,
+                    onCurrentFullUrl: (String value) {
+                      setState(() {
+                        currentFullUrl = value;
+                      });
+                    },
+                    processingSomething: true,
+                    onProcessingSomething: (bool value) {
+                      setState(() {
+                        processingSomething = value;
+                      });
+                    },
+                    onError: (String value) {
+                      debugPrint("Updating Ui based on the error received");
+                      if (processingSomething == true) {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          processingSomething = false;
+                        });
+                      }
+                      if (value == "net::ERR_INTERNET_DISCONNECTED") {
+                        debugPrint(
+                            "Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+                        setState(() {
+                          currentStatus = "launchLoadingScreen";
+                          vtopConnectionStatusErrorType =
+                              "net::ERR_INTERNET_DISCONNECTED";
+                          vtopConnectionStatusType = "Error";
+                        });
+                      }
+                    },
+                  );
+                }
               });
             } else if (ajaxRequest.responseText!.contains(
                     "You are logged out due to inactivity for more than 15 minutes") ||
@@ -1638,6 +1686,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
              document.querySelectorAll('[type=submit]')[0].click();
                                 ''');
                     } else if (requestType == "Fake") {
+                      debugPrint(
+                          "new semesterSubIdForAttendance: $semesterSubIdForAttendance");
+                      waitStatus = false;
+                      await headlessWebView?.webViewController
+                          .evaluateJavascript(source: '''
+             document.getElementById('semesterSubId').value = "${await _justRetrieveSemesterSubIdForAttendance()}";
+             document.querySelectorAll('[type=submit]')[0].click();
+                                ''');
+                    } else if (requestType == "ForDrawer") {
                       debugPrint(
                           "new semesterSubIdForAttendance: $semesterSubIdForAttendance");
                       waitStatus = false;
@@ -1839,7 +1896,67 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     loggedUserStatus = "classAttendance";
                   });
-                } else if (requestType == "Fake") {}
+                } else if (requestType == "Fake") {
+                } else if (requestType == "ForDrawer") {
+                  print("Request For Drawer");
+                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  if (loggedUserStatus != "settings") {
+                    Navigator.pushNamed(
+                      context,
+                      PageRoutes.settings,
+                      arguments: SettingsArguments(
+                        currentStatus: currentStatus,
+                        onWidgetDispose: (bool value) {
+                          debugPrint("settings disposed");
+                          WidgetsBinding.instance?.addPostFrameCallback(
+                            (_) {
+                              setState(() {
+                                loggedUserStatus = "studentPortalScreen";
+                              });
+                            },
+                          );
+                        },
+                        timeTableDocument: timeTableDocument,
+                        classAttendanceDocument: classAttendanceDocument,
+                        screenBasedPixelHeight: screenBasedPixelHeight,
+                        screenBasedPixelWidth: screenBasedPixelWidth,
+                        semesterSubIdForTimeTable: semesterSubIdForTimeTable,
+                        semesterSubIdForAttendance: semesterSubIdForAttendance,
+                        onSemesterSubIdForTimeTableChange: (String value) {},
+                        onSemesterSubIdForAttendanceChange: (String value) {},
+                        onProcessingSomething: (bool value) {
+                          setState(() {
+                            processingSomething = value;
+                          });
+                        },
+                        onUpdateDefaultTimeTableSemesterId: (String value) {
+                          setState(() {
+                            semesterSubIdForTimeTable = value;
+                          });
+                          _saveSemesterSubIdForTimeTable();
+                        },
+                        onUpdateDefaultAttendanceSemesterId: (String value) {
+                          setState(() {
+                            semesterSubIdForAttendance = value;
+                          });
+                          _saveSemesterSubIdForAttendance();
+                        },
+                        vtopMode: vtopMode,
+                        onUpdateDefaultVtopMode: (String value) {
+                          setState(() {
+                            vtopMode = value;
+                          });
+                          _saveVtopMode();
+                        },
+                        headlessWebView: headlessWebView,
+                        processingSomething: processingSomething,
+                      ),
+                    );
+                  }
+                  setState(() {
+                    loggedUserStatus = "settings";
+                  });
+                }
               });
             } else if (ajaxRequest.responseText!.contains(
                     "You are logged out due to inactivity for more than 15 minutes") ||
@@ -2046,42 +2163,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     //   vtopConnectionStatusType = "Connecting";
     // });
     // });
-  }
-
-  initialiseTimeTableHtmlDocument() {
-    requestType = "Fake";
-    callTimeTable(
-      context: context,
-      headlessWebView: headlessWebView,
-      onCurrentFullUrl: (String value) {
-        setState(() {
-          currentFullUrl = value;
-        });
-      },
-      processingSomething: false,
-      onProcessingSomething: (bool value) {
-        setState(() {
-          processingSomething = value;
-        });
-      },
-      onError: (String value) {
-        debugPrint("Updating Ui based on the error received");
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          setState(() {
-            processingSomething = false;
-          });
-        }
-        if (value == "net::ERR_INTERNET_DISCONNECTED") {
-          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-          setState(() {
-            currentStatus = "launchLoadingScreen";
-            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
-            vtopConnectionStatusType = "Error";
-          });
-        }
-      },
-    );
   }
 
   @override
