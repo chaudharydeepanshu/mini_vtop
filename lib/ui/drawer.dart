@@ -4,11 +4,14 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/custom_elevated_button.dart';
 import 'package:mini_vtop/coreFunctions/sign_out.dart';
+import 'package:mini_vtop/ui/settings.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'package:html/dom.dart' as dom;
+
+import '../navigation/page_routes_model.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
@@ -27,15 +30,18 @@ class CustomDrawer extends StatefulWidget {
     required this.onError,
     required this.onProcessingSomething,
     required this.timeTableDocument,
-    required this.semesterSubId,
+    required this.semesterSubIdForTimeTable,
     required this.onRequestType,
-    required this.onUpdateDefaultSemesterId,
+    required this.onUpdateDefaultTimeTableSemesterId,
     required this.onUpdateDefaultVtopMode,
     required this.onUpdateVtopMode,
     required this.vtopMode,
     required this.loggedUserStatus,
     required this.onLoggedUserStatus,
     required this.onTimeTableAndAttendance,
+    required this.classAttendanceDocument,
+    required this.semesterSubIdForAttendance,
+    required this.onUpdateDefaultAttendanceSemesterId,
   }) : super(key: key);
   final ThemeMode? themeMode;
   final ValueChanged<ThemeMode>? onThemeMode;
@@ -54,10 +60,13 @@ class CustomDrawer extends StatefulWidget {
   final ValueChanged<String> onError;
   final ValueChanged<bool> onProcessingSomething;
   final dom.Document? timeTableDocument;
-  final String semesterSubId;
+  final dom.Document? classAttendanceDocument;
+  final String semesterSubIdForTimeTable;
+  final String semesterSubIdForAttendance;
   final String vtopMode;
   final ValueChanged<String> onRequestType;
-  final ValueChanged<String> onUpdateDefaultSemesterId;
+  final ValueChanged<String> onUpdateDefaultTimeTableSemesterId;
+  final ValueChanged<String> onUpdateDefaultAttendanceSemesterId;
   final ValueChanged<String> onUpdateDefaultVtopMode;
 
   final ValueChanged<String> onUpdateVtopMode;
@@ -392,8 +401,59 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           // Then close the drawer
                           Navigator.pop(context);
                           // widget.onShowStudentProfileAllView?.call(true);
-                          widget.onTimeTableAndAttendance?.call(true);
-                          runRequestingSettingsDialogBox();
+                          if (_currentStatus != "signInScreen" &&
+                              _currentStatus != "launchLoadingScreen") {
+                            widget.onTimeTableAndAttendance?.call(true);
+                            runRequestingSettingsDialogBox();
+                          } else {
+                            Navigator.pushNamed(
+                              context,
+                              PageRoutes.settings,
+                              arguments: SettingsArguments(
+                                currentStatus: widget.currentStatus,
+                                onWidgetDispose: (bool value) {
+                                  debugPrint("settings disposed");
+                                  WidgetsBinding.instance?.addPostFrameCallback(
+                                    (_) => widget.onLoggedUserStatus
+                                        .call("studentPortalScreen"),
+                                  );
+                                },
+                                timeTableDocument: widget.timeTableDocument,
+                                classAttendanceDocument:
+                                    widget.classAttendanceDocument,
+                                screenBasedPixelHeight: screenBasedPixelHeight,
+                                screenBasedPixelWidth: screenBasedPixelWidth,
+                                semesterSubIdForTimeTable:
+                                    widget.semesterSubIdForTimeTable,
+                                semesterSubIdForAttendance:
+                                    widget.semesterSubIdForAttendance,
+                                onSemesterSubIdForTimeTableChange:
+                                    (String value) {},
+                                onSemesterSubIdForAttendanceChange:
+                                    (String value) {},
+                                onProcessingSomething: (bool value) {
+                                  widget.onProcessingSomething.call(value);
+                                },
+                                onUpdateDefaultTimeTableSemesterId:
+                                    (String value) {
+                                  widget.onUpdateDefaultTimeTableSemesterId
+                                      .call(value);
+                                },
+                                onUpdateDefaultAttendanceSemesterId:
+                                    (String value) {
+                                  widget.onUpdateDefaultAttendanceSemesterId
+                                      .call(value);
+                                },
+                                vtopMode: widget.vtopMode,
+                                onUpdateDefaultVtopMode: (String value) {
+                                  widget.onUpdateDefaultVtopMode.call(value);
+                                },
+                                headlessWebView: widget.headlessWebView,
+                                processingSomething: widget.processingSomething,
+                              ),
+                            );
+                            widget.onLoggedUserStatus.call("settings");
+                          }
                           // Navigator.pushNamed(
                           //   context,
                           //   PageRoutes.settings,

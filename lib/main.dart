@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'dart:typed_data';
@@ -80,7 +81,7 @@ Future main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
 
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   int? retrieveSavedThemeModeIndex = await retrieveSavedThemeMode();
   final ThemeMode savedThemeMode = retrieveSavedThemeModeIndex == 0
       ? ThemeMode.system
@@ -115,6 +116,7 @@ Future main() async {
 
   // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(
     // ↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓
     MultiProvider(
@@ -136,6 +138,8 @@ Future main() async {
       ),
     ),
   );
+  // whenever your initialization is completed, remove the splash screen:
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatefulWidget {
@@ -2457,7 +2461,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       },
       timeTableDocument: timeTableDocument,
       semesterSubIdForTimeTable: semesterSubIdForTimeTable,
-      onUpdateDefaultSemesterId: (String value) {
+      onUpdateDefaultTimeTableSemesterId: (String value) {
         setState(() {
           semesterSubIdForTimeTable = value;
         });
@@ -2485,6 +2489,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         setState(() {
           loggedUserStatus = value;
         });
+      },
+      classAttendanceDocument: classAttendanceDocument,
+      semesterSubIdForAttendance: semesterSubIdForAttendance,
+      onUpdateDefaultAttendanceSemesterId: (String value) {
+        setState(() {
+          semesterSubIdForAttendance = value;
+        });
+        _saveSemesterSubIdForAttendance();
       },
     );
 

@@ -23,6 +23,8 @@ chooseCorrectDrawer({
   required ThemeMode? themeMode,
   required dom.Document? timeTableDocument,
   required String semesterSubIdForTimeTable,
+  required dom.Document? classAttendanceDocument,
+  required String semesterSubIdForAttendance,
   required String vtopMode,
   required ValueChanged<bool> onTryAutoLoginStatus,
   required ValueChanged<String> onRequestType,
@@ -35,7 +37,8 @@ chooseCorrectDrawer({
   required ValueChanged<String> onUserEnteredPasswd,
   required ValueChanged<String> onError,
   required ValueChanged<Widget?> onDrawer,
-  required ValueChanged<String> onUpdateDefaultSemesterId,
+  required ValueChanged<String> onUpdateDefaultTimeTableSemesterId,
+  required ValueChanged<String> onUpdateDefaultAttendanceSemesterId,
   required ValueChanged<String> onUpdateDefaultVtopMode,
   required ValueChanged<String> onUpdateVtopMode,
   required ValueChanged<String> onLoggedUserStatus,
@@ -68,12 +71,12 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubIdForTimeTable,
+        semesterSubIdForTimeTable: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
-        onUpdateDefaultSemesterId: (String value) {
-          onUpdateDefaultSemesterId.call(value);
+        onUpdateDefaultTimeTableSemesterId: (String value) {
+          onUpdateDefaultTimeTableSemesterId.call(value);
         },
         onUpdateDefaultVtopMode: (String value) {
           onUpdateDefaultVtopMode.call(value);
@@ -104,6 +107,11 @@ chooseCorrectDrawer({
             },
           );
         },
+        onUpdateDefaultAttendanceSemesterId: (String value) {
+          onUpdateDefaultAttendanceSemesterId.call(value);
+        },
+        semesterSubIdForAttendance: semesterSubIdForAttendance,
+        classAttendanceDocument: classAttendanceDocument,
       ),
     );
   } else if (currentStatus == "signInScreen") {
@@ -130,12 +138,12 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubIdForTimeTable,
+        semesterSubIdForTimeTable: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
-        onUpdateDefaultSemesterId: (String value) {
-          onUpdateDefaultSemesterId.call(value);
+        onUpdateDefaultTimeTableSemesterId: (String value) {
+          onUpdateDefaultTimeTableSemesterId.call(value);
         },
         onUpdateDefaultVtopMode: (String value) {
           onUpdateDefaultVtopMode.call(value);
@@ -166,6 +174,11 @@ chooseCorrectDrawer({
             },
           );
         },
+        onUpdateDefaultAttendanceSemesterId: (String value) {
+          onUpdateDefaultAttendanceSemesterId.call(value);
+        },
+        semesterSubIdForAttendance: semesterSubIdForAttendance,
+        classAttendanceDocument: classAttendanceDocument,
       ),
     );
   } else if (currentStatus == "userLoggedIn") {
@@ -214,12 +227,12 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubIdForTimeTable,
+        semesterSubIdForTimeTable: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
-        onUpdateDefaultSemesterId: (String value) {
-          onUpdateDefaultSemesterId.call(value);
+        onUpdateDefaultTimeTableSemesterId: (String value) {
+          onUpdateDefaultTimeTableSemesterId.call(value);
         },
         onUpdateDefaultVtopMode: (String value) {
           onUpdateDefaultVtopMode.call(value);
@@ -250,6 +263,11 @@ chooseCorrectDrawer({
             },
           );
         },
+        onUpdateDefaultAttendanceSemesterId: (String value) {
+          onUpdateDefaultAttendanceSemesterId.call(value);
+        },
+        semesterSubIdForAttendance: semesterSubIdForAttendance,
+        classAttendanceDocument: classAttendanceDocument,
       ),
     );
   } else if (currentStatus == "originalVTOP") {
@@ -296,12 +314,12 @@ chooseCorrectDrawer({
           onProcessingSomething.call(value);
         },
         timeTableDocument: timeTableDocument,
-        semesterSubId: semesterSubIdForTimeTable,
+        semesterSubIdForTimeTable: semesterSubIdForTimeTable,
         onRequestType: (String value) {
           onRequestType.call(value);
         },
-        onUpdateDefaultSemesterId: (String value) {
-          onUpdateDefaultSemesterId.call(value);
+        onUpdateDefaultTimeTableSemesterId: (String value) {
+          onUpdateDefaultTimeTableSemesterId.call(value);
         },
         onUpdateDefaultVtopMode: (String value) {
           onUpdateDefaultVtopMode.call(value);
@@ -332,6 +350,11 @@ chooseCorrectDrawer({
             },
           );
         },
+        onUpdateDefaultAttendanceSemesterId: (String value) {
+          onUpdateDefaultAttendanceSemesterId.call(value);
+        },
+        semesterSubIdForAttendance: semesterSubIdForAttendance,
+        classAttendanceDocument: classAttendanceDocument,
       ),
     );
   }
