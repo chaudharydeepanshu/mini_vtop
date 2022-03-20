@@ -753,13 +753,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         //   Navigator.of(context).pop();
         // }
         checkInternetConnection();
+
         Future.delayed(const Duration(seconds: 5), () async {
           if (vtopConnectionStatusType == "Initiated") {
-            setState(() {
-              vtopConnectionStatusType = "Connecting";
-            });
+            if (mounted) {
+              setState(() {
+                vtopConnectionStatusType = "Connecting";
+              });
+            }
           }
         });
+
         // vtopConnectionStatusType = "Initiated";
         timer = Timer.periodic(const Duration(seconds: 20), (Timer t) {
           if (currentStatus == "launchLoadingScreen" &&
@@ -2125,8 +2129,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             vtopConnectionStatusErrorType = message;
 
             if (vtopConnectionStatusErrorType ==
-                "net::ERR_CONNECTION_TIMED_OUT") {
+                    "net::ERR_CONNECTION_TIMED_OUT" &&
+                usingVITWifi == null) {
               getWifiTypeDialogBox();
+            } else if (vtopConnectionStatusErrorType ==
+                    "net::ERR_CONNECTION_TIMED_OUT" &&
+                usingVITWifi == true) {
+              runDnsSettingsDialogBox();
             }
           });
         } else {
@@ -2177,7 +2186,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     // });
   }
 
-  bool usingVITWifi = false;
+  bool? usingVITWifi;
 
   late List<Widget> dialogActionButtonsListForGettingWifiType = [
     CustomTextButton(
@@ -2255,6 +2264,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         if (usingVITWifi == true) {
           runDnsSettingsDialogBox();
         }
+        processingSomething = false;
         return isDialogShowing = false;
       });
     });
@@ -2318,7 +2328,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           });
         },
         dialogActions: dialogActionButtonsListForDnsSettings,
-      ).then((_) => isDialogShowing = false);
+      ).then((_) {
+        processingSomething = false;
+        return isDialogShowing = false;
+      });
     });
   }
 
