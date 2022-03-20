@@ -48,6 +48,7 @@ dependencies:
   dio: ^4.0.4
   open_file: ^3.2.1
   flutter_markdown: ^0.6.9
+  open_settings: ^2.0.2
 
   #↓↓↓↓↓↓↓↓↓↓↓↓ For the full VTOP browser feature ↓↓↓↓↓↓↓↓↓↓↓↓
   flutter_downloader: ^1.7.3

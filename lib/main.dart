@@ -33,7 +33,9 @@ import 'package:mini_vtop/ui/settings.dart';
 import 'package:mini_vtop/ui/student_profile_all_view.dart';
 import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
+import 'package:open_settings/open_settings.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:version/version.dart';
 import 'basicFunctionsAndWidgets/custom_elevated_button.dart';
@@ -2228,7 +2230,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Are you connect to VIT Bhopal Wifi?',
+              'Are you connected to VIT Bhopal Wifi?',
               style: getDynamicTextStyle(
                   textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: Theme.of(context)
@@ -2258,6 +2260,23 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
+  late List<Widget> dialogActionButtonsListForDnsSettings = [
+    CustomTextButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+        OpenSettings.openAirplaneModeSetting();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'OPEN SETTINGS',
+      ),
+    ),
+  ];
+
   runDnsSettingsDialogBox() {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
@@ -2271,14 +2290,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             isDialogShowing = value;
           });
         },
-        dialogTitle: 'Heads Up!',
+        dialogTitle: 'Please Read!',
         dialogContent: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'So, if you are connected to VIT Bhopal wifi and you are failing to connect to VTOP. So, there could be two reasons:-\n\n1. VTOP is down right now.\n2. Your DNS is turned on.\n\n To verify if its the 2nd reason try accessing the app using mobile data and if it works then its the 2nd reason. If its the 2nd reason then turn off the DNS from network settings.',
+              'If you are connected to VIT Bhopal wifi then there could be two reasons for getting this error:-\n\n1. Official VTOP is down right now.\n2. Your DNS setting is turned on.\n\n To verify if its the 2nd reason try accessing the app using mobile data and if you connect successfully then its the 2nd reason above. If its the 2nd reason then turn off the DNS from network settings and try again.',
               style: getDynamicTextStyle(
                   textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: Theme.of(context)
@@ -2298,6 +2317,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             processingSomething = value;
           });
         },
+        dialogActions: dialogActionButtonsListForDnsSettings,
       ).then((_) => isDialogShowing = false);
     });
   }
