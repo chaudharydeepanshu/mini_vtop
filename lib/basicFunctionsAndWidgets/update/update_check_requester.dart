@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:version/version.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import '../../auth/secrets.dart';
 
 enum UpdatesProperties { version, date, description }
 
@@ -18,11 +21,17 @@ class UpdateCheckRequester {
       // "https://api.github.com/repos/chaudharydeepanshu/mini_vtop_releases/releases",
       "https://api.github.com/repos/chaudharydeepanshu/Mini-VTOP-Releases/releases",
     );
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(
+      url,
+      headers: {
+        "Authorization": "token $githubToken",
+      },
+    );
 
     // sample info available in response
     int statusCode = response.statusCode;
     Map<String, String> headers = response.headers;
+    debugPrint(headers.toString());
     String? contentType = headers['content-type'];
     String json = response.body;
     if (jsonDecode(json).isNotEmpty && jsonDecode(json) != null) {
