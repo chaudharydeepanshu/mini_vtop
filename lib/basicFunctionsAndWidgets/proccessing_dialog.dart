@@ -33,7 +33,7 @@ Future<void> customAlertDialogBox({
         barrierDismissible: barrierDismissible,
         screenBasedPixelWidth: screenBasedPixelWidth,
         screenBasedPixelHeight: screenBasedPixelHeight,
-        onSetState: onSetState,
+        // onSetState: onSetState,
         context: context,
       );
     },
@@ -50,7 +50,7 @@ class DialogBox extends StatefulWidget {
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
     required this.dialogContent,
-    this.onSetState,
+    // this.onSetState,
     this.dialogActions,
     required this.context,
   }) : super(key: key);
@@ -64,7 +64,7 @@ class DialogBox extends StatefulWidget {
   final double screenBasedPixelHeight;
   final Widget dialogContent;
   final List<Widget>? dialogActions;
-  final ValueChanged<StateSetter>? onSetState;
+  // final ValueChanged<StateSetter>? onSetState;
 
   @override
   State<DialogBox> createState() => _DialogBoxState();
@@ -86,7 +86,7 @@ class _DialogBoxState extends State<DialogBox> {
 
   @override
   Widget build(BuildContext context) {
-    _widget.onSetState?.call(setState);
+    // _widget.onSetState?.call(setState);
     return WillPopScope(
       onWillPop: () {
         return !_widget.barrierDismissible

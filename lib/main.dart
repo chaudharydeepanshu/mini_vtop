@@ -36,6 +36,7 @@ import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:version/version.dart';
+import 'basicFunctionsAndWidgets/custom_elevated_button.dart';
 import 'basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import 'basicFunctionsAndWidgets/dismiss_keyboard.dart';
 import 'basicFunctionsAndWidgets/package_info_calc.dart';
@@ -2120,6 +2121,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             currentStatus = "launchLoadingScreen";
             vtopConnectionStatusType = "Error";
             vtopConnectionStatusErrorType = message;
+
+            if (vtopConnectionStatusErrorType ==
+                "net::ERR_CONNECTION_TIMED_OUT") {
+              getWifiTypeDialogBox();
+            }
           });
         } else {
           vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
@@ -2169,6 +2175,133 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     // });
   }
 
+  bool usingVITWifi = false;
+
+  late List<Widget> dialogActionButtonsListForGettingWifiType = [
+    CustomTextButton(
+      onPressed: () {
+        usingVITWifi = false;
+        Navigator.of(context).pop();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'NO',
+      ),
+    ),
+    CustomTextButton(
+      onPressed: () {
+        usingVITWifi = true;
+        Navigator.of(context).pop();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'YES',
+      ),
+    ),
+  ];
+
+  getWifiTypeDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        processingSomething = true;
+      }); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: 'Heads Up!',
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Are you connect to VIT Bhopal Wifi?',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          setState(() {
+            processingSomething = value;
+          });
+        },
+        dialogActions: dialogActionButtonsListForGettingWifiType,
+      ).then((_) {
+        if (usingVITWifi == true) {
+          runDnsSettingsDialogBox();
+        }
+        return isDialogShowing = false;
+      });
+    });
+  }
+
+  runDnsSettingsDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        processingSomething = true;
+      }); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: 'Heads Up!',
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'So, if you are connected to VIT Bhopal wifi and you are failing to connect to VTOP. So, there could be two reasons:-\n\n1. VTOP is down right now.\n2. Your DNS is turned on.\n\n To verify if its the 2nd reason try accessing the app using mobile data and if it works then its the 2nd reason. If its the 2nd reason then turn off the DNS from network settings.',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          setState(() {
+            processingSomething = value;
+          });
+        },
+      ).then((_) => isDialogShowing = false);
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -2178,8 +2311,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // String? wifiName;
+
+  // deviceWifiName() async {
+  //   NetworkInfo info = NetworkInfo();
+  //   wifiName = await info.getWifiName(); // FooNetwork
+  //   debugPrint("wifiName: $wifiName");
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // deviceWifiName();
     // Reassigning new values to brightness, darkModeOn,and themeCalc() on every setstate
     // so that they get accurate values if parent widgets update these value
     brightness = WidgetsBinding.instance!.window.platformBrightness;
