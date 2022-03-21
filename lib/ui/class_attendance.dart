@@ -102,7 +102,10 @@ class _ClassAttendanceState extends State<ClassAttendance> {
                 child: Text(
                   "${htmlClassAttendanceDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                   style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      textStyle:
+                          Theme.of(context).textTheme.bodyText1?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),

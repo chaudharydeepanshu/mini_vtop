@@ -259,8 +259,26 @@ class _StudentPortalState extends State<StudentPortal> {
   late double screenBasedPixelWidth;
   late double screenBasedPixelHeight;
 
+  String waitingText = "Please Wait ...";
+
   @override
   Widget build(BuildContext context) {
+    //created to fix a bug which is resulting in users getting stuck on please wait
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          waitingText =
+              "Taking too long?\nTry switching VTOP mode\nOR\nRestart the app.\nWe are working on a fix.";
+          // "ghghgh";
+        });
+      }
+      if (arguments.studentName == null ||
+          (timerText == "00: 00" || timerText.isEmpty)) {
+        print("arguments.studentName: ${arguments.studentName}");
+        print("timerText: $timerText");
+      }
+    });
+
     screenBasedPixelWidth = arguments.screenBasedPixelWidth;
     screenBasedPixelHeight = arguments.screenBasedPixelHeight;
     // debugPrint("isDialogShowing: $isDialogShowing");
@@ -274,35 +292,35 @@ class _StudentPortalState extends State<StudentPortal> {
     // }
 
     // print(arguments.studentPortalDocument.outerHtml);
+
     return (arguments.studentName == null ||
             (timerText == "00: 00" || timerText.isEmpty))
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    strokeWidth: widgetSizeProvider(
-                        fixedSize: 4,
-                        sizeDecidingVariable: arguments.screenBasedPixelWidth),
-                  ),
-                  SizedBox(
-                    height: widgetSizeProvider(
-                        fixedSize: 10,
-                        sizeDecidingVariable: arguments.screenBasedPixelHeight),
-                  ),
-                  Text(
-                    "Please Wait ...",
+        ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  strokeWidth: widgetSizeProvider(
+                      fixedSize: 4,
+                      sizeDecidingVariable: arguments.screenBasedPixelWidth),
+                ),
+                SizedBox(
+                  height: widgetSizeProvider(
+                      fixedSize: 10,
+                      sizeDecidingVariable: arguments.screenBasedPixelHeight),
+                ),
+                Flexible(
+                  child: Text(
+                    waitingText,
+                    textAlign: TextAlign.center, // maxLines: 10,
                     style: getDynamicTextStyle(
                         textStyle: Theme.of(context).textTheme.headline5,
                         sizeDecidingVariable: arguments.screenBasedPixelWidth),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           )
         : Column(
             children: [

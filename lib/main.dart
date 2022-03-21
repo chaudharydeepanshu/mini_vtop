@@ -1453,11 +1453,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 }
                 if (requestType == "Real") {
                   // semesterSubId = await _justRetrieveSemesterSubId();
+                  DateTime? currentDateTime = await NTP.now();
                   Navigator.pushNamed(
                     context,
                     PageRoutes.timeTable,
                     arguments: TimeTableArguments(
                       currentStatus: currentStatus,
+                      currentDateTime: currentDateTime,
                       onWidgetDispose: (bool value) {
                         debugPrint("timeTable disposed");
                         WidgetsBinding.instance
@@ -1519,6 +1521,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 } else if (requestType == "Update") {
                   debugPrint("Table Update Ran");
+                  DateTime? currentDateTime = await NTP.now();
                   Navigator.pushReplacement(
                     context,
                     PageRouteBuilder(
@@ -1526,6 +1529,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           TimeTable(
                         arguments: TimeTableArguments(
                           currentStatus: currentStatus,
+                          currentDateTime: currentDateTime,
                           onWidgetDispose: (bool value) {
                             debugPrint("timeTable disposed");
                             WidgetsBinding.instance

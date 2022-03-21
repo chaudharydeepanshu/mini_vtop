@@ -21,6 +21,9 @@ class TimeTable extends StatefulWidget {
 }
 
 class _TimeTableState extends State<TimeTable> {
+  late DateTime currentDateTime =
+      widget.arguments.currentDateTime ?? DateTime.now();
+
   late Widget customTimeTable;
   List<TableRow> listOfTableRowsForCustomTimeTable = [];
   var timeTableSize = Size.zero;
@@ -112,14 +115,93 @@ class _TimeTableState extends State<TimeTable> {
                 "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
             List<Widget> listOfColumnsForRowWithIndex;
 
+            print(
+                "Current Week ---------------------: ${currentDateTime.weekday}");
+
+            Map<int, String> intToWeekDay = {
+              1: "MON",
+              2: "TUE",
+              3: "WED",
+              4: "THU",
+              5: "FRI",
+              6: "SAT",
+            };
+
+            print(
+                "Current Time ---------------------: ${currentDateTime.hour}:${currentDateTime.minute}");
+
+            Map<int, Map<String, DateTime>> timeFromElementPosition = {
+              2: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 8, 30),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 10, 00),
+              },
+              3: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 10, 05),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 11, 35),
+              },
+              4: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 11, 40),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 13, 10),
+              },
+              5: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 13, 15),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 14, 45),
+              },
+              6: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 14, 50),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 16, 20),
+              },
+              7: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 16, 25),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 17, 55),
+              },
+              8: {
+                "START": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 18, 00),
+                "END": DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day, 19, 30),
+              },
+            };
+
             listOfColumnsForRowWithIndex = List<Widget>.generate(
                 htmlTimeTableTrs[i].getElementsByTagName("td").length, (int j) {
+              Color? rowElementColorAccordingToTime = j >= 2
+                  ? (currentDateTime.isAfter(
+                              (timeFromElementPosition[j]?["START"])!) &&
+                          currentDateTime
+                              .isBefore((timeFromElementPosition[j]?["END"])!))
+                      ? Theme.of(context).colorScheme.onPrimaryContainer
+                      : null
+                  : null;
+
+              Color? rowColor = htmlTimeTableTrs[i]
+                          .getElementsByTagName("td")[0]
+                          .text
+                          .replaceAll(RegExp('\\s+'), ' ') ==
+                      intToWeekDay[currentDateTime.weekday]
+                  ? rowElementColorAccordingToTime ??
+                      Theme.of(context).colorScheme.primaryContainer
+                  : null;
+
               Container tableRowColumnContainer = Container(
-                decoration: const BoxDecoration(
-                    // color: Colors.white,
-                    // border: Border.all(color: Colors.black, width: 1),
-                    // borderRadius: const BorderRadius.all(Radius.circular(40));
-                    ),
+                decoration: BoxDecoration(
+                  color: rowColor,
+                  // color: Colors.white,
+                  // border: Border.all(color: Colors.black, width: 1),
+                  // borderRadius: const BorderRadius.all(Radius.circular(40));
+                ),
                 // height: 75,
                 // width: 250,
                 child: Align(
@@ -143,7 +225,17 @@ class _TimeTableState extends State<TimeTable> {
                       "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                       style: getDynamicTextStyle(
                           textStyle: j != 0
-                              ? Theme.of(context).textTheme.bodyText1
+                              ? rowColor == null ||
+                                      rowElementColorAccordingToTime == null
+                                  ? Theme.of(context).textTheme.bodyText1
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                      )
                               : Theme.of(context).textTheme.bodyText1?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -875,6 +967,7 @@ class TimeTableArguments {
   dom.Document? timeTableDocument;
   ValueChanged<String>? onSemesterSubIdChange;
   String semesterSubIdForTimeTable;
+  DateTime? currentDateTime;
   ValueChanged<bool> onProcessingSomething;
   // String userEnteredUname;
   // String userEnteredPasswd;
@@ -889,6 +982,7 @@ class TimeTableArguments {
     required this.timeTableDocument,
     required this.onSemesterSubIdChange,
     required this.semesterSubIdForTimeTable,
+    required this.currentDateTime,
     required this.onProcessingSomething,
     // required this.userEnteredUname,
     // required this.userEnteredPasswd,
