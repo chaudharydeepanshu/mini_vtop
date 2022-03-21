@@ -142,7 +142,11 @@ class _TimeTableState extends State<TimeTable> {
                     child: Text(
                       "${htmlTimeTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                       style: getDynamicTextStyle(
-                          textStyle: Theme.of(context).textTheme.bodyText1,
+                          textStyle: j != 0
+                              ? Theme.of(context).textTheme.bodyText1
+                              : Theme.of(context).textTheme.bodyText1?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                           sizeDecidingVariable: screenBasedPixelWidth),
                     ),
                   ),
@@ -220,7 +224,10 @@ class _TimeTableState extends State<TimeTable> {
                   child: Text(
                     "${htmlSubjectDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
                     style: getDynamicTextStyle(
-                        textStyle: Theme.of(context).textTheme.bodyText1,
+                        textStyle:
+                            Theme.of(context).textTheme.bodyText1?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                         sizeDecidingVariable: screenBasedPixelWidth),
                   ),
                 ),
@@ -764,7 +771,10 @@ class CustomTableRowElement extends StatelessWidget {
                 child: Text(
                   elementText1,
                   style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      textStyle:
+                          Theme.of(context).textTheme.bodyText1?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),
@@ -798,7 +808,10 @@ class CustomTableRowElement extends StatelessWidget {
                 child: Text(
                   elementText2,
                   style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
+                      textStyle:
+                          Theme.of(context).textTheme.bodyText1?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       sizeDecidingVariable: screenBasedPixelWidth),
                 ),
               ),
@@ -845,7 +858,9 @@ class LegendCellWidget extends StatelessWidget {
           child: Text(
             legendText,
             style: getDynamicTextStyle(
-                textStyle: Theme.of(context).textTheme.bodyText1,
+                textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                 sizeDecidingVariable: screenBasedPixelWidth),
           ),
         ),
