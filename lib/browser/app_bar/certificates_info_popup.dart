@@ -1436,6 +1436,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                               true, // click on notification to open downloaded file (for Android)
                           saveInPublicStorage: true,
                         );
+                        debugPrint(taskId.toString());
                       } else if (Platform.isWindows) {
                         // iOS-specific code
                       }
@@ -1557,6 +1558,7 @@ class _CertificateInfoPopupState extends State<CertificateInfoPopup> {
                               true, // click on notification to open downloaded file (for Android)
                           saveInPublicStorage: true,
                         );
+                        debugPrint(taskId.toString());
                       } else if (Platform.isWindows) {
                         // iOS-specific code
                       }

@@ -134,8 +134,8 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
   }
 
   Widget _buildLinkPreview() {
-    var browserModel = Provider.of<BrowserModel>(context, listen: true);
-    var settings = browserModel.getSettings();
+    // var browserModel = Provider.of<BrowserModel>(context, listen: true);
+    // var settings = browserModel.getSettings();
 
     return ListTile(
       title: const Center(child: Text("Link Preview")),
@@ -283,6 +283,7 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
               openFileFromNotification: true,
               saveInPublicStorage: true,
             );
+            debugPrint(taskId.toString());
           } else if (Platform.isWindows) {
             // iOS-specific code
           }

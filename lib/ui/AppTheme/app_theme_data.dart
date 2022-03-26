@@ -41,14 +41,22 @@ class AppThemeData {
         contentTextStyle: _textTheme.subtitle1!.apply(color: _darkFillColor),
       ),
       backgroundColor: colorScheme.background,
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.all(
+          colorScheme.primary,
+        ),
+        checkColor: MaterialStateProperty.all(
+          colorScheme.onPrimary,
+        ),
+      ),
     );
   }
 
   static const _light = FontWeight.w300;
   static const _regular = FontWeight.w400;
   static const _medium = FontWeight.w500;
-  static const _semiBold = FontWeight.w600;
-  static const _bold = FontWeight.w700;
+  // static const _semiBold = FontWeight.w600;
+  // static const _bold = FontWeight.w700;
 
   // For reference
   // textAppearanceHeadline1	Light 96sp

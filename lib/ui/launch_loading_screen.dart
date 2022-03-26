@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
-
-import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class LaunchLoadingScreen extends StatefulWidget {

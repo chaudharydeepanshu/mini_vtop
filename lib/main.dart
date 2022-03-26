@@ -1191,6 +1191,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             openFileFromNotification: true,
             saveInPublicStorage: true,
           );
+          debugPrint(taskId.toString());
         } else if (Platform.isWindows) {}
       },
       onWebViewCreated: (controller) async {
@@ -1220,9 +1221,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           }
         });
       },
-      androidShouldInterceptRequest: (controller, webResourceRequest) {
+      androidShouldInterceptRequest: (controller, webResourceRequest) async {
         debugPrint('Console Message: $webResourceRequest');
-        return null!;
+        return null;
       },
       onConsoleMessage: (controller, consoleMessage) {
         if (kDebugMode) {

@@ -3,7 +3,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:mini_vtop/basicFunctionsAndWidgets/build_credit_row.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_Attendance.dart';
+import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_attendance.dart';
 import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_timetable.dart';
 import '../basicFunctionsAndWidgets/custom_elevated_button.dart';
 import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';

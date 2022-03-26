@@ -352,6 +352,7 @@ class WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
             openFileFromNotification: true,
             saveInPublicStorage: true,
           );
+          debugPrint(taskId.toString());
         } else if (Platform.isWindows) {
           // iOS-specific code
         }

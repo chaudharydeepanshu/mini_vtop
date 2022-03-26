@@ -25,8 +25,8 @@ class _EmptyTabState extends State<EmptyTab> {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       openNewTab(_controller.text);
     });
-    var browserModel = Provider.of<BrowserModel>(context, listen: false);
-    var settings = browserModel.getSettings();
+    // var browserModel = Provider.of<BrowserModel>(context, listen: false);
+    // var settings = browserModel.getSettings();
 
     return Scaffold(
       body: FittedBox(

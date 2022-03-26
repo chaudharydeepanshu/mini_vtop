@@ -125,7 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
         break;
       case PopupSettingsMenuActions.resetWebViewSettings:
         var browserModel = Provider.of<BrowserModel>(context, listen: false);
-        var settings = browserModel.getSettings();
+        // var settings = browserModel.getSettings();
         var currentWebViewModel =
             Provider.of<WebViewModel>(context, listen: false);
         var _webViewController = currentWebViewModel.webViewController;
