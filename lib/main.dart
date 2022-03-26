@@ -1,17 +1,13 @@
-//todo: choose correct asset type and make the default fat apk by selecting asset with name minivtop-$version-release.apk and will move to more complicated apks in future
+//todo: choose correct asset type to apks like armX64 etc in future
 //todo: Clear old apks from app cache at start
 //todo: decrease animation size
 //todo: use predefined themes for text everywhere
 //todo: add overflow ellipses property to texts
-//todo: fix text field helper text size on smaller devices
-//todo: fix widget popping on refreshing captcha after session end
-//todo: create a settings section in app drawer which have the settings to disable battery optimization and run in background
-//todo: make timetable table display the current day and class in different color so that it is easy to identify
-//todo: fix the janky transition when changing vtop full mode to vtop mini mode
+//todo: create disable battery optimization and run in background in settings
+//todo: fix the stuttering transition when changing VTOP full mode to VTOP mini mode
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -35,16 +31,12 @@ import 'package:mini_vtop/ui/time_table.dart';
 import 'package:ntp/ntp.dart';
 import 'package:open_settings/open_settings.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:version/version.dart';
 import 'basicFunctionsAndWidgets/custom_elevated_button.dart';
 import 'basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import 'basicFunctionsAndWidgets/dismiss_keyboard.dart';
-import 'basicFunctionsAndWidgets/package_info_calc.dart';
 import 'basicFunctionsAndWidgets/print_wrapped.dart';
 import 'basicFunctionsAndWidgets/proccessing_dialog.dart';
-import 'basicFunctionsAndWidgets/update/update_check_requester.dart';
 import 'basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'browser/models/browser_model.dart';
 import 'browser/models/webview_model.dart';
@@ -113,9 +105,7 @@ Future main() async {
         debug: true // optional: set false to disable printing logs to console
         );
     FlutterDownloader.registerCallback(TestClass.callback);
-  } else if (Platform.isWindows) {
-// iOS-specific code
-  }
+  } else if (Platform.isWindows) {}
 
   // ↑↑↑↑↑↑↑↑↑↑↑↑ For the full VTOP browser feature ↑↑↑↑↑↑↑↑↑↑↑↑
 
@@ -141,7 +131,7 @@ Future main() async {
       ),
     ),
   );
-  // whenever your initialization is completed, remove the splash screen:
+  // app initialization is completed so removing the splash screen
   FlutterNativeSplash.remove();
 }
 
@@ -162,16 +152,9 @@ class _MyAppState extends State<MyApp> {
     return DismissKeyboard(
       child: MaterialApp(
         title: 'Mini VTOP',
-        // darkTheme: darkTheme,
-        // theme: theme,
-        // themeMode: ThemeMode.system,
         themeMode: themeMode,
         theme: AppThemeData.lightThemeData.copyWith(),
-
-        //ThemeClass.lightTheme,
         darkTheme: AppThemeData.darkThemeData.copyWith(),
-
-        // darkTheme: ThemeData.dark(),
         debugShowCheckedModeBanner: false,
         home: Home(
           themeMode: themeMode,
@@ -185,12 +168,7 @@ class _MyAppState extends State<MyApp> {
                       : 2);
             });
           },
-
-          // child: Home(
-          //   savedThemeMode: savedThemeMode ?? firstRunAfterInstallThemeMode,
-          // ),
         ),
-
         routes: {
           PageRoutes.studentProfileAllView: (context) => StudentProfileAllView(
                 arguments: ModalRoute.of(context)!.settings.arguments
@@ -232,34 +210,19 @@ class Home extends StatefulWidget with PreferredSizeWidget {
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
-  bool? darkModeOn;
-  String? theme;
-
-  themeCalc() async {
-    if (widget.themeMode == ThemeMode.light) {
-      setState(() {
-        theme = 'Light';
-      });
-    } else if (widget.themeMode == ThemeMode.dark) {
-      setState(() {
-        theme = 'Dark';
-      });
-    } else if (widget.themeMode == ThemeMode.system) {
-      setState(() {
-        theme = 'System';
-      });
-    }
-  }
+  bool? darkModeOn; // Used to store and get if dark mode is enabled or not.
+  late ThemeMode? themeMode = widget
+      .themeMode; // Used to store and get which type of theme is currently enabled.
 
   @override
   void didChangePlatformBrightness() {
     var brightness = WidgetsBinding.instance!.window.platformBrightness;
-    debugPrint(brightness.name);
-    // > should print light / dark when you switch
-    themeCalc();
+    debugPrint(
+        "brightness.name: ${brightness.name}"); // should print light / dark when we switch
+    //updating the status of dartModeOn on detecting change in platform brightness
     setState(() {
-      darkModeOn = (theme == 'Dark') ||
-          (brightness == Brightness.dark && theme == 'System');
+      darkModeOn = (themeMode == ThemeMode.dark) ||
+          (brightness == Brightness.dark && themeMode == ThemeMode.system);
     });
     super.didChangePlatformBrightness();
   }
@@ -374,6 +337,470 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   String vtopMode = "Mini VTOP"; // Used to store and get the user vtop mode.
 
   bool isDialogShowing = false; // Used to store and get the dialog box status.
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // A void function used for calling chooseCorrectBody() function.
+  void chooseHomePageBody() {
+    // A void function which uses a callback to assign body variable different bodies depending on currentStatus variable value.
+    chooseCorrectBody(
+      onBody: (Widget value) {
+        body = value;
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      tryAutoLoginStatus: tryAutoLoginStatus,
+      sessionDateTime: sessionDateTime,
+      autoCaptcha: autoCaptcha,
+      credentialsFound: credentialsFound,
+      studentProfileAllViewDocument: studentProfileAllViewDocument,
+      studentPortalDocument: studentPortalDocument,
+      vtopLoginErrorType: vtopLoginErrorType,
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          // vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          setState(() {
+            refreshingCaptcha = value;
+          });
+        });
+      },
+      currentFullUrl: currentFullUrl,
+      vtopConnectionStatusType: vtopConnectionStatusType,
+      vtopConnectionStatusErrorType: vtopConnectionStatusErrorType,
+      onVtopLoginErrorType: (String value) {
+        setState(() {
+          vtopLoginErrorType = value;
+        });
+      },
+      onRequestType: (String value) {
+        setState(() {
+          requestType = "Real";
+        });
+      },
+      studentName: studentName,
+      onClearUnamePasswd: (bool value) {
+        _clearUnamePasswd();
+      },
+      onRetryOnError: (bool value) {
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
+        setState(() {
+          vtopConnectionStatusErrorType = "None";
+          vtopConnectionStatusType = "Initiated";
+          debugPrint(
+              "restarting headlessInAppWebView manually as vtopConnectionStatusType has error");
+          runHeadlessInAppWebView(
+            headlessWebView: headlessWebView,
+            onCurrentFullUrl: (String value) {
+              currentFullUrl = value;
+            },
+          );
+        });
+      },
+      onTryAutoLoginStatus: (bool value) {
+        setState(() {
+          tryAutoLoginStatus = value;
+          _saveTryAutoLoginStatus();
+        });
+      },
+      themeMode: widget.themeMode,
+      onThemeMode: (ThemeMode value) {
+        widget.onThemeMode?.call(value);
+      },
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          setState(() {
+            processingSomething = false;
+          });
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
+      },
+    );
+  }
+
+  // A void function used for calling chooseCorrectAppbar() function.
+  void chooseHomePageAppbar() {
+    // A void function which uses a callback to assign appbar variable different appbars depending on currentStatus variable value.
+    chooseCorrectAppbar(
+      onAppbar: (Widget value) {
+        appbar = value;
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          // vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          refreshingCaptcha = value;
+        });
+      },
+      currentFullUrl: currentFullUrl,
+      onCurrentStatus: (String value) {
+        setState(() {
+          currentStatus = value;
+        });
+      },
+      scaffoldKey: _scaffoldKey,
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          processingSomething = false;
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
+      },
+    );
+  }
+
+  // A void function used for calling chooseCorrectDrawer() function.
+  void chooseHomePageDrawer() {
+    // A void function which uses a callback to assign drawer variable different drawers depending on currentStatus variable value.
+    chooseCorrectDrawer(
+      onDrawer: (Widget? value) {
+        drawer = value;
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      userEnteredPasswd: userEnteredPasswd,
+      userEnteredUname: userEnteredUname,
+      headlessWebView: headlessWebView,
+      image: image,
+      currentStatus: currentStatus,
+      loggedUserStatus: loggedUserStatus,
+      onUserEnteredPasswd: (String value) {
+        setState(() {
+          userEnteredPasswd = value;
+        });
+      },
+      context: context,
+      onUserEnteredUname: (String value) {
+        setState(() {
+          userEnteredUname = value;
+        });
+      },
+      onCurrentFullUrl: (String value) {
+        setState(() {
+          currentFullUrl = value;
+        });
+      },
+      processingSomething: processingSomething,
+      onProcessingSomething: (bool value) {
+        setState(() {
+          processingSomething = value;
+          // vtopLoginErrorType = "None";
+        });
+      },
+      refreshingCaptcha: refreshingCaptcha,
+      onRefreshingCaptcha: (bool value) {
+        setState(() {
+          refreshingCaptcha = value;
+        });
+      },
+      currentFullUrl: currentFullUrl,
+      onCurrentStatus: (String value) {
+        setState(() {
+          currentStatus = value;
+        });
+      },
+      themeMode: widget.themeMode,
+      onThemeMode: (ThemeMode value) {
+        widget.onThemeMode?.call(value);
+      },
+      onRequestType: (String value) {
+        setState(() {
+          requestType = value;
+        });
+      },
+      onTryAutoLoginStatus: (bool value) {
+        _clearTryAutoLoginStatus();
+        setState(() {
+          tryAutoLoginStatus = value;
+          _saveTryAutoLoginStatus();
+        });
+      },
+      onError: (String value) {
+        debugPrint("Updating Ui based on the error received");
+        if (processingSomething == true) {
+          Navigator.of(context).pop();
+          processingSomething = false;
+        }
+        if (value == "net::ERR_INTERNET_DISCONNECTED") {
+          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
+          setState(() {
+            currentStatus = "launchLoadingScreen";
+            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
+            vtopConnectionStatusType = "Error";
+          });
+        }
+      },
+      timeTableDocument: timeTableDocument,
+      semesterSubIdForTimeTable: semesterSubIdForTimeTable,
+      onUpdateDefaultTimeTableSemesterId: (String value) {
+        setState(() {
+          semesterSubIdForTimeTable = value;
+        });
+        _saveSemesterSubIdForTimeTable();
+      },
+      onUpdateVtopMode: (String value) {
+        setState(() {
+          if (value == "Mini VTOP") {
+            currentStatus = "userLoggedIn";
+            vtopMode = "Mini VTOP";
+          } else if (value == "Full VTOP") {
+            currentStatus = "originalVTOP";
+            vtopMode = "Full VTOP";
+          }
+        });
+      },
+      onUpdateDefaultVtopMode: (String value) {
+        setState(() {
+          vtopMode = value;
+        });
+        _saveVtopMode();
+      },
+      vtopMode: vtopMode,
+      onLoggedUserStatus: (String value) {
+        setState(() {
+          loggedUserStatus = value;
+        });
+      },
+      classAttendanceDocument: classAttendanceDocument,
+      semesterSubIdForAttendance: semesterSubIdForAttendance,
+      onUpdateDefaultAttendanceSemesterId: (String value) {
+        setState(() {
+          semesterSubIdForAttendance = value;
+        });
+        _saveSemesterSubIdForAttendance();
+      },
+    );
+  }
+
+  bool?
+      usingVITWifi; // Used to store and get if the user is using VIT wifi or not.
+
+  late List<Widget> dialogActionButtonsListForGettingWifiType = [
+    CustomTextButton(
+      onPressed: () {
+        usingVITWifi = false;
+        Navigator.of(context).pop();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'NO',
+      ),
+    ),
+    CustomTextButton(
+      onPressed: () {
+        usingVITWifi = true;
+        Navigator.of(context).pop();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'YES',
+      ),
+    ),
+  ];
+
+  getWifiTypeDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        processingSomething = true;
+      }); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: 'Heads Up!',
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Are you connected to VIT Bhopal Wifi?',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          setState(() {
+            processingSomething = value;
+          });
+        },
+        dialogActions: dialogActionButtonsListForGettingWifiType,
+      ).then((_) {
+        if (usingVITWifi == true) {
+          runDnsSettingsDialogBox();
+        }
+        processingSomething = false;
+        return isDialogShowing = false;
+      });
+    });
+  }
+
+  late List<Widget> dialogActionButtonsListForDnsSettings = [
+    CustomTextButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+        OpenSettings.openAirplaneModeSetting();
+      },
+      screenBasedPixelWidth: screenBasedPixelWidth,
+      screenBasedPixelHeight: screenBasedPixelHeight,
+      size: const Size(20, 50),
+      borderRadius: 20,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'OPEN SETTINGS',
+      ),
+    ),
+  ];
+
+  runDnsSettingsDialogBox() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        processingSomething = true;
+      }); //then set processing something true for the new loading dialog
+      customAlertDialogBox(
+        isDialogShowing: isDialogShowing,
+        context: context,
+        onIsDialogShowing: (bool value) {
+          setState(() {
+            isDialogShowing = value;
+          });
+        },
+        dialogTitle: 'Please Read!',
+        dialogContent: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'If you are connected to VIT Bhopal wifi then there could be two reasons for getting this error:-\n\n1. Official VTOP is down right now.\n2. Your DNS setting is turned on.\n\n To verify if its the 2nd reason try accessing the app using mobile data and if you connect successfully then its the 2nd reason above. If its the 2nd reason then turn off the DNS from network settings and try again.',
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.60)),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        barrierDismissible: true,
+        screenBasedPixelHeight: screenBasedPixelHeight,
+        screenBasedPixelWidth: screenBasedPixelWidth,
+        onProcessingSomething: (bool value) {
+          setState(() {
+            processingSomething = value;
+          });
+        },
+        dialogActions: dialogActionButtonsListForDnsSettings,
+      ).then((_) {
+        processingSomething = false;
+        return isDialogShowing = false;
+      });
+    });
+  }
 
   openStudentProfileAllView({required String forXAction}) async {
     await headlessWebView?.webViewController.evaluateJavascript(source: '''
@@ -591,6 +1018,27 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   @override
+  void didUpdateWidget(Home oldWidget) {
+    // Reassigning new values to brightness, darkModeOn on every oldWidget.themeMode != widget.themeMode
+    // so that they get accurate values if parent widgets update these value
+    if (oldWidget.themeMode != widget.themeMode) {
+      brightness = WidgetsBinding.instance!.window.platformBrightness;
+      darkModeOn = (widget.themeMode == ThemeMode.system &&
+              brightness == Brightness.dark) ||
+          widget.themeMode == ThemeMode.dark;
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
+    headlessWebView?.dispose();
+  }
+
+  @override
   void initState() {
     inActivityOrStatusNot200Response(
         {required String dialogTitle, required String dialogChildrenText}) {
@@ -693,12 +1141,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance!.addObserver(this); //most important
     var brightness = WidgetsBinding.instance!.window.platformBrightness;
-    debugPrint(brightness.name);
-    // > should print Brightness.light / Brightness.dark when you switch
-    themeCalc();
+    debugPrint(
+        "brightness.name: ${brightness.name}"); // should print light / dark when we switch
+    //updating the status of dartModeOn on detecting change in platform brightness
     setState(() {
-      darkModeOn = (theme == 'Dark') ||
-          (brightness == Brightness.dark && theme == 'System');
+      darkModeOn = (themeMode == ThemeMode.dark) ||
+          (brightness == Brightness.dark && themeMode == ThemeMode.system);
     });
 
     _retrieveUnamePasswd();
@@ -743,17 +1191,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             openFileFromNotification: true,
             saveInPublicStorage: true,
           );
-        } else if (Platform.isWindows) {
-// iOS-specific code
-        }
+        } else if (Platform.isWindows) {}
       },
       onWebViewCreated: (controller) async {
-        // if (loggedUserStatus != "studentPortalScreen") {
-        //   debugPrint("closing open gages on auto logout on session time end");
-        //   Navigator.of(context).pop();
-        // }
         checkInternetConnection();
-
         Future.delayed(const Duration(seconds: 5), () async {
           if (vtopConnectionStatusType == "Initiated") {
             if (mounted) {
@@ -764,7 +1205,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           }
         });
 
-        // vtopConnectionStatusType = "Initiated";
         timer = Timer.periodic(const Duration(seconds: 20), (Timer t) {
           if (currentStatus == "launchLoadingScreen" &&
               vtopConnectionStatusErrorType == "None") {
@@ -779,24 +1219,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             );
           }
         });
-
-        // const snackBar = SnackBar(
-        //   content: Text('HeadlessInAppWebView created!'),
-        //   duration: Duration(seconds: 1),
-        // );
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       androidShouldInterceptRequest: (controller, webResourceRequest) {
         debugPrint('Console Message: $webResourceRequest');
         return null!;
       },
       onConsoleMessage: (controller, consoleMessage) {
-        // final snackBar = SnackBar(
-        //   content: Text('Console Message: ${consoleMessage.message}'),
-        //   duration: const Duration(seconds: 1),
-        // );
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
         if (kDebugMode) {
           print('Console Message: ${consoleMessage.message}');
         }
@@ -809,46 +1237,26 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       },
       shouldInterceptAjaxRequest:
           (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
-// print("ajaxRequest: ${ajaxRequest}");
-// ajaxRequest.headers?.setRequestHeader("Cookie", authState.setCookie);
         return ajaxRequest;
       },
       onAjaxReadyStateChange:
           (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
-// print("ajaxRequest: ${ajaxRequest}");
-// print(ajaxRequest.status);
         return AjaxRequestAction.PROCEED;
       },
       onAjaxProgress:
           (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
-// printWrapped("ajaxRequest: ${ajaxRequest}");
-// await controller
-//     .evaluateJavascript(
-//         source:
-//             "new XMLSerializer().serializeToString(document);")
-//     .then((value) {
-//   printWrapped("Element: $value");
-// });
         if (ajaxRequest.event?.type == AjaxRequestEventType.LOADEND) {
-          // printWrapped("ajaxRequest: ${ajaxRequest}");
           if (ajaxRequest.url.toString() == "vtopLogin") {
+            // printWrapped("ajaxRequest: ${ajaxRequest}");
             noOfLoginAjaxRequests++;
-            // if (ajaxRequest.status == 200) {
-            //   noOfLoginAjaxRequests++;
-            // } else {
-            //   noOfHomePageBuilds--;
-            // }
+
             debugPrint("noOfHomePageBuilds: ${noOfHomePageBuilds.toString()}");
             debugPrint(
                 "noOfLoginAjaxRequests: ${noOfLoginAjaxRequests.toString()}");
             debugPrint(
                 "vtopLogin ajaxRequest.status: ${ajaxRequest.status.toString()}");
-            // if (noOfLoginAjaxRequests == noOfHomePageBuilds) {
+
             if (ajaxRequest.status == 200) {
-              // await controller.evaluateJavascript(
-              //     source:
-              //         '''document.querySelector('img[alt="vtopCaptcha"]').src;''').then(
-              //     (value) {
               var document = parse('${ajaxRequest.responseText}');
               String? imageSrc = document
                   .querySelector('img[alt="vtopCaptcha"]')
@@ -857,13 +1265,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               String uri = imageSrc!;
               String base64String = uri.split(', ').last;
               Uint8List _bytes = base64.decode(base64String);
-              // printWrapped("vtopCaptcha _bytes: $base64String");
-              // Map<String, dynamic> vtopLoginAjaxRequestMap = {
-              //   "webViewController": controller,
-              //   "image": Image.memory(_bytes),
-              //   "currentStatus": "runHeadlessInAppWebView",
-              // };
-              // onVtopLoginAjaxRequest.call(vtopLoginAjaxRequestMap);
 
               autoFillCaptcha(
                   context: context,
@@ -880,7 +1281,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
               Future.delayed(const Duration(milliseconds: 2480), () async {
                 setState(() {
-                  // webViewController = controller;
                   image = Image.memory(_bytes);
                   currentStatus = "signInScreen";
                   processingSomething = false;
@@ -899,10 +1299,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   dialogTitle: 'Request Status != 200',
                   dialogChildrenText: 'Starting new session\nplease wait...');
             }
-            // print("vtopCaptcha _bytes: ${_bytes}");
-            // });
-            // });
-            // }
           } else if (ajaxRequest.url.toString() == "doLogin") {
             // print("ajaxRequest: ${ajaxRequest}");
             await controller
@@ -912,20 +1308,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               if (ajaxRequest.status == 200) {
                 if (value.contains(userEnteredUname + "(STUDENT)")) {
                   printWrapped("User $userEnteredUname successfully signed in");
-                  // onCurrentStatus.call("userLoggedIn");
-                  // Navigator.of(context)
-                  //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
+
                   _saveUnamePasswd();
                   sessionDateTime = await NTP.now().then((value) {
                     _saveSessionDateTime();
                     debugPrint(
                         'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
-                    // declareManageUserSessionConstants(
-                    //     onCurrentFullUrl: (String value) {
-                    //       currentFullUrl = value;
-                    //     },
-                    //     headlessWebView: headlessWebView,
-                    //     context: context);
+
                     manageUserSession(
                       context: context,
                       headlessWebView: headlessWebView,
@@ -963,12 +1352,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       },
                     );
                     openStudentProfileAllView(forXAction: 'New login');
-                    //actually we are using openStudentProfileAllView() to get profile document and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request
+                    // Actually we are using openStudentProfileAllView() to get profile document
+                    // and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request.
 
                     setState(() {
-                      // currentStatus = "userLoggedIn";
-                      // loggedUserStatus = "studentPortalScreen";
-                      // processingSomething = false;
                       studentPortalDocument =
                           parse('${ajaxRequest.responseText}');
                     });
@@ -976,8 +1363,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 } else if (value.contains("User Id Not available")) {
                   printWrapped("User Id Not available");
-                  //User Id Not available WHEN ENTERING WRONG USER ID
-                  // processingSomething = false; // we put this inside the onloadstop // the processing is already validated but we still want to show the dialog until user sees the updated login page
+                  // User Id Not available WHEN ENTERING WRONG USER ID
+                  // processingSomething = false;
+                  // We commented the statement because we put this inside the onloadstop.
+                  // We know that processing is already validated but we still want to show the dialog until user sees the updated login page
                   vtopLoginErrorType = "User Id Not available";
                   runHeadlessInAppWebView(
                     headlessWebView: headlessWebView,
@@ -1011,11 +1400,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       });
                     },
                   );
-                  // print(
-                  //     "called Action https://vtop.vitbhopal.ac.in/vtop for Invalid Captcha");
-                  // await controller.evaluateJavascript(
-                  //     source:
-                  //         '''window.location.href = "https://vtop.vitbhopal.ac.in/vtop";''');
                 } else if (value.contains(
                         "You are logged out due to inactivity for more than 15 minutes") ||
                     ajaxRequest.responseText!
@@ -1061,7 +1445,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             });
           } else if (ajaxRequest.url.toString() == "doRefreshCaptcha") {
             // printWrapped("ajaxRequest: ${ajaxRequest}");
-            // print("ajaxRequest: ${ajaxRequest}");
+
             if (ajaxRequest.responseText != null) {
               if (ajaxRequest.status == 200) {
                 if (ajaxRequest.responseText!.contains(
@@ -1073,9 +1457,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       dialogChildrenText:
                           'Starting new session\nplease wait...');
                 } else {
-                  // await controller.evaluateJavascript(source: '''
-                  //   document.querySelector('img[alt="vtopCaptcha"]').src;
-                  //   ''').then((value) {
                   var document = parse('${ajaxRequest.responseText}');
                   String? imageSrc = document
                       .querySelector('img[alt="vtopCaptcha"]')
@@ -1084,7 +1465,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   String base64String = uri.split(', ').last;
                   Uint8List _bytes = base64.decode(base64String);
                   // printWrapped("vtopCaptcha _bytes: $base64String");
-                  // onImage.call(Image.memory(_bytes));
 
                   autoFillCaptcha(
                       context: context,
@@ -1098,10 +1478,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   setState(() {
                     refreshingCaptcha = false;
                     image = Image.memory(_bytes);
-                    // loaded(uri, image!);
                   });
-                  // print("vtopCaptcha _bytes: ${_bytes}");
-                  // });
                 }
               } else if (ajaxRequest.responseText!.contains(
                       "You are logged out due to inactivity for more than 15 minutes") ||
@@ -1118,7 +1495,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             }
           } else if (ajaxRequest.url.toString() ==
               "studentsRecord/StudentProfileAllView") {
-            // var document = parse('${ajaxRequest.responseText}');
+            // printWrapped("ajaxRequest: ${ajaxRequest}");
+
             if (requestType == "New login") {
               _credentialsFound();
               setState(() {
@@ -1158,12 +1536,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               });
             } else if (requestType == "Logged in") {
               _credentialsFound();
-              // declareManageUserSessionConstants(
-              //     onCurrentFullUrl: (String value) {
-              //       currentFullUrl = value;
-              //     },
-              //     headlessWebView: headlessWebView,
-              //     context: context);
               manageUserSession(
                 context: context,
                 headlessWebView: headlessWebView,
@@ -1326,11 +1698,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     dialogChildrenText: 'Starting new session\nplease wait...');
               }
             }
-            // print(document.outerHtml);
-            //document.querySelectorAll('table')[1];
-            // print("ajaxRequest: ${ajaxRequest}");
           } else if (ajaxRequest.url.toString() == "processLogout") {
             // print("ajaxRequest: ${ajaxRequest}");
+
             debugPrint("processing logout");
             if (processingSomething == true) {
               Navigator.of(context).pop();
@@ -1378,7 +1748,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                             "new XMLSerializer().serializeToString(document);")
                     .then((value) async {
                   if (value.contains("Please wait")) {
-                    // waitStatus = true;
                   } else {
                     if (requestType == "Real") {
                       debugPrint(
@@ -1452,7 +1821,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 }
                 if (requestType == "Real") {
-                  // semesterSubId = await _justRetrieveSemesterSubId();
                   DateTime? currentDateTime = await NTP.now();
                   Navigator.pushNamed(
                     context,
@@ -1613,7 +1981,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 } else if (requestType == "Fake") {
                 } else if (requestType == "ForDrawer") {
-                  print("Request For Drawer");
+                  debugPrint("Request For Drawer");
                   // semesterSubId = await _justRetrieveSemesterSubId();
                   setState(() {
                     requestType = "ForDrawer";
@@ -1886,9 +2254,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           },
                         ),
                       ),
-                      // transitionsBuilder:
-                      //     (context, animation, secondaryAnimation, child) =>
-                      //         FadeTransition(opacity: animation, child: child),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0);
@@ -1904,8 +2269,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         );
                       },
                       transitionDuration: Duration.zero,
-                      // reverseTransitionDuration:
-                      //     // const Duration(milliseconds: 2000),
                     ),
                   );
                   setState(() {
@@ -1913,8 +2276,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   });
                 } else if (requestType == "Fake") {
                 } else if (requestType == "ForDrawer") {
-                  print("Request For Drawer");
-                  // semesterSubId = await _justRetrieveSemesterSubId();
+                  debugPrint("Request For Drawer");
+
                   if (loggedUserStatus != "settings") {
                     Navigator.pushNamed(
                       context,
@@ -1987,13 +2350,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             }
           } else {
             printWrapped("ajaxRequest: $ajaxRequest");
-            //"You are logged out due to inactivity for more than 15 minutes"
-            // print("response: 232");
-            // await headlessWebView?.dispose();
-            // await headlessWebView?.run();
+            printWrapped("ajaxRequest.status: ${ajaxRequest.status}");
           }
         }
-        // print(ajaxRequest.status);
         return AjaxRequestAction.PROCEED;
       },
       onLoadStart: (controller, url) async {
@@ -2001,12 +2360,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         noOfLoginAjaxRequests = 0;
 
         debugPrint("noOfHomePageBuilds onLoadStart: $noOfHomePageBuilds");
-        // final snackBar = SnackBar(
-        //   content: Text('onLoadStart $url'),
-        //   duration: const Duration(seconds: 1),
-        // );
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        // onCurrentFullUrl.call(url?.toString() ?? '');
+
         setState(() {
           currentFullUrl = url?.toString() ?? '';
         });
@@ -2146,28 +2500,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
           vtopConnectionStatusType = "Error";
         }
-
-//         var tRexHtml = await controller.getTRexRunnerHtml();
-//         var tRexCss = await controller.getTRexRunnerCss();
-//
-//         controller.loadData(data: """
-// <html>
-//   <head>
-//     <meta charset="utf-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
-//     <style>$tRexCss</style>
-//   </head>
-//   <body>
-//     $tRexHtml
-//     <p>
-//       URL $url failed to load.
-//     </p>
-//     <p>
-//       Error: $code, $message
-//     </p>
-//   </body>
-// </html>
-//                   """);
       },
       onLoadHttpError: (InAppWebViewController controller, Uri? url,
           int statusCode, String description) async {
@@ -2182,502 +2514,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           });
         },
         headlessWebView: headlessWebView);
-
-    // Future.delayed(const Duration(seconds: 4), () async {
-    // setState(() {
-    //   vtopConnectionStatusType = "Connecting";
-    // });
-    // });
   }
-
-  bool? usingVITWifi;
-
-  late List<Widget> dialogActionButtonsListForGettingWifiType = [
-    CustomTextButton(
-      onPressed: () {
-        usingVITWifi = false;
-        Navigator.of(context).pop();
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      size: const Size(20, 50),
-      borderRadius: 20,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: const Text(
-        'NO',
-      ),
-    ),
-    CustomTextButton(
-      onPressed: () {
-        usingVITWifi = true;
-        Navigator.of(context).pop();
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      size: const Size(20, 50),
-      borderRadius: 20,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: const Text(
-        'YES',
-      ),
-    ),
-  ];
-
-  getWifiTypeDialogBox() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      setState(() {
-        processingSomething = true;
-      }); //then set processing something true for the new loading dialog
-      customAlertDialogBox(
-        isDialogShowing: isDialogShowing,
-        context: context,
-        onIsDialogShowing: (bool value) {
-          setState(() {
-            isDialogShowing = value;
-          });
-        },
-        dialogTitle: 'Heads Up!',
-        dialogContent: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Are you connected to VIT Bhopal Wifi?',
-              style: getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.60)),
-                  sizeDecidingVariable: screenBasedPixelWidth),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        barrierDismissible: true,
-        screenBasedPixelHeight: screenBasedPixelHeight,
-        screenBasedPixelWidth: screenBasedPixelWidth,
-        onProcessingSomething: (bool value) {
-          setState(() {
-            processingSomething = value;
-          });
-        },
-        dialogActions: dialogActionButtonsListForGettingWifiType,
-      ).then((_) {
-        if (usingVITWifi == true) {
-          runDnsSettingsDialogBox();
-        }
-        processingSomething = false;
-        return isDialogShowing = false;
-      });
-    });
-  }
-
-  late List<Widget> dialogActionButtonsListForDnsSettings = [
-    CustomTextButton(
-      onPressed: () {
-        Navigator.of(context).pop();
-        OpenSettings.openAirplaneModeSetting();
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      size: const Size(20, 50),
-      borderRadius: 20,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: const Text(
-        'OPEN SETTINGS',
-      ),
-    ),
-  ];
-
-  runDnsSettingsDialogBox() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      setState(() {
-        processingSomething = true;
-      }); //then set processing something true for the new loading dialog
-      customAlertDialogBox(
-        isDialogShowing: isDialogShowing,
-        context: context,
-        onIsDialogShowing: (bool value) {
-          setState(() {
-            isDialogShowing = value;
-          });
-        },
-        dialogTitle: 'Please Read!',
-        dialogContent: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'If you are connected to VIT Bhopal wifi then there could be two reasons for getting this error:-\n\n1. Official VTOP is down right now.\n2. Your DNS setting is turned on.\n\n To verify if its the 2nd reason try accessing the app using mobile data and if you connect successfully then its the 2nd reason above. If its the 2nd reason then turn off the DNS from network settings and try again.',
-              style: getDynamicTextStyle(
-                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.60)),
-                  sizeDecidingVariable: screenBasedPixelWidth),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        barrierDismissible: true,
-        screenBasedPixelHeight: screenBasedPixelHeight,
-        screenBasedPixelWidth: screenBasedPixelWidth,
-        onProcessingSomething: (bool value) {
-          setState(() {
-            processingSomething = value;
-          });
-        },
-        dialogActions: dialogActionButtonsListForDnsSettings,
-      ).then((_) {
-        processingSomething = false;
-        return isDialogShowing = false;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance!.removeObserver(this);
-    headlessWebView?.dispose();
-  }
-
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // String? wifiName;
-
-  // deviceWifiName() async {
-  //   NetworkInfo info = NetworkInfo();
-  //   wifiName = await info.getWifiName(); // FooNetwork
-  //   debugPrint("wifiName: $wifiName");
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // deviceWifiName();
-    // Reassigning new values to brightness, darkModeOn,and themeCalc() on every setstate
-    // so that they get accurate values if parent widgets update these value
-    brightness = WidgetsBinding.instance!.window.platformBrightness;
-    darkModeOn = (widget.themeMode == ThemeMode.system &&
-            brightness == Brightness.dark) ||
-        widget.themeMode == ThemeMode.dark;
-    themeCalc();
-    debugPrint('darkModeOn: $darkModeOn, theme: $theme');
-
+    // ↓↓↓↓↓↓↓↓↓↓↓↓ Don't remove them as they are for testing ↓↓↓↓↓↓↓↓↓↓↓↓
     // vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
     // vtopConnectionStatusType = "Error";
     // currentStatus = "launchLoadingScreen";
     // currentStatus = "userLoggedIn";
     // currentStatus = "signInScreen";
+    // ↑↑↑↑↑↑↑↑↑↑↑↑ Don't remove them as they are for testing ↑↑↑↑↑↑↑↑↑↑↑↑
+
+    debugPrint('darkModeOn: $darkModeOn, theme: $themeMode');
     debugPrint("loggedUserStatus: $loggedUserStatus");
     debugPrint("currentStatus: $currentStatus");
     debugPrint("processingSomething: $processingSomething");
     debugPrint("vtopLoginErrorType: $vtopLoginErrorType");
     debugPrint("vtopMode: $vtopMode");
 
-    chooseCorrectBody(
-      onBody: (Widget value) {
-        body = value;
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      tryAutoLoginStatus: tryAutoLoginStatus,
-      sessionDateTime: sessionDateTime,
-      autoCaptcha: autoCaptcha,
-      credentialsFound: credentialsFound,
-      studentProfileAllViewDocument: studentProfileAllViewDocument,
-      studentPortalDocument: studentPortalDocument,
-      vtopLoginErrorType: vtopLoginErrorType,
-      userEnteredPasswd: userEnteredPasswd,
-      userEnteredUname: userEnteredUname,
-      headlessWebView: headlessWebView,
-      image: image,
-      currentStatus: currentStatus,
-      loggedUserStatus: loggedUserStatus,
-      onUserEnteredPasswd: (String value) {
-        setState(() {
-          userEnteredPasswd = value;
-        });
-      },
-      context: context,
-      onUserEnteredUname: (String value) {
-        setState(() {
-          userEnteredUname = value;
-        });
-      },
-      onCurrentFullUrl: (String value) {
-        setState(() {
-          currentFullUrl = value;
-        });
-      },
-      processingSomething: processingSomething,
-      onProcessingSomething: (bool value) {
-        setState(() {
-          processingSomething = value;
-          // vtopLoginErrorType = "None";
-        });
-      },
-      refreshingCaptcha: refreshingCaptcha,
-      onRefreshingCaptcha: (bool value) {
-        setState(() {
-          setState(() {
-            refreshingCaptcha = value;
-          });
-        });
-      },
-      currentFullUrl: currentFullUrl,
-      vtopConnectionStatusType: vtopConnectionStatusType,
-      vtopConnectionStatusErrorType: vtopConnectionStatusErrorType,
-      onVtopLoginErrorType: (String value) {
-        setState(() {
-          vtopLoginErrorType = value;
-        });
-      },
-      onRequestType: (String value) {
-        setState(() {
-          requestType = "Real";
-        });
-      },
-      studentName: studentName,
-      onClearUnamePasswd: (bool value) {
-        _clearUnamePasswd();
-      },
-      onRetryOnError: (bool value) {
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          setState(() {
-            processingSomething = false;
-          });
-        }
-        setState(() {
-          vtopConnectionStatusErrorType = "None";
-          vtopConnectionStatusType = "Initiated";
-          debugPrint(
-              "restarting headlessInAppWebView manually as vtopConnectionStatusType has error");
-          runHeadlessInAppWebView(
-            headlessWebView: headlessWebView,
-            onCurrentFullUrl: (String value) {
-              currentFullUrl = value;
-            },
-          );
-        });
-      },
-      onTryAutoLoginStatus: (bool value) {
-        setState(() {
-          tryAutoLoginStatus = value;
-          _saveTryAutoLoginStatus();
-        });
-      },
-      themeMode: widget.themeMode,
-      onThemeMode: (ThemeMode value) {
-        widget.onThemeMode?.call(value);
-      },
-      onError: (String value) {
-        debugPrint("Updating Ui based on the error received");
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          setState(() {
-            processingSomething = false;
-          });
-        }
-        if (value == "net::ERR_INTERNET_DISCONNECTED") {
-          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-          setState(() {
-            currentStatus = "launchLoadingScreen";
-            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
-            vtopConnectionStatusType = "Error";
-          });
-        }
-      },
-    );
-
-    chooseCorrectAppbar(
-      onAppbar: (Widget value) {
-        appbar = value;
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      userEnteredPasswd: userEnteredPasswd,
-      userEnteredUname: userEnteredUname,
-      headlessWebView: headlessWebView,
-      image: image,
-      currentStatus: currentStatus,
-      loggedUserStatus: loggedUserStatus,
-      onUserEnteredPasswd: (String value) {
-        setState(() {
-          userEnteredPasswd = value;
-        });
-      },
-      context: context,
-      onUserEnteredUname: (String value) {
-        setState(() {
-          userEnteredUname = value;
-        });
-      },
-      onCurrentFullUrl: (String value) {
-        setState(() {
-          currentFullUrl = value;
-        });
-      },
-      processingSomething: processingSomething,
-      onProcessingSomething: (bool value) {
-        setState(() {
-          processingSomething = value;
-          // vtopLoginErrorType = "None";
-        });
-      },
-      refreshingCaptcha: refreshingCaptcha,
-      onRefreshingCaptcha: (bool value) {
-        setState(() {
-          refreshingCaptcha = value;
-        });
-      },
-      currentFullUrl: currentFullUrl,
-      onCurrentStatus: (String value) {
-        setState(() {
-          currentStatus = value;
-        });
-      },
-      scaffoldKey: _scaffoldKey,
-      onError: (String value) {
-        debugPrint("Updating Ui based on the error received");
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          processingSomething = false;
-        }
-        if (value == "net::ERR_INTERNET_DISCONNECTED") {
-          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-          setState(() {
-            currentStatus = "launchLoadingScreen";
-            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
-            vtopConnectionStatusType = "Error";
-          });
-        }
-      },
-    );
-
-    chooseCorrectDrawer(
-      onDrawer: (Widget? value) {
-        drawer = value;
-      },
-      screenBasedPixelWidth: screenBasedPixelWidth,
-      screenBasedPixelHeight: screenBasedPixelHeight,
-      userEnteredPasswd: userEnteredPasswd,
-      userEnteredUname: userEnteredUname,
-      headlessWebView: headlessWebView,
-      image: image,
-      currentStatus: currentStatus,
-      loggedUserStatus: loggedUserStatus,
-      onUserEnteredPasswd: (String value) {
-        setState(() {
-          userEnteredPasswd = value;
-        });
-      },
-      context: context,
-      onUserEnteredUname: (String value) {
-        setState(() {
-          userEnteredUname = value;
-        });
-      },
-      onCurrentFullUrl: (String value) {
-        setState(() {
-          currentFullUrl = value;
-        });
-      },
-      processingSomething: processingSomething,
-      onProcessingSomething: (bool value) {
-        setState(() {
-          processingSomething = value;
-          // vtopLoginErrorType = "None";
-        });
-      },
-      refreshingCaptcha: refreshingCaptcha,
-      onRefreshingCaptcha: (bool value) {
-        setState(() {
-          refreshingCaptcha = value;
-        });
-      },
-      currentFullUrl: currentFullUrl,
-      onCurrentStatus: (String value) {
-        setState(() {
-          currentStatus = value;
-        });
-      },
-      themeMode: widget.themeMode,
-      onThemeMode: (ThemeMode value) {
-        widget.onThemeMode?.call(value);
-      },
-      onRequestType: (String value) {
-        setState(() {
-          requestType = value;
-        });
-      },
-      onTryAutoLoginStatus: (bool value) {
-        _clearTryAutoLoginStatus();
-        setState(() {
-          tryAutoLoginStatus = value;
-          _saveTryAutoLoginStatus();
-        });
-      },
-      onError: (String value) {
-        debugPrint("Updating Ui based on the error received");
-        if (processingSomething == true) {
-          Navigator.of(context).pop();
-          processingSomething = false;
-        }
-        if (value == "net::ERR_INTERNET_DISCONNECTED") {
-          debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-          setState(() {
-            currentStatus = "launchLoadingScreen";
-            vtopConnectionStatusErrorType = "net::ERR_INTERNET_DISCONNECTED";
-            vtopConnectionStatusType = "Error";
-          });
-        }
-      },
-      timeTableDocument: timeTableDocument,
-      semesterSubIdForTimeTable: semesterSubIdForTimeTable,
-      onUpdateDefaultTimeTableSemesterId: (String value) {
-        setState(() {
-          semesterSubIdForTimeTable = value;
-        });
-        _saveSemesterSubIdForTimeTable();
-      },
-      onUpdateVtopMode: (String value) {
-        setState(() {
-          if (value == "Mini VTOP") {
-            currentStatus = "userLoggedIn";
-            vtopMode = "Mini VTOP";
-          } else if (value == "Full VTOP") {
-            currentStatus = "originalVTOP";
-            vtopMode = "Full VTOP";
-          }
-        });
-      },
-      onUpdateDefaultVtopMode: (String value) {
-        setState(() {
-          vtopMode = value;
-        });
-        _saveVtopMode();
-      },
-      vtopMode: vtopMode,
-      onLoggedUserStatus: (String value) {
-        setState(() {
-          loggedUserStatus = value;
-        });
-      },
-      classAttendanceDocument: classAttendanceDocument,
-      semesterSubIdForAttendance: semesterSubIdForAttendance,
-      onUpdateDefaultAttendanceSemesterId: (String value) {
-        setState(() {
-          semesterSubIdForAttendance = value;
-        });
-        _saveSemesterSubIdForAttendance();
-      },
-    );
+    chooseHomePageBody();
+    chooseHomePageAppbar();
+    chooseHomePageDrawer();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(

@@ -1,12 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:ntp/ntp.dart';
-
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
@@ -110,8 +107,6 @@ class _StudentPortalState extends State<StudentPortal> {
           {
             "name": "Profile",
             "action": () {
-              // timer.cancel();
-              // startTimeout();
               widget.onShowStudentProfileAllView?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
               runRequestingDataDialogBox();
@@ -126,8 +121,6 @@ class _StudentPortalState extends State<StudentPortal> {
           {
             "name": "Time Table & Subjects Details",
             "action": () {
-              // timer.cancel();
-              // startTimeout();
               widget.onTimeTable?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
               runRequestingDataDialogBox();
@@ -136,8 +129,6 @@ class _StudentPortalState extends State<StudentPortal> {
           {
             "name": "Class Attendance",
             "action": () {
-              // timer.cancel();
-              // startTimeout();
               widget.onClassAttendance?.call(true);
               Navigator.of(context).pop(); // pop the option selection dialog
               runRequestingDataDialogBox();
@@ -181,7 +172,7 @@ class _StudentPortalState extends State<StudentPortal> {
     // so to fight that case we are reassigning timerMaxSeconds variable with the amounts of seconds remaining from that time
     timer = Timer.periodic(duration, (timer) {
       setState(() {
-        // print(timer.tick.toString() + " , " + timerMaxSeconds.toString());
+        // debugPrint(timer.tick.toString() + " , " + timerMaxSeconds.toString());
         //gets the timer.tick value for removing that much seconds from timerMaxSeconds for displaying timer on screen/ui
         currentSeconds = timer.tick;
         // timerMaxSeconds = 10;
@@ -269,29 +260,17 @@ class _StudentPortalState extends State<StudentPortal> {
         setState(() {
           waitingText =
               "Taking too long?\nTry switching VTOP mode\nOR\nRestart the app.\nWe are working on a fix.";
-          // "ghghgh";
         });
       }
       if (arguments.studentName == null ||
           (timerText == "00: 00" || timerText.isEmpty)) {
-        print("arguments.studentName: ${arguments.studentName}");
-        print("timerText: $timerText");
+        debugPrint("arguments.studentName: ${arguments.studentName}");
+        debugPrint("timerText: $timerText");
       }
     });
 
     screenBasedPixelWidth = arguments.screenBasedPixelWidth;
     screenBasedPixelHeight = arguments.screenBasedPixelHeight;
-    // debugPrint("isDialogShowing: $isDialogShowing");
-    // if (arguments.processingSomething == false &&
-    //     isDialogShowing == true) {
-    //   // _controller3 = TextEditingController(text: "");
-    //   // Future.delayed(const Duration(milliseconds: 500), () async {
-    //   Navigator.of(context).pop();
-    //   debugPrint("dialogBox popped");
-    //   // });
-    // }
-
-    // print(arguments.studentPortalDocument.outerHtml);
 
     return (arguments.studentName == null ||
             (timerText == "00: 00" || timerText.isEmpty))
@@ -354,16 +333,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                             .headline6,
                                         sizeDecidingVariable:
                                             arguments.screenBasedPixelWidth),
-                                    // style: GoogleFonts.lato(
-                                    //   // color: Colors.white,
-                                    //   // textStyle: Theme.of(context).textTheme.headline1,
-                                    //   fontSize: widgetSizeProvider(
-                                    //       fixedSize: 17,
-                                    //       sizeDecidingVariable: widget
-                                    //           .arguments.screenBasedPixelWidth),
-                                    //   fontWeight: FontWeight.w700,
-                                    //   fontStyle: FontStyle.normal,
-                                    // ),
                                   ),
                                   FittedBox(
                                     fit: BoxFit.scaleDown,
@@ -386,7 +355,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .secondaryContainer,
-                                  //border: Border.all(color: Colors.blue, width: 10),
                                   borderRadius: BorderRadius.circular(
                                     widgetSizeProvider(
                                         fixedSize: 20,
@@ -416,7 +384,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                                 sizeDecidingVariable: widget
                                                     .arguments
                                                     .screenBasedPixelWidth),
-                                            // color: Colors.white,
                                           ),
                                         ),
                                         SizedBox(
@@ -497,9 +464,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                   ),
                                   child: ElevatedButton(
                                     style: ButtonStyle(
-                                      // backgroundColor:
-                                      //     MaterialStateProperty.all(
-                                      //         const Color(0xff04294f)),
                                       padding: MaterialStateProperty.all(
                                         EdgeInsets.all(
                                           widgetSizeProvider(
@@ -564,10 +528,6 @@ class _StudentPortalState extends State<StudentPortal> {
                                                                   .screenBasedPixelHeight),
                                                     ),
                                                   ),
-                                                  // backgroundColor:
-                                                  //     MaterialStateProperty.all(
-                                                  //         const Color(
-                                                  //             0xff04294f)),
                                                   padding:
                                                       MaterialStateProperty.all(
                                                     EdgeInsets.only(

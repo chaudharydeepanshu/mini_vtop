@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
-chooseCorrectAppbar({
+void chooseCorrectAppbar({
   required BuildContext context,
   required double screenBasedPixelWidth,
   required double screenBasedPixelHeight,

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -8,7 +7,6 @@ import '../basicFunctionsAndWidgets/custom_elevated_button.dart';
 import '../basicFunctionsAndWidgets/direct_pop.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/stop_pop.dart';
-import '../basicFunctionsAndWidgets/update/build_update_checker_widget.dart';
 import '../basicFunctionsAndWidgets/upper_case_text_formatter.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
@@ -265,7 +263,6 @@ class _LoginSectionState extends State<LoginSection> {
     debugPrint("isDialogShowing: $isFirstDialogShowing");
     if (widget.arguments.processingSomething == false &&
         isSecondDialogShowing == true) {
-      // _controller3 = TextEditingController(text: "");
       Future.delayed(const Duration(milliseconds: 500), () async {
         Navigator.of(context).pop();
         debugPrint("dialogBox popped");
@@ -357,7 +354,6 @@ class _LoginSectionState extends State<LoginSection> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .errorContainer,
-                                                // border: Border.all(),
                                                 borderRadius: BorderRadius.all(
                                                   Radius.circular(
                                                     widgetSizeProvider(
@@ -539,7 +535,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                       }
                                                       return null;
                                                     },
-                                                    autovalidateMode:
+                                                    autoValidateMode:
                                                         AutovalidateMode
                                                             .onUserInteraction,
                                                     suffixIcon: null,
@@ -568,7 +564,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                       }
                                                       return null;
                                                     },
-                                                    autovalidateMode:
+                                                    autoValidateMode:
                                                         AutovalidateMode
                                                             .onUserInteraction,
                                                     suffixIcon: null,
@@ -642,41 +638,6 @@ class _LoginSectionState extends State<LoginSection> {
                                                         ],
                                                       ),
                                                     ),
-                                                    // customElevatedButton(
-                                                    //   onPressed: () {
-                                                    //     setState(() {
-                                                    //       _controller =
-                                                    //           TextEditingController(
-                                                    //               text: "");
-                                                    //       _controller2 =
-                                                    //           TextEditingController(
-                                                    //               text: "");
-                                                    //     });
-                                                    //
-                                                    //     widget
-                                                    //         .onClearUnamePasswd
-                                                    //         .call(true);
-                                                    //   },
-                                                    //   child: Row(
-                                                    //     children: [
-                                                    //       Icon(
-                                                    //         Icons
-                                                    //             .close_outlined,
-                                                    //         size:
-                                                    //             screenBasedPixelWidth *
-                                                    //                 24.0,
-                                                    //       ),
-                                                    //       SizedBox(
-                                                    //         width:
-                                                    //             screenBasedPixelWidth *
-                                                    //                 8,
-                                                    //       ),
-                                                    //       Text(
-                                                    //         "Clear",
-                                                    //       )
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
                                                   ],
                                                 ),
                                               ),
@@ -707,7 +668,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                   }
                                                   return null;
                                                 },
-                                                autovalidateMode:
+                                                autoValidateMode:
                                                     AutovalidateMode
                                                         .onUserInteraction,
                                                 suffixIcon: null,
@@ -741,7 +702,7 @@ class _LoginSectionState extends State<LoginSection> {
                                                   }
                                                   return null;
                                                 },
-                                                autovalidateMode:
+                                                autoValidateMode:
                                                     AutovalidateMode
                                                         .onUserInteraction,
                                                 suffixIcon: SizedBox(
@@ -887,10 +848,6 @@ class _LoginSectionState extends State<LoginSection> {
                                                   : image,
                                             ),
                                           ),
-                                          // Html(
-                                          //   data: serializedDocument,
-                                          // ),
-                                          // Text("Document: $serializedDocument"),
                                         ),
                                         //Refresh captcha button.
                                         Tooltip(
@@ -900,8 +857,6 @@ class _LoginSectionState extends State<LoginSection> {
                                                         .refreshingCaptcha ==
                                                     false
                                                 ? () {
-                                                    // _controller3 =
-                                                    //     TextEditingController(text: "");
                                                     signInCredentialsMap = {
                                                       "uname":
                                                           '${_controller?.value.text.toUpperCase()}',
@@ -972,7 +927,7 @@ class _LoginSectionState extends State<LoginSection> {
                                       }
                                       return null;
                                     },
-                                    autovalidateMode:
+                                    autoValidateMode:
                                         AutovalidateMode.onUserInteraction,
                                     suffixIcon: null,
                                     obscureText: false,
@@ -1226,52 +1181,6 @@ class _LoginSectionState extends State<LoginSection> {
     );
   }
 
-  // FittedBox customElevatedButton({
-  //   required void Function()? onPressed,
-  //   required Widget? child,
-  // }) {
-  //   return FittedBox(
-  //     fit: BoxFit.scaleDown,
-  //     alignment: Alignment.center,
-  //     child: ElevatedButton(
-  //       style: ButtonStyle(
-  //         // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
-  //         padding: MaterialStateProperty.all(EdgeInsets.only(
-  //           top: widgetSizeProvider(
-  //               fixedSize: 16,
-  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-  //           bottom: widgetSizeProvider(
-  //               fixedSize: 16,
-  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-  //           left: widgetSizeProvider(
-  //               fixedSize: 30,
-  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-  //           right: widgetSizeProvider(
-  //               fixedSize: 30,
-  //               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-  //         )),
-  //         textStyle: MaterialStateProperty.all(
-  //           getDynamicTextStyle(
-  //               textStyle: Theme.of(context).textTheme.button,
-  //               sizeDecidingVariable: screenBasedPixelWidth),
-  //         ),
-  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-  //           RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(
-  //               widgetSizeProvider(
-  //                   fixedSize: 20,
-  //                   sizeDecidingVariable:
-  //                       widget.arguments.screenBasedPixelWidth),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //       onPressed: onPressed,
-  //       child: child,
-  //     ),
-  //   );
-  // }
-
   TextFormField loginTextFormFields({
     required String labelText,
     required TextEditingController? controller,
@@ -1279,7 +1188,7 @@ class _LoginSectionState extends State<LoginSection> {
     required String? Function(String?)? validator,
     required List<TextInputFormatter>? inputFormatters,
     required ValueChanged<String> onChanged,
-    required AutovalidateMode? autovalidateMode,
+    required AutovalidateMode? autoValidateMode,
     required Widget? suffixIcon,
     required bool obscureText,
     required bool enableSuggestions,
@@ -1295,12 +1204,8 @@ class _LoginSectionState extends State<LoginSection> {
       cursorWidth: widgetSizeProvider(
           fixedSize: 2,
           sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
-      // initialValue: 'Input text',
-      // maxLength: 20,
       decoration: InputDecoration(
         filled: true,
-        // fillColor: Color(0x0DFFFFFF),
-        // icon: const Icon(Icons.favorite),
         labelText: labelText,
         labelStyle: getDynamicTextStyle(
             textStyle:
@@ -1324,26 +1229,18 @@ class _LoginSectionState extends State<LoginSection> {
               fixedSize: 13.5,
               sizeDecidingVariable: widget.arguments.screenBasedPixelWidth),
         ),
-        // labelStyle: TextStyle(
-        //   color: Color(0xFF6200EE),
-        // ),
         helperText: helperText,
         helperStyle: getDynamicTextStyle(
             textStyle: Theme.of(context).inputDecorationTheme.helperStyle,
             sizeDecidingVariable: screenBasedPixelWidth),
-
         floatingLabelStyle: getDynamicTextStyle(
             textStyle:
                 Theme.of(context).inputDecorationTheme.floatingLabelStyle,
             sizeDecidingVariable: screenBasedPixelWidth),
-
         errorStyle: getDynamicTextStyle(
             textStyle: Theme.of(context).inputDecorationTheme.errorStyle,
             sizeDecidingVariable: screenBasedPixelWidth),
-
-        enabledBorder: const UnderlineInputBorder(
-            // borderSide: BorderSide(color: Color(0xFF6200EE)),
-            ),
+        enabledBorder: const UnderlineInputBorder(),
         suffixIconConstraints: BoxConstraints(
           minHeight: widgetSizeProvider(
               fixedSize: 24,
@@ -1360,7 +1257,7 @@ class _LoginSectionState extends State<LoginSection> {
       obscuringCharacter: "*",
       enableSuggestions: enableSuggestions,
       autocorrect: autocorrect,
-      autovalidateMode: autovalidateMode,
+      autovalidateMode: autoValidateMode,
       validator: validator,
       inputFormatters: inputFormatters,
       onChanged: (String value) {
@@ -1374,7 +1271,6 @@ class LoginSectionArguments {
   String currentStatus;
   String userEnteredUname;
   String userEnteredPasswd;
-  // HeadlessInAppWebView headlessWebView;
   bool processingSomething;
   Image? image;
   bool refreshingCaptcha;
@@ -1390,7 +1286,6 @@ class LoginSectionArguments {
     required this.currentStatus,
     required this.userEnteredUname,
     required this.userEnteredPasswd,
-    //   required this.headlessWebView,
     required this.image,
     required this.processingSomething,
     required this.refreshingCaptcha,

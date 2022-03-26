@@ -1,22 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-// enum SizeType { width, height }
-//
-// double widgetSizeProvider({
-//   required SizeType sizeType,
-//   required BuildContext context,
-//   required double fixedSize,
-// }) {
-//   double sizeDecidingVariable;
-//   if (sizeType == SizeType.width) {
-//     sizeDecidingVariable = MediaQuery.of(context).size.width * 0.0027625;
-//   } else {
-//     sizeDecidingVariable = MediaQuery.of(context).size.height * 0.00169;
-//   }
-//   return sizeDecidingVariable * fixedSize > fixedSize
-//       ? fixedSize
-//       : sizeDecidingVariable * fixedSize;
-// }
 
 double widgetSizeProvider({
   required double sizeDecidingVariable,

@@ -15,7 +15,7 @@ import 'forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 import 'forHeadlessInAppWebView/show_console_message.dart';
 import 'forHeadlessInAppWebView/stop_headless_in_app_web_view.dart';
 
-chooseCorrectBody(
+void chooseCorrectBody(
     {required BuildContext context,
     required double screenBasedPixelWidth,
     required double screenBasedPixelHeight,

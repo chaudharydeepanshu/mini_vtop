@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/widget_size_limiter.dart';
 
@@ -31,9 +29,6 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // width: widgetSizeProvider(
-      //     fixedSize: widget.size.width + 50,
-      //     sizeDecidingVariable: widget.screenBasedPixelWidth),
       height: widget.size != null
           ? widgetSizeProvider(
               fixedSize: (widget.size?.height)!,
@@ -58,7 +53,6 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                         sizeDecidingVariable: widget.screenBasedPixelHeight),
                   ),
           ),
-          // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
           padding: MaterialStateProperty.all(EdgeInsets.symmetric(
             vertical: widgetSizeProvider(
                 fixedSize: widget.padding.vertical,
@@ -74,11 +68,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.borderRadius
-                  // widgetSizeProvider(
-                  //     fixedSize: 20,
-                  //     sizeDecidingVariable: widget.screenBasedPixelWidth),
-                  ),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
           ),
         ),
@@ -117,9 +107,6 @@ class _CustomTextButtonState extends State<CustomTextButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // width: widgetSizeProvider(
-      //     fixedSize: widget.size.width + 50,
-      //     sizeDecidingVariable: widget.screenBasedPixelWidth),
       height: widgetSizeProvider(
           fixedSize: widget.size.height,
           sizeDecidingVariable: widget.screenBasedPixelWidth),
@@ -139,7 +126,6 @@ class _CustomTextButtonState extends State<CustomTextButton> {
                     sizeDecidingVariable: widget.screenBasedPixelHeight),
               ),
             ),
-            // backgroundColor: MaterialStateProperty.all(const Color(0xff04294f)),
             padding: MaterialStateProperty.all(EdgeInsets.symmetric(
               vertical: widgetSizeProvider(
                   fixedSize: widget.padding.vertical,
@@ -155,11 +141,7 @@ class _CustomTextButtonState extends State<CustomTextButton> {
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius
-                    // widgetSizeProvider(
-                    //     fixedSize: 20,
-                    //     sizeDecidingVariable: widget.screenBasedPixelWidth),
-                    ),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
             ),
           ),

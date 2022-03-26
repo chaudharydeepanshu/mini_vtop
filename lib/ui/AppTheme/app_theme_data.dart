@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'lib_color_schemes.g.dart';
 
 class AppThemeData {
@@ -51,6 +50,7 @@ class AppThemeData {
   static const _semiBold = FontWeight.w600;
   static const _bold = FontWeight.w700;
 
+  // For reference
   // textAppearanceHeadline1	Light 96sp
   // textAppearanceHeadline2	Light 60sp
   // textAppearanceHeadline3	Regular 48sp
@@ -64,18 +64,17 @@ class AppThemeData {
   // textAppearanceCaption	Regular 12sp
   // textAppearanceButton	Medium all caps 14sp
   // textAppearanceOverline	Regular all caps 10sp
-
-//       {
-//   FontWeight.w100: 'Thin',
-//   FontWeight.w200: 'ExtraLight',
-//   FontWeight.w300: 'Light',
-//   FontWeight.w400: 'Regular',
-//   FontWeight.w500: 'Medium',
-//   FontWeight.w600: 'SemiBold',
-//   FontWeight.w700: 'Bold',
-//   FontWeight.w800: 'ExtraBold',
-//   FontWeight.w900: 'Black',
-// }
+  // {
+  //   FontWeight.w100: 'Thin',
+  //   FontWeight.w200: 'ExtraLight',
+  //   FontWeight.w300: 'Light',
+  //   FontWeight.w400: 'Regular',
+  //   FontWeight.w500: 'Medium',
+  //   FontWeight.w600: 'SemiBold',
+  //   FontWeight.w700: 'Bold',
+  //   FontWeight.w800: 'ExtraBold',
+  //   FontWeight.w900: 'Black',
+  // }
 
   static const TextTheme _textTheme = TextTheme(
     headline1: TextStyle(

@@ -3,7 +3,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 
-callTimeTable(
+void callTimeTable(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required bool processingSomething,
@@ -28,11 +28,6 @@ callTimeTable(
             value.contains("You have been successfully logged out")) {
           debugPrint(
               "You are logged out due to inactivity for more than 15 minutes");
-          // runHeadlessInAppWebView(
-          //     headlessWebView: headlessWebView,
-          //     onCurrentFullUrl: (String value) {
-          //       onCurrentFullUrl.call(value);
-          //     });
           debugPrint(
               "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callTimeTable");
           runHeadlessInAppWebView(

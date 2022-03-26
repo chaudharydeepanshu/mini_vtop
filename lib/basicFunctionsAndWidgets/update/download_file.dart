@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
@@ -40,9 +39,6 @@ Future<void> downloadFile({
     releaseSavePath,
     cancelToken: cancelToken,
     onReceiveProgress: (rcv, total) {
-      // print(
-      //     'received: ${rcv.toStringAsFixed(0)} out of total: ${total.toStringAsFixed(0)}');
-
       progress = ((rcv / total) * 100).toStringAsFixed(0);
       onProgress.call(progress);
 
@@ -53,18 +49,18 @@ Future<void> downloadFile({
     },
     deleteOnError: true,
   ).then((_) {
-    print("Run then");
+    debugPrint("Run then");
     if (progress == '100') {
       isDownloaded = true;
-      print("Download completed");
+      debugPrint("Download completed");
       onIsDownloaded.call(isDownloaded);
     }
 
     downloading = false;
     onDownloading.call(downloading);
 
-    print(isDialogShowing);
-    print(isDownloaded);
+    debugPrint("isDialogShowing: $isDialogShowing");
+    debugPrint("isDownloaded: $isDownloaded");
     if (isDialogShowing == true && isDownloaded == true) {
       Navigator.of(context).pop();
       isDialogShowing = false;

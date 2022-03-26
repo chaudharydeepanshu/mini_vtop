@@ -57,10 +57,6 @@ class _BuildVtopModeSelectorState extends State<BuildVtopModeSelector> {
                 sizeDecidingVariable: _screenBasedPixelWidth),
           ),
         ),
-        // SizedBox(
-        //   width: widgetSizeProvider(
-        //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-        // ),
         Flexible(
           flex: 1,
           child: Container(
@@ -90,14 +86,11 @@ class _BuildVtopModeSelectorState extends State<BuildVtopModeSelector> {
                     fixedSize: 24,
                     sizeDecidingVariable: _screenBasedPixelWidth),
                 color: Theme.of(context).colorScheme.onPrimary,
-                // color: Colors.white,
               ),
               elevation: 16,
-              // style: const TextStyle(color: Colors.deepPurple),
               underline: Container(
                 height: widgetSizeProvider(
                     fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
-                // color: Colors.deepPurpleAccent,
               ),
               onChanged: (String? newValue) {
                 widget.onDropDownChanged.call(newValue);

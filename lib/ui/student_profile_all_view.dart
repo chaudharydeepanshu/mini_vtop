@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 
 class StudentProfileAllView extends StatefulWidget {
@@ -18,7 +17,6 @@ class StudentProfileAllView extends StatefulWidget {
 }
 
 class _StudentProfileAllViewState extends State<StudentProfileAllView> {
-  // late List<Widget> listOfTableRows;
   Map<String, dynamic> createTablesListAndHeadersList(
       {required List listOfTrs}) {
     List<List> listOfHeaders = [];
@@ -61,12 +59,8 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
 
       Widget tableHeader = Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary, // Color(0xff04294f),
-          // border: Border.all(color: Colors.white, width: 1),
-          // borderRadius: const BorderRadius.all(Radius.circular(40));
+          color: Theme.of(context).colorScheme.secondary,
         ),
-        // height: 64,
-        // width: 500,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -98,37 +92,24 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           List<TableRow>.generate(listOfLists[index].length, (int i) {
         List<Widget> listOfColumnsForRowWithIndex =
             List<Widget>.generate(2, (int j) {
-          Container tableRowColumnContainer = Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 75,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+          Widget tableRowColumnContainer = Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+              child: Text(
+                "${listOfLists[index][i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           );
@@ -151,11 +132,6 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
           Table(
             border:
                 TableBorder.all(color: Theme.of(context).colorScheme.outline),
-            // columnWidths: const <int, TableColumnWidth>{
-            // 0: IntrinsicColumnWidth(),
-            // 1: FlexColumnWidth(),
-            // 2: FixedColumnWidth(64),
-            // },
             defaultColumnWidth: const FlexColumnWidth(),
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: listOfRows,
@@ -194,13 +170,9 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
         .children[0]
         .children[0]
         .children[0];
-    // ?.getElementById("1a")
-    // ?.children[0]
-    // .children[0]
-    // .children[0]; //document.getElementById("htmlPersonalDetailTable");
+
     List htmlPersonalDetailTrs =
         htmlPersonalDetailTable?.getElementsByTagName("tr") ?? [];
-    // int tdsInTr1 = htmlPersonalDetailTrs[1].getElementsByTagName("td").length;
 
     Map<String, dynamic> mapOfListOfHeadersAndListsForPersonalDetail =
         createTablesListAndHeadersList(listOfTrs: htmlPersonalDetailTrs);
@@ -324,7 +296,6 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          // toolbarHeight: screenBasedPixelWidth * 80,
           centerTitle: true,
           title: Text(
             "Student Profile",
@@ -333,7 +304,6 @@ class _StudentProfileAllViewState extends State<StudentProfileAllView> {
                 sizeDecidingVariable: screenBasedPixelWidth),
             textAlign: TextAlign.center,
           ),
-          // backgroundColor: Theme.of(context).colorScheme.surface,
           leading: Builder(
             builder: (context) => OutlinedButton(
               style: ButtonStyle(
@@ -435,10 +405,6 @@ class StudentProfileAllViewArguments {
   String? currentStatus;
   ValueChanged<bool>? onWidgetDispose;
   dom.Document? studentProfileAllViewDocument;
-  // String userEnteredUname;
-  // String userEnteredPasswd;
-  // HeadlessInAppWebView headlessWebView;
-  // Image? image;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
 
@@ -446,10 +412,6 @@ class StudentProfileAllViewArguments {
     required this.currentStatus,
     required this.onWidgetDispose,
     required this.studentProfileAllViewDocument,
-    // required this.userEnteredUname,
-    // required this.userEnteredPasswd,
-    // required this.headlessWebView,
-    // required this.image,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
   });

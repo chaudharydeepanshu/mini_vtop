@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-
 import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_timetable.dart';
 import '../basicFunctionsAndWidgets/measure_size_of_widget.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
@@ -31,17 +30,6 @@ class _ClassAttendanceState extends State<ClassAttendance> {
       [];
 
   List<Map<String, String>> semesters = [];
-
-  // var timeTableDocument = widget.arguments.timeTableDocument;
-  //
-  // @override
-  // void didUpdateWidget(TimeTable oldWidget) {
-  //   if (oldWidget.arguments.timeTableDocument != widget.arguments.timeTableDocument) {
-  //     _currentStatus = widget.currentStatus;
-  //   }
-  //
-  //   super.didUpdateWidget(oldWidget);
-  // }
 
   @override
   void didChangeDependencies() {
@@ -74,40 +62,26 @@ class _ClassAttendanceState extends State<ClassAttendance> {
             htmlClassAttendanceDetailTableTrs[i]
                 .getElementsByTagName("th")
                 .length, (int j) {
-          Container tableRowColumnContainer = Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 75,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  "${htmlClassAttendanceDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: getDynamicTextStyle(
-                      textStyle:
-                          Theme.of(context).textTheme.bodyText1?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+          Widget tableRowColumnContainer = Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+              child: Text(
+                "${htmlClassAttendanceDetailTableTrs[i].getElementsByTagName("th")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           );
@@ -119,37 +93,24 @@ class _ClassAttendanceState extends State<ClassAttendance> {
             htmlClassAttendanceDetailTableTrs[i]
                 .getElementsByTagName("td")
                 .length, (int j) {
-          Container tableRowColumnContainer = Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 75,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  "${htmlClassAttendanceDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
-                  style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+          Widget tableRowColumnContainer = Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+              child: Text(
+                "${htmlClassAttendanceDetailTableTrs[i].getElementsByTagName("td")[j].text.replaceAll(RegExp('\\s+'), ' ')}",
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           );
@@ -170,11 +131,6 @@ class _ClassAttendanceState extends State<ClassAttendance> {
       children: [
         Table(
           border: TableBorder.all(color: Theme.of(context).colorScheme.outline),
-          // columnWidths: const <int, TableColumnWidth>{
-          //   0: IntrinsicColumnWidth(),
-          //   1: FlexColumnWidth(),
-          //   2: FixedColumnWidth(64),
-          // },
           defaultColumnWidth: const IntrinsicColumnWidth(),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: listOfTableRowsForCustomClassAttendanceDetailTable,
@@ -186,20 +142,11 @@ class _ClassAttendanceState extends State<ClassAttendance> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              // color: Colors.white,
-              // border: Border(
-              //   bottom: BorderSide(color: Colors.black, width: 1),
-              //   left: BorderSide(color: Colors.black, width: 1),
-              //   right: BorderSide(color: Colors.black, width: 1),
-              // ),
               border: Border.all(
                 color: Theme.of(context).colorScheme.outline,
                 width: widgetSizeProvider(
                     fixedSize: 1, sizeDecidingVariable: screenBasedPixelWidth),
               ),
-              // border: Border.all(
-              //     color: Colors.black, width: screenBasedPixelWidth * 1),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
             ),
             child: Row(
               children: [
@@ -294,7 +241,6 @@ class _ClassAttendanceState extends State<ClassAttendance> {
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
@@ -363,7 +309,6 @@ class _ClassAttendanceState extends State<ClassAttendance> {
                               dropdownValue: dropdownValue,
                               onDropDownChanged: (String? newValue) {
                                 setState(() {
-                                  // dropdownValue = newValue!;
                                   WidgetsBinding.instance
                                       ?.addPostFrameCallback((_) {
                                     widget.arguments.onProcessingSomething.call(
@@ -447,8 +392,7 @@ class _ClassAttendanceState extends State<ClassAttendance> {
                           screenBasedPixelHeight: screenBasedPixelHeight,
                         ),
                         SizedBox(
-                          height: classAttendanceDetailTableSize
-                              .height, //(listOfRows.length + 1) * 48 + 1 + 16,
+                          height: classAttendanceDetailTableSize.height,
                           width: MediaQuery.of(context).size.width,
                           child: InteractiveViewer(
                             constrained: false,
@@ -501,11 +445,7 @@ class TableHeader extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
-        // border: Border.all(color: Colors.white, width: 1),
-        // borderRadius: const BorderRadius.all(Radius.circular(40));
       ),
-      // height: 64,
-      // width: 500,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -551,94 +491,62 @@ class CustomTableRowElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          // color: Colors.white,
-          // border: Border.all(color: Colors.black, width: 1),
-          // borderRadius: const BorderRadius.all(Radius.circular(40));
-          ),
-      // height: 75,
-      // width: 250,
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              // color: Colors.white,
-
-              border: Border(
-                bottom: BorderSide(
-                  color: Theme.of(context).colorScheme.outline,
-                  width: widgetSizeProvider(
-                      fixedSize: 1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-              ),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
-            // height: 37.5,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  elementText1,
-                  style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outline,
+                width: widgetSizeProvider(
+                    fixedSize: 1, sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 37.5,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  elementText2,
-                  style: getDynamicTextStyle(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+              child: Text(
+                elementText1,
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              right: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+            child: Text(
+              elementText2,
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1,
+                  sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -657,15 +565,9 @@ class LegendCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          // color: Colors.white,
-          // border: Border.all(color: Colors.black, width: 1),
-          // borderRadius: const BorderRadius.all(Radius.circular(40));
-          ),
+    return SizedBox(
       height: widgetSizeProvider(
           fixedSize: 75, sizeDecidingVariable: screenBasedPixelHeight),
-      // width: 250,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
@@ -694,10 +596,6 @@ class ClassAttendanceArguments {
   ValueChanged<String>? onSemesterSubIdChange;
   String semesterSubIdForAttendance;
   ValueChanged<bool> onProcessingSomething;
-  // String userEnteredUname;
-  // String userEnteredPasswd;
-  // HeadlessInAppWebView headlessWebView;
-  // Image? image;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
 
@@ -708,10 +606,6 @@ class ClassAttendanceArguments {
     required this.onSemesterSubIdChange,
     required this.semesterSubIdForAttendance,
     required this.onProcessingSomething,
-    // required this.userEnteredUname,
-    // required this.userEnteredPasswd,
-    // required this.headlessWebView,
-    // required this.image,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
   });

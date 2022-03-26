@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
 import 'forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 
-declareAutoFillCaptchaConstants(
+void declareAutoFillCaptchaConstants(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required ValueChanged<String> onCurrentFullUrl}) async {
@@ -18,11 +17,6 @@ declareAutoFillCaptchaConstants(
           value.contains("You have been successfully logged out")) {
         debugPrint(
             "You are logged out due to inactivity for more than 15 minutes");
-        // runHeadlessInAppWebView(
-        //     headlessWebView: headlessWebView,
-        //     onCurrentFullUrl: (String value) {
-        //       onCurrentFullUrl.call(value);
-        //     });
         debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
         runHeadlessInAppWebView(
@@ -4600,7 +4594,7 @@ const SolveCap = (img) => {
   }
 }
 
-autoFillCaptcha(
+void autoFillCaptcha(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required ValueChanged<String> onCurrentFullUrl}) async {
@@ -4615,11 +4609,6 @@ autoFillCaptcha(
           value.contains("You have been successfully logged out")) {
         debugPrint(
             "You are logged out due to inactivity for more than 15 minutes");
-        // runHeadlessInAppWebView(
-        //     headlessWebView: headlessWebView,
-        //     onCurrentFullUrl: (String value) {
-        //       onCurrentFullUrl.call(value);
-        //     });
         debugPrint(
             "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for manageUserSession");
         runHeadlessInAppWebView(

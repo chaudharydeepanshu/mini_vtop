@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-
 import '../basicFunctionsAndWidgets/build_semester_selector_widget_for_timetable.dart';
 import '../basicFunctionsAndWidgets/measure_size_of_widget.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
@@ -39,17 +38,6 @@ class _TimeTableState extends State<TimeTable> {
 
   List<Map<String, String>> semesters = [];
 
-  // var timeTableDocument = widget.arguments.timeTableDocument;
-  //
-  // @override
-  // void didUpdateWidget(TimeTable oldWidget) {
-  //   if (oldWidget.arguments.timeTableDocument != widget.arguments.timeTableDocument) {
-  //     _currentStatus = widget.currentStatus;
-  //   }
-  //
-  //   super.didUpdateWidget(oldWidget);
-  // }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -59,12 +47,10 @@ class _TimeTableState extends State<TimeTable> {
             .text
             .replaceAll(RegExp('\\s+'), ' ') !=
         "No Record(s) Found") {
-      var htmlTimeTable = widget.arguments.timeTableDocument?.getElementById(
-          "timeTableStyle"); //document.getElementById("htmlTimeTable");
+      var htmlTimeTable =
+          widget.arguments.timeTableDocument?.getElementById("timeTableStyle");
       List htmlTimeTableTrs = htmlTimeTable?.getElementsByTagName("tr") ?? [];
-      // int tdsInTr1 = htmlTimeTableTrs[1].getElementsByTagName("td").length;
-      // int tdLength = htmlTimeTableTrs[index].getElementsByTagName("td").length;
-      // List<Widget> listOfColumnsForRowWithIndex = [];
+
       listOfTableRowsForCustomTimeTable = List<TableRow>.generate(1, (int i) {
         debugPrint(
             "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
@@ -115,8 +101,7 @@ class _TimeTableState extends State<TimeTable> {
                 "no. of tds: ${htmlTimeTableTrs[i].getElementsByTagName("td").length}");
             List<Widget> listOfColumnsForRowWithIndex;
 
-            print(
-                "Current Week ---------------------: ${currentDateTime.weekday}");
+            debugPrint("Current Week: ${currentDateTime.weekday}");
 
             Map<int, String> intToWeekDay = {
               1: "MON",
@@ -127,8 +112,8 @@ class _TimeTableState extends State<TimeTable> {
               6: "SAT",
             };
 
-            print(
-                "Current Time ---------------------: ${currentDateTime.hour}:${currentDateTime.minute}");
+            debugPrint(
+                "Current Time: ${currentDateTime.hour}:${currentDateTime.minute}");
 
             Map<int, Map<String, DateTime>> timeFromElementPosition = {
               2: {
@@ -198,12 +183,7 @@ class _TimeTableState extends State<TimeTable> {
               Container tableRowColumnContainer = Container(
                 decoration: BoxDecoration(
                   color: rowColor,
-                  // color: Colors.white,
-                  // border: Border.all(color: Colors.black, width: 1),
-                  // borderRadius: const BorderRadius.all(Radius.circular(40));
                 ),
-                // height: 75,
-                // width: 250,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
@@ -289,13 +269,7 @@ class _TimeTableState extends State<TimeTable> {
               htmlSubjectDetailTableTrs[i].getElementsByTagName("th").length,
               (int j) {
             Container tableRowColumnContainer = Container(
-              decoration: const BoxDecoration(
-                  // color: Colors.white,
-                  // border: Border.all(color: Colors.black, width: 1),
-                  // borderRadius: const BorderRadius.all(Radius.circular(40));
-                  ),
-              // height: 75,
-              // width: 250,
+              decoration: const BoxDecoration(),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -333,13 +307,7 @@ class _TimeTableState extends State<TimeTable> {
               htmlSubjectDetailTableTrs[i].getElementsByTagName("td").length,
               (int j) {
             Container tableRowColumnContainer = Container(
-              decoration: const BoxDecoration(
-                  // color: Colors.white,
-                  // border: Border.all(color: Colors.black, width: 1),
-                  // borderRadius: const BorderRadius.all(Radius.circular(40));
-                  ),
-              // height: 75,
-              // width: 250,
+              decoration: const BoxDecoration(),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -384,11 +352,6 @@ class _TimeTableState extends State<TimeTable> {
           Table(
             border:
                 TableBorder.all(color: Theme.of(context).colorScheme.outline),
-            // columnWidths: const <int, TableColumnWidth>{
-            //   0: IntrinsicColumnWidth(),
-            //   1: FlexColumnWidth(),
-            //   2: FixedColumnWidth(64),
-            // },
             defaultColumnWidth: const IntrinsicColumnWidth(),
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: listOfTableRowsForCustomSubjectDetailTable,
@@ -400,21 +363,12 @@ class _TimeTableState extends State<TimeTable> {
             ),
             child: Container(
               decoration: BoxDecoration(
-                // color: Colors.white,
-                // border: Border(
-                //   bottom: BorderSide(color: Colors.black, width: 1),
-                //   left: BorderSide(color: Colors.black, width: 1),
-                //   right: BorderSide(color: Colors.black, width: 1),
-                // ),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outline,
                   width: widgetSizeProvider(
                       fixedSize: 1,
                       sizeDecidingVariable: screenBasedPixelWidth),
                 ),
-                // border: Border.all(
-                //     color: Colors.black, width: screenBasedPixelWidth * 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
               ),
               child: Row(
                 children: [
@@ -509,7 +463,6 @@ class _TimeTableState extends State<TimeTable> {
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
@@ -767,11 +720,7 @@ class TableHeader extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
-        // border: Border.all(color: Colors.white, width: 1),
-        // borderRadius: const BorderRadius.all(Radius.circular(40));
       ),
-      // height: 64,
-      // width: 500,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -817,100 +766,66 @@ class CustomTableRowElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          // color: Colors.white,
-          // border: Border.all(color: Colors.black, width: 1),
-          // borderRadius: const BorderRadius.all(Radius.circular(40));
-          ),
-      // height: 75,
-      // width: 250,
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              // color: Colors.white,
-
-              border: Border(
-                bottom: BorderSide(
-                  color: Theme.of(context).colorScheme.outline,
-                  width: widgetSizeProvider(
-                      fixedSize: 1,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-              ),
-              // borderRadius: const BorderRadius.all(Radius.circular(40));
-            ),
-            // height: 37.5,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  elementText1,
-                  style: getDynamicTextStyle(
-                      textStyle:
-                          Theme.of(context).textTheme.bodyText1?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outline,
+                width: widgetSizeProvider(
+                    fixedSize: 1, sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-                // color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 1),
-                // borderRadius: const BorderRadius.all(Radius.circular(40));
-                ),
-            // height: 37.5,
-            // width: 250,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  right: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  top: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                  bottom: widgetSizeProvider(
-                      fixedSize: 15,
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
-                child: Text(
-                  elementText2,
-                  style: getDynamicTextStyle(
-                      textStyle:
-                          Theme.of(context).textTheme.bodyText1?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                      sizeDecidingVariable: screenBasedPixelWidth),
-                ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                right: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                top: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+                bottom: widgetSizeProvider(
+                    fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              ),
+              child: Text(
+                elementText1,
+                style: getDynamicTextStyle(
+                    textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    sizeDecidingVariable: screenBasedPixelWidth),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              right: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              top: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+              bottom: widgetSizeProvider(
+                  fixedSize: 15, sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+            child: Text(
+              elementText2,
+              style: getDynamicTextStyle(
+                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  sizeDecidingVariable: screenBasedPixelWidth),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -930,14 +845,9 @@ class LegendCellWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-          // color: Colors.white,
-          // border: Border.all(color: Colors.black, width: 1),
-          // borderRadius: const BorderRadius.all(Radius.circular(40));
-          ),
+      decoration: const BoxDecoration(),
       height: widgetSizeProvider(
           fixedSize: 75, sizeDecidingVariable: screenBasedPixelHeight),
-      // width: 250,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
@@ -969,10 +879,6 @@ class TimeTableArguments {
   String semesterSubIdForTimeTable;
   DateTime? currentDateTime;
   ValueChanged<bool> onProcessingSomething;
-  // String userEnteredUname;
-  // String userEnteredPasswd;
-  // HeadlessInAppWebView headlessWebView;
-  // Image? image;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
 
@@ -984,10 +890,6 @@ class TimeTableArguments {
     required this.semesterSubIdForTimeTable,
     required this.currentDateTime,
     required this.onProcessingSomething,
-    // required this.userEnteredUname,
-    // required this.userEnteredPasswd,
-    // required this.headlessWebView,
-    // required this.image,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
   });

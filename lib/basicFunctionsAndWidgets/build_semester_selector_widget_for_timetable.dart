@@ -59,10 +59,6 @@ class _BuildSemesterSelectorForTimeTableState
                 sizeDecidingVariable: _screenBasedPixelWidth),
           ),
         ),
-        // SizedBox(
-        //   width: widgetSizeProvider(
-        //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-        // ),
         Flexible(
           flex: 2,
           child: Container(
@@ -86,21 +82,17 @@ class _BuildSemesterSelectorForTimeTableState
               dropdownColor: Theme.of(context).colorScheme.primaryContainer,
               value: _dropdownValue,
               isExpanded: true,
-
               icon: Icon(
                 Icons.arrow_downward,
                 size: widgetSizeProvider(
                     fixedSize: 24,
                     sizeDecidingVariable: _screenBasedPixelWidth),
                 color: Theme.of(context).colorScheme.onPrimary,
-                // color: Colors.white,
               ),
               elevation: 16,
-              // style: const TextStyle(color: Colors.deepPurple),
               underline: Container(
                 height: widgetSizeProvider(
                     fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
-                // color: Colors.deepPurpleAccent,
               ),
               onChanged: (String? newValue) {
                 widget.onDropDownChanged.call(newValue);
@@ -110,7 +102,6 @@ class _BuildSemesterSelectorForTimeTableState
                 return DropdownMenuItem<String>(
                   value: value["semesterCode"],
                   child: Container(
-                    // width: 145,
                     // height: value["semesterCode"] == _dropdownValue
                     //     ? kMinInteractiveDimension
                     //     : null,

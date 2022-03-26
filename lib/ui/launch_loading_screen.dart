@@ -22,9 +22,6 @@ class LaunchLoadingScreen extends StatefulWidget {
 }
 
 class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
-  // double width = 1000;
-  // double height = 300;
-
   Timer? timer;
 
   late Widget animationOfLoadingScreen;
@@ -42,11 +39,8 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
       required Color textDialogOfLoginScreenColor,
       required Widget actionButton}) {
     return AnimatedContainer(
-      // height: height,
-      // width: width,
       decoration: BoxDecoration(
         color: textDialogOfLoginScreenColor,
-        //border: Border.all(color: Colors.blue, width: 10),
         borderRadius: BorderRadius.all(
           Radius.circular(
             widgetSizeProvider(
@@ -93,8 +87,6 @@ class _LaunchLoadingScreenState extends State<LaunchLoadingScreen> {
       key: const ValueKey<int>(0),
     );
     super.initState();
-    // callTimerMethod();
-    // callChangeTextMethod();
   }
 
   @override

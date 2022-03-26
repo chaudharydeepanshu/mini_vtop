@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' as dom;
@@ -182,7 +181,6 @@ class _SettingsState extends State<Settings> {
               sizeDecidingVariable: screenBasedPixelWidth),
           textAlign: TextAlign.center,
         ),
-        // backgroundColor: Theme.of(context).colorScheme.surface,
         leading: Builder(
           builder: (context) => OutlinedButton(
             style: ButtonStyle(
@@ -495,11 +493,6 @@ class SettingsArguments {
   ValueChanged<String> onUpdateDefaultTimeTableSemesterId;
   ValueChanged<String> onUpdateDefaultAttendanceSemesterId;
   ValueChanged<String> onUpdateDefaultVtopMode;
-
-  // String userEnteredUname;
-  // String userEnteredPasswd;
-  // HeadlessInAppWebView headlessWebView;
-  // Image? image;
   double screenBasedPixelWidth;
   double screenBasedPixelHeight;
 
@@ -519,10 +512,6 @@ class SettingsArguments {
     required this.onUpdateDefaultTimeTableSemesterId,
     required this.onUpdateDefaultAttendanceSemesterId,
     required this.onUpdateDefaultVtopMode,
-    // required this.userEnteredUname,
-    // required this.userEnteredPasswd,
-    // required this.headlessWebView,
-    // required this.image,
     required this.screenBasedPixelWidth,
     required this.screenBasedPixelHeight,
   });

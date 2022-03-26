@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-showConsoleMessage(
+void showConsoleMessage(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required ValueChanged<String> onCurrentFullUrl}) async {

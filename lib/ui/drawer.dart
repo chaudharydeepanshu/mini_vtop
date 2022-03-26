@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../basicFunctionsAndWidgets/proccessing_dialog.dart';
 import '../basicFunctionsAndWidgets/widget_size_limiter.dart';
 import 'package:html/dom.dart' as dom;
-
 import '../navigation/page_routes_model.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -85,6 +83,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
   void didUpdateWidget(CustomDrawer oldWidget) {
     if (oldWidget.currentStatus != widget.currentStatus) {
       _currentStatus = widget.currentStatus;
+    }
+    if (oldWidget.themeMode != widget.themeMode) {
+      themeButtonTextCalc();
     }
 
     super.didUpdateWidget(oldWidget);
@@ -242,8 +243,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    themeButtonTextCalc();
-    debugPrint(themeButtonText);
+    debugPrint("themeButtonText $themeButtonText");
     debugPrint(
         "brightness.name: ${WidgetsBinding.instance!.window.platformBrightness}");
     return Drawer(
@@ -284,16 +284,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                           (themeButtonText == 'Dark'))
                                       ? Colors.white
                                       : Colors.black,
-                                  // height: 100,
                                   alignment: Alignment.center,
                                   semanticsLabel: 'App Logo'),
-                              // const SizedBox(
-                              //   height: 10,
-                              // ),
-                              // const Text(
-                              //   'Mini VTOP',
-                              //   style: TextStyle(fontSize: 20),
-                              // ),
                             ],
                           ),
                         ),
@@ -317,8 +309,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       } else if (widget.themeMode == ThemeMode.system) {
                         widget.onThemeMode?.call(ThemeMode.light);
                       }
-                      // Then close the drawer
-                      //Navigator.pop(context);
                     },
                     child: Row(
                       children: [
@@ -364,7 +354,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                       ?.call(true);
                                   _currentStatus = "userLoggedIn";
                                   widget.onUpdateVtopMode.call("Mini VTOP");
-                                  // widget.onCurrentStatus.call("userLoggedIn");
                                 }
                                 vtopModeButtonTextCalc();
                                 // Then close the drawer
@@ -397,10 +386,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           // Update the state of the app
                           // making a fake call to StudentProfileAllView so that
                           // if the user gets logged out it will automatically restart the webview
+                          // widget.onShowStudentProfileAllView?.call(true);
 
                           // Then close the drawer
                           Navigator.pop(context);
-                          // widget.onShowStudentProfileAllView?.call(true);
+
                           if (_currentStatus != "signInScreen" &&
                               _currentStatus != "launchLoadingScreen") {
                             widget.onTimeTableAndAttendance?.call(true);
@@ -454,38 +444,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             );
                             widget.onLoggedUserStatus.call("settings");
                           }
-                          // Navigator.pushNamed(
-                          //   context,
-                          //   PageRoutes.settings,
-                          //   arguments: SettingsArguments(
-                          //     currentStatus: widget.currentStatus,
-                          //     onWidgetDispose: (bool value) {
-                          //       debugPrint("settings disposed");
-                          //       WidgetsBinding.instance?.addPostFrameCallback(
-                          //         (_) => widget.onLoggedUserStatus
-                          //             .call("studentPortalScreen"),
-                          //       );
-                          //     },
-                          //     timeTableDocument: widget.timeTableDocument,
-                          //     screenBasedPixelHeight: screenBasedPixelHeight,
-                          //     screenBasedPixelWidth: screenBasedPixelWidth,
-                          //     semesterSubId: widget.semesterSubId,
-                          //     onSemesterSubIdChange: (String value) {},
-                          //     onProcessingSomething: (bool value) {
-                          //       widget.onProcessingSomething.call(value);
-                          //     },
-                          //     onUpdateDefaultSemesterId: (String value) {
-                          //       widget.onUpdateDefaultSemesterId.call(value);
-                          //     },
-                          //     vtopMode: widget.vtopMode,
-                          //     onUpdateDefaultVtopMode: (String value) {
-                          //       widget.onUpdateDefaultVtopMode.call(value);
-                          //     },
-                          //     headlessWebView: widget.headlessWebView,
-                          //     processingSomething: widget.processingSomething,
-                          //   ),
-                          // );
-                          // widget.onLoggedUserStatus.call("settings");
                         },
                         child: Row(
                           children: const [
@@ -524,8 +482,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                   },
                                 );
                                 // Then close the drawer
-
                                 Navigator.pop(context);
+
                                 WidgetsBinding.instance
                                     ?.addPostFrameCallback((_) {
                                   widget.onProcessingSomething.call(
@@ -615,6 +573,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
             child: Column(
               children: [
+                // Commented out as currently there is no privacy policy.
                 // RichText(
                 //   text: TextSpan(
                 //     text: 'Privacy Policy',

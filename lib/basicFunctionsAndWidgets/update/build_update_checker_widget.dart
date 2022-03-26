@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:mini_vtop/basicFunctionsAndWidgets/package_info_calc.dart';
@@ -819,14 +818,6 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
         //             .request()
         //         : PermissionStatus.granted;
         if (statusOfInstallPackagesPermission == PermissionStatus.granted) {
-          // ScaffoldMessenger.of(context)
-          //   ..hideCurrentSnackBar()
-          //   ..showSnackBar(customSnackBar(
-          //     snackBarText: "Checking for updates. Please Wait.",
-          //     screenBasedPixelWidth: _screenBasedPixelWidth,
-          //     context: context,
-          //   ));
-
           if (latestVersion != null) {
             if (latestVersion! > currentVersion) {
               debugPrint("Latest version available");
@@ -837,8 +828,7 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                   screenBasedPixelWidth: _screenBasedPixelWidth,
                   context: context,
                 ));
-              // WidgetsBinding.instance
-              //     ?.addPostFrameCallback((_) {
+
               customAlertDialogBox(
                 isDialogShowing: isDialogShowing,
                 context: context,
@@ -905,56 +895,6 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                             ),
                           ],
                         ),
-                        // CustomBox(
-                        //   settingsType: 'Update version',
-                        //   screenBasedPixelWidth: _screenBasedPixelWidth,
-                        //   screenBasedPixelHeight: _screenBasedPixelHeight,
-                        //   settingsBoxChildren: [
-                        //     SizedBox(
-                        //       height: widgetSizeProvider(
-                        //           fixedSize: 20,
-                        //           sizeDecidingVariable: _screenBasedPixelWidth),
-                        //       width: widgetSizeProvider(
-                        //           fixedSize: double.maxFinite,
-                        //           sizeDecidingVariable: _screenBasedPixelWidth),
-                        //       child: SingleChildScrollView(
-                        //         child: Row(
-                        //           children: [
-                        //             Flexible(
-                        //               child: Markdown(
-                        //                 padding: const EdgeInsets.all(0),
-                        //                 styleSheet: MarkdownStyleSheet(
-                        //                   h3: TextStyle(
-                        //                     fontWeight: FontWeight.bold,
-                        //                     fontSize: widgetSizeProvider(
-                        //                         fixedSize: 16,
-                        //                         sizeDecidingVariable:
-                        //                             _screenBasedPixelWidth),
-                        //                   ),
-                        //                   p: TextStyle(
-                        //                     fontWeight: FontWeight.bold,
-                        //                     fontSize: widgetSizeProvider(
-                        //                         fixedSize: 14,
-                        //                         sizeDecidingVariable:
-                        //                             _screenBasedPixelWidth),
-                        //                   ),
-                        //                 ),
-                        //                 shrinkWrap: true,
-                        //                 controller: controller,
-                        //                 selectable: false,
-                        //                 data: UpdateCheckRequester
-                        //                             .latestVersion ==
-                        //                         null
-                        //                     ? "No version tag 🦥"
-                        //                     : "v${UpdateCheckRequester.latestVersion}",
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
                       ],
                     ),
                   ),
@@ -995,7 +935,6 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                 ],
               ).then((_) => isDialogShowing = false);
               debugPrint("dialogBox initiated");
-              // });
             } else if (latestVersion == currentVersion) {
               debugPrint("Using latest version available");
               ScaffoldMessenger.of(context)
@@ -1191,10 +1130,6 @@ class _BuildUpdateCheckerState extends State<BuildUpdateChecker> {
                       sizeDecidingVariable: _screenBasedPixelWidth),
                 ),
               ),
-              // SizedBox(
-              //   width: widgetSizeProvider(
-              //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-              // ),
               Flexible(
                 flex: 1,
                 child: CustomElevatedButton(
@@ -1274,7 +1209,6 @@ class UpdateDescriptionContent extends StatelessWidget {
     required double screenBasedPixelWidth,
     required this.currentVersion,
     required this.controller,
-    // required this.updateDescription,
     required this.updateTypeTag,
   })  : _screenBasedPixelWidth = screenBasedPixelWidth,
         super(key: key);
@@ -1283,7 +1217,6 @@ class UpdateDescriptionContent extends StatelessWidget {
   final double _screenBasedPixelWidth;
   final Version? currentVersion;
   final ScrollController? controller;
-  // final String? updateDescription;
   final String updateTypeTag;
 
   @override
@@ -1313,15 +1246,6 @@ class UpdateDescriptionContent extends StatelessWidget {
                       DateFormat('dd MMMM yyyy').format(updateDateInIsoFormat);
                   String? updateDescription =
                       updatesMapListOf![index][UpdatesProperties.description];
-                  // String updateTypeTag;
-                  if (index == 0 ||
-                      currentVersion! < Version.parse(updateVersion)) {
-                    // updateTypeTag = "New";
-                  } else if (currentVersion == Version.parse(updateVersion)) {
-                    // updateTypeTag = "Current";
-                  } else {
-                    // updateTypeTag = "Old";
-                  }
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1386,81 +1310,6 @@ class UpdateDescriptionContent extends StatelessWidget {
         ),
       ],
     );
-    // Stack(
-    //   alignment: Alignment.topCenter,
-    //   children: [
-    //     Padding(
-    //       padding: const EdgeInsets.only(top: 12.5, bottom: 8.0),
-    //       child: Container(
-    //         decoration: BoxDecoration(
-    //           border: Border.all(
-    //               color: Theme.of(context).colorScheme.onPrimaryContainer,
-    //               width: 1),
-    //           borderRadius: const BorderRadius.all(Radius.circular(10)),
-    //         ),
-    //         child: Padding(
-    //           padding: const EdgeInsets.only(left: 2.0, right: 2.0, top: 15),
-    //           child: Column(
-    //             mainAxisAlignment: MainAxisAlignment.start,
-    //             crossAxisAlignment: CrossAxisAlignment.start,
-    //             children: [
-    //               Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                 children: [
-    //                   Flexible(
-    //                     flex: 1,
-    //                     child: CustomChips(
-    //                       chipText: "v" + updateVersion!,
-    //                       screenBasedPixelWidth: _screenBasedPixelWidth,
-    //                     ),
-    //                   ),
-    //                   Flexible(
-    //                     flex: 2,
-    //                     child: CustomChips(
-    //                       chipText: updateDate,
-    //                       screenBasedPixelWidth: _screenBasedPixelWidth,
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Padding(
-    //                 padding:
-    //                     const EdgeInsets.only(left: 8.0, bottom: 8.0, top: 8.0),
-    //                 child: Markdown(
-    //                   padding: const EdgeInsets.all(0),
-    //                   styleSheet: MarkdownStyleSheet(
-    //                     h3: TextStyle(
-    //                       fontWeight: FontWeight.bold,
-    //                       fontSize: widgetSizeProvider(
-    //                           fixedSize: 14,
-    //                           sizeDecidingVariable: _screenBasedPixelWidth),
-    //                     ),
-    //                     p: TextStyle(
-    //                       fontWeight: FontWeight.bold,
-    //                       fontSize: widgetSizeProvider(
-    //                           fixedSize: 12,
-    //                           sizeDecidingVariable: _screenBasedPixelWidth),
-    //                     ),
-    //                   ),
-    //                   shrinkWrap: true,
-    //                   controller: controller,
-    //                   selectable: false,
-    //                   data: updateDescription == null || updateDescription == ""
-    //                       ? "No description 🦥"
-    //                       : updateDescription!,
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //     CustomChips(
-    //       chipText: updateTypeTag,
-    //       screenBasedPixelWidth: _screenBasedPixelWidth,
-    //     ),
-    //   ],
-    // );
   }
 }
 
@@ -1563,7 +1412,6 @@ class _CustomChipsState extends State<CustomChips> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // border: Border.all(),
         borderRadius: const BorderRadius.all(Radius.circular(1000)),
         color: Theme.of(context).colorScheme.tertiary,
       ),

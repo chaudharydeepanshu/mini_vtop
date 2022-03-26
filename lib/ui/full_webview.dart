@@ -46,6 +46,7 @@ class _FullWebViewState extends State<FullWebView> {
   @override
   void initState() {
     // requestPermissions();
+    // Not requesting these permissions as they are not required in VTOP
     startTimeout();
     super.initState();
   }
@@ -159,7 +160,6 @@ class _FullWebViewState extends State<FullWebView> {
     super.dispose();
   }
 
-  // final GlobalKey webViewKey = GlobalKey();
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
@@ -225,12 +225,7 @@ class _FlutterBrowserAppState extends State<FlutterBrowserApp> {
         debugShowCheckedModeBanner: false,
         themeMode: themeMode,
         theme: AppThemeData.lightThemeData.copyWith(),
-        //ThemeClass.lightTheme,
         darkTheme: AppThemeData.darkThemeData.copyWith(),
-        // theme: ThemeData(
-        //   primarySwatch: Colors.blue,
-        //   visualDensity: VisualDensity.adaptivePlatformDensity,
-        // ),
         initialRoute: '/',
         routes: {
           '/': (context) => const Browser(),

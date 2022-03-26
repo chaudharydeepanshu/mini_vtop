@@ -59,10 +59,6 @@ class _BuildSemesterSelectorForAttendanceState
                 sizeDecidingVariable: _screenBasedPixelWidth),
           ),
         ),
-        // SizedBox(
-        //   width: widgetSizeProvider(
-        //       fixedSize: 5, sizeDecidingVariable: _screenBasedPixelWidth),
-        // ),
         Flexible(
           flex: 2,
           child: Container(
@@ -93,14 +89,11 @@ class _BuildSemesterSelectorForAttendanceState
                     fixedSize: 24,
                     sizeDecidingVariable: _screenBasedPixelWidth),
                 color: Theme.of(context).colorScheme.onPrimary,
-                // color: Colors.white,
               ),
               elevation: 16,
-              // style: const TextStyle(color: Colors.deepPurple),
               underline: Container(
                 height: widgetSizeProvider(
                     fixedSize: 2, sizeDecidingVariable: _screenBasedPixelWidth),
-                // color: Colors.deepPurpleAccent,
               ),
               onChanged: (String? newValue) {
                 widget.onDropDownChanged.call(newValue);
@@ -110,7 +103,6 @@ class _BuildSemesterSelectorForAttendanceState
                 return DropdownMenuItem<String>(
                   value: value["semesterCode"],
                   child: Container(
-                    // width: 145,
                     // height: value["semesterCode"] == _dropdownValue
                     //     ? kMinInteractiveDimension
                     //     : null,

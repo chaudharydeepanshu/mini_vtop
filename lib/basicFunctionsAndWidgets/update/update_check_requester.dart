@@ -29,10 +29,10 @@ class UpdateCheckRequester {
     );
 
     // sample info available in response
-    int statusCode = response.statusCode;
+    // int statusCode = response.statusCode;
     Map<String, String> headers = response.headers;
     debugPrint(headers.toString());
-    String? contentType = headers['content-type'];
+    // String? contentType = headers['content-type'];
     String json = response.body;
     if (jsonDecode(json).isNotEmpty && jsonDecode(json) != null) {
       Map<String, dynamic>? data = jsonDecode(json)[0];
@@ -66,17 +66,9 @@ class UpdateCheckRequester {
             releaseDownloadUrl = data["assets"][i]["browser_download_url"];
           }
         }
-        // releaseDownloadUrl = data["assets"][0]["browser_download_url"];
       }
     }
-    // // downloadDirectory.path + "/$releaseFileName";
-    // // String verse = data["contents"]["verse"];
-    // // dynamic chapter= data["contents"]["chapter"];
-    //
-    // // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(json)));
     // debugPrint("statusCode: $statusCode");
-    // // debugPrint("contentType: $contentType");
-    // // debugPrint("data: $data");
     // debugPrint("releaseDescription: $releaseDescription");
     // debugPrint(
     //     "currentReleaseVersion:$currentVersion , latestReleaseVersion: $latestVersion");

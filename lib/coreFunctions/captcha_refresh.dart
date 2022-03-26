@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:mini_vtop/coreFunctions/forHeadlessInAppWebView/run_headless_in_app_web_view.dart';
 
-performCaptchaRefresh(
+void performCaptchaRefresh(
     {required BuildContext context,
     required HeadlessInAppWebView? headlessWebView,
     required bool refreshingCaptcha,
@@ -28,11 +28,6 @@ performCaptchaRefresh(
             value.contains("You have been successfully logged out")) {
           debugPrint(
               "You are logged out due to inactivity for more than 15 minutes");
-          // runHeadlessInAppWebView(
-          //     headlessWebView: headlessWebView,
-          //     onCurrentFullUrl: (String value) {
-          //       onCurrentFullUrl.call(value);
-          //     });
           debugPrint(
               "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for performCaptchaRefresh");
           runHeadlessInAppWebView(
