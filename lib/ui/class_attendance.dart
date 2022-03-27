@@ -371,7 +371,11 @@ class _ClassAttendanceState extends State<ClassAttendance> {
                                         widget.arguments.onProcessingSomething
                                             .call(value);
                                       },
-                                    ).then((_) => isDialogShowing = false);
+                                    ).then((_) {
+                                      widget.arguments.onProcessingSomething
+                                          .call(false);
+                                      return isDialogShowing = false;
+                                    });
                                   });
                                   widget.arguments.onSemesterSubIdChange
                                       ?.call(newValue!);

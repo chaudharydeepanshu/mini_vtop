@@ -594,7 +594,11 @@ class _TimeTableState extends State<TimeTable> {
                                         widget.arguments.onProcessingSomething
                                             .call(value);
                                       },
-                                    ).then((_) => isDialogShowing = false);
+                                    ).then((_) {
+                                      widget.arguments.onProcessingSomething
+                                          .call(false);
+                                      return isDialogShowing = false;
+                                    });
                                   });
                                   widget.arguments.onSemesterSubIdChange
                                       ?.call(newValue!);

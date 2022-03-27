@@ -138,7 +138,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
         onProcessingSomething: (bool value) {
           widget.onProcessingSomething.call(value);
         },
-      ).then((_) => isDialogShowing = false);
+      ).then((_) {
+        widget.onProcessingSomething.call(false);
+        return isDialogShowing = false;
+      });
     });
   }
 
@@ -540,7 +543,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                     onProcessingSomething: (bool value) {
                                       widget.onProcessingSomething.call(value);
                                     },
-                                  ).then((_) => isDialogShowing = false);
+                                  ).then((_) {
+                                    widget.onProcessingSomething.call(false);
+                                    return isDialogShowing = false;
+                                  });
                                 });
                               },
                               child: Row(

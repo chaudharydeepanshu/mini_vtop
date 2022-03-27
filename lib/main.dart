@@ -1103,7 +1103,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               processingSomething = value;
             });
           },
-        ).then((_) => isDialogShowing = false);
+        ).then((_) {
+          processingSomething = false;
+          return isDialogShowing = false;
+        });
       });
 
       performSignOut(

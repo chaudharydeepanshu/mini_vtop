@@ -113,6 +113,14 @@ class _LoginSectionState extends State<LoginSection> {
           FocusManager.instance.primaryFocus?.unfocus();
         }
         if (_formKey.currentState!.validate()) {
+          if (widget.arguments.processingSomething == true) {
+            Navigator.of(context).pop();
+            setState(() {
+              widget.onProcessingSomething.call(false);
+              // processingSomething = false;
+            });
+          }
+
           widget.onProcessingSomething.call(true);
           customAlertDialogBox(
             isDialogShowing: isFirstDialogShowing,
@@ -166,7 +174,10 @@ class _LoginSectionState extends State<LoginSection> {
             onProcessingSomething: (bool value) {
               widget.onProcessingSomething.call(value);
             },
-          ).then((_) => isFirstDialogShowing = false);
+          ).then((_) {
+            widget.onProcessingSomething.call(false);
+            return isFirstDialogShowing = false;
+          });
           debugPrint("dialogBox initiated");
           signInCredentialsMap = {
             "uname": '${_controller?.value.text.toUpperCase()}',
@@ -257,7 +268,10 @@ class _LoginSectionState extends State<LoginSection> {
           onProcessingSomething: (bool value) {
             widget.onProcessingSomething.call(value);
           },
-        ).then((_) => isSecondDialogShowing = false);
+        ).then((_) {
+          widget.onProcessingSomething.call(false);
+          return isSecondDialogShowing = false;
+        });
       });
     }
     debugPrint("isDialogShowing: $isFirstDialogShowing");
@@ -1018,6 +1032,17 @@ class _LoginSectionState extends State<LoginSection> {
                                             }
                                             if (_formKey.currentState!
                                                 .validate()) {
+                                              if (widget.arguments
+                                                      .processingSomething ==
+                                                  true) {
+                                                Navigator.of(context).pop();
+                                                setState(() {
+                                                  widget.onProcessingSomething
+                                                      .call(false);
+                                                  // processingSomething = false;
+                                                });
+                                              }
+
                                               customAlertDialogBox(
                                                 isDialogShowing:
                                                     isFirstDialogShowing,
@@ -1090,8 +1115,12 @@ class _LoginSectionState extends State<LoginSection> {
                                                   widget.onProcessingSomething
                                                       .call(value);
                                                 },
-                                              ).then((_) =>
-                                                  isFirstDialogShowing = false);
+                                              ).then((_) {
+                                                widget.onProcessingSomething
+                                                    .call(false);
+                                                return isFirstDialogShowing =
+                                                    false;
+                                              });
                                               debugPrint("dialogBox initiated");
                                               signInCredentialsMap = {
                                                 "uname":

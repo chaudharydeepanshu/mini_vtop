@@ -92,7 +92,10 @@ class _StudentPortalState extends State<StudentPortal> {
         onProcessingSomething: (bool value) {
           widget.onProcessingSomething.call(value);
         },
-      ).then((_) => isDialogShowing = false);
+      ).then((_) {
+        widget.onProcessingSomething.call(false);
+        return isDialogShowing = false;
+      });
     });
   }
 
@@ -230,7 +233,10 @@ class _StudentPortalState extends State<StudentPortal> {
                   widget.onProcessingSomething.call(value);
                 });
               },
-            ).then((_) => isDialogShowing = false);
+            ).then((_) {
+              widget.onProcessingSomething.call(false);
+              return isDialogShowing = false;
+            });
           });
           widget.onPerformSignOut?.call(true);
           timer.cancel();
@@ -595,7 +601,11 @@ class _StudentPortalState extends State<StudentPortal> {
                                           widget.onProcessingSomething
                                               .call(value);
                                         },
-                                      );
+                                      ).then((_) {
+                                        widget.onProcessingSomething
+                                            .call(false);
+                                        return isDialogShowing = false;
+                                      });
                                     },
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,

@@ -143,7 +143,10 @@ class _FullWebViewState extends State<FullWebView> {
                   widget.onProcessingSomething.call(value);
                 });
               },
-            ).then((_) => isDialogShowing = false);
+            ).then((_) {
+              widget.onProcessingSomething.call(false);
+              return isDialogShowing = false;
+            });
           });
           widget.onPerformSignOut?.call(true);
           timer.cancel();
