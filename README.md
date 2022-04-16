@@ -4,7 +4,7 @@
 
 ## Mini VTOP
 
-Mini VTOP is a flutter project which uses the power of webview to create a user friendly unofficial app of VIT Bhopal Univeristy website. This app sends ajax requests and intercepts ajax requests of the university website to perform, manipulate and display different user interactions. This app includes two type of experiences:-
+Mini VTOP is a flutter project which uses the power of webview to create a user friendly unofficial app of VIT Bhopal University website. This app sends ajax requests and intercepts ajax requests of the university website to perform, manipulate and display different user interactions. This app includes two type of experiences:-
 1. Mini VTOP - This default option provides few specific actions and data to user in user-friendly way and in general it provides most accessed fuctions of university website.
 2. Full VTOP - This option provides access to whole website and in general this can be used if the user instantly wants access to full website without re-entering the credentials.
 
