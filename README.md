@@ -2,6 +2,8 @@
 
 [![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e)
 
+**Note: Only the "V2" branch will be developed and maintained moving forward. The Mini VTOP "V1" branch is no longer supported due to numerous problems. Efficiency and maintainability are the goals for "V2".**
+
 ## Mini VTOP
 
 Mini VTOP is a flutter project which uses the power of webview to create a user friendly unofficial app of VIT Bhopal University website. This app sends ajax requests and intercepts ajax requests of the university website to perform, manipulate and display different user interactions. This app includes two type of experiences:-
