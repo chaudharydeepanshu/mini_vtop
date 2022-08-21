@@ -1,3 +1,0 @@
-Some assets used are downloaded from icons8 animated media section (Link- https://icons8.com/l/animations/). For now, they will be used for free in the app with proper credits.
-icons8 animated media Assets:-
-assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8
