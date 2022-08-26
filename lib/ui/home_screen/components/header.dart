@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mini_vtop/ui/header_section_screen/quick_glance_screen.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({Key? key}) : super(key: key);
@@ -6,9 +7,15 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
       elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Row(
@@ -31,7 +38,13 @@ class HomeHeader extends StatelessWidget {
               ],
             ),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => const QuickGlance(),
+                    ),
+                  );
+                },
                 child: Row(
                   children: [
                     Icon(Icons.arrow_forward),

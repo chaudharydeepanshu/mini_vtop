@@ -39,7 +39,11 @@ dependencies:
 
   riverpod: ^1.0.3
 
-  animations: ^2.0.3
+  animations: ^2.0.4
+
+  syncfusion_flutter_gauges: ^20.2.45
+
+  clean_calendar: ^0.3.1-dev.1
 
 
   # The following adds the Cupertino Icons font to your application.

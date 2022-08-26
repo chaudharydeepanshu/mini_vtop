@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mini_vtop/ui/explore_section_screens/academics/academics.dart';
+import 'package:mini_vtop/ui/explore_section_screens/attendance/attendance.dart';
+import 'package:mini_vtop/ui/explore_section_screens/student_profile/student_profile.dart';
 import 'package:mini_vtop/ui/explore_section_screens/time_table/time_table.dart';
 import 'package:mini_vtop/ui/home_screen/components/grid_view_in_card_view.dart';
 
@@ -46,17 +49,35 @@ class ExploreSection extends StatelessWidget {
       GridCardDetail(
         cardIcon: const Icon(Icons.account_circle),
         cardTitle: 'Student Profile',
-        cardOnTap: () {},
+        cardOnTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => const StudentProfile(),
+            ),
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.school),
         cardTitle: 'Academics',
-        cardOnTap: () {},
+        cardOnTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => const Academics(),
+            ),
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.badge),
         cardTitle: 'Attendance',
-        cardOnTap: () {},
+        cardOnTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => const Attendance(),
+            ),
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.table_chart),
