@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:mini_vtop/ui/home_screen/home_screen.dart';
 import 'Theme/app_theme_data.dart';
 
 void main() {
@@ -22,24 +23,6 @@ class MyApp extends StatelessWidget {
           home: const Home(),
         );
       },
-    );
-  }
-}
-
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mini VTOP"),
-      ),
-      body: Center(
-        child: ListView(
-          children: const [],
-        ),
-      ),
     );
   }
 }
