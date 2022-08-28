@@ -14,8 +14,8 @@ class TimeTable extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Container(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+          Ink(
+            color: Theme.of(context).colorScheme.onInverseSurface,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CleanCalendar(

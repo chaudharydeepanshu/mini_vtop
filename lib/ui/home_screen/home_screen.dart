@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView(
-        children: [
+        children: const [
           SizedBox(
             height: 16,
           ),

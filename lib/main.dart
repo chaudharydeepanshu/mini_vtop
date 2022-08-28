@@ -1,10 +1,13 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/home_screen/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_vtop/ui/connection_screen/connection_screen.dart';
 import 'Theme/app_theme_data.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
           theme: AppThemeData.lightThemeData(lightDynamic),
           darkTheme: AppThemeData.darkThemeData(darkDynamic),
           themeMode: ThemeMode.system,
-          home: const Home(),
+          home: const ConnectionScreen(),
         );
       },
     );
