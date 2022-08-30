@@ -17,6 +17,6 @@ final connectionStatusStateProvider = ChangeNotifierProvider.autoDispose((ref) {
 });
 
 final vtopActionsProvider =
-    ChangeNotifierProvider.autoDispose((ref) => VTOPActions(ref.read)..init());
+    ChangeNotifierProvider((ref) => VTOPActions(ref.read)..init());
 
 final vtopDataProvider = ChangeNotifierProvider((ref) => VTOPData());

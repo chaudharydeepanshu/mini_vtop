@@ -5,10 +5,15 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 
+enum VTOPPageStatus { notProcessing, processing, loaded, error }
+
 class VTOPActions extends ChangeNotifier {
   VTOPActions(this.read);
 
   final Reader read;
+
+  VTOPPageStatus _studentProfilePageStatus = VTOPPageStatus.notProcessing;
+  VTOPPageStatus get studentProfilePageStatus => _studentProfilePageStatus;
 
   late final HeadlessWebView readHeadlessWebViewProviderValue =
       read(headlessWebViewProvider);
@@ -18,6 +23,11 @@ class VTOPActions extends ChangeNotifier {
 
   init() {
     readHeadlessWebViewProviderValue.resetControlVars();
+  }
+
+  void updateStudentProfilePageStatus({required VTOPPageStatus status}) {
+    _studentProfilePageStatus = status;
+    notifyListeners();
   }
 
   void performCaptchaRefresh({required BuildContext context}) async {
@@ -132,7 +142,7 @@ class VTOPActions extends ChangeNotifier {
     }
   }
 
-  void callStudentProfileAllView() async {
+  void callStudentProfileAllView({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
@@ -166,6 +176,61 @@ class VTOPActions extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
+                                ''');
+            debugPrint("called StudentProfileAllView");
+
+            _studentProfilePageStatus = VTOPPageStatus.processing;
+          }
+        } else {
+          debugPrint(
+              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
+        }
+      });
+    } else {
+      // const snackBar = SnackBar(
+      //   content: Text(
+      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
+      //   duration: Duration(milliseconds: 1500),
+      // );
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    notifyListeners();
+  }
+
+  void callStudentGradeHistory({required BuildContext context}) async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    if (headlessWebView.isRunning()) {
+      // if (!await InternetConnectionChecker().hasConnection) {
+      //   debugPrint(
+      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
+      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
+      // }
+
+      await headlessWebView.webViewController
+          .evaluateJavascript(
+              source: "new XMLSerializer().serializeToString(document);")
+          .then((value) async {
+        if (value != null) {
+          // printWrapped(value);
+          if (value.contains(
+                  "You are logged out due to inactivity for more than 15 minutes") ||
+              value.contains("You have been successfully logged out")) {
+            debugPrint(
+                "You are logged out due to inactivity for more than 15 minutes");
+            debugPrint(
+                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
+            // runHeadlessInAppWebView(
+            //   headlessWebView: headlessWebView,
+            //   onCurrentFullUrl: (String value) {
+            //     onCurrentFullUrl(value);
+            //   },
+            // );
+          } else {
+            await headlessWebView.webViewController
+                .evaluateJavascript(source: '''
+                               document.getElementById("EXM0023").click();
                                 ''');
             debugPrint("called StudentProfileAllView");
           }
