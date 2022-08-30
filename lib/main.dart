@@ -10,6 +10,8 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
           darkTheme: AppThemeData.darkThemeData(darkDynamic),
           themeMode: ThemeMode.system,
           home: const ConnectionScreen(),
+          navigatorKey: navigatorKey,
         );
       },
     );

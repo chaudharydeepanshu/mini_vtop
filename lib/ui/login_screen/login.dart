@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mini_vtop/state/user_login_state.dart';
+import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/ui/login_screen/components/control_teddy.dart';
 import 'package:mini_vtop/ui/login_screen/components/tracking_text_input.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../state/providers.dart';
+import '../home_screen/home_screen.dart';
 import 'components/upper_case_text_formatter.dart';
 
 class Login extends StatelessWidget {
@@ -36,10 +42,17 @@ class TeddyLoginScreen extends StatefulWidget {
 class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
   late ControlTeddy controlTeddy;
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     controlTeddy = ControlTeddy();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   String password = "";
@@ -79,12 +92,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
               children: <Widget>[
                 LoginFields(
                   controlTeddy: controlTeddy,
-                  onRegistrationNumber: (String value) {
-                    registrationNumber = value;
-                  },
-                  onPassword: (String value) {
-                    password = value;
-                  },
+                  formKey: formKey,
                 ),
                 const SizedBox(
                   height: 10,
@@ -103,6 +111,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
                 ),
                 LoginButton(
                   controlTeddy: controlTeddy,
+                  formKey: formKey,
                 ),
                 const SizedBox(
                   height: 10,
@@ -122,27 +131,77 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
 }
 
 class LoginButton extends StatelessWidget {
-  const LoginButton({Key? key, required this.controlTeddy}) : super(key: key);
+  const LoginButton(
+      {Key? key, required this.controlTeddy, required this.formKey})
+      : super(key: key);
 
   final ControlTeddy controlTeddy;
+
+  final GlobalKey<FormState> formKey;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              controlTeddy.submitPassword();
+          child: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              bool processingLogin = ref.watch(userLoginStateProvider
+                  .select((value) => value.processingLogin));
+
+              ref.listen(
+                  userLoginStateProvider.select((value) => value.userLoggedIn),
+                  (previous, next) {
+                if (previous == false && next == true) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Home()),
+                    );
+                  });
+                }
+                ref
+                    .read(userLoginStateProvider)
+                    .updateLoginProgress(loginProgress: false);
+              });
+
+              ref.listen(
+                  userLoginStateProvider.select(
+                      (value) => value.processingLogin), (previous, next) {
+                processingLogin = next;
+              });
+
+              return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    controlTeddy.submitPassword();
+
+                    ref
+                        .read(userLoginStateProvider)
+                        .updateLoginProgress(loginProgress: true);
+
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+
+                    readVTOPActionsProviderValue.performSignIn(
+                        context: context);
+                  }
+                },
+                child: Center(
+                  child: !processingLogin
+                      ? Text('Login')
+                      : SpinKitThreeBounce(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 24,
+                        ),
+                ),
+              );
             },
-            child: Center(
-              child: const Text('Login'),
-            ),
           ),
         ),
       ],
@@ -152,188 +211,227 @@ class LoginButton extends StatelessWidget {
 
 class LoginFields extends StatelessWidget {
   const LoginFields(
-      {Key? key,
-      required this.onRegistrationNumber,
-      required this.onPassword,
-      required this.controlTeddy})
+      {Key? key, required this.controlTeddy, required this.formKey})
       : super(key: key);
 
-  final ValueChanged<String> onRegistrationNumber;
-  final ValueChanged<String> onPassword;
   final ControlTeddy controlTeddy;
 
+  final GlobalKey<FormState> formKey;
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          TrackingTextInput(
-            helperText: 'Ex:- 20BCEXXXXX',
-            labelText: 'Username / Registration No.',
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-              FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        String solvedCaptcha = ref.watch(
+            userLoginStateProvider.select((value) => value.solvedCaptcha));
+
+        return Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TrackingTextInput(
+                    helperText: 'Ex:- 20BCEXXXXX',
+                    labelText: 'Username / Registration No.',
+                    inputFormatters: [
+                      UpperCaseTextFormatter(),
+                      FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+                    ],
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter registration no.';
+                      }
+                      return null;
+                    },
+                    autoValidateMode: AutovalidateMode.onUserInteraction,
+                    isObscured: false,
+                    enableSuggestions: true,
+                    autocorrect: false,
+                    enabled: true,
+                    readOnly: false,
+                    onCaretMoved: (
+                        {Offset? globalCaretPosition, Size? textFieldSize}) {
+                      controlTeddy.lookAt(
+                          textFieldSize: textFieldSize,
+                          caret: globalCaretPosition);
+                    },
+                    onTextChanged: (String value) {
+                      ref
+                          .read(userLoginStateProvider)
+                          .setRegistrationNumber(registrationNumber: value);
+                      // print(value);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return TrackingTextInput(
+                    helperText: 'Ex:- password123',
+                    labelText: 'VTOP Password',
+                    inputFormatters: [],
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter VTOP password';
+                      }
+                      return null;
+                    },
+                    autoValidateMode: AutovalidateMode.onUserInteraction,
+                    isObscured: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    enabled: true,
+                    readOnly: false,
+                    onCaretMoved: (
+                        {Offset? globalCaretPosition, Size? textFieldSize}) {
+                      controlTeddy.coverEyes(
+                          cover: globalCaretPosition != null);
+                      controlTeddy.lookAt(
+                          textFieldSize: textFieldSize, caret: null);
+                    },
+                    onTextChanged: (String value) {
+                      controlTeddy.password = value;
+                      ref
+                          .read(userLoginStateProvider)
+                          .setPassword(password: value);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const CaptchaSection(),
+              const SizedBox(
+                height: 10,
+              ),
+              TrackingTextInput(
+                helperText: '🤖🤖🤖',
+                labelText: 'Captcha',
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                  FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+                ],
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter captcha';
+                  }
+                  return null;
+                },
+                autoValidateMode: AutovalidateMode.onUserInteraction,
+                isObscured: false,
+                enableSuggestions: false,
+                autocorrect: false,
+                enabled: true,
+                readOnly: false,
+                onCaretMoved: (
+                    {Offset? globalCaretPosition, Size? textFieldSize}) {
+                  controlTeddy.coverEyes(cover: globalCaretPosition != null);
+                  controlTeddy.lookAt(
+                      textFieldSize: textFieldSize, caret: null);
+                },
+                onTextChanged: (String value) {
+                  ref.read(userLoginStateProvider).setCaptcha(captcha: value);
+                },
+                preFilledValue: solvedCaptcha,
+              ),
             ],
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter registration no.';
-              }
-              return null;
-            },
-            autoValidateMode: AutovalidateMode.onUserInteraction,
-            isObscured: false,
-            enableSuggestions: true,
-            autocorrect: false,
-            enabled: true,
-            readOnly: false,
-            onCaretMoved: ({Offset? globalCaretPosition, Size? textFieldSize}) {
-              controlTeddy.lookAt(
-                  textFieldSize: textFieldSize, caret: globalCaretPosition);
-            },
-            onTextChanged: (String value) {
-              onRegistrationNumber.call(value);
-              // print(value);
-            },
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          TrackingTextInput(
-            helperText: 'Ex:- password123',
-            labelText: 'VTOP Password',
-            inputFormatters: [],
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter VTOP password';
-              }
-              return null;
-            },
-            autoValidateMode: AutovalidateMode.onUserInteraction,
-            isObscured: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            enabled: true,
-            readOnly: false,
-            onCaretMoved: ({Offset? globalCaretPosition, Size? textFieldSize}) {
-              controlTeddy.coverEyes(cover: globalCaretPosition != null);
-              controlTeddy.lookAt(textFieldSize: textFieldSize, caret: null);
-            },
-            onTextChanged: (String value) {
-              controlTeddy.password = value;
-              onPassword.call(value);
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const CaptchaImage(),
-          const SizedBox(
-            height: 10,
-          ),
-          TrackingTextInput(
-            helperText: '🤖🤖🤖',
-            labelText: 'Captcha',
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-              FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
-            ],
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter captcha';
-              }
-              return null;
-            },
-            autoValidateMode: AutovalidateMode.onUserInteraction,
-            isObscured: false,
-            enableSuggestions: false,
-            autocorrect: false,
-            enabled: true,
-            readOnly: false,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class CaptchaImage extends StatefulWidget {
-  const CaptchaImage({super.key});
-
-  @override
-  State<CaptchaImage> createState() => _CaptchaImageState();
-}
-
-class _CaptchaImageState extends State<CaptchaImage> {
-  Image image = Image.network(
-    'https://lh3.googleusercontent.com/drive-viewer/AJc5JmQhDPCm2QQMMUp-RLiJzFHsRu_PDc4pS-b9ihSXbOyVwjYjP6Ee6tKgjplTriedJvVmojOSGQY=w1920-h904',
-    fit: BoxFit.cover,
-  );
-
-  bool imageLoading = true;
-
-  @override
-  void initState() {
-    image.image
-        .resolve(const ImageConfiguration())
-        .addListener(ImageStreamListener((ImageInfo info, bool syncCall) {
-      setState(() {
-        imageLoading = false;
-      });
-
-      // completer.complete();
-    }));
-    super.initState();
-  }
+class CaptchaSection extends StatelessWidget {
+  const CaptchaSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      width: 180,
-      height: 45,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-      child: Stack(
-        children: [
-          Shimmer.fromColors(
-            baseColor: Theme.of(context).colorScheme.surfaceVariant,
-            highlightColor: Theme.of(context).colorScheme.primary,
-            enabled: imageLoading,
-            child: Container(
-              color: Theme.of(context).colorScheme.surfaceVariant,
-            ),
-          ),
-          Image.network(
-            'https://lh3.googleusercontent.com/drive-viewer/AJc5JmQhDPCm2QQMMUp-RLiJzFHsRu_PDc4pS-b9ihSXbOyVwjYjP6Ee6tKgjplTriedJvVmojOSGQY=w1920-h904',
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const CaptchaImage(),
+        const SizedBox(
+          width: 10,
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            return IconButton(
+                onPressed: () {
+                  final UserLoginState readUserLoginStateProviderValue =
+                      ref.read(userLoginStateProvider);
+
+                  readUserLoginStateProviderValue.updateCaptchaImage(
+                      bytes: Uint8List.fromList([]));
+
+                  final VTOPActions readVTOPActionsProviderValue =
+                      ref.read(vtopActionsProvider);
+
+                  readVTOPActionsProviderValue.performCaptchaRefresh(
+                      context: context);
+                },
+                icon: const Icon(Icons.refresh));
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class CaptchaImage extends StatelessWidget {
+  const CaptchaImage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        Image? image;
+
+        bool imageLoading = true;
+
+        Uint8List? captchaImageBytes = ref.watch(
+            userLoginStateProvider.select((value) => value.captchaImage));
+
+        if (captchaImageBytes != null && captchaImageBytes.isNotEmpty) {
+          image = Image.memory(
+            captchaImageBytes,
             fit: BoxFit.cover,
-          )
-        ],
-      ),
+          );
+
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            imageLoading = false;
+          });
+        } else {
+          imageLoading = true;
+        }
+
+        return Container(
+          clipBehavior: Clip.antiAlias,
+          width: 180,
+          height: 45,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+          child: Stack(
+            children: [
+              Shimmer.fromColors(
+                baseColor: Theme.of(context).colorScheme.surfaceVariant,
+                highlightColor: Theme.of(context).colorScheme.primary,
+                enabled: imageLoading,
+                child: Container(
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                ),
+              ),
+              image ?? const SizedBox(),
+            ],
+          ),
+        );
+      },
     );
   }
 }
-
-// class CaptchaImage extends StatelessWidget {
-//   const CaptchaImage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     Image image = Image.network(
-//         );
-//
-//     image.image.resolve(ImageConfiguration())
-//         .addListener(ImageStreamListener((ImageInfo info, bool syncCall) {
-//
-// // DO SOMETHING HERE
-//
-//       completer.complete();
-//
-//     });
-//
-//     return Container(
-//       child: image,
-//     );
-//   }
-// }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,9 @@ import 'package:mini_vtop/state/connection_state.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/ui/login_screen/login.dart';
 import 'package:rive/rive.dart';
+
+import '../../state/user_login_state.dart';
+import '../home_screen/home_screen.dart';
 
 class ConnectionScreen extends ConsumerStatefulWidget {
   const ConnectionScreen({Key? key}) : super(key: key);
@@ -14,6 +19,15 @@ class ConnectionScreen extends ConsumerStatefulWidget {
 }
 
 class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
+  late Future<bool> initWebViewState;
+
+  Future<bool> initWebViewData() async {
+    Stopwatch stopwatch = Stopwatch()..start();
+    ref.read(headlessWebViewProvider);
+    log('initWebViewData Executed in ${stopwatch.elapsed}');
+    return true;
+  }
+
   /// Tracks if the animation is playing by whether controller is running.
   bool get isPlaying => controller?.isActive ?? false;
 
@@ -23,10 +37,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
   SMIInput<bool>? _connectedInput;
   SMIInput<bool>? _errorInput;
 
-  @override
-  void initState() {
-    super.initState();
-
+  loadAnimationFile() {
     // Load the animation file from the bundle, note that you could also
     // download this. The RiveFile just expects a list of bytes.
     rootBundle.load('assets/rive/connection_state_machine.riv').then(
@@ -47,21 +58,44 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
 
           controller.isActiveChanged.addListener(() {
             final ConnectionStatusState connectionStatusState =
-                ref.read(connectionStateProvider);
+                ref.read(connectionStatusStateProvider);
             if (connectionStatusState.connectionStatus ==
                 ConnectionStatus.connected) {
+
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Login()),
-                );
+
+                final UserLoginState readUserLoginStateProviderValue =
+                ref.read(userLoginStateProvider);
+
+                if(readUserLoginStateProviderValue.userLoggedIn) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Home()),
+                  );
+                }else{
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Login()),
+                  );
+                }
+
               });
+
+
             }
           });
         }
         setState(() => _riveArtboard = artboard);
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initWebViewState = initWebViewData();
+
+    loadAnimationFile();
   }
 
   @override
@@ -75,10 +109,10 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final ConnectionStatus connectionStatus = ref.watch(
-            connectionStateProvider.select((value) => value.connectionStatus));
+            connectionStatusStateProvider.select((value) => value.connectionStatus));
 
         ref.listen<ConnectionStatus>(
-            connectionStateProvider.select((value) => value.connectionStatus),
+            connectionStatusStateProvider.select((value) => value.connectionStatus),
             (ConnectionStatus? previousConnectionStatus,
                 ConnectionStatus newConnectionStatus) {
           if (newConnectionStatus == ConnectionStatus.connecting) {

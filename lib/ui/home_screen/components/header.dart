@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_vtop/models/student_profile_model.dart';
 import 'package:mini_vtop/ui/header_section_screen/quick_glance_screen.dart';
+
+import '../../../state/providers.dart';
+import '../../../state/vtop_data_state.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({Key? key}) : super(key: key);
@@ -17,18 +22,27 @@ class HomeHeader extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Hello, DC",
-                  style: Theme.of(context).textTheme.titleMedium,
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final StudentProfileModel studentProfile = ref.watch(
+                        vtopDataProvider
+                            .select((value) => value.studentProfile));
+
+                    return Text(
+                      "Hello, ${studentProfile.firstName}",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(

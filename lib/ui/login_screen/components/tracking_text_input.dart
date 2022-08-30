@@ -19,7 +19,8 @@ class TrackingTextInput extends StatefulWidget {
       required this.enableSuggestions,
       required this.autocorrect,
       this.enabled,
-      required this.readOnly})
+      required this.readOnly,
+      this.preFilledValue})
       : super(key: key);
 
   final String labelText;
@@ -37,6 +38,7 @@ class TrackingTextInput extends StatefulWidget {
   // final String? hint;
   // final String? label;
   final bool isObscured;
+  final String? preFilledValue;
 
   @override
   State<TrackingTextInput> createState() => _TrackingTextInputState();
@@ -44,7 +46,7 @@ class TrackingTextInput extends StatefulWidget {
 
 class _TrackingTextInputState extends State<TrackingTextInput> {
   final GlobalKey _fieldKey = GlobalKey();
-  final TextEditingController _textController = TextEditingController();
+  late TextEditingController _textController;
   final _focusNode = FocusNode();
   Timer? _debounceTimer;
 
@@ -74,6 +76,12 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
 
   @override
   void initState() {
+    if (widget.preFilledValue != null) {
+      _textController = TextEditingController()..text = widget.preFilledValue!;
+    } else {
+      _textController = TextEditingController();
+    }
+
     // Listening text field focus node to change animation depending on field.
     _focusNode.addListener(debounceListener);
 
@@ -83,6 +91,18 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
     // Used to decide and change password visibility in text field.
     isObscured = widget.isObscured;
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant TrackingTextInput oldWidget) {
+    if (oldWidget.preFilledValue != widget.preFilledValue) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.preFilledValue != null) {
+          _textController.text = widget.preFilledValue!;
+        }
+      });
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -169,7 +189,7 @@ class LoginTextFormFields extends StatelessWidget {
         labelText: labelText,
         disabledBorder: enabled!
             ? null
-            : UnderlineInputBorder(
+            : const UnderlineInputBorder(
                 // borderSide:
                 //     const BorderSide(color: Colors.transparent, width: 2.0),
                 // borderRadius: BorderRadius.circular(0),
