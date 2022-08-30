@@ -13,11 +13,14 @@ List<Uint8List> splitImage(List<int> input) {
   // log(image.getBytes().length.toString());
   // log(image.getBytes().toString());
 
-  int x = 0, y = 13;
+  int x = 0, y = 12;
   int width = (image.width / 6).floor();
 
   // int height = (image.height / 3).floor();
-  int height = (image.height).floor();
+  // Removing 13 from 45 because the height of character bitmaps is 32 from bottom
+  // Also starting y from 12 because its the vertex and it start from 0 so 0..to..12..is 13.
+  int height = (image.height - 13).floor();
+
   // print("height: $height");
 
   // split image to parts
@@ -31,7 +34,20 @@ List<Uint8List> splitImage(List<int> input) {
   // convert image from image package to Image Widget to display
   List<Uint8List> output = <Uint8List>[];
   for (var img in parts) {
-    output.add(img.getBytes().asUint8List());
+    // refer https://www.nofuss.co.za/programming/dart_png_to_binary_text_format.html
+    int bpp = 4;
+    Uint8List pixels = imglib.grayscale(img).getBytes();
+    List<int> singleBitBytes = [];
+    for (int i = 0; i < pixels.length; i += bpp) {
+      if ((i / bpp) % width == 0) {
+        // sink.write("\n");
+      }
+      singleBitBytes
+          .add((pixels[i] + pixels[i + 1] + pixels[i + 2] > 0) ? 1 : 0);
+      // sink.write();
+    }
+
+    output.add(singleBitBytes.asUint8List());
     // log(img.getBytes().length.toString());
     // log(img.getBytes().toString());
   }
@@ -63,13 +79,12 @@ List<String> compareImageBytes({required List<Uint8List> imagesBytesList}) {
       for (int x = 0;
           x < captchaCharactersBytes.values.elementAt(j).length;
           x++) {
-        int byte = imagesBytesList[i][x] > 0 ? 255 : 0;
-        if (byte == 0) {
-          if (byte == captchaCharactersBytes.values.elementAt(j)[x]) {
-            bytesSameLocationMatchCount++;
-          }
+        if (imagesBytesList[i][x] == 0 &&
+            captchaCharactersBytes.values.elementAt(j)[x] == "0") {
+          bytesSameLocationMatchCount++;
         }
-        if (captchaCharactersBytes.values.elementAt(j)[x] == 0) {
+
+        if (captchaCharactersBytes.values.elementAt(j)[x] == "0") {
           blacksCount++;
         }
       }

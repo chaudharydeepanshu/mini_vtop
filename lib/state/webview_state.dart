@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -138,6 +139,8 @@ class HeadlessWebView extends ChangeNotifier {
           String? imageSrc = document
               .querySelector('img[alt="vtopCaptcha"]')
               ?.attributes["src"];
+
+          // log(imageSrc.toString());
 
           if (imageSrc != null) {
             String uri = imageSrc;
