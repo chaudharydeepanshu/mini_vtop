@@ -95,8 +95,9 @@ class HeadlessWebView extends ChangeNotifier {
           } else if (ajaxRequest.url.toString() ==
               "studentsRecord/StudentProfileAllView") {
             _vtopStudentProfileAllViewAjaxRequest(ajaxRequest: ajaxRequest);
-          } else {
-            print(ajaxRequest.url.toString());
+          } else if (ajaxRequest.url.toString() ==
+              "examinations/examGradeView/StudentGradeHistory") {
+            _vtopStudentGradeHistoryAjaxRequest(ajaxRequest: ajaxRequest);
           }
         }
         return AjaxRequestAction.PROCEED;
@@ -391,58 +392,61 @@ class HeadlessWebView extends ChangeNotifier {
     }
   }
 
-  // _vtopStudentProfileAllViewAjaxRequest(
-  //     {required AjaxRequest ajaxRequest}) async {
-  //   // _credentialsFound();
-  //   // setState(() {
-  //   //   vtopConnectionStatusType = "Connected";
-  //   // });
-  //   if (ajaxRequest.status == 200) {
-  //     await headlessWebView.webViewController
-  //         .evaluateJavascript(
-  //             source: "new XMLSerializer().serializeToString(document);")
-  //         .then((value) {
-  //       Document document = parse('$value');
-  //
-  //       read(vtopDataProvider)
-  //           .setStudentProfile(studentProfileViewDocument: document);
-  //
-  //       // setState(() {
-  //       // studentName = document
-  //       //     .getElementById('exTab1')
-  //       //     ?.children[1]
-  //       //     .children[0]
-  //       //     .children[0]
-  //       //     .children[0]
-  //       //     .children[0]
-  //       //     .children[0]
-  //       //     .children[2]
-  //       //     .children[1]
-  //       //     .innerHtml;
-  //       // if (vtopMode == "Mini VTOP") {
-  //       //   currentStatus = "userLoggedIn";
-  //       // } else if (vtopMode == "Full VTOP") {
-  //       //   currentStatus = "originalVTOP";
-  //       // }
-  //       // loggedUserStatus = "studentPortalScreen";
-  //       // Navigator.of(context)
-  //       //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
-  //       // processingSomething = false;
-  //       // });
-  //     });
-  //   } else if (ajaxRequest.responseText!.contains(
-  //           "You are logged out due to inactivity for more than 15 minutes") ||
-  //       ajaxRequest.responseText!
-  //           .contains("You have been successfully logged out")) {
-  //     // inActivityOrStatusNot200Response(
-  //     //     dialogTitle: 'Session ended',
-  //     //     dialogChildrenText: 'Starting new session\nplease wait...');
-  //   } else if (ajaxRequest.status != 200) {
-  //     // inActivityOrStatusNot200Response(
-  //     //     dialogTitle: 'Request Status != 200',
-  //     //     dialogChildrenText: 'Starting new session\nplease wait...');
-  //   }
-  // }
+  _vtopStudentGradeHistoryAjaxRequest(
+      {required AjaxRequest ajaxRequest}) async {
+    // _credentialsFound();
+    // setState(() {
+    //   vtopConnectionStatusType = "Connected";
+    // });
+    if (ajaxRequest.status == 200) {
+      await headlessWebView.webViewController
+          .evaluateJavascript(
+              source: "new XMLSerializer().serializeToString(document);")
+          .then((value) {
+        Document document = parse('$value');
+
+        read(vtopDataProvider)
+            .setStudentAcademics(studentGradeHistoryDocument: document);
+
+        readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
+            status: VTOPPageStatus.loaded);
+
+        // setState(() {
+        // studentName = document
+        //     .getElementById('exTab1')
+        //     ?.children[1]
+        //     .children[0]
+        //     .children[0]
+        //     .children[0]
+        //     .children[0]
+        //     .children[0]
+        //     .children[2]
+        //     .children[1]
+        //     .innerHtml;
+        // if (vtopMode == "Mini VTOP") {
+        //   currentStatus = "userLoggedIn";
+        // } else if (vtopMode == "Full VTOP") {
+        //   currentStatus = "originalVTOP";
+        // }
+        // loggedUserStatus = "studentPortalScreen";
+        // Navigator.of(context)
+        //     .pop(); //used to pop the dialog of signIn processing as it will not pop automatically as currentStatus will not be "runHeadlessInAppWebView" and loginpage will not open with the logic to pop it.
+        // processingSomething = false;
+        // });
+      });
+    } else if (ajaxRequest.responseText!.contains(
+            "You are logged out due to inactivity for more than 15 minutes") ||
+        ajaxRequest.responseText!
+            .contains("You have been successfully logged out")) {
+      // inActivityOrStatusNot200Response(
+      //     dialogTitle: 'Session ended',
+      //     dialogChildrenText: 'Starting new session\nplease wait...');
+    } else if (ajaxRequest.status != 200) {
+      // inActivityOrStatusNot200Response(
+      //     dialogTitle: 'Request Status != 200',
+      //     dialogChildrenText: 'Starting new session\nplease wait...');
+    }
+  }
 
   _vtopLoginAjaxRequest({required AjaxRequest ajaxRequest}) {
     // printWrapped("ajaxRequest: ${ajaxRequest}");

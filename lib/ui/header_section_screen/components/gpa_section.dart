@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class CGPASection extends StatelessWidget {
-  const CGPASection({Key? key}) : super(key: key);
+  const CGPASection({Key? key, required this.currentGPA}) : super(key: key);
 
-  final double currentGPA = 9;
+  final double currentGPA;
   final double totalGPA = 10;
 
   @override

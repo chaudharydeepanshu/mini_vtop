@@ -14,7 +14,9 @@ class QuickGlance extends StatelessWidget {
       ),
       body: ListView(
         children: const [
-          CGPASection(),
+          CGPASection(
+            currentGPA: 0,
+          ),
           SizedBox(
             height: 16,
           ),

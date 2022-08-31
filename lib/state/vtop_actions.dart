@@ -15,6 +15,10 @@ class VTOPActions extends ChangeNotifier {
   VTOPPageStatus _studentProfilePageStatus = VTOPPageStatus.notProcessing;
   VTOPPageStatus get studentProfilePageStatus => _studentProfilePageStatus;
 
+  VTOPPageStatus _studentGradeHistoryPageStatus = VTOPPageStatus.notProcessing;
+  VTOPPageStatus get studentGradeHistoryPageStatus =>
+      _studentGradeHistoryPageStatus;
+
   late final HeadlessWebView readHeadlessWebViewProviderValue =
       read(headlessWebViewProvider);
 
@@ -27,6 +31,11 @@ class VTOPActions extends ChangeNotifier {
 
   void updateStudentProfilePageStatus({required VTOPPageStatus status}) {
     _studentProfilePageStatus = status;
+    notifyListeners();
+  }
+
+  void updateStudentGradeHistoryPageStatus({required VTOPPageStatus status}) {
+    _studentGradeHistoryPageStatus = status;
     notifyListeners();
   }
 
@@ -146,6 +155,8 @@ class VTOPActions extends ChangeNotifier {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
+    _studentProfilePageStatus = VTOPPageStatus.processing;
+
     if (headlessWebView.isRunning()) {
       // if (!await InternetConnectionChecker().hasConnection) {
       //   debugPrint(
@@ -178,8 +189,6 @@ class VTOPActions extends ChangeNotifier {
                                document.getElementById("STA002").click();
                                 ''');
             debugPrint("called StudentProfileAllView");
-
-            _studentProfilePageStatus = VTOPPageStatus.processing;
           }
         } else {
           debugPrint(
@@ -194,12 +203,13 @@ class VTOPActions extends ChangeNotifier {
       // );
       // ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    notifyListeners();
   }
 
   void callStudentGradeHistory({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
+
+    _studentGradeHistoryPageStatus = VTOPPageStatus.processing;
 
     if (headlessWebView.isRunning()) {
       // if (!await InternetConnectionChecker().hasConnection) {
@@ -232,7 +242,7 @@ class VTOPActions extends ChangeNotifier {
                 .evaluateJavascript(source: '''
                                document.getElementById("EXM0023").click();
                                 ''');
-            debugPrint("called StudentProfileAllView");
+            debugPrint("called Academics");
           }
         } else {
           debugPrint(
