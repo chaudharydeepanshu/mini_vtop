@@ -12,7 +12,7 @@ class Attendance extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView(
-        children: [
+        children: const [
           AttendanceCard(),
           SizedBox(
             height: 8,
@@ -124,7 +124,7 @@ class AttendanceCard extends StatelessWidget {
                       ),
                       Text(
                         "More Detail",
-                        style: Theme.of(context).textTheme.button,
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ],
                   ),

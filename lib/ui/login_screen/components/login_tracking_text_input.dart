@@ -101,6 +101,8 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (widget.preFilledValue != null) {
           _textController.text = widget.preFilledValue!;
+          _textController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _textController.text.length));
         }
       });
     }

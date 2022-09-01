@@ -66,7 +66,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                     ref.read(userLoginStateProvider);
 
                 if (readUserLoginStateProviderValue.loginStatus ==
-                    LoginStatus.loggedIn) {
+                    LoginResponseStatus.loggedIn) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const Home()),

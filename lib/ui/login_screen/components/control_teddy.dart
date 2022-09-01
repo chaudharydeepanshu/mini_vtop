@@ -18,7 +18,7 @@ class ControlTeddy {
   SMIInput<double>? _look;
 
   // Function fired when Riveanimation has initialized.
-  void _onRiveInit(Artboard artboard) {
+  void onRiveInit(Artboard artboard) {
     final StateMachineController? controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
     if (controller != null) {

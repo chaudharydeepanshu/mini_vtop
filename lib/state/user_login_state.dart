@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 
-enum LoginStatus {
+enum LoginResponseStatus {
   loggedOut,
   processing,
   loggedIn,
@@ -12,56 +12,56 @@ enum LoginStatus {
   wrongPassword,
   wrongCaptcha,
   maxAttemptsError,
-  sessionTimedOut,
   unknownResponse
 }
 
-enum ForgotUserIDSearchStatus {
+enum ForgotUserIDSearchResponseStatus {
   notSearching,
   searching,
   notFound,
   found,
   unknownResponse,
-  sessionTimedOut,
   otpTriggerWait
 }
 
-enum ForgotUserIDValidateStatus {
+enum ForgotUserIDValidateResponseStatus {
   notProcessing,
   processing,
   invalidOTP,
   successful,
-  unknownResponse,
-  sessionTimedOut
+  unknownResponse
 }
 
 class UserLoginState extends ChangeNotifier {
-  late String _solvedCaptcha = "Test";
-  String get solvedCaptcha => _solvedCaptcha;
+  late String _autoCaptcha = "";
+  String get autoCaptcha => _autoCaptcha;
 
-  late String _userID = "";
+  late String _captcha = "";
+  String get captcha => _captcha;
+
+  late String _userID = "20BCE10531";
   String get userID => _userID;
 
-  late String _password = "";
+  late String _password = "Ramjasc4141@";
   String get password => _password;
 
   Uint8List? _captchaImage;
   Uint8List? get captchaImage => _captchaImage;
 
-  late LoginStatus _loginStatus = LoginStatus.loggedOut;
-  LoginStatus get loginStatus => _loginStatus;
+  late LoginResponseStatus _loginStatus = LoginResponseStatus.loggedOut;
+  LoginResponseStatus get loginStatus => _loginStatus;
 
   late Duration _otpTriggerWait = Duration.zero;
   Duration get otpTriggerWait => _otpTriggerWait;
 
-  late ForgotUserIDSearchStatus _forgotUserIDSearchStatus =
-      ForgotUserIDSearchStatus.notSearching;
-  ForgotUserIDSearchStatus get forgotUserIDSearchStatus =>
+  late ForgotUserIDSearchResponseStatus _forgotUserIDSearchStatus =
+      ForgotUserIDSearchResponseStatus.notSearching;
+  ForgotUserIDSearchResponseStatus get forgotUserIDSearchStatus =>
       _forgotUserIDSearchStatus;
 
-  late ForgotUserIDValidateStatus _forgotUserIDValidateStatus =
-      ForgotUserIDValidateStatus.notProcessing;
-  ForgotUserIDValidateStatus get forgotUserIDValidateStatus =>
+  late ForgotUserIDValidateResponseStatus _forgotUserIDValidateStatus =
+      ForgotUserIDValidateResponseStatus.notProcessing;
+  ForgotUserIDValidateResponseStatus get forgotUserIDValidateStatus =>
       _forgotUserIDValidateStatus;
 
   late String _erpIDOrRegNo = "";
@@ -70,13 +70,15 @@ class UserLoginState extends ChangeNotifier {
   late String _emailOTP = "";
   String get emailOTP => _emailOTP;
 
-  void setCaptcha({required String captcha}) {
-    _solvedCaptcha = captcha;
+  void setAutoCaptcha({required String autoCaptcha}) {
+    _autoCaptcha = autoCaptcha;
+    _captcha = autoCaptcha;
     notifyListeners();
+  }
 
-    print(solvedCaptcha);
-
-    print("setCaptcha called");
+  void setCaptcha({required String captcha}) {
+    _captcha = captcha;
+    notifyListeners();
   }
 
   void setUserID({required String userID}) {
@@ -94,7 +96,13 @@ class UserLoginState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateLoginStatus({required LoginStatus loginStatus}) {
+  void updateLoginStatus({required LoginResponseStatus loginStatus}) {
+    _loginStatus = loginStatus;
+
+    notifyListeners();
+  }
+
+  void updateResponseStatus({required LoginResponseStatus loginStatus}) {
     _loginStatus = loginStatus;
 
     notifyListeners();
@@ -111,14 +119,14 @@ class UserLoginState extends ChangeNotifier {
   }
 
   void updateForgotUserIDSearchStatus(
-      {required ForgotUserIDSearchStatus status}) {
+      {required ForgotUserIDSearchResponseStatus status}) {
     _forgotUserIDSearchStatus = status;
 
     notifyListeners();
   }
 
   void updateForgotUserIDValidateStatus(
-      {required ForgotUserIDValidateStatus status}) {
+      {required ForgotUserIDValidateResponseStatus status}) {
     _forgotUserIDValidateStatus = status;
 
     notifyListeners();
@@ -137,7 +145,7 @@ class UserLoginState extends ChangeNotifier {
     if (otpTriggerDateTime != null) {
       Duration elapsedDuration = DateTime.now().difference(otpTriggerDateTime);
       _otpTriggerWait = const Duration(minutes: 10) - elapsedDuration;
-      print("otpTriggerWait: $_otpTriggerWait");
+      log("otpTriggerWait: $_otpTriggerWait");
     } else {
       _otpTriggerWait = Duration.zero;
     }

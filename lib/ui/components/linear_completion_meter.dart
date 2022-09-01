@@ -71,7 +71,7 @@ class _LinearCompletionMeterState extends State<LinearCompletionMeter>
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               )
-            : SizedBox(),
+            : const SizedBox(),
         ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(12)),
           child: LinearProgressIndicator(

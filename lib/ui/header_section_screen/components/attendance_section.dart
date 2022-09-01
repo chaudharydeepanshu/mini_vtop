@@ -37,15 +37,15 @@ class AttendanceSection extends StatelessWidget {
                 Expanded(
                   child: ListView.separated(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      return AttendanceForSubject(
+                      return const AttendanceForSubject(
                         subjectName: 'Maths',
                         subjectAttendanceInPercent: 72,
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return Divider();
+                      return const Divider();
                     },
                     itemCount: 5,
                   ),

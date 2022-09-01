@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mini_vtop/models/student_profile_model.dart';
 import 'package:mini_vtop/ui/header_section_screen/quick_glance_screen.dart';
 
 import 'package:mini_vtop/state/providers.dart';
@@ -26,7 +25,8 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
     if (studentProfilePageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.callStudentProfileAllView(context: context);
+      readVTOPActionsProviderValue.studentProfileAllViewAction(
+          context: context);
     }
 
     super.initState();

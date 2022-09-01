@@ -54,8 +54,6 @@ class VTOPData extends ChangeNotifier {
     school = CapString().capitalizeFirstOfEach(
         tableBody?.children[20].children[1].innerHtml ?? "-*-");
 
-    // print(studentProfileViewDocument);
-
     _studentProfile = StudentProfileModel(
         name: name,
         firstName: name.split(" ")[0],
@@ -85,8 +83,6 @@ class VTOPData extends ChangeNotifier {
         tableBody?.children[8].children[0].children[0].children[1];
 
     cgpa = double.parse(cgpaTable?.children[2].innerHtml ?? "0");
-
-    // print(studentProfileViewDocument);
 
     _studentAcademics = StudentAcademicsModel(
       cgpa: cgpa,

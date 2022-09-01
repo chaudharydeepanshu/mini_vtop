@@ -10,8 +10,6 @@ import 'package:mini_vtop/ui/login_screen/components/upper_case_text_formatter.d
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
-import 'package:mini_vtop/state/connection_state.dart';
-
 class ForgotUserID extends ConsumerStatefulWidget {
   const ForgotUserID({Key? key}) : super(key: key);
 
@@ -28,15 +26,17 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
   @override
   void initState() {
     // Resetting to clear any previous state
-    ref.read(userLoginStateProvider).updateForgotUserIDSearchStatus(
-        status: ForgotUserIDSearchStatus.notSearching);
-    ref.read(userLoginStateProvider).updateForgotUserIDValidateStatus(
-        status: ForgotUserIDValidateStatus.notProcessing);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userLoginStateProvider).updateForgotUserIDSearchStatus(
+          status: ForgotUserIDSearchResponseStatus.notSearching);
+      ref.read(userLoginStateProvider).updateForgotUserIDValidateStatus(
+          status: ForgotUserIDValidateResponseStatus.notProcessing);
+    });
 
     // Making a click on ForgotUserID button.
     final VTOPActions readVTOPActionsProviderValue =
         ref.read(vtopActionsProvider);
-    readVTOPActionsProviderValue.callForgotUserID(context: context);
+    readVTOPActionsProviderValue.forgotUserIDAction(context: context);
 
     super.initState();
   }
@@ -62,21 +62,35 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                     vtopActionsProvider
                         .select((value) => value.forgotUserIDPageStatus));
 
-                // Listening to connection status change.
+                final VTOPStatus vtopStatus = ref.watch(
+                    vtopActionsProvider.select((value) => value.vtopStatus));
+
+                //----------- Listener for reloading forgot user id page if session gets timed out or WebView gets reloaded -----------
+                // Listening to session status change.
                 ref.listen(
-                    connectionStatusStateProvider.select(
-                        (value) => value.connectionStatus), (previous, next) {
-                  //Checking if connection status is connected and its a new connection status.
-                  if (next == ConnectionStatus.connected && previous != next) {
+                    vtopActionsProvider.select((value) => value.vtopStatus),
+                    (previous, next) {
+                  //Checking if VTOPStatus status is sessionActive and its a new status.
+                  if (next == VTOPStatus.homepage && previous != next) {
+                    // If true then opening the login page.
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+                    readVTOPActionsProviderValue.openLoginPageAction(
+                        context: context);
+                  }
+                  //Checking if login page status is loaded and its a new status.
+                  else if (next == VTOPStatus.studentLoginPage &&
+                      previous != next) {
                     // If true then making a click on ForgotUserID button and setting page status to processing.
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
-                    readVTOPActionsProviderValue.callForgotUserID(
+                    readVTOPActionsProviderValue.forgotUserIDAction(
                         context: context);
                     readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                         status: VTOPPageStatus.processing);
                   }
                 });
+                //----------------------
 
                 // Listening for validation status.
                 ref.listen(
@@ -84,7 +98,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                         .select((value) => value.forgotUserIDValidateStatus),
                     (previous, next) {
                   //Checking if validation status is successful and its a new validation status.
-                  if (next == ForgotUserIDValidateStatus.successful &&
+                  if (next == ForgotUserIDValidateResponseStatus.successful &&
                       previous != next) {
                     // If true then showing the dialog with user id.
                     final String userID =
@@ -100,7 +114,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                           child: Consumer(
                             builder: (BuildContext context, WidgetRef ref,
                                 Widget? child) {
-                              ForgotUserIDSearchStatus
+                              ForgotUserIDSearchResponseStatus
                                   forgotUserIDSearchStatus = ref.watch(
                                       userLoginStateProvider.select((value) =>
                                           value.forgotUserIDSearchStatus));
@@ -151,7 +165,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                                                   .read(userLoginStateProvider)
                                                   .updateForgotUserIDSearchStatus(
                                                       status:
-                                                          ForgotUserIDSearchStatus
+                                                          ForgotUserIDSearchResponseStatus
                                                               .notSearching);
                                               // print(value);
                                             },
@@ -213,10 +227,10 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                                             enableSuggestions: true,
                                             autocorrect: false,
                                             enabled: forgotUserIDSearchStatus ==
-                                                        ForgotUserIDSearchStatus
+                                                        ForgotUserIDSearchResponseStatus
                                                             .found ||
                                                     forgotUserIDSearchStatus ==
-                                                        ForgotUserIDSearchStatus
+                                                        ForgotUserIDSearchResponseStatus
                                                             .otpTriggerWait
                                                 ? true
                                                 : false,
@@ -266,8 +280,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                           )
-                        : forgotUserIDPageStatus ==
-                                VTOPPageStatus.sessionTimeout
+                        : vtopStatus == VTOPStatus.sessionTimedOut
                             ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -295,7 +308,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
             onRefresh: () async {
               final VTOPActions readVTOPActionsProviderValue =
                   ref.read(vtopActionsProvider);
-              readVTOPActionsProviderValue.callForgotUserID(context: context);
+              readVTOPActionsProviderValue.forgotUserIDAction(context: context);
               readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                   status: VTOPPageStatus.processing);
             },
@@ -305,6 +318,29 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
     );
   }
 }
+
+// showBanner({required BuildContext context, required String contentText}) {
+//   String? contentText;
+//   Color? backgroundColor;
+//   Duration? duration;
+//   IconData? iconData;
+//   Color? iconAndTextColor;
+//
+//   return ScaffoldMessenger.of(context).showMaterialBanner(
+//     MaterialBanner(
+//       padding: const EdgeInsets.all(20),
+//       content: Text(contentText),
+//       leading: const Icon(Icons.info),
+//       backgroundColor: Theme.of(context).colorScheme.onSurface,
+//       actions: <Widget>[
+//         TextButton(
+//           onPressed: () {},
+//           child: const Text('DISMISS'),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
 Future<void> userIDDialog(
     {required BuildContext context, required String userID}) {
@@ -341,8 +377,8 @@ class ForgotUserIDSearchButton extends StatelessWidget {
         Expanded(
           child: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              ForgotUserIDSearchStatus forgotUserIDSearchStatus = ref.watch(
-                  userLoginStateProvider
+              ForgotUserIDSearchResponseStatus forgotUserIDSearchStatus =
+                  ref.watch(userLoginStateProvider
                       .select((value) => value.forgotUserIDSearchStatus));
 
               ref.listen(
@@ -350,7 +386,8 @@ class ForgotUserIDSearchButton extends StatelessWidget {
                       .select((value) => value.forgotUserIDSearchStatus),
                   (previous, next) {
                 if (previous != next) {
-                  final ForgotUserIDSearchStatus forgotUserIDSearchStatus =
+                  final ForgotUserIDSearchResponseStatus
+                      forgotUserIDSearchStatus =
                       ref.read(userLoginStateProvider).forgotUserIDSearchStatus;
 
                   final Duration otpTriggerWait =
@@ -380,18 +417,18 @@ class ForgotUserIDSearchButton extends StatelessWidget {
                     ref
                         .read(userLoginStateProvider)
                         .updateForgotUserIDSearchStatus(
-                            status: ForgotUserIDSearchStatus.searching);
+                            status: ForgotUserIDSearchResponseStatus.searching);
 
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
 
-                    readVTOPActionsProviderValue.callForgotUserIDSearch(
+                    readVTOPActionsProviderValue.forgotUserIDSearchAction(
                         context: context);
                   }
                 },
                 child: Center(
                   child: forgotUserIDSearchStatus !=
-                          ForgotUserIDSearchStatus.searching
+                          ForgotUserIDSearchResponseStatus.searching
                       ? const Text('Search & Send OTP')
                       : SpinKitThreeBounce(
                           color: Theme.of(context).colorScheme.onPrimary,
@@ -420,12 +457,12 @@ class ForgotUserIDValidateButton extends StatelessWidget {
         Expanded(
           child: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              ForgotUserIDSearchStatus forgotUserIDSearchStatus = ref.watch(
-                  userLoginStateProvider
+              ForgotUserIDSearchResponseStatus forgotUserIDSearchStatus =
+                  ref.watch(userLoginStateProvider
                       .select((value) => value.forgotUserIDSearchStatus));
 
-              ForgotUserIDValidateStatus forgotUserIDValidateStatus = ref.watch(
-                  userLoginStateProvider
+              ForgotUserIDValidateResponseStatus forgotUserIDValidateStatus =
+                  ref.watch(userLoginStateProvider
                       .select((value) => value.forgotUserIDValidateStatus));
 
               ref.listen(
@@ -433,8 +470,8 @@ class ForgotUserIDValidateButton extends StatelessWidget {
                       .select((value) => value.forgotUserIDValidateStatus),
                   (previous, next) {
                 if (previous != next) {
-                  final ForgotUserIDValidateStatus forgotUserIDValidateStatus =
-                      ref
+                  final ForgotUserIDValidateResponseStatus
+                      forgotUserIDValidateStatus = ref
                           .read(userLoginStateProvider)
                           .forgotUserIDValidateStatus;
 
@@ -454,9 +491,9 @@ class ForgotUserIDValidateButton extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: forgotUserIDSearchStatus ==
-                            ForgotUserIDSearchStatus.found ||
+                            ForgotUserIDSearchResponseStatus.found ||
                         forgotUserIDSearchStatus ==
-                            ForgotUserIDSearchStatus.otpTriggerWait
+                            ForgotUserIDSearchResponseStatus.otpTriggerWait
                     ? () {
                         if (formFieldKey.currentState!.validate()) {
                           FocusManager.instance.primaryFocus?.unfocus();
@@ -464,20 +501,20 @@ class ForgotUserIDValidateButton extends StatelessWidget {
                           ref
                               .read(userLoginStateProvider)
                               .updateForgotUserIDValidateStatus(
-                                  status:
-                                      ForgotUserIDValidateStatus.processing);
+                                  status: ForgotUserIDValidateResponseStatus
+                                      .processing);
 
                           final VTOPActions readVTOPActionsProviderValue =
                               ref.read(vtopActionsProvider);
 
-                          readVTOPActionsProviderValue.callForgotUserIDValidate(
-                              context: context);
+                          readVTOPActionsProviderValue
+                              .forgotUserIDValidateAction(context: context);
                         }
                       }
                     : null,
                 child: Center(
                   child: forgotUserIDValidateStatus !=
-                          ForgotUserIDValidateStatus.processing
+                          ForgotUserIDValidateResponseStatus.processing
                       ? const Text('Validate')
                       : SpinKitThreeBounce(
                           color: Theme.of(context).colorScheme.onPrimary,
@@ -494,7 +531,7 @@ class ForgotUserIDValidateButton extends StatelessWidget {
 }
 
 SnackBar? forgotUserIDSearchSnackBar(
-    {required ForgotUserIDSearchStatus status,
+    {required ForgotUserIDSearchResponseStatus status,
     Duration? otpTriggerWait,
     required BuildContext context}) {
   String? contentText;
@@ -503,39 +540,33 @@ SnackBar? forgotUserIDSearchSnackBar(
   IconData? iconData;
   Color? iconAndTextColor;
 
-  if (status == ForgotUserIDSearchStatus.notFound) {
+  if (status == ForgotUserIDSearchResponseStatus.notFound) {
     contentText = 'ERP ID / Reg. No. invalid! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDSearchStatus.sessionTimedOut) {
-    contentText = 'Session timed out! Please try again.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDSearchStatus.unknownResponse) {
+  } else if (status == ForgotUserIDSearchResponseStatus.unknownResponse) {
     contentText =
         'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDSearchStatus.otpTriggerWait) {
+  } else if (status == ForgotUserIDSearchResponseStatus.otpTriggerWait) {
     contentText =
         'OTP already sent so use that.${otpTriggerWait != null && otpTriggerWait != Duration.zero ? "\nFor generating new OTP please wait ${otpTriggerWait > const Duration(minutes: 1) ? "${otpTriggerWait.inMinutes} minutes" : "${otpTriggerWait.inSeconds} seconds"} more." : ""}';
     backgroundColor = null;
     duration = null;
     iconData = null;
     iconAndTextColor = null;
-  } else if (status == ForgotUserIDSearchStatus.found) {
+  } else if (status == ForgotUserIDSearchResponseStatus.found) {
     contentText = 'Verified! Enter OTP sent via Email.';
     backgroundColor = null;
     duration = null;
     iconData = null;
     iconAndTextColor = null;
-  } else if (status == ForgotUserIDSearchStatus.searching) {
+  } else if (status == ForgotUserIDSearchResponseStatus.searching) {
     contentText = 'Searching! Please wait.';
     backgroundColor = null;
     duration = null;
@@ -554,7 +585,7 @@ SnackBar? forgotUserIDSearchSnackBar(
 }
 
 SnackBar? forgotUserIDValidateSnackBar(
-    {required ForgotUserIDValidateStatus status,
+    {required ForgotUserIDValidateResponseStatus status,
     required BuildContext context}) {
   String? contentText;
   Color? backgroundColor;
@@ -562,32 +593,26 @@ SnackBar? forgotUserIDValidateSnackBar(
   IconData? iconData;
   Color? iconAndTextColor;
 
-  if (status == ForgotUserIDValidateStatus.invalidOTP) {
+  if (status == ForgotUserIDValidateResponseStatus.invalidOTP) {
     contentText = 'OTP was invalid! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDValidateStatus.sessionTimedOut) {
-    contentText = 'Session timed out! Please try again.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDValidateStatus.unknownResponse) {
+  } else if (status == ForgotUserIDValidateResponseStatus.unknownResponse) {
     contentText =
         'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDValidateStatus.successful) {
+  } else if (status == ForgotUserIDValidateResponseStatus.successful) {
     contentText = 'Found it!';
     backgroundColor = null;
     duration = null;
     iconData = null;
     iconAndTextColor = null;
-  } else if (status == ForgotUserIDValidateStatus.processing) {
+  } else if (status == ForgotUserIDValidateResponseStatus.processing) {
     contentText = 'Processing! Please wait.';
     backgroundColor = null;
     duration = null;

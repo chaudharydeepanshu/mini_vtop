@@ -23,7 +23,7 @@ class _AcademicsState extends ConsumerState<Academics> {
     if (studentGradeHistoryPageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.callStudentGradeHistory(context: context);
+      readVTOPActionsProviderValue.studentGradeHistoryAction(context: context);
     }
 
     super.initState();

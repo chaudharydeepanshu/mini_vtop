@@ -94,7 +94,7 @@ class ListViewInCardSection extends StatelessWidget {
                                 const Icon(Icons.arrow_forward),
                                 Text(
                                   "Show All",
-                                  style: Theme.of(context).textTheme.button,
+                                  style: Theme.of(context).textTheme.labelLarge,
                                 ),
                               ],
                             ),

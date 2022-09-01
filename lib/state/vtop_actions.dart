@@ -7,18 +7,28 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 
-enum VTOPPageStatus {
-  notProcessing,
-  processing,
-  loaded,
-  sessionTimeout,
-  unknownResponse
+enum VTOPStatus {
+  noStatus,
+  homepage,
+  forgotUserIDPage,
+  studentLoginPage,
+  sessionActive,
+  sessionTimedOut,
 }
+
+enum VTOPPageStatus { notProcessing, processing, loaded, unknownResponse }
 
 class VTOPActions extends ChangeNotifier {
   VTOPActions(this.read);
 
   final Reader read;
+
+  // Keeps track of VTOP main pages status.
+  VTOPStatus _vtopStatus = VTOPStatus.sessionTimedOut;
+  VTOPStatus get vtopStatus => _vtopStatus;
+
+  VTOPPageStatus _loginPageStatus = VTOPPageStatus.notProcessing;
+  VTOPPageStatus get loginPageStatus => _loginPageStatus;
 
   VTOPPageStatus _studentProfilePageStatus = VTOPPageStatus.notProcessing;
   VTOPPageStatus get studentProfilePageStatus => _studentProfilePageStatus;
@@ -30,14 +40,6 @@ class VTOPActions extends ChangeNotifier {
   VTOPPageStatus _forgotUserIDPageStatus = VTOPPageStatus.notProcessing;
   VTOPPageStatus get forgotUserIDPageStatus => _forgotUserIDPageStatus;
 
-  VTOPPageStatus _forgotUserIDSearchPageStatus = VTOPPageStatus.notProcessing;
-  VTOPPageStatus get forgotUserIDSearchPageStatus =>
-      _forgotUserIDSearchPageStatus;
-
-  VTOPPageStatus _forgotUserIDValidatePageStatus = VTOPPageStatus.notProcessing;
-  VTOPPageStatus get forgotUserIDValidatePageStatus =>
-      _forgotUserIDValidatePageStatus;
-
   late final HeadlessWebView readHeadlessWebViewProviderValue =
       read(headlessWebViewProvider);
 
@@ -46,6 +48,16 @@ class VTOPActions extends ChangeNotifier {
 
   init() {
     readHeadlessWebViewProviderValue.resetControlVars();
+  }
+
+  void updateVTOPStatus({required VTOPStatus status}) {
+    _vtopStatus = status;
+    notifyListeners();
+  }
+
+  void updateLoginPageStatus({required VTOPPageStatus status}) {
+    _loginPageStatus = status;
+    notifyListeners();
   }
 
   void updateStudentProfilePageStatus({required VTOPPageStatus status}) {
@@ -63,404 +75,251 @@ class VTOPActions extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateForgotUserIDSearchPageStatus({required VTOPPageStatus status}) {
-    _forgotUserIDSearchPageStatus = status;
-    notifyListeners();
-  }
-
-  void updateForgotUserIDValidatePageStatus({required VTOPPageStatus status}) {
-    _forgotUserIDValidatePageStatus = status;
-    notifyListeners();
-  }
-
-  void performCaptchaRefresh({required BuildContext context}) async {
+  void openLoginPageAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of performCaptchaRefresh()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
 
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            print(
-                "You are logged out due to inactivity for more than 15 minutes");
-            print(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for performCaptchaRefresh");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _loginPageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController
+            .evaluateJavascript(source: "openPage();");
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+
+  void performCaptchaRefreshAction({required BuildContext context}) async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
                                doRefreshCaptcha();
                                 ''');
-            print("called captchaRefresh");
-          }
-        } else {
-          print(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in performCaptchaRefresh()");
-        }
-      });
-    } else {
-// print('HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!');
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void performSignIn({required BuildContext context}) async {
+  void performSignInAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    String registrationNumber = readUserLoginStateProviderValue.userID;
-    String password = readUserLoginStateProviderValue.password;
-    String solvedCaptcha = readUserLoginStateProviderValue.solvedCaptcha;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of performSignIn()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            debugPrint(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for performSignIn");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
-        document.getElementById('uname').value = '$registrationNumber';
-        document.getElementById('passwd').value = '$password';
-        document.getElementById('captchaCheck').value = '$solvedCaptcha';
-        document.getElementById('captcha').click();
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        readUserLoginStateProviderValue.updateLoginStatus(
+            loginStatus: LoginResponseStatus.processing);
+      },
+      performAction: () async {
+        String userID = readUserLoginStateProviderValue.userID;
+        String password = readUserLoginStateProviderValue.password;
+        String captcha = readUserLoginStateProviderValue.captcha;
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        // document.getElementById('uname').value = '$userID';
+        // document.getElementById('passwd').value = '$password';
+        // document.getElementById('captchaCheck').value = '$captcha';
+        // document.getElementById('captcha').click();
+        
+        data = "uname="+"$userID"+"&passwd="+`\${encodeURIComponent('$password')}`+"&captchaCheck="+"$captcha";
+          console.log(data);
+        ajaxCall('doLogin',data,'page_outline');
                                 ''');
-            debugPrint("called signIn");
-          }
-        } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in performSignIn()");
-        }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void callStudentProfileAllView({required BuildContext context}) async {
+  void studentProfileAllViewAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    _studentProfilePageStatus = VTOPPageStatus.processing;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes")
-              // || value.contains("You have been successfully logged out")
-              ) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            debugPrint(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentProfilePageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
                                 ''');
-            debugPrint("called StudentProfileAllView");
-          }
-        } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
-        }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void callStudentGradeHistory({required BuildContext context}) async {
+  void studentGradeHistoryAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    _studentGradeHistoryPageStatus = VTOPPageStatus.processing;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            debugPrint(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentGradeHistoryPageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
                                document.getElementById("EXM0023").click();
                                 ''');
-            debugPrint("called Academics");
-          }
-        } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
-        }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void callForgotUserID({required BuildContext context}) async {
+  void forgotUserIDAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    _forgotUserIDPageStatus = VTOPPageStatus.processing;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            _forgotUserIDPageStatus = VTOPPageStatus.sessionTimeout;
-            notifyListeners();
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _forgotUserIDPageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
                                forgotUserID();
                                 ''');
-
-            debugPrint("called ForgotUserID");
-          }
-        } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
-        }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void callForgotUserIDSearch({required BuildContext context}) async {
+  void forgotUserIDSearchAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    String erpIDOrRegNo = readUserLoginStateProviderValue.erpIDOrRegNo;
-
-    _forgotUserIDSearchPageStatus = VTOPPageStatus.processing;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            debugPrint(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
+            status: ForgotUserIDSearchResponseStatus.searching);
+      },
+      performAction: () async {
+        String erpIDOrRegNo = readUserLoginStateProviderValue.erpIDOrRegNo;
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
             document.getElementById("userId").value = '$erpIDOrRegNo';
          document.getElementById("btnSubmit").click();
                                 ''');
-
-            debugPrint("called ForgotUserIDSearch");
-          }
-        } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
-        }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
   }
 
-  void callForgotUserIDValidate({required BuildContext context}) async {
+  void forgotUserIDValidateAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
-    String emailOTP = readUserLoginStateProviderValue.emailOTP;
-
-    _forgotUserIDSearchPageStatus = VTOPPageStatus.processing;
-
-    if (headlessWebView.isRunning()) {
-      // if (!await InternetConnectionChecker().hasConnection) {
-      //   debugPrint(
-      //       "InternetConnectionChecker plugin detected no internet access during execution of callStudentProfileAllView()\nSo, now calling runHeadlessInAppWebView() to recheck connection and and update error on screen");
-      //   onError.call("net::ERR_INTERNET_DISCONNECTED");
-      // }
-
-      await headlessWebView.webViewController
-          .evaluateJavascript(
-              source: "new XMLSerializer().serializeToString(document);")
-          .then((value) async {
-        if (value != null) {
-          // printWrapped(value);
-          if (value.contains(
-                  "You are logged out due to inactivity for more than 15 minutes") ||
-              value.contains("You have been successfully logged out")) {
-            debugPrint(
-                "You are logged out due to inactivity for more than 15 minutes");
-            debugPrint(
-                "called inactivityResponse or successfullyLoggedOut Action https://vtop.vitbhopal.ac.in/vtop for callStudentProfileAllView");
-            // runHeadlessInAppWebView(
-            //   headlessWebView: headlessWebView,
-            //   onCurrentFullUrl: (String value) {
-            //     onCurrentFullUrl(value);
-            //   },
-            // );
-          } else {
-            await headlessWebView.webViewController
-                .evaluateJavascript(source: '''
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
+            status: ForgotUserIDValidateResponseStatus.processing);
+      },
+      performAction: () async {
+        String emailOTP = readUserLoginStateProviderValue.emailOTP;
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
             document.getElementById("otp").value = '$emailOTP';
          document.getElementById("btnValidate").click();
                                 ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+}
 
-            debugPrint("called ForgotUserIDValidate");
-          }
+void _actionHandler({
+  required BuildContext context,
+  required HeadlessInAppWebView headlessWebView,
+  required Function() sessionTimeOutAction,
+  required Function() performAction,
+  required Function() initialAction,
+}) async {
+  // Perform initial action like setting status to processing.
+  initialAction();
+
+  if (headlessWebView.isRunning()) {
+    // If true means then headless WebView is running.
+
+    await headlessWebView.webViewController
+        .evaluateJavascript(
+            source: "new XMLSerializer().serializeToString(document);")
+        .then((value) async {
+      if (value != null) {
+        if (value.contains(
+            "You are logged out due to inactivity for more than 15 minutes")) {
+          log('Session timed out.');
+
+          sessionTimeOutAction();
         } else {
-          debugPrint(
-              "value for await headlessWebView?.webViewController.evaluateJavascript(source: 'new XMLSerializer().serializeToString(document);') is null in callStudentProfileAllView()");
+          // If true means then action can be performed.
+
+          log('Performing action.');
+          performAction();
         }
-      });
-    } else {
-      // const snackBar = SnackBar(
-      //   content: Text(
-      //       'HeadlessInAppWebView is not running. Click on "Run HeadlessInAppWebView"!'),
-      //   duration: Duration(milliseconds: 1500),
-      // );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      } else {
+        // If true means then action can be performed.
+
+        log('Document is null.');
+      }
+    });
+  } else {
+    log('HeadlessInAppWebView is not running.');
   }
 }

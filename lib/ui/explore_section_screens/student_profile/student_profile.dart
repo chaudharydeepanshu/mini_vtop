@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mini_vtop/models/student_profile_model.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
@@ -23,7 +22,8 @@ class _StudentProfileState extends ConsumerState<StudentProfile> {
     if (studentProfilePageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.callStudentProfileAllView(context: context);
+      readVTOPActionsProviderValue.studentProfileAllViewAction(
+          context: context);
     }
 
     super.initState();
@@ -65,38 +65,38 @@ class _StudentProfileState extends ConsumerState<StudentProfile> {
                                 parameter1: 'Name',
                                 parameter2: vtopData.studentProfile.name,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'DOB',
                                 parameter2: vtopData.studentProfile.dob,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'Blood Group',
                                 parameter2: vtopData.studentProfile.bloodGroup,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'Roll No.',
                                 parameter2: vtopData.studentProfile.rollNo,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'Application No.',
                                 parameter2:
                                     vtopData.studentProfile.applicationNo,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'Program',
                                 parameter2: vtopData.studentProfile.program,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'Branch',
                                 parameter2: vtopData.studentProfile.branch,
                               ),
-                              Divider(),
+                              const Divider(),
                               DetailLine(
                                 parameter1: 'School',
                                 parameter2: vtopData.studentProfile.school,
@@ -123,7 +123,7 @@ class _StudentProfileState extends ConsumerState<StudentProfile> {
         onRefresh: () async {
           final VTOPActions readVTOPActionsProviderValue =
               ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.callStudentProfileAllView(
+          readVTOPActionsProviderValue.studentProfileAllViewAction(
               context: context);
           readVTOPActionsProviderValue.updateStudentProfilePageStatus(
               status: VTOPPageStatus.processing);

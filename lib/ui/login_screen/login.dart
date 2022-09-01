@@ -15,8 +15,28 @@ import '../home_screen/home_screen.dart';
 import 'components/forgot_user_id_screen.dart';
 import 'components/upper_case_text_formatter.dart';
 
-class Login extends StatelessWidget {
+class Login extends ConsumerStatefulWidget {
   const Login({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<Login> createState() => _LoginState();
+}
+
+class _LoginState extends ConsumerState<Login> {
+  @override
+  void initState() {
+    // // Resetting to clear any previous state
+    // ref.read(userLoginStateProvider).updateForgotUserIDSearchStatus(
+    //     status: ForgotUserIDSearchResponseStatus.notSearching);
+    // ref.read(userLoginStateProvider).updateForgotUserIDValidateStatus(
+    //     status: ForgotUserIDValidateResponseStatus.notProcessing);
+
+    // Making a click on GoToLogin button.
+    final VTOPActions readVTOPActionsProviderValue =
+        ref.read(vtopActionsProvider);
+    readVTOPActionsProviderValue.openLoginPageAction(context: context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +50,59 @@ class Login extends StatelessWidget {
           title: const Text("VTOP Login"),
           centerTitle: true,
         ),
-        body: const SafeArea(
-          child: TeddyLoginScreen(),
+        body: SafeArea(
+          child: RefreshIndicator(
+            child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                // Watching loginPageStatus page status.
+                final VTOPPageStatus loginPageStatus = ref.watch(
+                    vtopActionsProvider
+                        .select((value) => value.loginPageStatus));
+
+                //----------- Listener for reloading login page if session gets timed out or WebView gets reloaded -----------
+                // Listening to session status change.
+                ref.listen(
+                    vtopActionsProvider.select((value) => value.vtopStatus),
+                    (previous, next) {
+                  //Checking if VTOPStatus status is sessionActive and its a new status.
+                  if (next == VTOPStatus.homepage && previous != next) {
+                    // If true then opening the login page.
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+                    readVTOPActionsProviderValue.openLoginPageAction(
+                        context: context);
+                  }
+                });
+                //----------------------
+
+                return loginPageStatus == VTOPPageStatus.loaded
+                    ? const SingleChildScrollView(
+                        child: TeddyLoginScreen(),
+                      )
+                    : loginPageStatus == VTOPPageStatus.processing
+                        ? Center(
+                            child: SpinKitThreeBounce(
+                              size: 24,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              "Error",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          );
+              },
+            ),
+            onRefresh: () async {
+              final VTOPActions readVTOPActionsProviderValue =
+                  ref.read(vtopActionsProvider);
+              readVTOPActionsProviderValue.openLoginPageAction(
+                  context: context);
+              readVTOPActionsProviderValue.updateLoginPageStatus(
+                  status: VTOPPageStatus.processing);
+            },
+          ),
         ),
       ),
     );
@@ -68,71 +139,67 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      // padding: EdgeInsets.only(
-      //     left: 20.0, right: 20.0, top: devicePadding.top + 50.0),
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          // Container(
-          //   height: 200,
-          //   padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-          //   child: RiveAnimation.asset(
-          //     "assets/rive/animated_login_screen.riv",
-          //     animations: const ['idle', 'curves'],
-          //     alignment: Alignment.bottomCenter,
-          //     fit: BoxFit.contain,
-          //     onInit: _controlTeddy._onRiveInit,
-          //   ),
-          // ),
-          const Icon(
-            Icons.school,
-            size: 150,
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.center,
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        // Container(
+        //   height: 200,
+        //   padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+        //   child: RiveAnimation.asset(
+        //     "assets/rive/animated_login_screen.riv",
+        //     animations: const ['idle', 'curves'],
+        //     alignment: Alignment.bottomCenter,
+        //     fit: BoxFit.contain,
+        //     onInit: _controlTeddy.onRiveInit,
+        //   ),
+        // ),
+        const Icon(
+          Icons.school,
+          size: 150,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              LoginFields(
+                controlTeddy: controlTeddy,
+                formKey: formKey,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              CheckboxListTile(
+                value: autoLogin,
+                title: const Text("Enable Auto login?"),
+                onChanged: (bool? value) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  setState(() {
+                    autoLogin = value ?? false;
+                  });
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              LoginButton(
+                controlTeddy: controlTeddy,
+                formKey: formKey,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "By logging in, you accept our Terms and Conditions and Privacy Policy",
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                LoginFields(
-                  controlTeddy: controlTeddy,
-                  formKey: formKey,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CheckboxListTile(
-                  value: autoLogin,
-                  title: const Text("Enable Auto login?"),
-                  onChanged: (bool? value) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    setState(() {
-                      autoLogin = value ?? false;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                LoginButton(
-                  controlTeddy: controlTeddy,
-                  formKey: formKey,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "By logging in, you accept our Terms and Conditions and Privacy Policy",
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -163,13 +230,13 @@ class LoginButton extends StatelessWidget {
                 captchaLoading = true;
               }
 
-              LoginStatus loginStatus = ref.watch(
+              LoginResponseStatus loginStatus = ref.watch(
                   userLoginStateProvider.select((value) => value.loginStatus));
 
               ref.listen(
                   userLoginStateProvider.select((value) => value.loginStatus),
                   (previous, next) {
-                if (next == LoginStatus.loggedIn) {
+                if (next == LoginResponseStatus.loggedIn) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.pushReplacement(
                       context,
@@ -178,15 +245,34 @@ class LoginButton extends StatelessWidget {
                   });
                 }
                 if (previous != next) {
-                  final LoginStatus loginStatus =
+                  //---------- Showing SnackBar ----------
+                  final LoginResponseStatus loginStatus =
                       ref.read(userLoginStateProvider).loginStatus;
-
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
                   SnackBar? snackBar =
                       loginSnackBar(status: loginStatus, context: context);
                   if (snackBar != null) {
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                  //--------------------
+                  // ---------- Refreshing captcha ----------
+                  if (next == LoginResponseStatus.maxAttemptsError ||
+                      next == LoginResponseStatus.unknownResponse ||
+                      next == LoginResponseStatus.wrongUserId ||
+                      next == LoginResponseStatus.wrongPassword ||
+                      next == LoginResponseStatus.wrongCaptcha ||
+                      next == LoginResponseStatus.loggedOut) {
+                    // Only refresh if the above is true otherwise the login wont succeed.
+                    // Because when status changes to processing the captcha will get refreshed before login causing failure.
+                    final UserLoginState readUserLoginStateProviderValue =
+                        ref.read(userLoginStateProvider);
+                    readUserLoginStateProviderValue.updateCaptchaImage(
+                        bytes: Uint8List.fromList([]));
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+                    readVTOPActionsProviderValue.performCaptchaRefreshAction(
+                        context: context);
+                    // --------------------
                   }
                 }
               });
@@ -203,18 +289,18 @@ class LoginButton extends StatelessWidget {
                           controlTeddy.submitPassword();
 
                           ref.read(userLoginStateProvider).updateLoginStatus(
-                              loginStatus: LoginStatus.processing);
+                              loginStatus: LoginResponseStatus.processing);
 
                           final VTOPActions readVTOPActionsProviderValue =
                               ref.read(vtopActionsProvider);
 
-                          readVTOPActionsProviderValue.performSignIn(
+                          readVTOPActionsProviderValue.performSignInAction(
                               context: context);
                         }
                       }
                     : null,
                 child: Center(
-                  child: loginStatus != LoginStatus.processing
+                  child: loginStatus != LoginResponseStatus.processing
                       ? const Text('Login')
                       : SpinKitThreeBounce(
                           color: Theme.of(context).colorScheme.onPrimary,
@@ -231,57 +317,51 @@ class LoginButton extends StatelessWidget {
 }
 
 SnackBar? loginSnackBar(
-    {required LoginStatus status, required BuildContext context}) {
+    {required LoginResponseStatus status, required BuildContext context}) {
   String? contentText;
   Color? backgroundColor;
   Duration? duration;
   IconData? iconData;
   Color? iconAndTextColor;
 
-  if (status == LoginStatus.wrongCaptcha) {
+  if (status == LoginResponseStatus.wrongCaptcha) {
     contentText = 'Captcha was invalid! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.wrongPassword) {
+  } else if (status == LoginResponseStatus.wrongPassword) {
     contentText = 'Password was wrong! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.wrongUserId) {
+  } else if (status == LoginResponseStatus.wrongUserId) {
     contentText = 'User Id was wrong! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.maxAttemptsError) {
+  } else if (status == LoginResponseStatus.maxAttemptsError) {
     contentText = 'Max fail attempts reached! Please use forget password.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.sessionTimedOut) {
-    contentText = 'Session timed out! Please try again.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.unknownResponse) {
+  } else if (status == LoginResponseStatus.unknownResponse) {
     contentText =
         'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginStatus.loggedIn) {
+  } else if (status == LoginResponseStatus.loggedIn) {
     contentText = 'Successfully logged in!';
     backgroundColor = null;
     duration = null;
     iconData = null;
     iconAndTextColor = null;
-  } else if (status == LoginStatus.processing) {
+  } else if (status == LoginResponseStatus.processing) {
     contentText = 'Processing login! Please wait.';
     backgroundColor = null;
     duration = null;
@@ -312,8 +392,12 @@ class LoginFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        String solvedCaptcha = ref.watch(
-            userLoginStateProvider.select((value) => value.solvedCaptcha));
+        String autoCaptcha = ref
+            .watch(userLoginStateProvider.select((value) => value.autoCaptcha));
+
+        String userID = ref.read(userLoginStateProvider).userID;
+
+        String password = ref.read(userLoginStateProvider).password;
 
         return Form(
           key: formKey,
@@ -322,6 +406,7 @@ class LoginFields extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TrackingTextInput(
+                    preFilledValue: userID,
                     prefixIcon: const Icon(Icons.badge),
                     helperText: 'Ex:- 20BCEXXXXX',
                     labelText: 'UserID',
@@ -377,10 +462,11 @@ class LoginFields extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TrackingTextInput(
+                    preFilledValue: password,
                     prefixIcon: const Icon(Icons.password),
                     helperText: 'Ex:- password123',
                     labelText: 'VTOP Password',
-                    inputFormatters: [],
+                    inputFormatters: const [],
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter VTOP password';
@@ -449,7 +535,7 @@ class LoginFields extends StatelessWidget {
                 onTextChanged: (String value) {
                   ref.read(userLoginStateProvider).setCaptcha(captcha: value);
                 },
-                preFilledValue: solvedCaptcha,
+                preFilledValue: autoCaptcha,
               ),
             ],
           ),
@@ -549,7 +635,7 @@ class CaptchaIconButton extends StatelessWidget {
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
 
-                    readVTOPActionsProviderValue.performCaptchaRefresh(
+                    readVTOPActionsProviderValue.performCaptchaRefreshAction(
                         context: context);
 
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();

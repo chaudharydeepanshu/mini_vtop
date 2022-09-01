@@ -28,7 +28,7 @@ class TimeTable extends StatelessWidget {
                 dateSelectionMode: DatePickerSelectionMode.single,
                 onSelectedDates: (List<DateTime> selectedDates) {
                   // Called every time dates are selected or deselected.
-                  print(selectedDates);
+                  // print(selectedDates);
                 },
               ),
             ),
@@ -107,7 +107,7 @@ class TimeTableCard extends StatelessWidget {
             ),
             Text(
               "8:15 am - 9:15 am",
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(
               height: 8,
@@ -137,7 +137,7 @@ class TimeTableCard extends StatelessWidget {
                           children: [
                             Text(
                               "Room # ",
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                             Text(
                               "4563 - B",
