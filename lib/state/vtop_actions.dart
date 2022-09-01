@@ -7,7 +7,13 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 
-enum VTOPPageStatus { notProcessing, processing, loaded, sessionTimeout, error }
+enum VTOPPageStatus {
+  notProcessing,
+  processing,
+  loaded,
+  sessionTimeout,
+  unknownResponse
+}
 
 class VTOPActions extends ChangeNotifier {
   VTOPActions(this.read);

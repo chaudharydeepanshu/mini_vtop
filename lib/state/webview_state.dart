@@ -87,11 +87,11 @@ class HeadlessWebView extends ChangeNotifier {
           URLRequest(url: Uri.parse("https://vtop.vitbhopal.ac.in/vtop/")),
       initialOptions: _options,
       onWebViewCreated: (InAppWebViewController controller) {
-        print('HeadlessInAppWebView created!');
+        log('HeadlessInAppWebView created!');
       },
       onConsoleMessage:
           (InAppWebViewController controller, ConsoleMessage consoleMessage) {
-        print('Console Message: ${consoleMessage.message}');
+        log('Console Message: ${consoleMessage.message}');
       },
       shouldInterceptAjaxRequest:
           (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
@@ -126,22 +126,22 @@ class HeadlessWebView extends ChangeNotifier {
           } else if (ajaxRequest.url.toString() == "forgotLoginID") {
             _vtopForgotUserIDValidateAjaxRequest(ajaxRequest: ajaxRequest);
           } else {
-            print("ajaxRequest.url:- ${ajaxRequest.url.toString()}");
+            log("ajaxRequest.url:- ${ajaxRequest.url.toString()}");
           }
         }
         return AjaxRequestAction.PROCEED;
       },
       shouldInterceptFetchRequest:
           (InAppWebViewController controller, FetchRequest fetchRequest) async {
-        print(fetchRequest);
+        // log(fetchRequest);
         return fetchRequest;
       },
       onLoadStart: (InAppWebViewController controller, Uri? url) async {
-        print('onLoadStart $url');
+        log('onLoadStart $url');
         _url = url?.toString() ?? '';
       },
       onLoadStop: (InAppWebViewController controller, Uri? url) async {
-        print('onLoadStop $url');
+        log('onLoadStop $url');
         _url = url?.toString() ?? '';
         _onLoadStopAction(url: url);
       },
@@ -189,17 +189,17 @@ class HeadlessWebView extends ChangeNotifier {
             } else if (value.contains("You are not authorized")) {
               log("You are not authorized.");
               readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
-                  status: VTOPPageStatus.error);
+                  status: VTOPPageStatus.unknownResponse);
               readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
-                  status: ForgotUserIDValidateStatus.unknownError);
+                  status: ForgotUserIDValidateStatus.unknownResponse);
             } else {
-              log("Unknown error");
+              log("Unknown response");
               log(value.toString());
               readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
-                  status: VTOPPageStatus.error);
+                  status: VTOPPageStatus.unknownResponse);
               settingSomeVarsBeforeWebViewRestart(
                   forgotUserIDValidateStatus:
-                      ForgotUserIDValidateStatus.unknownError);
+                      ForgotUserIDValidateStatus.unknownResponse);
               runHeadlessInAppWebView();
             }
           });
@@ -248,13 +248,13 @@ class HeadlessWebView extends ChangeNotifier {
               readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
                   status: ForgotUserIDSearchStatus.notFound);
             } else {
-              log("Unknown error");
+              log("Unknown response");
               // log(value.toString());
               readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
-                  status: VTOPPageStatus.error);
+                  status: VTOPPageStatus.unknownResponse);
               settingSomeVarsBeforeWebViewRestart(
                   forgotUserIDSearchStatus:
-                      ForgotUserIDSearchStatus.unknownError);
+                      ForgotUserIDSearchStatus.unknownResponse);
               runHeadlessInAppWebView();
             }
           });
@@ -287,7 +287,7 @@ class HeadlessWebView extends ChangeNotifier {
             } else {
               log("Unknown error");
               readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
-                  status: VTOPPageStatus.error);
+                  status: VTOPPageStatus.unknownResponse);
               settingSomeVarsBeforeWebViewRestart();
               runHeadlessInAppWebView();
             }
@@ -414,7 +414,7 @@ class HeadlessWebView extends ChangeNotifier {
             } else {
               log("Unknown error.");
               settingSomeVarsBeforeWebViewRestart(
-                  loginStatus: LoginStatus.unknownError);
+                  loginStatus: LoginStatus.unknownResponse);
               runHeadlessInAppWebView();
             }
           });

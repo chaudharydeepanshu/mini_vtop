@@ -10,6 +10,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../state/providers.dart';
 import '../../state/webview_state.dart';
+import '../components/custom_snack_bar.dart';
 import '../home_screen/home_screen.dart';
 import 'components/forgot_user_id_screen.dart';
 import 'components/upper_case_text_formatter.dart';
@@ -182,8 +183,11 @@ class LoginButton extends StatelessWidget {
 
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      loginSnackBar(status: loginStatus, context: context));
+                  SnackBar? snackBar =
+                      loginSnackBar(status: loginStatus, context: context);
+                  if (snackBar != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
                 }
               });
 
@@ -226,94 +230,74 @@ class LoginButton extends StatelessWidget {
   }
 }
 
-SnackBar loginSnackBar(
-        {required LoginStatus status, required BuildContext context}) =>
-    SnackBar(
-      content: status == LoginStatus.wrongCaptcha
-          ? Text(
-              '🤯 Captcha was invalid! Please try again.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            )
-          : status == LoginStatus.wrongPassword
-              ? Text(
-                  '🤯 Password was wrong! Please try again.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                )
-              : status == LoginStatus.wrongUserId
-                  ? Text(
-                      '🤯 User Id was wrong! Please try again.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    )
-                  : status == LoginStatus.maxAttemptsError
-                      ? Text(
-                          '⚠️Max fail attempts reached! Please use forget password.',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onErrorContainer,
-                                  ),
-                        )
-                      : status == LoginStatus.unknownError
-                          ? Text(
-                              '⚠️Unknown error! Please try again latter or use official VTOP for now.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onErrorContainer,
-                                  ),
-                            )
-                          : status == LoginStatus.loggedIn
-                              ? const Text('😀 Successfully logged in!')
-                              : status == LoginStatus.processing
-                                  ? const Text(
-                                      '🤔 Processing login! Please wait.')
-                                  : const Text('🤔🤔🤔'),
-      backgroundColor: status == LoginStatus.wrongCaptcha
-          ? Theme.of(context).colorScheme.errorContainer
-          : status == LoginStatus.wrongPassword
-              ? Theme.of(context).colorScheme.errorContainer
-              : status == LoginStatus.wrongUserId
-                  ? Theme.of(context).colorScheme.errorContainer
-                  : status == LoginStatus.maxAttemptsError
-                      ? Theme.of(context).colorScheme.errorContainer
-                      : status == LoginStatus.unknownError
-                          ? Theme.of(context).colorScheme.errorContainer
-                          : status == LoginStatus.loggedIn
-                              ? null
-                              : status == LoginStatus.processing
-                                  ? null
-                                  : null,
-      duration: status == LoginStatus.wrongCaptcha
-          ? const Duration(days: 365)
-          : status == LoginStatus.wrongPassword
-              ? const Duration(days: 365)
-              : status == LoginStatus.wrongUserId
-                  ? const Duration(days: 365)
-                  : status == LoginStatus.maxAttemptsError
-                      ? const Duration(days: 365)
-                      : status == LoginStatus.unknownError
-                          ? const Duration(days: 365)
-                          : status == LoginStatus.loggedIn
-                              ? const Duration(seconds: 4)
-                              : status == LoginStatus.processing
-                                  ? const Duration(seconds: 4)
-                                  : const Duration(seconds: 4),
-      action: SnackBarAction(
-        label: 'Ok',
-        onPressed: () {},
-      ),
-    );
+SnackBar? loginSnackBar(
+    {required LoginStatus status, required BuildContext context}) {
+  String? contentText;
+  Color? backgroundColor;
+  Duration? duration;
+  IconData? iconData;
+  Color? iconAndTextColor;
+
+  if (status == LoginStatus.wrongCaptcha) {
+    contentText = 'Captcha was invalid! Please try again.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.wrongPassword) {
+    contentText = 'Password was wrong! Please try again.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.wrongUserId) {
+    contentText = 'User Id was wrong! Please try again.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.maxAttemptsError) {
+    contentText = 'Max fail attempts reached! Please use forget password.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.sessionTimedOut) {
+    contentText = 'Session timed out! Please try again.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.unknownResponse) {
+    contentText =
+        'Unknown response! Please try again latter or use official VTOP for now.';
+    backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == LoginStatus.loggedIn) {
+    contentText = 'Successfully logged in!';
+    backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
+  } else if (status == LoginStatus.processing) {
+    contentText = 'Processing login! Please wait.';
+    backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
+  }
+
+  return customSnackBar(
+    context: context,
+    contentText: contentText,
+    backgroundColor: backgroundColor,
+    duration: duration,
+    iconData: iconData,
+    iconAndTextColor: iconAndTextColor,
+  );
+}
 
 class LoginFields extends StatelessWidget {
   const LoginFields(

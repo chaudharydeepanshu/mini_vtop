@@ -13,7 +13,7 @@ enum LoginStatus {
   wrongCaptcha,
   maxAttemptsError,
   sessionTimedOut,
-  unknownError
+  unknownResponse
 }
 
 enum ForgotUserIDSearchStatus {
@@ -21,7 +21,7 @@ enum ForgotUserIDSearchStatus {
   searching,
   notFound,
   found,
-  unknownError,
+  unknownResponse,
   sessionTimedOut,
   otpTriggerWait
 }
@@ -31,7 +31,7 @@ enum ForgotUserIDValidateStatus {
   processing,
   invalidOTP,
   successful,
-  unknownError,
+  unknownResponse,
   sessionTimedOut
 }
 

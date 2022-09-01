@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
+import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
 import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
 import 'package:mini_vtop/ui/login_screen/components/upper_case_text_formatter.dart';
 
@@ -26,6 +27,12 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
 
   @override
   void initState() {
+    // Resetting to clear any previous state
+    ref.read(userLoginStateProvider).updateForgotUserIDSearchStatus(
+        status: ForgotUserIDSearchStatus.notSearching);
+    ref.read(userLoginStateProvider).updateForgotUserIDValidateStatus(
+        status: ForgotUserIDValidateStatus.notProcessing);
+
     // Making a click on ForgotUserID button.
     final VTOPActions readVTOPActionsProviderValue =
         ref.read(vtopActionsProvider);
@@ -490,123 +497,112 @@ SnackBar? forgotUserIDSearchSnackBar(
     {required ForgotUserIDSearchStatus status,
     Duration? otpTriggerWait,
     required BuildContext context}) {
-  Widget? content;
-  Duration? duration;
+  String? contentText;
   Color? backgroundColor;
+  Duration? duration;
+  IconData? iconData;
+  Color? iconAndTextColor;
 
   if (status == ForgotUserIDSearchStatus.notFound) {
-    content = Text(
-      '🤯 ERP ID / Reg. No. invalid! Please try again.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
-    duration = const Duration(days: 365);
+    contentText = 'ERP ID / Reg. No. invalid! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
   } else if (status == ForgotUserIDSearchStatus.sessionTimedOut) {
-    content = Text(
-      '⚠️Session timed out! Please try again.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
-    duration = const Duration(days: 365);
+    contentText = 'Session timed out! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
-  } else if (status == ForgotUserIDSearchStatus.unknownError) {
-    content = Text(
-      '⚠️Unknown error! Please try again latter or use official VTOP for now.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
     duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == ForgotUserIDSearchStatus.unknownResponse) {
+    contentText =
+        'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
   } else if (status == ForgotUserIDSearchStatus.otpTriggerWait) {
-    content = Text(
-      '🤯 OTP already sent so use that.${otpTriggerWait != null && otpTriggerWait != Duration.zero ? "\nFor generating new OTP please wait ${otpTriggerWait > const Duration(minutes: 1) ? "${otpTriggerWait.inMinutes} minutes" : "${otpTriggerWait.inSeconds} seconds"} more." : ""}',
-    );
-    duration = const Duration(days: 365);
+    contentText =
+        'OTP already sent so use that.${otpTriggerWait != null && otpTriggerWait != Duration.zero ? "\nFor generating new OTP please wait ${otpTriggerWait > const Duration(minutes: 1) ? "${otpTriggerWait.inMinutes} minutes" : "${otpTriggerWait.inSeconds} seconds"} more." : ""}';
     backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
   } else if (status == ForgotUserIDSearchStatus.found) {
-    content = const Text('😀 Verified! Enter OTP sent via Email.');
-    duration = null;
+    contentText = 'Verified! Enter OTP sent via Email.';
     backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
   } else if (status == ForgotUserIDSearchStatus.searching) {
-    content = const Text('🤔 Searching! Please wait.');
-    duration = null;
+    contentText = 'Searching! Please wait.';
     backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
   }
-  if (content != null) {
-    return SnackBar(
-      content: content,
-      backgroundColor: backgroundColor,
-      duration: duration ?? const Duration(seconds: 4),
-      action: SnackBarAction(
-        label: 'Ok',
-        onPressed: () {},
-      ),
-    );
-  } else {
-    return null;
-  }
+
+  return customSnackBar(
+    context: context,
+    contentText: contentText,
+    backgroundColor: backgroundColor,
+    duration: duration,
+    iconData: iconData,
+    iconAndTextColor: iconAndTextColor,
+  );
 }
 
 SnackBar? forgotUserIDValidateSnackBar(
     {required ForgotUserIDValidateStatus status,
     required BuildContext context}) {
-  Widget? content;
-  Duration? duration;
+  String? contentText;
   Color? backgroundColor;
+  Duration? duration;
+  IconData? iconData;
+  Color? iconAndTextColor;
 
   if (status == ForgotUserIDValidateStatus.invalidOTP) {
-    content = Text(
-      '🤯 OTP was invalid! Please try again.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
-    duration = const Duration(days: 365);
+    contentText = 'OTP was invalid! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
   } else if (status == ForgotUserIDValidateStatus.sessionTimedOut) {
-    content = Text(
-      '⚠️Session timed out! Please try again.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
-    duration = const Duration(days: 365);
+    contentText = 'Session timed out! Please try again.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
-  } else if (status == ForgotUserIDValidateStatus.unknownError) {
-    content = Text(
-      '⚠️Unknown error! Please try again latter or use official VTOP for now.',
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-    );
     duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
+  } else if (status == ForgotUserIDValidateStatus.unknownResponse) {
+    contentText =
+        'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
+    duration = const Duration(days: 365);
+    iconData = Icons.warning;
+    iconAndTextColor = Theme.of(context).colorScheme.error;
   } else if (status == ForgotUserIDValidateStatus.successful) {
-    content = const Text('😀 Found it!');
-    duration = null;
+    contentText = 'Found it!';
     backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
   } else if (status == ForgotUserIDValidateStatus.processing) {
-    content = const Text('🤔 Processing! Please wait.');
-    duration = null;
+    contentText = 'Processing! Please wait.';
     backgroundColor = null;
+    duration = null;
+    iconData = null;
+    iconAndTextColor = null;
   }
-  if (content != null) {
-    return SnackBar(
-      content: content,
-      backgroundColor: backgroundColor,
-      duration: duration ?? const Duration(seconds: 4),
-      action: SnackBarAction(
-        label: 'Ok',
-        onPressed: () {},
-      ),
-    );
-  } else {
-    return null;
-  }
+
+  return customSnackBar(
+    context: context,
+    contentText: contentText,
+    backgroundColor: backgroundColor,
+    duration: duration,
+    iconData: iconData,
+    iconAndTextColor: iconAndTextColor,
+  );
 }
 
 class TextInput extends StatefulWidget {
