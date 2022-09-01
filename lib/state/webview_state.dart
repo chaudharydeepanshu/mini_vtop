@@ -288,7 +288,7 @@ class HeadlessWebView extends ChangeNotifier {
           await headlessWebView.webViewController
               .evaluateJavascript(
                   source: "new XMLSerializer().serializeToString(document);")
-              .then((value) {
+              .then((value) async {
             Document document = parse('${ajaxRequest.responseText}');
             String? imageSrc = document
                 .querySelector('img[alt="vtopCaptcha"]')
@@ -298,8 +298,8 @@ class HeadlessWebView extends ChangeNotifier {
               String uri = imageSrc;
               String base64String = uri.split(', ').last;
               Uint8List bytes = base64.decode(base64String);
+              String solvedCaptcha = await getSolvedCaptcha(imageBytes: bytes);
               readUserLoginStateProviderValue.updateCaptchaImage(bytes: bytes);
-              String solvedCaptcha = getSolvedCaptcha(imageBytes: bytes);
               readUserLoginStateProviderValue.setAutoCaptcha(
                   autoCaptcha: solvedCaptcha);
             }
@@ -426,7 +426,7 @@ class HeadlessWebView extends ChangeNotifier {
           await headlessWebView.webViewController
               .evaluateJavascript(
                   source: "new XMLSerializer().serializeToString(document);")
-              .then((value) {
+              .then((value) async {
             Document document = parse('${ajaxRequest.responseText}');
             String? imageSrc = document
                 .querySelector('img[alt="vtopCaptcha"]')
@@ -435,8 +435,8 @@ class HeadlessWebView extends ChangeNotifier {
               String uri = imageSrc;
               String base64String = uri.split(', ').last;
               Uint8List bytes = base64.decode(base64String);
+              String solvedCaptcha = await getSolvedCaptcha(imageBytes: bytes);
               readUserLoginStateProviderValue.updateCaptchaImage(bytes: bytes);
-              String solvedCaptcha = getSolvedCaptcha(imageBytes: bytes);
               readUserLoginStateProviderValue.setAutoCaptcha(
                   autoCaptcha: solvedCaptcha);
             }

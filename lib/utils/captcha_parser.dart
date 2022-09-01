@@ -1,10 +1,35 @@
+import 'dart:isolate';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as imglib;
 
 import 'dart:typed_data';
 
 import 'package:mini_vtop/utils/vit_captcha_characters_bitmaps.dart';
+
+class CropImageParam {
+  final List<int> input;
+  CropImageParam(this.input);
+}
+
+List<Uint8List> cropImageIsolate(CropImageParam param) {
+  // Crop an image in 6 parts horizontally from input (Uint8List in this case).
+  List<Uint8List> croppedImages = splitImage(param.input);
+  return croppedImages;
+}
+
+class CompareBitmapsParam {
+  final List<Uint8List> croppedImages;
+  CompareBitmapsParam(this.croppedImages);
+}
+
+String compareBitmapsIsolate(CompareBitmapsParam param) {
+  // Crop an image in 6 parts horizontally from input (Uint8List in this case).
+  String matchedBitmaps =
+      compareImageBytes(imagesBytesList: param.croppedImages);
+  return matchedBitmaps;
+}
 
 List<Uint8List> splitImage(List<int> input) {
   // convert image to image from image package
@@ -67,7 +92,7 @@ extension AsUint8List on List<int> {
 }
 
 /// Comparing all 6 parts of image with every bitmap to get most accurate character
-List<String> compareImageBytes({required List<Uint8List> imagesBytesList}) {
+String compareImageBytes({required List<Uint8List> imagesBytesList}) {
   List<String> charactersMatched = [];
   for (int i = 0; i < imagesBytesList.length; i++) {
     List<double> charMatchTracker = [];
@@ -99,11 +124,18 @@ List<String> compareImageBytes({required List<Uint8List> imagesBytesList}) {
     charactersMatched.add(mostProbableChar);
   }
   // print(charactersMatched);
-  return charactersMatched;
+  return charactersMatched.join("");
 }
 
-String getSolvedCaptcha({required Uint8List imageBytes}) {
-  String solvedCaptcha =
-      compareImageBytes(imagesBytesList: splitImage(imageBytes)).join("");
+Future<String> getSolvedCaptcha({required Uint8List imageBytes}) async {
+  // Get the cropped images from the isolate.
+  List<Uint8List> croppedImages =
+      await compute(cropImageIsolate, CropImageParam(imageBytes));
+
+  // Get the matched bitmaps from the isolate.
+  String matchedBitmaps =
+      await compute(compareBitmapsIsolate, CompareBitmapsParam(croppedImages));
+
+  String solvedCaptcha = matchedBitmaps;
   return solvedCaptcha;
 }
