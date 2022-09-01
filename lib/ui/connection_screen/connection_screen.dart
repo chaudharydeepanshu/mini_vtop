@@ -61,27 +61,23 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                 ref.read(connectionStatusStateProvider);
             if (connectionStatusState.connectionStatus ==
                 ConnectionStatus.connected) {
-
               WidgetsBinding.instance.addPostFrameCallback((_) {
-
                 final UserLoginState readUserLoginStateProviderValue =
-                ref.read(userLoginStateProvider);
+                    ref.read(userLoginStateProvider);
 
-                if(readUserLoginStateProviderValue.userLoggedIn) {
+                if (readUserLoginStateProviderValue.loginStatus ==
+                    LoginStatus.loggedIn) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const Home()),
                   );
-                }else{
+                } else {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const Login()),
                   );
                 }
-
               });
-
-
             }
           });
         }
@@ -109,10 +105,12 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final ConnectionStatus connectionStatus = ref.watch(
-            connectionStatusStateProvider.select((value) => value.connectionStatus));
+            connectionStatusStateProvider
+                .select((value) => value.connectionStatus));
 
         ref.listen<ConnectionStatus>(
-            connectionStatusStateProvider.select((value) => value.connectionStatus),
+            connectionStatusStateProvider
+                .select((value) => value.connectionStatus),
             (ConnectionStatus? previousConnectionStatus,
                 ConnectionStatus newConnectionStatus) {
           if (newConnectionStatus == ConnectionStatus.connecting) {

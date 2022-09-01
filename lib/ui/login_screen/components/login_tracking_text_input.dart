@@ -20,6 +20,7 @@ class TrackingTextInput extends StatefulWidget {
       required this.autocorrect,
       this.enabled,
       required this.readOnly,
+      this.prefixIcon,
       this.preFilledValue})
       : super(key: key);
 
@@ -32,6 +33,7 @@ class TrackingTextInput extends StatefulWidget {
   final bool autocorrect;
   final bool? enabled;
   final bool readOnly;
+  final Widget? prefixIcon;
 
   final CaretMoved? onCaretMoved;
   final TextChanged? onTextChanged;
@@ -114,7 +116,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    return LoginTextFormFields(
+    return CustomTextFormField(
       fieldKey: _fieldKey,
       labelText: widget.labelText,
       controller: _textController,
@@ -123,6 +125,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
       validator: widget.validator,
       inputFormatters: widget.inputFormatters,
       autoValidateMode: widget.autoValidateMode,
+      prefixIcon: widget.prefixIcon,
       suffixIcon: widget.isObscured
           ? IconButton(
               icon: Icon(
@@ -144,17 +147,18 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
   }
 }
 
-class LoginTextFormFields extends StatelessWidget {
-  const LoginTextFormFields({
+class CustomTextFormField extends StatelessWidget {
+  const CustomTextFormField({
     Key? key,
-    required this.fieldKey,
+    this.fieldKey,
     required this.labelText,
     required this.controller,
-    required this.focusNode,
+    this.focusNode,
     required this.helperText,
     required this.validator,
     required this.inputFormatters,
     required this.autoValidateMode,
+    this.prefixIcon,
     required this.suffixIcon,
     required this.isObscured,
     required this.enableSuggestions,
@@ -163,14 +167,15 @@ class LoginTextFormFields extends StatelessWidget {
     required this.readOnly,
   }) : super(key: key);
 
-  final GlobalKey<State<StatefulWidget>> fieldKey;
+  final GlobalKey<State<StatefulWidget>>? fieldKey;
   final String labelText;
   final TextEditingController? controller;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final String? helperText;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
   final AutovalidateMode? autoValidateMode;
+  final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool isObscured;
   final bool enableSuggestions;
@@ -197,12 +202,16 @@ class LoginTextFormFields extends StatelessWidget {
         // isDense: true,
         helperText: helperText,
         // enabledBorder: const UnderlineInputBorder(),
+        prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
       ),
       enabled: enabled,
       readOnly: readOnly,
       obscureText: isObscured,
       // obscuringCharacter: "*",
+      onTap: () {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      },
       enableSuggestions: enableSuggestions,
       autocorrect: autocorrect,
       autovalidateMode: autoValidateMode,

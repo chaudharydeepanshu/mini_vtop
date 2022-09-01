@@ -5,11 +5,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/ui/login_screen/components/control_teddy.dart';
-import 'package:mini_vtop/ui/login_screen/components/tracking_text_input.dart';
+import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../state/providers.dart';
+import '../../state/webview_state.dart';
 import '../home_screen/home_screen.dart';
+import 'components/forgot_user_id_screen.dart';
 import 'components/upper_case_text_formatter.dart';
 
 class Login extends StatelessWidget {
@@ -18,7 +20,10 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text("VTOP Login"),
@@ -82,7 +87,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
           // ),
           const Icon(
             Icons.school,
-            size: 200,
+            size: 150,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -101,6 +106,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
                   value: autoLogin,
                   title: const Text("Enable Auto login?"),
                   onChanged: (bool? value) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     setState(() {
                       autoLogin = value ?? false;
                     });
@@ -146,13 +152,23 @@ class LoginButton extends StatelessWidget {
         Expanded(
           child: Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              bool processingLogin = ref.watch(userLoginStateProvider
-                  .select((value) => value.processingLogin));
+              // Keeping track of captcha loading to disable enable button
+              bool captchaLoading = true;
+              Uint8List? captchaImageBytes = ref.watch(
+                  userLoginStateProvider.select((value) => value.captchaImage));
+              if (captchaImageBytes != null && captchaImageBytes.isNotEmpty) {
+                captchaLoading = false;
+              } else {
+                captchaLoading = true;
+              }
+
+              LoginStatus loginStatus = ref.watch(
+                  userLoginStateProvider.select((value) => value.loginStatus));
 
               ref.listen(
-                  userLoginStateProvider.select((value) => value.userLoggedIn),
+                  userLoginStateProvider.select((value) => value.loginStatus),
                   (previous, next) {
-                if (previous == false && next == true) {
+                if (next == LoginStatus.loggedIn) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.pushReplacement(
                       context,
@@ -160,15 +176,15 @@ class LoginButton extends StatelessWidget {
                     );
                   });
                 }
-                ref
-                    .read(userLoginStateProvider)
-                    .updateLoginProgress(loginProgress: false);
-              });
+                if (previous != next) {
+                  final LoginStatus loginStatus =
+                      ref.read(userLoginStateProvider).loginStatus;
 
-              ref.listen(
-                  userLoginStateProvider.select(
-                      (value) => value.processingLogin), (previous, next) {
-                processingLogin = next;
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      loginSnackBar(status: loginStatus, context: context));
+                }
               });
 
               return ElevatedButton(
@@ -176,25 +192,26 @@ class LoginButton extends StatelessWidget {
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    controlTeddy.submitPassword();
+                onPressed: !captchaLoading
+                    ? () {
+                        if (formKey.currentState!.validate()) {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          controlTeddy.submitPassword();
 
-                    ref
-                        .read(userLoginStateProvider)
-                        .updateLoginProgress(loginProgress: true);
+                          ref.read(userLoginStateProvider).updateLoginStatus(
+                              loginStatus: LoginStatus.processing);
 
-                    final VTOPActions readVTOPActionsProviderValue =
-                        ref.read(vtopActionsProvider);
+                          final VTOPActions readVTOPActionsProviderValue =
+                              ref.read(vtopActionsProvider);
 
-                    readVTOPActionsProviderValue.performSignIn(
-                        context: context);
-                  }
-                },
+                          readVTOPActionsProviderValue.performSignIn(
+                              context: context);
+                        }
+                      }
+                    : null,
                 child: Center(
-                  child: !processingLogin
-                      ? Text('Login')
+                  child: loginStatus != LoginStatus.processing
+                      ? const Text('Login')
                       : SpinKitThreeBounce(
                           color: Theme.of(context).colorScheme.onPrimary,
                           size: 24,
@@ -208,6 +225,95 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+
+SnackBar loginSnackBar(
+        {required LoginStatus status, required BuildContext context}) =>
+    SnackBar(
+      content: status == LoginStatus.wrongCaptcha
+          ? Text(
+              '🤯 Captcha was invalid! Please try again.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
+            )
+          : status == LoginStatus.wrongPassword
+              ? Text(
+                  '🤯 Password was wrong! Please try again.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
+                )
+              : status == LoginStatus.wrongUserId
+                  ? Text(
+                      '🤯 User Id was wrong! Please try again.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer,
+                          ),
+                    )
+                  : status == LoginStatus.maxAttemptsError
+                      ? Text(
+                          '⚠️Max fail attempts reached! Please use forget password.',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onErrorContainer,
+                                  ),
+                        )
+                      : status == LoginStatus.unknownError
+                          ? Text(
+                              '⚠️Unknown error! Please try again latter or use official VTOP for now.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onErrorContainer,
+                                  ),
+                            )
+                          : status == LoginStatus.loggedIn
+                              ? const Text('😀 Successfully logged in!')
+                              : status == LoginStatus.processing
+                                  ? const Text(
+                                      '🤔 Processing login! Please wait.')
+                                  : const Text('🤔🤔🤔'),
+      backgroundColor: status == LoginStatus.wrongCaptcha
+          ? Theme.of(context).colorScheme.errorContainer
+          : status == LoginStatus.wrongPassword
+              ? Theme.of(context).colorScheme.errorContainer
+              : status == LoginStatus.wrongUserId
+                  ? Theme.of(context).colorScheme.errorContainer
+                  : status == LoginStatus.maxAttemptsError
+                      ? Theme.of(context).colorScheme.errorContainer
+                      : status == LoginStatus.unknownError
+                          ? Theme.of(context).colorScheme.errorContainer
+                          : status == LoginStatus.loggedIn
+                              ? null
+                              : status == LoginStatus.processing
+                                  ? null
+                                  : null,
+      duration: status == LoginStatus.wrongCaptcha
+          ? const Duration(days: 365)
+          : status == LoginStatus.wrongPassword
+              ? const Duration(days: 365)
+              : status == LoginStatus.wrongUserId
+                  ? const Duration(days: 365)
+                  : status == LoginStatus.maxAttemptsError
+                      ? const Duration(days: 365)
+                      : status == LoginStatus.unknownError
+                          ? const Duration(days: 365)
+                          : status == LoginStatus.loggedIn
+                              ? const Duration(seconds: 4)
+                              : status == LoginStatus.processing
+                                  ? const Duration(seconds: 4)
+                                  : const Duration(seconds: 4),
+      action: SnackBarAction(
+        label: 'Ok',
+        onPressed: () {},
+      ),
+    );
 
 class LoginFields extends StatelessWidget {
   const LoginFields(
@@ -232,15 +338,16 @@ class LoginFields extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TrackingTextInput(
+                    prefixIcon: const Icon(Icons.badge),
                     helperText: 'Ex:- 20BCEXXXXX',
-                    labelText: 'Username / Registration No.',
+                    labelText: 'UserID',
                     inputFormatters: [
                       UpperCaseTextFormatter(),
                       FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
                     ],
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter registration no.';
+                        return 'Please enter UserID';
                       }
                       return null;
                     },
@@ -257,12 +364,27 @@ class LoginFields extends StatelessWidget {
                           caret: globalCaretPosition);
                     },
                     onTextChanged: (String value) {
-                      ref
-                          .read(userLoginStateProvider)
-                          .setRegistrationNumber(registrationNumber: value);
+                      ref.read(userLoginStateProvider).setUserID(userID: value);
                       // print(value);
                     },
                   );
+                },
+              ),
+              ForgotDetailButtons(
+                label: "Forgot UserID?",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ForgotUserID(),
+                    ),
+                  ).then((value) {
+                    final HeadlessWebView readHeadlessWebViewProviderValue =
+                        ref.read(headlessWebViewProvider);
+                    readHeadlessWebViewProviderValue
+                        .settingSomeVarsBeforeWebViewRestart();
+                    readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+                  });
                 },
               ),
               const SizedBox(
@@ -271,6 +393,7 @@ class LoginFields extends StatelessWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return TrackingTextInput(
+                    prefixIcon: const Icon(Icons.password),
                     helperText: 'Ex:- password123',
                     labelText: 'VTOP Password',
                     inputFormatters: [],
@@ -302,6 +425,10 @@ class LoginFields extends StatelessWidget {
                   );
                 },
               ),
+              ForgotDetailButtons(
+                label: "Forgot Password?",
+                onPressed: () {},
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -310,6 +437,7 @@ class LoginFields extends StatelessWidget {
                 height: 10,
               ),
               TrackingTextInput(
+                prefixIcon: const Icon(Icons.smart_toy),
                 helperText: '🤖🤖🤖',
                 labelText: 'Captcha',
                 inputFormatters: [
@@ -347,6 +475,49 @@ class LoginFields extends StatelessWidget {
   }
 }
 
+class ForgotDetailButtons extends StatelessWidget {
+  const ForgotDetailButtons({Key? key, this.onPressed, required this.label})
+      : super(key: key);
+
+  final void Function()? onPressed;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        // Keeping track of captcha loading to disable enable button
+        bool captchaLoading = true;
+        Uint8List? captchaImageBytes = ref.watch(
+            userLoginStateProvider.select((value) => value.captchaImage));
+        if (captchaImageBytes != null && captchaImageBytes.isNotEmpty) {
+          captchaLoading = false;
+        } else {
+          captchaLoading = true;
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                // minimumSize: Size(0, 0),
+              ),
+              onPressed: !captchaLoading ? onPressed : null,
+              child: Text(label),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class CaptchaSection extends StatelessWidget {
   const CaptchaSection({Key? key}) : super(key: key);
 
@@ -354,31 +525,54 @@ class CaptchaSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const CaptchaImage(),
-        const SizedBox(
+      children: const [
+        CaptchaImage(),
+        SizedBox(
           width: 10,
         ),
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-            return IconButton(
-                onPressed: () {
-                  final UserLoginState readUserLoginStateProviderValue =
-                      ref.read(userLoginStateProvider);
-
-                  readUserLoginStateProviderValue.updateCaptchaImage(
-                      bytes: Uint8List.fromList([]));
-
-                  final VTOPActions readVTOPActionsProviderValue =
-                      ref.read(vtopActionsProvider);
-
-                  readVTOPActionsProviderValue.performCaptchaRefresh(
-                      context: context);
-                },
-                icon: const Icon(Icons.refresh));
-          },
-        ),
+        CaptchaIconButton(),
       ],
+    );
+  }
+}
+
+class CaptchaIconButton extends StatelessWidget {
+  const CaptchaIconButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        // Keeping track of captcha loading to disable enable button
+        bool captchaLoading = true;
+        Uint8List? captchaImageBytes = ref.watch(
+            userLoginStateProvider.select((value) => value.captchaImage));
+        if (captchaImageBytes != null && captchaImageBytes.isNotEmpty) {
+          captchaLoading = false;
+        } else {
+          captchaLoading = true;
+        }
+
+        return IconButton(
+            onPressed: !captchaLoading
+                ? () {
+                    final UserLoginState readUserLoginStateProviderValue =
+                        ref.read(userLoginStateProvider);
+
+                    readUserLoginStateProviderValue.updateCaptchaImage(
+                        bytes: Uint8List.fromList([]));
+
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+
+                    readVTOPActionsProviderValue.performCaptchaRefresh(
+                        context: context);
+
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  }
+                : null,
+            icon: const Icon(Icons.refresh));
+      },
     );
   }
 }
@@ -392,7 +586,7 @@ class CaptchaImage extends StatelessWidget {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         Image? image;
 
-        bool imageLoading = true;
+        bool captchaLoading = true;
 
         Uint8List? captchaImageBytes = ref.watch(
             userLoginStateProvider.select((value) => value.captchaImage));
@@ -403,11 +597,9 @@ class CaptchaImage extends StatelessWidget {
             fit: BoxFit.cover,
           );
 
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            imageLoading = false;
-          });
+          captchaLoading = false;
         } else {
-          imageLoading = true;
+          captchaLoading = true;
         }
 
         return Container(
@@ -422,7 +614,7 @@ class CaptchaImage extends StatelessWidget {
               Shimmer.fromColors(
                 baseColor: Theme.of(context).colorScheme.surfaceVariant,
                 highlightColor: Theme.of(context).colorScheme.primary,
-                enabled: imageLoading,
+                enabled: captchaLoading,
                 child: Container(
                   color: Theme.of(context).colorScheme.surfaceVariant,
                 ),

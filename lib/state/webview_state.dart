@@ -46,6 +46,25 @@ class HeadlessWebView extends ChangeNotifier {
     super.dispose();
   }
 
+  settingSomeVarsBeforeWebViewRestart({
+    LoginStatus? loginStatus,
+    ConnectionStatus? connectionStatus,
+    ForgotUserIDSearchStatus? forgotUserIDSearchStatus,
+    ForgotUserIDValidateStatus? forgotUserIDValidateStatus,
+  }) {
+    readConnectionStatusStateProviderValue.update(
+        newStatus: connectionStatus ?? ConnectionStatus.connecting);
+    readUserLoginStateProviderValue.updateLoginStatus(
+        loginStatus: loginStatus ?? LoginStatus.loggedOut);
+    readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
+        status:
+            forgotUserIDSearchStatus ?? ForgotUserIDSearchStatus.notSearching);
+    readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
+        status: forgotUserIDValidateStatus ??
+            ForgotUserIDValidateStatus.notProcessing);
+    readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
+  }
+
   resetControlVars() {
     _noOfHomePageBuilds = 0;
     _noOfAjaxRequests = 0;
@@ -56,6 +75,7 @@ class HeadlessWebView extends ChangeNotifier {
         crossPlatform: InAppWebViewOptions(
           useShouldOverrideUrlLoading: true,
           useShouldInterceptAjaxRequest: true,
+          useShouldInterceptFetchRequest: true,
         ),
         android: AndroidInAppWebViewOptions(
             // useHybridComposition: true,
@@ -83,10 +103,10 @@ class HeadlessWebView extends ChangeNotifier {
       },
       onAjaxProgress:
           (InAppWebViewController controller, AjaxRequest ajaxRequest) async {
+        // print(ajaxRequest.url.toString());
         if (ajaxRequest.readyState == AjaxRequestReadyState.DONE &&
             !(await controller.isLoading())) {
           if (ajaxRequest.url.toString() == "vtopLogin") {
-            print("vtopLogin");
             _vtopLoginAjaxRequest(ajaxRequest: ajaxRequest);
           } else if (ajaxRequest.url.toString() == "doRefreshCaptcha") {
             _doRefreshCaptchaAjaxRequest(ajaxRequest: ajaxRequest);
@@ -98,9 +118,23 @@ class HeadlessWebView extends ChangeNotifier {
           } else if (ajaxRequest.url.toString() ==
               "examinations/examGradeView/StudentGradeHistory") {
             _vtopStudentGradeHistoryAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() == "forgotUserID") {
+            _vtopForgotUserIDAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() ==
+              "vtop/forgotUserID/validate") {
+            _vtopForgotUserIDSearchAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() == "forgotLoginID") {
+            _vtopForgotUserIDValidateAjaxRequest(ajaxRequest: ajaxRequest);
+          } else {
+            print("ajaxRequest.url:- ${ajaxRequest.url.toString()}");
           }
         }
         return AjaxRequestAction.PROCEED;
+      },
+      shouldInterceptFetchRequest:
+          (InAppWebViewController controller, FetchRequest fetchRequest) async {
+        print(fetchRequest);
+        return fetchRequest;
       },
       onLoadStart: (InAppWebViewController controller, Uri? url) async {
         print('onLoadStart $url');
@@ -117,8 +151,155 @@ class HeadlessWebView extends ChangeNotifier {
   }
 
   runHeadlessInAppWebView() async {
-    await headlessWebView.dispose();
+    resetControlVars();
+    try {
+      await headlessWebView.dispose();
+    } on Exception catch (exception) {
+      log(exception.toString());
+    } catch (error) {
+      log(error.toString());
+    }
     await headlessWebView.run();
+  }
+
+  _vtopForgotUserIDValidateAjaxRequest(
+      {required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          await headlessWebView.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then((value) {
+            Document document = parse('$value');
+            if (value.contains("Login ID is :")) {
+              log("User ID found.");
+              readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
+                  status: VTOPPageStatus.loaded);
+              readUserLoginStateProviderValue.setUserIDFromForgotUserIDValidate(
+                  forgotUserIDValidateDocument: document);
+              readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
+                  status: ForgotUserIDValidateStatus.successful);
+            } else if (value.contains("Invalid OTP. Please try again.")) {
+              log("OTP is invalid.");
+              readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
+                  status: VTOPPageStatus.loaded);
+              readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
+                  status: ForgotUserIDValidateStatus.invalidOTP);
+            } else if (value.contains("You are not authorized")) {
+              log("You are not authorized.");
+              readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
+                  status: VTOPPageStatus.error);
+              readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
+                  status: ForgotUserIDValidateStatus.unknownError);
+            } else {
+              log("Unknown error");
+              log(value.toString());
+              readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
+                  status: VTOPPageStatus.error);
+              settingSomeVarsBeforeWebViewRestart(
+                  forgotUserIDValidateStatus:
+                      ForgotUserIDValidateStatus.unknownError);
+              runHeadlessInAppWebView();
+            }
+          });
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateForgotUserIDValidatePageStatus(
+              status: VTOPPageStatus.sessionTimeout);
+          settingSomeVarsBeforeWebViewRestart(
+              forgotUserIDValidateStatus:
+                  ForgotUserIDValidateStatus.sessionTimedOut);
+          runHeadlessInAppWebView();
+        });
+  }
+
+  _vtopForgotUserIDSearchAjaxRequest({required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          await headlessWebView.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then((value) {
+            Document document = parse('$value');
+            // log(value);
+
+            if (value.contains(
+                "New OTP can be generated 10 minutes after last successful OTP was triggred")) {
+              log("OTP is sent to email successfully");
+              readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
+                  status: VTOPPageStatus.loaded);
+              readUserLoginStateProviderValue.setOTPTriggerWait(
+                  forgotUserIDSearchDocument: document);
+              readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
+                  status: ForgotUserIDSearchStatus.otpTriggerWait);
+            } else if (value.contains("OTP has been sent to your email")) {
+              log("OTP is sent to email successfully");
+              readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
+                  status: VTOPPageStatus.loaded);
+              readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
+                  status: ForgotUserIDSearchStatus.found);
+            } else if (value.contains("Invalid User id")) {
+              log("User id is invalid");
+              readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
+                  status: VTOPPageStatus.loaded);
+              readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
+                  status: ForgotUserIDSearchStatus.notFound);
+            } else {
+              log("Unknown error");
+              // log(value.toString());
+              readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
+                  status: VTOPPageStatus.error);
+              settingSomeVarsBeforeWebViewRestart(
+                  forgotUserIDSearchStatus:
+                      ForgotUserIDSearchStatus.unknownError);
+              runHeadlessInAppWebView();
+            }
+          });
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateForgotUserIDSearchPageStatus(
+              status: VTOPPageStatus.sessionTimeout);
+          settingSomeVarsBeforeWebViewRestart(
+              forgotUserIDSearchStatus:
+                  ForgotUserIDSearchStatus.sessionTimedOut);
+          runHeadlessInAppWebView();
+        });
+  }
+
+  _vtopForgotUserIDAjaxRequest({required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          await headlessWebView.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then((value) {
+            // Document document = parse('$value');
+            // log(value);
+            if (value.contains("V-TOP Forgot UserID")) {
+              log("Forgot UserID page loaded successfully");
+              readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
+                  status: VTOPPageStatus.loaded);
+            } else {
+              log("Unknown error");
+              readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
+                  status: VTOPPageStatus.error);
+              settingSomeVarsBeforeWebViewRestart();
+              runHeadlessInAppWebView();
+            }
+          });
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
+              status: VTOPPageStatus.sessionTimeout);
+          settingSomeVarsBeforeWebViewRestart();
+          runHeadlessInAppWebView();
+        });
   }
 
   _doRefreshCaptchaAjaxRequest({required AjaxRequest ajaxRequest}) {
@@ -190,150 +371,60 @@ class HeadlessWebView extends ChangeNotifier {
   }
 
   _vtopDoLoginAjaxRequest({required AjaxRequest ajaxRequest}) async {
-// print("ajaxRequest: ${ajaxRequest}");
-    await headlessWebView.webViewController
-        .evaluateJavascript(
-            source: "new XMLSerializer().serializeToString(document);")
-        .then((value) async {
-      if (ajaxRequest.status == 200) {
-        if (value.contains(
-            readUserLoginStateProviderValue.registrationNumber + "(STUDENT)")) {
-          print(
-              "User ${readUserLoginStateProviderValue.registrationNumber} successfully signed in");
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          await headlessWebView.webViewController
+              .evaluateJavascript(
+                  source: "new XMLSerializer().serializeToString(document);")
+              .then((value) {
+            // Document document = parse('$value');
 
-          readUserLoginStateProviderValue.updateLoginStatus(loginStatus: true);
+            if (value.contains(
+                "${readUserLoginStateProviderValue.userID}(STUDENT)")) {
+              log("User Id ${readUserLoginStateProviderValue.userID} logged in.");
 
-//        _saveUnamePasswd();
-//           sessionDateTime = await NTP.now().then((value) {
-//             _saveSessionDateTime();
-//             debugPrint(
-//                 'NTP DateTime: $sessionDateTime, DateTime: ${DateTime.now().toString()}');
-//
-//             manageUserSession(
-//               context: context,
-//               headlessWebView: headlessWebView,
-//               onCurrentFullUrl: (String value) {
-//                 setState(() {
-//                   currentFullUrl = value;
-//                 });
-//               },
-//               onProcessingSomething: (bool value) {
-//                 setState(() {
-//                   processingSomething = value;
-//                 });
-//               },
-//               onRequestType: (String value) {
-//                 setState(() {
-//                   requestType = value;
-//                 });
-//               },
-//               onError: (String value) {
-//                 debugPrint("Updating Ui based on the error received");
-//                 if (processingSomething == true) {
-//                   Navigator.of(context).pop();
-//                   processingSomething = false;
-//                 }
-//                 if (value == "net::ERR_INTERNET_DISCONNECTED") {
-//                   debugPrint("Updating Ui for net::ERR_INTERNET_DISCONNECTED");
-//                   setState(() {
-//                     currentStatus = "launchLoadingScreen";
-//                     vtopConnectionStatusErrorType =
-//                         "net::ERR_INTERNET_DISCONNECTED";
-//                     vtopConnectionStatusType = "Error";
-//                   });
-//                 }
-//               },
-//             );
-//             openStudentProfileAllView(forXAction: 'New login');
-// // Actually we are using openStudentProfileAllView() to get profile document
-// // and then setting the currentStatus = "userLoggedIn" in the studentsRecord/StudentProfileAllView ajax request.
-//
-//             setState(() {
-//               studentPortalDocument = parse('${ajaxRequest.responseText}');
-//             });
-//             return value;
-//           });
-        } else if (value.contains("User Id Not available")) {
-          print("User Id Not available");
-// User Id Not available WHEN ENTERING WRONG USER ID
-// processingSomething = false;
-// We commented the statement because we put this inside the onloadstop.
-// We know that processing is already validated but we still want to show the dialog until user sees the updated login page
-//           vtopLoginErrorType = "User Id Not available";
-//           runHeadlessInAppWebView(
-//             headlessWebView: headlessWebView,
-//             onCurrentFullUrl: (String value) {
-//               setState(() {
-//                 currentFullUrl = value;
-//               });
-//             },
-//           );
-        } else if (value.contains("Invalid User Id / Password")) {
-          print("Most probably invalid password");
-//Invalid User Id / Password WHEN ENTERING CORRECT ID BUT WRONG PASSWORD
-//           vtopLoginErrorType = "Most probably invalid password";
-//           runHeadlessInAppWebView(
-//             headlessWebView: headlessWebView,
-//             onCurrentFullUrl: (String value) {
-//               setState(() {
-//                 currentFullUrl = value;
-//               });
-//             },
-//           );
-        } else if (value.contains("Invalid Captcha")) {
-          print("Invalid Captcha");
-//Invalid Captcha WHEN ENTERING WRONG CAPTCHA
-//           vtopLoginErrorType = "Invalid Captcha";
-//           runHeadlessInAppWebView(
-//             headlessWebView: headlessWebView,
-//             onCurrentFullUrl: (String value) {
-//               setState(() {
-//                 currentFullUrl = value;
-//               });
-//             },
-//           );
-        } else if (value.contains(
-                "You are logged out due to inactivity for more than 15 minutes") ||
-            ajaxRequest.responseText!
-                .contains("You have been successfully logged out")) {
-          print("Most probably session expired due to inactivity");
-//Invalid User Id / Password WHEN ENTERING CORRECT ID BUT WRONG PASSWORD
-//           vtopLoginErrorType = "Session expired due to inactivity";
-//           runHeadlessInAppWebView(
-//             headlessWebView: headlessWebView,
-//             onCurrentFullUrl: (String value) {
-//               setState(() {
-//                 currentFullUrl = value;
-//               });
-//             },
-//           );
-        } else {
-          print(
-              "Can't find why something got wrong enable print ajaxRequest for doLogin and see the logs");
-          // printWrapped("ajaxRequest: $ajaxRequest");
-          // vtopLoginErrorType = "Something is wrong! Please retry.";
-          // runHeadlessInAppWebView(
-          //   headlessWebView: headlessWebView,
-          //   onCurrentFullUrl: (String value) {
-          //     setState(() {
-          //       currentFullUrl = value;
-          //     });
-          //   },
-          // );
-        }
-      } else if (ajaxRequest.responseText!.contains(
-              "You are logged out due to inactivity for more than 15 minutes") ||
-          ajaxRequest.responseText!
-              .contains("You have been successfully logged out")) {
-        // inActivityOrStatusNot200Response(
-        //     dialogTitle: 'Session ended',
-        //     dialogChildrenText: 'Starting new session\nplease wait...');
-      } else if (ajaxRequest.status != 200) {
-        // inActivityOrStatusNot200Response(
-        //     dialogTitle: 'Request Status != 200',
-        //     dialogChildrenText: 'Starting new session\nplease wait...');
-      }
-    });
+              readUserLoginStateProviderValue.updateLoginStatus(
+                  loginStatus: LoginStatus.loggedIn);
+            } else if (value.contains("User Id Not available")) {
+              log("User Id ${readUserLoginStateProviderValue.userID} is not available.");
+
+              settingSomeVarsBeforeWebViewRestart(
+                  loginStatus: LoginStatus.wrongUserId);
+              runHeadlessInAppWebView();
+            } else if (value.contains("Invalid User Id / Password")) {
+              log("Password ${readUserLoginStateProviderValue.password} is wrong.");
+
+              settingSomeVarsBeforeWebViewRestart(
+                  loginStatus: LoginStatus.wrongPassword);
+              runHeadlessInAppWebView();
+            } else if (value.contains("Invalid Captcha")) {
+              log("Captcha is invalid.");
+
+              settingSomeVarsBeforeWebViewRestart(
+                  loginStatus: LoginStatus.wrongCaptcha);
+              runHeadlessInAppWebView();
+            } else if (value.contains(
+                "Number of Maximum Fail Attempts Reached. use Forgot Password")) {
+              log("Maximum Fail Attempts Reached. use Forgot Password");
+
+              settingSomeVarsBeforeWebViewRestart(
+                  loginStatus: LoginStatus.maxAttemptsError);
+              runHeadlessInAppWebView();
+            } else {
+              log("Unknown error.");
+              settingSomeVarsBeforeWebViewRestart(
+                  loginStatus: LoginStatus.unknownError);
+              runHeadlessInAppWebView();
+            }
+          });
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          settingSomeVarsBeforeWebViewRestart(
+              loginStatus: LoginStatus.sessionTimedOut);
+          runHeadlessInAppWebView();
+        });
   }
 
   _vtopStudentProfileAllViewAjaxRequest(
@@ -394,11 +485,9 @@ class HeadlessWebView extends ChangeNotifier {
 
   _vtopStudentGradeHistoryAjaxRequest(
       {required AjaxRequest ajaxRequest}) async {
-    // _credentialsFound();
-    // setState(() {
-    //   vtopConnectionStatusType = "Connected";
-    // });
+    log("ajaxRequest.status: ${ajaxRequest.status}");
     if (ajaxRequest.status == 200) {
+      /// ajaxRequest.status == 200 means a successful operation without any issues.
       await headlessWebView.webViewController
           .evaluateJavascript(
               source: "new XMLSerializer().serializeToString(document);")
@@ -434,17 +523,19 @@ class HeadlessWebView extends ChangeNotifier {
         // processingSomething = false;
         // });
       });
-    } else if (ajaxRequest.responseText!.contains(
-            "You are logged out due to inactivity for more than 15 minutes") ||
-        ajaxRequest.responseText!
-            .contains("You have been successfully logged out")) {
-      // inActivityOrStatusNot200Response(
-      //     dialogTitle: 'Session ended',
-      //     dialogChildrenText: 'Starting new session\nplease wait...');
-    } else if (ajaxRequest.status != 200) {
-      // inActivityOrStatusNot200Response(
-      //     dialogTitle: 'Request Status != 200',
-      //     dialogChildrenText: 'Starting new session\nplease wait...');
+    } else if (ajaxRequest.status == 231) {
+      /// ajaxRequest.status == 231 loads the homepage for VTOP. Homepage not login page.
+      /// If user logged in then logged in homepage for VTOP is loaded.
+    } else if (ajaxRequest.status == 232) {
+      /// ajaxRequest.status == 232 means the Session Timed out.
+      /// The ajaxRequest.responseText should contain "You are logged out due to inactivity for more than 15 minutes"
+      /// ajaxRequest.responseText!.contains("You are logged out due to inactivity for more than 15 minutes") should be true.
+    } else if (ajaxRequest.status == 233) {
+      /// ajaxRequest.status == 233 executes same operation as ajaxRequest.status == 200.
+      /// But is still an error request.
+      /// Todo: Find the situation in which this status is encountered and then handle that suitably.
+    } else {
+      /// Any other ajaxRequest.status executes same operation as ajaxRequest.status == 200.
     }
   }
 
@@ -589,7 +680,7 @@ class HeadlessWebView extends ChangeNotifier {
                 newStatus: ConnectionStatus.connected);
 
             readUserLoginStateProviderValue.updateLoginStatus(
-                loginStatus: true);
+                loginStatus: LoginStatus.loggedIn);
 
             // openStudentProfileAllView(forXAction: 'Logged in');
             //
@@ -597,6 +688,40 @@ class HeadlessWebView extends ChangeNotifier {
           }
         }
       });
+    }
+  }
+
+  _ajaxRequestCommonHandler(
+      {required AjaxRequest ajaxRequest,
+      required Function() ajaxRequestStatus200Action,
+      required Function() ajaxRequestStatus232Action}) async {
+    if (ajaxRequest.status == 200) {
+      /// ajaxRequest.status == 200 means a successful operation without any issues.
+
+      log("ajaxRequest.status: 200 encountered");
+      ajaxRequestStatus200Action();
+    } else if (ajaxRequest.status == 231) {
+      /// ajaxRequest.status == 231 loads the homepage for VTOP. Homepage not login page.
+      /// If user logged in then logged in homepage for VTOP is loaded.
+
+      log("ajaxRequest.status: 231 encountered");
+    } else if (ajaxRequest.status == 232) {
+      /// ajaxRequest.status == 232 means the Session Timed out.
+      /// The ajaxRequest.responseText should contain "You are logged out due to inactivity for more than 15 minutes"
+      /// ajaxRequest.responseText!.contains("You are logged out due to inactivity for more than 15 minutes") should be true.
+
+      log("ajaxRequest.status: 232 encountered");
+      ajaxRequestStatus232Action();
+    } else if (ajaxRequest.status == 233) {
+      /// ajaxRequest.status == 233 executes same operation as ajaxRequest.status == 200.
+      /// But is still an error request.
+      /// Todo: Find the situation in which this status is encountered and then handle that suitably.
+
+      log("ajaxRequest.status: 233 encountered");
+    } else {
+      /// Any other ajaxRequest.status executes same operation as ajaxRequest.status == 200.
+
+      log("ajaxRequest.status: ${ajaxRequest.status} encountered");
     }
   }
 }

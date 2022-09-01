@@ -97,20 +97,17 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                 ),
               ],
             ),
-            OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const QuickGlance(),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Icon(Icons.arrow_forward),
-                    Text("Quick Glance"),
-                  ],
-                )),
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const QuickGlance(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text("Quick Glance"),
+            ),
           ],
         ),
       ),

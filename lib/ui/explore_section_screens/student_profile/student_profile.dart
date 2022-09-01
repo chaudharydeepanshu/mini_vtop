@@ -36,87 +36,98 @@ class _StudentProfileState extends ConsumerState<StudentProfile> {
         title: const Text("Student Profile"),
         centerTitle: true,
       ),
-      body: ListView(
-        children: [
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              final VTOPPageStatus studentProfilePageStatus = ref.watch(
-                  vtopActionsProvider
-                      .select((value) => value.studentProfilePageStatus));
+      body: RefreshIndicator(
+        child: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final VTOPPageStatus studentProfilePageStatus = ref.watch(
+                vtopActionsProvider
+                    .select((value) => value.studentProfilePageStatus));
 
-              final VTOPData vtopData = ref.watch(vtopDataProvider);
+            final VTOPData vtopData = ref.watch(vtopDataProvider);
 
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                ),
-                child: studentProfilePageStatus == VTOPPageStatus.loaded
-                    ? Column(
-                        children: [
-                          DetailLine(
-                            parameter1: 'Name',
-                            parameter2: vtopData.studentProfile.name,
+            return studentProfilePageStatus == VTOPPageStatus.loaded
+                ? ListView(
+                    children: [
+                      Card(
+                          clipBehavior: Clip.antiAlias,
+                          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
                           ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'DOB',
-                            parameter2: vtopData.studentProfile.dob,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'Blood Group',
-                            parameter2: vtopData.studentProfile.bloodGroup,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'Roll No.',
-                            parameter2: vtopData.studentProfile.rollNo,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'Application No.',
-                            parameter2: vtopData.studentProfile.applicationNo,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'Program',
-                            parameter2: vtopData.studentProfile.program,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'Branch',
-                            parameter2: vtopData.studentProfile.branch,
-                          ),
-                          Divider(),
-                          DetailLine(
-                            parameter1: 'School',
-                            parameter2: vtopData.studentProfile.school,
-                          ),
-                        ],
+                          child: Column(
+                            children: [
+                              DetailLine(
+                                parameter1: 'Name',
+                                parameter2: vtopData.studentProfile.name,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'DOB',
+                                parameter2: vtopData.studentProfile.dob,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'Blood Group',
+                                parameter2: vtopData.studentProfile.bloodGroup,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'Roll No.',
+                                parameter2: vtopData.studentProfile.rollNo,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'Application No.',
+                                parameter2:
+                                    vtopData.studentProfile.applicationNo,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'Program',
+                                parameter2: vtopData.studentProfile.program,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'Branch',
+                                parameter2: vtopData.studentProfile.branch,
+                              ),
+                              Divider(),
+                              DetailLine(
+                                parameter1: 'School',
+                                parameter2: vtopData.studentProfile.school,
+                              ),
+                            ],
+                          )),
+                    ],
+                  )
+                : studentProfilePageStatus == VTOPPageStatus.processing
+                    ? Center(
+                        child: SpinKitThreeBounce(
+                          size: 24,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       )
-                    : studentProfilePageStatus == VTOPPageStatus.processing
-                        ? Center(
-                            child: SpinKitThreeBounce(
-                              size: 24,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "Error",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-              );
-            },
-          ),
-        ],
+                    : Center(
+                        child: Text(
+                          "Error",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      );
+          },
+        ),
+        onRefresh: () async {
+          final VTOPActions readVTOPActionsProviderValue =
+              ref.read(vtopActionsProvider);
+          readVTOPActionsProviderValue.callStudentProfileAllView(
+              context: context);
+          readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+              status: VTOPPageStatus.processing);
+        },
       ),
     );
   }

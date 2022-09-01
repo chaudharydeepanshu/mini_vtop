@@ -87,22 +87,40 @@ class GridViewInCardSection extends StatelessWidget {
                         const Divider(
                           height: 0,
                         ),
-                        InkWell(
-                          onTap: cardShowAllOnTap,
-                          child: SizedBox(
-                            height: 48,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.arrow_forward),
-                                Text(
-                                  "Show All",
-                                  style: Theme.of(context).textTheme.button,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 48),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
-                              ],
+                                onPressed: cardShowAllOnTap,
+                                icon: const Icon(Icons.arrow_forward),
+                                label: const Text("Show All"),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
+                        // InkWell(
+                        //   onTap: cardShowAllOnTap,
+                        //   child: SizedBox(
+                        //     height: 48,
+                        //     child: Row(
+                        //       children: [
+                        //         const Icon(Icons.arrow_forward),
+                        //         Text(
+                        //           "Show All",
+                        //           style: Theme.of(context).textTheme.labelLarge,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     )
                   : const SizedBox(),
@@ -122,23 +140,68 @@ class GridViewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return ElevatedButton(
       clipBehavior: Clip.antiAlias,
-      // margin: EdgeInsets.symmetric(horizontal: 16.0),
-      color: Theme.of(context).colorScheme.surfaceVariant,
-      child: InkWell(
-        onTap: gridCardDetail.cardOnTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            gridCardDetail.cardIcon,
-            const SizedBox(
-              height: 10,
-            ),
-            Text(gridCardDetail.cardTitle),
-          ],
-        ),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+      onPressed: gridCardDetail.cardOnTap,
+      child: Stack(
+        alignment: AlignmentDirectional.topCenter,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                  ),
+                  child: gridCardDetail.cardOnTap == null
+                      ? Text(
+                          "Coming Soon",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.labelSmall,
+                        )
+                      : const SizedBox(),
+                ),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              gridCardDetail.cardIcon,
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                gridCardDetail.cardTitle,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ],
       ),
     );
+    //   Card(
+    //   clipBehavior: Clip.antiAlias,
+    //   // margin: EdgeInsets.symmetric(horizontal: 16.0),
+    //   color: Theme.of(context).colorScheme.surfaceVariant,
+    //   child: InkWell(
+    //     onTap: gridCardDetail.cardOnTap,
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         gridCardDetail.cardIcon,
+    //         const SizedBox(
+    //           height: 10,
+    //         ),
+    //         Text(gridCardDetail.cardTitle),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

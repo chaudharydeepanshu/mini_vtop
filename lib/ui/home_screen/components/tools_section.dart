@@ -43,19 +43,19 @@ class ToolsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<GridCardDetail> toolsCardsDetails = [
       GridCardDetail(
-        cardIcon: const Icon(Icons.account_circle),
+        cardIcon: const Icon(Icons.schedule),
         cardTitle: 'Schedule Generator',
-        cardOnTap: () {},
+        cardOnTap: null,
       ),
       GridCardDetail(
-        cardIcon: const Icon(Icons.school),
+        cardIcon: const Icon(Icons.notifications),
         cardTitle: 'Auto Reminders',
-        cardOnTap: () {},
+        cardOnTap: null,
       ),
       GridCardDetail(
-        cardIcon: const Icon(Icons.badge),
-        cardTitle: 'Share Stuff Instantly',
-        cardOnTap: () {},
+        cardIcon: const Icon(Icons.share),
+        cardTitle: 'Share Stuff',
+        cardOnTap: null,
       ),
     ];
 

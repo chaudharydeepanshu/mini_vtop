@@ -12,7 +12,7 @@ final userLoginStateProvider =
 final headlessWebViewProvider =
     ChangeNotifierProvider((ref) => HeadlessWebView(ref.read)..init());
 
-final connectionStatusStateProvider = ChangeNotifierProvider.autoDispose((ref) {
+final connectionStatusStateProvider = ChangeNotifierProvider((ref) {
   return ConnectionStatusState()..init();
 });
 
