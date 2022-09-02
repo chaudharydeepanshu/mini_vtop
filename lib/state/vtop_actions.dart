@@ -14,6 +14,7 @@ enum VTOPStatus {
   studentLoginPage,
   sessionActive,
   sessionTimedOut,
+  error,
 }
 
 enum VTOPPageStatus { notProcessing, processing, loaded, unknownResponse }
@@ -45,10 +46,6 @@ class VTOPActions extends ChangeNotifier {
 
   late final UserLoginState readUserLoginStateProviderValue =
       read(userLoginStateProvider);
-
-  init() {
-    readHeadlessWebViewProviderValue.resetControlVars();
-  }
 
   void updateVTOPStatus({required VTOPStatus status}) {
     _vtopStatus = status;
@@ -91,7 +88,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -115,7 +112,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -150,7 +147,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -174,7 +171,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -198,7 +195,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -222,7 +219,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -249,7 +246,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
@@ -276,7 +273,7 @@ class VTOPActions extends ChangeNotifier {
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
-        readHeadlessWebViewProviderValue.settingSomeVarsBeforeWebViewRestart();
+        readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },

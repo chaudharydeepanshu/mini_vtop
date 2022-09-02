@@ -296,13 +296,31 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                                   ],
                                 ),
                               )
-                            : Center(
-                                child: Text(
-                                  "Error",
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                              );
+                            : vtopStatus == VTOPStatus.error
+                                ? Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SpinKitThreeBounce(
+                                          size: 24,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                        const Text(
+                                            "Error occurred! Reconnecting.")
+                                      ],
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      "Unknown Status",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  );
               },
             ),
             onRefresh: () async {

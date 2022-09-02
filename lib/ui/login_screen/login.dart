@@ -264,10 +264,6 @@ class LoginButton extends StatelessWidget {
                       next == LoginResponseStatus.loggedOut) {
                     // Only refresh if the above is true otherwise the login wont succeed.
                     // Because when status changes to processing the captcha will get refreshed before login causing failure.
-                    final UserLoginState readUserLoginStateProviderValue =
-                        ref.read(userLoginStateProvider);
-                    readUserLoginStateProviderValue.updateCaptchaImage(
-                        bytes: Uint8List.fromList([]));
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
                     readVTOPActionsProviderValue.performCaptchaRefreshAction(
@@ -450,8 +446,7 @@ class LoginFields extends StatelessWidget {
                   ).then((value) {
                     final HeadlessWebView readHeadlessWebViewProviderValue =
                         ref.read(headlessWebViewProvider);
-                    readHeadlessWebViewProviderValue
-                        .settingSomeVarsBeforeWebViewRestart();
+                    readHeadlessWebViewProviderValue.settingSomeVars();
                     readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
                   });
                 },
@@ -626,12 +621,6 @@ class CaptchaIconButton extends StatelessWidget {
         return IconButton(
             onPressed: !captchaLoading
                 ? () {
-                    final UserLoginState readUserLoginStateProviderValue =
-                        ref.read(userLoginStateProvider);
-
-                    readUserLoginStateProviderValue.updateCaptchaImage(
-                        bytes: Uint8List.fromList([]));
-
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
 

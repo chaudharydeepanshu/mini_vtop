@@ -1,10 +1,6 @@
-import 'dart:isolate';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:image/image.dart' as imglib;
-
-import 'dart:typed_data';
 
 import 'package:mini_vtop/utils/vit_captcha_characters_bitmaps.dart';
 
