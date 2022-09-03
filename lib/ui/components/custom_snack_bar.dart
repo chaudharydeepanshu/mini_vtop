@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-SnackBar? customSnackBar(
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showCustomSnackBar(
     {String? contentText,
     Color? backgroundColor,
     Duration? duration,
     IconData? iconData,
     Color? iconAndTextColor,
     required BuildContext context}) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
   if (contentText != null) {
-    return SnackBar(
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -62,7 +64,7 @@ SnackBar? customSnackBar(
       //   label: 'Ok',
       //   onPressed: () {},
       // ),
-    );
+    ));
   } else {
     return null;
   }

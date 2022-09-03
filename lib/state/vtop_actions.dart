@@ -7,6 +7,9 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 
+import 'connection_state.dart';
+import 'error_state.dart';
+
 enum VTOPStatus {
   noStatus,
   homepage,
@@ -14,10 +17,15 @@ enum VTOPStatus {
   studentLoginPage,
   sessionActive,
   sessionTimedOut,
-  error,
+  // error,
 }
 
-enum VTOPPageStatus { notProcessing, processing, loaded, unknownResponse }
+enum VTOPPageStatus {
+  notProcessing,
+  processing,
+  loaded,
+  // unknownResponse
+}
 
 class VTOPActions extends ChangeNotifier {
   VTOPActions(this.read);
@@ -46,6 +54,12 @@ class VTOPActions extends ChangeNotifier {
 
   late final UserLoginState readUserLoginStateProviderValue =
       read(userLoginStateProvider);
+
+  late final ConnectionStatusState readConnectionStatusStateProviderValue =
+      read(connectionStatusStateProvider);
+
+  late final ErrorStatusState readErrorStatusStateProviderValue =
+      read(errorStatusStateProvider);
 
   void updateVTOPStatus({required VTOPStatus status}) {
     _vtopStatus = status;
@@ -92,6 +106,11 @@ class VTOPActions extends ChangeNotifier {
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
     );
   }
 
@@ -114,6 +133,11 @@ class VTOPActions extends ChangeNotifier {
         _vtopStatus = VTOPStatus.sessionTimedOut;
         readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
     );
@@ -151,6 +175,11 @@ class VTOPActions extends ChangeNotifier {
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
     );
   }
 
@@ -173,6 +202,11 @@ class VTOPActions extends ChangeNotifier {
         _vtopStatus = VTOPStatus.sessionTimedOut;
         readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
     );
@@ -199,6 +233,11 @@ class VTOPActions extends ChangeNotifier {
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
     );
   }
 
@@ -221,6 +260,11 @@ class VTOPActions extends ChangeNotifier {
         _vtopStatus = VTOPStatus.sessionTimedOut;
         readHeadlessWebViewProviderValue.settingSomeVars();
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
     );
@@ -250,6 +294,11 @@ class VTOPActions extends ChangeNotifier {
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
     );
   }
 
@@ -277,6 +326,11 @@ class VTOPActions extends ChangeNotifier {
         readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
         notifyListeners();
       },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
     );
   }
 }
@@ -287,6 +341,7 @@ void _actionHandler({
   required Function() sessionTimeOutAction,
   required Function() performAction,
   required Function() initialAction,
+  required Function() closedConnectionErrorAction,
 }) async {
   // Perform initial action like setting status to processing.
   initialAction();
@@ -299,7 +354,16 @@ void _actionHandler({
             source: "new XMLSerializer().serializeToString(document);")
         .then((value) async {
       if (value != null) {
-        if (value.contains(
+        if (value.contains("Web page not available")) {
+          log('Web page not available.');
+          if (value.contains("net::ERR_CONNECTION_CLOSED")) {
+            log('net::ERR_CONNECTION_CLOSED');
+
+            closedConnectionErrorAction();
+          } else {
+            // connectionErrorAction();
+          }
+        } else if (value.contains(
             "You are logged out due to inactivity for more than 15 minutes")) {
           log('Session timed out.');
 

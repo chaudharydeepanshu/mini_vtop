@@ -2,7 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-enum ConnectionStatus { connecting, connected, error }
+enum ConnectionStatus {
+  connecting,
+  connected,
+  // error
+}
 
 class ConnectionStatusState extends ChangeNotifier {
   late ConnectionStatus _connectionStatus;
@@ -13,8 +17,8 @@ class ConnectionStatusState extends ChangeNotifier {
     notifyListeners();
   }
 
-  update({required ConnectionStatus newStatus}) {
-    _connectionStatus = newStatus;
+  update({required ConnectionStatus status}) {
+    _connectionStatus = status;
     log("Connection Status: $connectionStatus");
     notifyListeners();
   }

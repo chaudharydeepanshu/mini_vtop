@@ -15,6 +15,8 @@ import 'package:mini_vtop/state/vtop_actions.dart';
 
 import 'package:mini_vtop/utils/captcha_parser.dart';
 
+import 'error_state.dart';
+
 class HeadlessWebView extends ChangeNotifier {
   HeadlessWebView(this.read);
 
@@ -38,6 +40,9 @@ class HeadlessWebView extends ChangeNotifier {
 
   late final VTOPActions readVTOPActionsProviderValue =
       read(vtopActionsProvider);
+
+  late final ErrorStatusState readErrorStatusStateProviderValue =
+      read(errorStatusStateProvider);
 
   @override
   void dispose() {
@@ -114,6 +119,20 @@ class HeadlessWebView extends ChangeNotifier {
             redirectFromUrl: url);
         return NavigationActionPolicy.ALLOW;
       },
+      onReceivedServerTrustAuthRequest: (controller, challenge) async {
+        SslError? sslError = challenge.protectionSpace.sslError;
+        // if (sslError != null &&
+        //     (sslError.iosError != null || sslError.androidError != null)) {
+        //   if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
+        //     return ServerTrustAuthResponse(
+        //         action: ServerTrustAuthResponseAction.PROCEED);
+        //   }
+        //   return ServerTrustAuthResponse(
+        //       action: ServerTrustAuthResponseAction.CANCEL);
+        // }
+        return ServerTrustAuthResponse(
+            action: ServerTrustAuthResponseAction.PROCEED);
+      },
       shouldInterceptFetchRequest:
           (InAppWebViewController controller, FetchRequest fetchRequest) async {
         log('shouldInterceptFetchRequest $url');
@@ -131,6 +150,14 @@ class HeadlessWebView extends ChangeNotifier {
         _url = url?.toString() ?? '';
         _onLoadStopAction(url: url);
       },
+      onLoadError: (InAppWebViewController controller, Uri? url, int code,
+          String message) {
+        log("url: $url, errorCode:$code, message:$message");
+      },
+      onLoadHttpError: (InAppWebViewController controller, Uri? url, int code,
+          String message) {
+        log("url: $url, errorCode:$code, message:$message");
+      },
     );
 
     runHeadlessInAppWebView();
@@ -138,11 +165,14 @@ class HeadlessWebView extends ChangeNotifier {
 
   settingSomeVars({
     LoginResponseStatus? loginStatus,
+    VTOPPageStatus? loginPageStatus,
     ForgotUserIDSearchResponseStatus? forgotUserIDSearchStatus,
     ForgotUserIDValidateResponseStatus? forgotUserIDValidateStatus,
   }) {
     readUserLoginStateProviderValue.updateLoginStatus(
         loginStatus: loginStatus ?? LoginResponseStatus.loggedOut);
+    readVTOPActionsProviderValue.updateLoginPageStatus(
+        status: loginPageStatus ?? VTOPPageStatus.notProcessing);
     readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
         status: forgotUserIDSearchStatus ??
             ForgotUserIDSearchResponseStatus.notSearching);
@@ -154,7 +184,7 @@ class HeadlessWebView extends ChangeNotifier {
   settingSomeVarsBeforeWebViewRestart() {
     readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
     readConnectionStatusStateProviderValue.update(
-        newStatus: ConnectionStatus.connecting);
+        status: ConnectionStatus.connecting);
     readVTOPActionsProviderValue.updateVTOPStatus(status: VTOPStatus.noStatus);
   }
 
@@ -201,14 +231,11 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue
                     .updateForgotUserIDValidateStatus(
                         status:
-                            ForgotUserIDValidateResponseStatus.unknownResponse);
+                            ForgotUserIDValidateResponseStatus.notAuthorized);
               } else {
                 log("Unknown response");
-                log(value.toString());
-                settingSomeVars(
-                    forgotUserIDValidateStatus:
-                        ForgotUserIDValidateResponseStatus.unknownResponse);
-                runHeadlessInAppWebView();
+                readErrorStatusStateProviderValue.update(
+                    status: ErrorStatus.vtopUnknownResponsesError);
               }
             });
           } else {
@@ -224,10 +251,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -260,12 +285,9 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
                     status: ForgotUserIDSearchResponseStatus.notFound);
               } else {
-                log("Unknown response");
-                // log(value.toString());
-                settingSomeVars(
-                    forgotUserIDSearchStatus:
-                        ForgotUserIDSearchResponseStatus.unknownResponse);
-                runHeadlessInAppWebView();
+                log("Unknown response error");
+                readErrorStatusStateProviderValue.update(
+                    status: ErrorStatus.vtopUnknownResponsesError);
               }
             });
           } else {
@@ -281,10 +303,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -307,11 +327,9 @@ class HeadlessWebView extends ChangeNotifier {
                 readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                     status: VTOPPageStatus.loaded);
               } else {
-                log("Unknown error");
-                readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
-                    status: VTOPPageStatus.unknownResponse);
-                settingSomeVars();
-                runHeadlessInAppWebView();
+                log("Unknown response error");
+                readErrorStatusStateProviderValue.update(
+                    status: ErrorStatus.vtopUnknownResponsesError);
               }
             });
           } else {
@@ -327,10 +345,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -375,10 +391,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -419,9 +433,9 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue.updateLoginStatus(
                     loginStatus: LoginResponseStatus.maxAttemptsError);
               } else {
-                log("Unknown error.");
-                readUserLoginStateProviderValue.updateLoginStatus(
-                    loginStatus: LoginResponseStatus.unknownResponse);
+                log("Unknown response error.");
+                readErrorStatusStateProviderValue.update(
+                    status: ErrorStatus.vtopUnknownResponsesError);
               }
             });
           } else {
@@ -437,10 +451,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -476,10 +488,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -514,10 +524,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
-          settingSomeVars();
-          runHeadlessInAppWebView();
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
         });
   }
 
@@ -566,8 +574,8 @@ class HeadlessWebView extends ChangeNotifier {
         },
         ajaxRequestOtherStatusAction: () {
           log("Error occurred.");
-          readVTOPActionsProviderValue.updateVTOPStatus(
-              status: VTOPStatus.error);
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
           settingSomeVars();
           runHeadlessInAppWebView();
         });
@@ -585,7 +593,7 @@ class HeadlessWebView extends ChangeNotifier {
           // And when we click login on the new requests then the old requests login get a session time out.
           // And then the session time out request will call restart for WebView which will lead to an endless loop.
           readConnectionStatusStateProviderValue.update(
-              newStatus: ConnectionStatus.connected);
+              status: ConnectionStatus.connected);
           readVTOPActionsProviderValue.updateVTOPStatus(
               status: VTOPStatus.homepage);
         } else {
@@ -596,7 +604,7 @@ class HeadlessWebView extends ChangeNotifier {
         log("Accepted onLoadStop callback as till now no action was taken for loaded VTOP.");
         log("VTOP is already logged in.");
         readConnectionStatusStateProviderValue.update(
-            newStatus: ConnectionStatus.connected);
+            status: ConnectionStatus.connected);
         readVTOPActionsProviderValue.updateVTOPStatus(
             status: VTOPStatus.sessionActive);
         readUserLoginStateProviderValue.updateLoginStatus(

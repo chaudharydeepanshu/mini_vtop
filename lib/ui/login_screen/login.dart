@@ -6,12 +6,16 @@ import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/ui/login_screen/components/control_teddy.dart';
 import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
+import 'package:rive/rive.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../state/providers.dart';
-import '../../state/webview_state.dart';
-import '../components/custom_snack_bar.dart';
-import '../home_screen/home_screen.dart';
+import 'package:mini_vtop/state/providers.dart';
+import 'package:mini_vtop/state/webview_state.dart';
+import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
+import 'package:mini_vtop/ui/home_screen/home_screen.dart';
+import '../../state/connection_state.dart';
+import '../components/error_indicators.dart';
+import '../components/page_body_indicators.dart';
 import 'components/forgot_user_id_screen.dart';
 import 'components/upper_case_text_formatter.dart';
 
@@ -60,38 +64,40 @@ class _LoginState extends ConsumerState<Login> {
                         .select((value) => value.loginPageStatus));
 
                 //----------- Listener for reloading login page if session gets timed out or WebView gets reloaded -----------
+
                 // Listening to session status change.
                 ref.listen(
                     vtopActionsProvider.select((value) => value.vtopStatus),
                     (previous, next) {
-                  //Checking if VTOPStatus status is sessionActive and its a new status.
-                  if (next == VTOPStatus.homepage && previous != next) {
-                    // If true then opening the login page.
+                  //Checking if VTOPStatus status is sessionTimedOut and its a new status.
+                  if (previous != next && next == VTOPStatus.sessionTimedOut) {
+                    // Showing session timeout banner.
+                    // If true then we are connecting.
+                  }
+
+                  //Checking if VTOPStatus status is homepage and its a new status.
+                  if (previous != next && next == VTOPStatus.homepage) {
+                    // Remove session timeout banner.
+                    // If true then we are on homepage.
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
+                    // Opening login page.
                     readVTOPActionsProviderValue.openLoginPageAction(
                         context: context);
+                    readVTOPActionsProviderValue.updateLoginPageStatus(
+                        status: VTOPPageStatus.processing);
                   }
                 });
                 //----------------------
 
                 return loginPageStatus == VTOPPageStatus.loaded
                     ? const SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
                         child: TeddyLoginScreen(),
                       )
-                    : loginPageStatus == VTOPPageStatus.processing
-                        ? Center(
-                            child: SpinKitThreeBounce(
-                              size: 24,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "Error",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          );
+                    : PageBodyIndicators(
+                        pageStatus: loginPageStatus,
+                        errorLocation: ErrorLocation.beforeHomeScreen);
               },
             ),
             onRefresh: () async {
@@ -154,10 +160,18 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
         //     onInit: _controlTeddy.onRiveInit,
         //   ),
         // ),
-        const Icon(
-          Icons.school,
-          size: 150,
+        SizedBox(
+          width: 150,
+          height: 150,
+          child: RiveAnimation.asset(
+            'assets/rive/bachelor_cap.riv',
+            fit: BoxFit.contain,
+          ),
         ),
+        // const Icon(
+        //   Icons.school,
+        //   size: 150,
+        // ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -248,16 +262,12 @@ class LoginButton extends StatelessWidget {
                   //---------- Showing SnackBar ----------
                   final LoginResponseStatus loginStatus =
                       ref.read(userLoginStateProvider).loginStatus;
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  SnackBar? snackBar =
-                      loginSnackBar(status: loginStatus, context: context);
-                  if (snackBar != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
+
+                  showLoginSnackBar(status: loginStatus, context: context);
+
                   //--------------------
                   // ---------- Refreshing captcha ----------
                   if (next == LoginResponseStatus.maxAttemptsError ||
-                      next == LoginResponseStatus.unknownResponse ||
                       next == LoginResponseStatus.wrongUserId ||
                       next == LoginResponseStatus.wrongPassword ||
                       next == LoginResponseStatus.wrongCaptcha ||
@@ -312,7 +322,7 @@ class LoginButton extends StatelessWidget {
   }
 }
 
-SnackBar? loginSnackBar(
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showLoginSnackBar(
     {required LoginResponseStatus status, required BuildContext context}) {
   String? contentText;
   Color? backgroundColor;
@@ -344,13 +354,6 @@ SnackBar? loginSnackBar(
     duration = const Duration(days: 365);
     iconData = Icons.warning;
     iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == LoginResponseStatus.unknownResponse) {
-    contentText =
-        'Unknown response! Please try again latter or use official VTOP for now.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
   } else if (status == LoginResponseStatus.loggedIn) {
     contentText = 'Successfully logged in!';
     backgroundColor = null;
@@ -365,7 +368,7 @@ SnackBar? loginSnackBar(
     iconAndTextColor = null;
   }
 
-  return customSnackBar(
+  return showCustomSnackBar(
     context: context,
     contentText: contentText,
     backgroundColor: backgroundColor,
@@ -446,6 +449,10 @@ class LoginFields extends StatelessWidget {
                   ).then((value) {
                     final HeadlessWebView readHeadlessWebViewProviderValue =
                         ref.read(headlessWebViewProvider);
+                    final VTOPActions readVTOPActionsProviderValue =
+                        ref.read(vtopActionsProvider);
+                    readVTOPActionsProviderValue.updateVTOPStatus(
+                        status: VTOPStatus.sessionTimedOut);
                     readHeadlessWebViewProviderValue.settingSomeVars();
                     readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
                   });

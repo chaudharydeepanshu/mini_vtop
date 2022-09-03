@@ -12,7 +12,7 @@ enum LoginResponseStatus {
   wrongPassword,
   wrongCaptcha,
   maxAttemptsError,
-  unknownResponse
+  // unknownResponse
 }
 
 enum ForgotUserIDSearchResponseStatus {
@@ -20,7 +20,7 @@ enum ForgotUserIDSearchResponseStatus {
   searching,
   notFound,
   found,
-  unknownResponse,
+  // unknownResponse,
   otpTriggerWait
 }
 
@@ -29,7 +29,8 @@ enum ForgotUserIDValidateResponseStatus {
   processing,
   invalidOTP,
   successful,
-  unknownResponse
+  notAuthorized
+  // unknownResponse
 }
 
 class UserLoginState extends ChangeNotifier {

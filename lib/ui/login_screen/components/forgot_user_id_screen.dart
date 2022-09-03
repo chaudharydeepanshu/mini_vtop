@@ -10,6 +10,9 @@ import 'package:mini_vtop/ui/login_screen/components/upper_case_text_formatter.d
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
+import '../../components/error_indicators.dart';
+import '../../components/page_body_indicators.dart';
+
 class ForgotUserID extends ConsumerStatefulWidget {
   const ForgotUserID({Key? key}) : super(key: key);
 
@@ -62,9 +65,6 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                     vtopActionsProvider
                         .select((value) => value.forgotUserIDPageStatus));
 
-                final VTOPStatus vtopStatus = ref.watch(
-                    vtopActionsProvider.select((value) => value.vtopStatus));
-
                 //----------- Listener for reloading forgot user id page if session gets timed out or WebView gets reloaded -----------
                 // Listening to session status change.
                 ref.listen(
@@ -109,6 +109,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
 
                 return forgotUserIDPageStatus == VTOPPageStatus.loaded
                     ? SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Consumer(
@@ -119,208 +120,37 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
                                       userLoginStateProvider.select((value) =>
                                           value.forgotUserIDSearchStatus));
 
-                              return Form(
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.looks_one),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: TextInput(
-                                            fieldKey: erpIDOrRegNoFormFieldKey,
-                                            prefixIcon: const Icon(Icons.badge),
-                                            helperText: 'Ex:- 20BCEXXXXX',
-                                            labelText: 'ERP ID / Reg. No.',
-                                            inputFormatters: [
-                                              UpperCaseTextFormatter(),
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp("[0-9A-Z]")),
-                                            ],
-                                            validator: (String? value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please enter ERP ID / Reg. No.';
-                                              }
-                                              return null;
-                                            },
-                                            autoValidateMode: AutovalidateMode
-                                                .onUserInteraction,
-                                            isObscured: false,
-                                            enableSuggestions: true,
-                                            autocorrect: false,
-                                            enabled: true,
-                                            readOnly: false,
-                                            onTextChanged: (String value) {
-                                              ref
-                                                  .read(userLoginStateProvider)
-                                                  .setErpIDOrRegNo(
-                                                      erpIDOrRegNo: value);
+                              return ForgotUserIDScreenBody(
+                                forgotUserIDSearchStatus:
+                                    forgotUserIDSearchStatus,
+                                erpIDOrRegNoFormFieldKey:
+                                    erpIDOrRegNoFormFieldKey,
+                                emailOTPFormFieldKey: emailOTPFormFieldKey,
+                                onErpIDOrRegNoChanged: (String value) {
+                                  ref
+                                      .read(userLoginStateProvider)
+                                      .setErpIDOrRegNo(erpIDOrRegNo: value);
 
-                                              ref
-                                                  .read(userLoginStateProvider)
-                                                  .updateForgotUserIDSearchStatus(
-                                                      status:
-                                                          ForgotUserIDSearchResponseStatus
-                                                              .notSearching);
-                                              // print(value);
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.looks_two),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: ForgotUserIDSearchButton(
-                                            formFieldKey:
-                                                erpIDOrRegNoFormFieldKey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.looks_3),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: TextInput(
-                                            fieldKey: emailOTPFormFieldKey,
-                                            // helperText: 'Ex:- 20BCEXXXXX',
-                                            prefixIcon: const Icon(Icons.pin),
-                                            labelText: 'Email OTP',
-                                            inputFormatters: [
-                                              UpperCaseTextFormatter(),
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp("[0-9A-Z]")),
-                                            ],
-                                            validator: (String? value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please enter OTP received on email.';
-                                              }
-                                              return null;
-                                            },
-                                            autoValidateMode: AutovalidateMode
-                                                .onUserInteraction,
-                                            isObscured: false,
-                                            enableSuggestions: true,
-                                            autocorrect: false,
-                                            enabled: forgotUserIDSearchStatus ==
-                                                        ForgotUserIDSearchResponseStatus
-                                                            .found ||
-                                                    forgotUserIDSearchStatus ==
-                                                        ForgotUserIDSearchResponseStatus
-                                                            .otpTriggerWait
-                                                ? true
-                                                : false,
-                                            readOnly: false,
-                                            onTextChanged: (String value) {
-                                              ref
-                                                  .read(userLoginStateProvider)
-                                                  .setEmailOTP(emailOTP: value);
-                                              // print(value);
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.looks_4),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: ForgotUserIDValidateButton(
-                                            formFieldKey: emailOTPFormFieldKey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
+                                  ref
+                                      .read(userLoginStateProvider)
+                                      .updateForgotUserIDSearchStatus(
+                                          status:
+                                              ForgotUserIDSearchResponseStatus
+                                                  .notSearching);
+                                },
+                                onEmailOTPChanged: (String value) {
+                                  ref
+                                      .read(userLoginStateProvider)
+                                      .setEmailOTP(emailOTP: value);
+                                },
                               );
                             },
                           ),
                         ),
                       )
-                    : forgotUserIDPageStatus == VTOPPageStatus.processing
-                        ? Center(
-                            child: SpinKitThreeBounce(
-                              size: 24,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          )
-                        : vtopStatus == VTOPStatus.sessionTimedOut
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SpinKitThreeBounce(
-                                      size: 24,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                    const Text(
-                                        "Session timed out! Reconnecting.")
-                                  ],
-                                ),
-                              )
-                            : vtopStatus == VTOPStatus.error
-                                ? Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SpinKitThreeBounce(
-                                          size: 24,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
-                                        ),
-                                        const Text(
-                                            "Error occurred! Reconnecting.")
-                                      ],
-                                    ),
-                                  )
-                                : Center(
-                                    child: Text(
-                                      "Unknown Status",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                  );
+                    : PageBodyIndicators(
+                        pageStatus: forgotUserIDPageStatus,
+                        errorLocation: ErrorLocation.beforeHomeScreen);
               },
             ),
             onRefresh: () async {
@@ -337,28 +167,151 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
   }
 }
 
-// showBanner({required BuildContext context, required String contentText}) {
-//   String? contentText;
-//   Color? backgroundColor;
-//   Duration? duration;
-//   IconData? iconData;
-//   Color? iconAndTextColor;
-//
-//   return ScaffoldMessenger.of(context).showMaterialBanner(
-//     MaterialBanner(
-//       padding: const EdgeInsets.all(20),
-//       content: Text(contentText),
-//       leading: const Icon(Icons.info),
-//       backgroundColor: Theme.of(context).colorScheme.onSurface,
-//       actions: <Widget>[
-//         TextButton(
-//           onPressed: () {},
-//           child: const Text('DISMISS'),
-//         ),
-//       ],
-//     ),
-//   );
-// }
+class ForgotUserIDScreenBody extends StatelessWidget {
+  const ForgotUserIDScreenBody(
+      {Key? key,
+      required this.forgotUserIDSearchStatus,
+      required this.erpIDOrRegNoFormFieldKey,
+      required this.emailOTPFormFieldKey,
+      required this.onErpIDOrRegNoChanged,
+      required this.onEmailOTPChanged})
+      : super(key: key);
+
+  final ForgotUserIDSearchResponseStatus forgotUserIDSearchStatus;
+
+  final GlobalKey<FormFieldState> erpIDOrRegNoFormFieldKey;
+  final GlobalKey<FormFieldState> emailOTPFormFieldKey;
+
+  final ValueChanged<String> onErpIDOrRegNoChanged;
+  final ValueChanged<String> onEmailOTPChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.looks_one),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: TextInput(
+                  fieldKey: erpIDOrRegNoFormFieldKey,
+                  prefixIcon: const Icon(Icons.badge),
+                  helperText: 'Ex:- 20BCEXXXXX',
+                  labelText: 'ERP ID / Reg. No.',
+                  inputFormatters: [
+                    UpperCaseTextFormatter(),
+                    FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+                  ],
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter ERP ID / Reg. No.';
+                    }
+                    return null;
+                  },
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  isObscured: false,
+                  enableSuggestions: true,
+                  autocorrect: false,
+                  enabled: true,
+                  readOnly: false,
+                  onTextChanged: (String value) {
+                    // print(value);
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.looks_two),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: ForgotUserIDSearchButton(
+                  formFieldKey: erpIDOrRegNoFormFieldKey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.looks_3),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: TextInput(
+                  fieldKey: emailOTPFormFieldKey,
+                  // helperText: 'Ex:- 20BCEXXXXX',
+                  prefixIcon: const Icon(Icons.pin),
+                  labelText: 'Email OTP',
+                  inputFormatters: [
+                    UpperCaseTextFormatter(),
+                    FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+                  ],
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter OTP received on email.';
+                    }
+                    return null;
+                  },
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  isObscured: false,
+                  enableSuggestions: true,
+                  autocorrect: false,
+                  enabled: forgotUserIDSearchStatus ==
+                              ForgotUserIDSearchResponseStatus.found ||
+                          forgotUserIDSearchStatus ==
+                              ForgotUserIDSearchResponseStatus.otpTriggerWait
+                      ? true
+                      : false,
+                  readOnly: false,
+                  onTextChanged: (String value) {
+                    // print(value);
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.looks_4),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: ForgotUserIDValidateButton(
+                  formFieldKey: emailOTPFormFieldKey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 Future<void> userIDDialog(
     {required BuildContext context, required String userID}) {
@@ -411,15 +364,10 @@ class ForgotUserIDSearchButton extends StatelessWidget {
                   final Duration otpTriggerWait =
                       ref.read(userLoginStateProvider).otpTriggerWait;
 
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                  SnackBar? snackBar = forgotUserIDSearchSnackBar(
+                  showForgotUserIDSearchSnackBar(
                       status: forgotUserIDSearchStatus,
                       otpTriggerWait: otpTriggerWait,
                       context: context);
-                  if (snackBar != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
                 }
               });
 
@@ -493,13 +441,8 @@ class ForgotUserIDValidateButton extends StatelessWidget {
                           .read(userLoginStateProvider)
                           .forgotUserIDValidateStatus;
 
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                  SnackBar? snackBar = forgotUserIDValidateSnackBar(
+                  showForgotUserIDValidateSnackBar(
                       status: forgotUserIDValidateStatus, context: context);
-                  if (snackBar != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
                 }
               });
 
@@ -548,10 +491,11 @@ class ForgotUserIDValidateButton extends StatelessWidget {
   }
 }
 
-SnackBar? forgotUserIDSearchSnackBar(
-    {required ForgotUserIDSearchResponseStatus status,
-    Duration? otpTriggerWait,
-    required BuildContext context}) {
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
+    showForgotUserIDSearchSnackBar(
+        {required ForgotUserIDSearchResponseStatus status,
+        Duration? otpTriggerWait,
+        required BuildContext context}) {
   String? contentText;
   Color? backgroundColor;
   Duration? duration;
@@ -560,13 +504,6 @@ SnackBar? forgotUserIDSearchSnackBar(
 
   if (status == ForgotUserIDSearchResponseStatus.notFound) {
     contentText = 'ERP ID / Reg. No. invalid! Please try again.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDSearchResponseStatus.unknownResponse) {
-    contentText =
-        'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
@@ -592,7 +529,7 @@ SnackBar? forgotUserIDSearchSnackBar(
     iconAndTextColor = null;
   }
 
-  return customSnackBar(
+  return showCustomSnackBar(
     context: context,
     contentText: contentText,
     backgroundColor: backgroundColor,
@@ -602,9 +539,10 @@ SnackBar? forgotUserIDSearchSnackBar(
   );
 }
 
-SnackBar? forgotUserIDValidateSnackBar(
-    {required ForgotUserIDValidateResponseStatus status,
-    required BuildContext context}) {
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
+    showForgotUserIDValidateSnackBar(
+        {required ForgotUserIDValidateResponseStatus status,
+        required BuildContext context}) {
   String? contentText;
   Color? backgroundColor;
   Duration? duration;
@@ -613,13 +551,6 @@ SnackBar? forgotUserIDValidateSnackBar(
 
   if (status == ForgotUserIDValidateResponseStatus.invalidOTP) {
     contentText = 'OTP was invalid! Please try again.';
-    backgroundColor = Theme.of(context).colorScheme.errorContainer;
-    duration = const Duration(days: 365);
-    iconData = Icons.warning;
-    iconAndTextColor = Theme.of(context).colorScheme.error;
-  } else if (status == ForgotUserIDValidateResponseStatus.unknownResponse) {
-    contentText =
-        'Unknown response! Please try again latter or use official VTOP for now.';
     backgroundColor = Theme.of(context).colorScheme.errorContainer;
     duration = const Duration(days: 365);
     iconData = Icons.warning;
@@ -638,7 +569,7 @@ SnackBar? forgotUserIDValidateSnackBar(
     iconAndTextColor = null;
   }
 
-  return customSnackBar(
+  return showCustomSnackBar(
     context: context,
     contentText: contentText,
     backgroundColor: backgroundColor,

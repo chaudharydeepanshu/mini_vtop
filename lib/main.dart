@@ -38,3 +38,5 @@ class MyApp extends StatelessWidget {
 // Todo: Integrate the above warning with the connection warning and provide an option to reconnect. Also continue showing old data with this warning if connection fails.
 // Todo: If connection fails on app start then provide an option to continue surfing with a warning of no connection. Also provide an option to reconnect in that warning.
 // Todo: make requests every few minutes to increase session time.
+// Todo: Add vit calendar.
+// Todo: Add a resume generator.
