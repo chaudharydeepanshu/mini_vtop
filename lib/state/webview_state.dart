@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -27,7 +28,9 @@ class HeadlessWebView extends ChangeNotifier {
 
   late InAppWebViewGroupOptions _options;
 
-  final String _initialUrl = "https://vtop.vitbhopal.ac.in/vtop/";
+  final String _initialUrl =
+      // "https://self-signed.badssl.com/";
+      "https://vtop.vitbhopal.ac.in/vtop/";
 
   String _url = "";
   String get url => _url;
@@ -126,9 +129,16 @@ class HeadlessWebView extends ChangeNotifier {
         //   if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
         //     return ServerTrustAuthResponse(
         //         action: ServerTrustAuthResponseAction.PROCEED);
+        //   } else {
+        //     log("SSL Error occurred: $sslError.");
+        //     readErrorStatusStateProviderValue.update(
+        //         status: ErrorStatus.sslError);
+        //     return ServerTrustAuthResponse(
+        //         action: ServerTrustAuthResponseAction.CANCEL);
         //   }
+        // } else {
         //   return ServerTrustAuthResponse(
-        //       action: ServerTrustAuthResponseAction.CANCEL);
+        //       action: ServerTrustAuthResponseAction.PROCEED);
         // }
         return ServerTrustAuthResponse(
             action: ServerTrustAuthResponseAction.PROCEED);
@@ -186,6 +196,7 @@ class HeadlessWebView extends ChangeNotifier {
     readConnectionStatusStateProviderValue.update(
         status: ConnectionStatus.connecting);
     readVTOPActionsProviderValue.updateVTOPStatus(status: VTOPStatus.noStatus);
+    readErrorStatusStateProviderValue.update(status: ErrorStatus.noError);
   }
 
   runHeadlessInAppWebView() async {

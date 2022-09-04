@@ -93,28 +93,65 @@ class BeforeHomeScreenErrors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (errorStatus == ErrorStatus.connectionClosedError) {
-      return const FullBodyError(
-          errorHeadingText: "Ohh...SH*T!",
-          errorBodyText: "App connection with VTOP got closed");
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Ohh...SH*T!",
+              messageBodyText: "App connection with VTOP got closed"),
+          ErrorRetryButton(),
+        ],
+      );
     }
     if (errorStatus == ErrorStatus.noInternetError) {
-      return const FullBodyError(
-          errorHeadingText: "No Internet!",
-          errorBodyText: "Looks like someone has stolen your router");
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "No Internet!",
+              messageBodyText: "Looks like someone has stolen your router"),
+          ErrorRetryButton(),
+        ],
+      );
+    }
+    if (errorStatus == ErrorStatus.sslError) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Woah! SSL Issue.",
+              messageBodyText:
+                  "Detected SSL issue in VTOP. A secure connection cannot be made."),
+          ErrorRetryButton(),
+        ],
+      );
     }
     if (errorStatus == ErrorStatus.vtopError) {
-      return const FullBodyError(
-          errorHeadingText: "Aw, Snap!",
-          errorBodyText: "Something is wrong with VTOP");
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Aw, Snap!",
+              messageBodyText: "Something is wrong with VTOP"),
+          ErrorRetryButton(),
+        ],
+      );
     }
     if (errorStatus == ErrorStatus.vtopUnknownResponsesError) {
-      return const FullBodyError(
-          errorHeadingText: "Gibberish Response!",
-          errorBodyText: "VTOP sent an unknown response");
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Gibberish Response!",
+              messageBodyText: "VTOP sent an unknown response"),
+          ErrorRetryButton(),
+        ],
+      );
     } else {
-      return const FullBodyError(
-          errorHeadingText: "Unexpected Error!",
-          errorBodyText: "Something is wrong but we don't know what & why");
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Unexpected Error!",
+              messageBodyText:
+                  "Something is wrong but we don't know what & why"),
+          ErrorRetryButton(),
+        ],
+      );
     }
   }
 }
@@ -145,13 +182,15 @@ class AfterHomeScreenErrors extends StatelessWidget {
   }
 }
 
-class FullBodyError extends StatelessWidget {
-  const FullBodyError(
-      {Key? key, required this.errorHeadingText, required this.errorBodyText})
+class FullBodyMessage extends StatelessWidget {
+  const FullBodyMessage(
+      {Key? key,
+      required this.messageHeadingText,
+      required this.messageBodyText})
       : super(key: key);
 
-  final String errorHeadingText;
-  final String errorBodyText;
+  final String messageHeadingText;
+  final String messageBodyText;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +200,7 @@ class FullBodyError extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            errorHeadingText,
+            messageHeadingText,
             style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
@@ -170,14 +209,13 @@ class FullBodyError extends StatelessWidget {
             endIndent: 50,
           ),
           Text(
-            errorBodyText,
+            messageBodyText,
             style: Theme.of(context).textTheme.labelMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(
             height: 15,
           ),
-          const ErrorRetryButton(),
         ],
       ),
     );
@@ -204,14 +242,8 @@ class ErrorRetryButton extends StatelessWidget {
                   primary: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
-                  final ErrorStatusState readErrorStatusStateProviderValue =
-                      ref.read(errorStatusStateProvider);
-                  readErrorStatusStateProviderValue.update(
-                      status: ErrorStatus.noError);
                   final HeadlessWebView readHeadlessWebViewProviderValue =
                       ref.read(headlessWebViewProvider);
-                  readHeadlessWebViewProviderValue
-                      .settingSomeVarsBeforeWebViewRestart();
                   readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
                 },
                 icon: const Icon(Icons.refresh),

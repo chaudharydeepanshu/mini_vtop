@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Todo: Replace connection screen if error occurs with the error connection state and provide a retry option
 // Todo: Load data inside database on 1st run of app.
 // Todo: Implement session time out warning banner and provide option to login inside that. Also continue showing old data with this warning if login fails.
 // Todo: Integrate the above warning with the connection warning and provide an option to reconnect. Also continue showing old data with this warning if connection fails.

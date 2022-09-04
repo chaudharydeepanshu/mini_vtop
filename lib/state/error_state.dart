@@ -20,6 +20,9 @@ enum ErrorStatus {
 
   // For any VTOP Page related errors. Like unknown responses.
   vtopUnknownResponsesError,
+
+  // For VTOP SSL related errors.
+  sslError,
 }
 
 class ErrorStatusState extends ChangeNotifier {
