@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.5.0
 
 environment:
-  sdk: '>=2.19.0-96.0.dev <3.0.0'
+  sdk: '>=2.18.0 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -32,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dynamic_color: ^1.5.3
+  dynamic_color: ^1.5.4
 
   webview_flutter: ^3.0.4
 
@@ -46,7 +46,7 @@ dependencies:
 
   syncfusion_flutter_gauges: ^20.2.46
 
-  clean_calendar: ^0.3.1-dev.1
+  clean_calendar: ^0.4.1
 
   rive: ^0.9.1
 
@@ -57,6 +57,8 @@ dependencies:
   image: ^3.2.0
 
   flutter_spinkit: ^5.1.0
+
+  sentry_flutter: ^6.9.1
 
 
   # The following adds the Cupertino Icons font to your application.

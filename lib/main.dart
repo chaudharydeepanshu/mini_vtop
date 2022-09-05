@@ -2,15 +2,27 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/ui/connection_screen/connection_screen.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'Theme/app_theme_data.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const ProviderScope(child: MyApp()));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://20d01220afad4f18a588c096ac580857@o1395082.ingest.sentry.io/6717545';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(const ProviderScope(child: MyApp())),
+  );
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -27,6 +39,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.system,
           home: const ConnectionScreen(),
           navigatorKey: navigatorKey,
+          scaffoldMessengerKey: rootScaffoldMessengerKey,
         );
       },
     );

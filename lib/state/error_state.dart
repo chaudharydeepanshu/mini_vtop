@@ -9,6 +9,12 @@ enum ErrorStatus {
   // net::ERR_CONNECTION_CLOSED
   connectionClosedError,
 
+  // net::ERR_NAME_NOT_RESOLVED
+  internetOrDnsError,
+
+  // net::ERR_CLEARTEXT_NOT_PERMITTED HTTP traffic is not permitted
+  httpTrafficError,
+
   // For no internet error.
   noInternetError,
 
@@ -17,6 +23,9 @@ enum ErrorStatus {
 
   // For any main VTOP related errors.
   vtopError,
+
+  // If WebView provides null document before action request.
+  nullDocBeforeAction,
 
   // For any VTOP Page related errors. Like unknown responses.
   vtopUnknownResponsesError,

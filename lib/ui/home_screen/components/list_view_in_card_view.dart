@@ -20,13 +20,15 @@ class ListTileDetail {
 }
 
 class ListViewInCardSection extends StatelessWidget {
-  const ListViewInCardSection(
-      {Key? key,
-      required this.sectionTitle,
-      required this.listTilesDetails,
-      this.cardShowAllOnTap})
-      : super(key: key);
+  const ListViewInCardSection({
+    Key? key,
+    required this.sectionTitle,
+    required this.emptySectionText,
+    required this.listTilesDetails,
+    this.cardShowAllOnTap,
+  }) : super(key: key);
 
+  final String emptySectionText;
   final String sectionTitle;
   final List<ListTileDetail> listTilesDetails;
   final Function()? cardShowAllOnTap;
@@ -60,23 +62,29 @@ class ListViewInCardSection extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: listTilesDetails.length <= 4
-                      ? listTilesDetails.length
-                      : 4,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListViewTile(
-                      listTileDetail: listTilesDetails[index],
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const Divider(
-                      color: Colors.transparent,
-                    );
-                  },
-                ),
+                child: listTilesDetails.isNotEmpty
+                    ? ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: listTilesDetails.length <= 4
+                            ? listTilesDetails.length
+                            : 4,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListViewTile(
+                            listTileDetail: listTilesDetails[index],
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider(
+                            color: Colors.transparent,
+                          );
+                        },
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: Text(emptySectionText)),
+                        ],
+                      ),
               ),
               listTilesDetails.length > 4
                   ? Column(

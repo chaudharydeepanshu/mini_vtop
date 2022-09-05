@@ -61,6 +61,7 @@ class ToolsSection extends StatelessWidget {
 
     return GridViewInCardSection(
       sectionTitle: 'Tools',
+      emptySectionText: 'No tools available',
       gridCardsDetails: toolsCardsDetails,
       cardShowAllOnTap: () {
         Navigator.of(context).push(

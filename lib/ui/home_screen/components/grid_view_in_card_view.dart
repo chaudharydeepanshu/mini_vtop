@@ -21,13 +21,15 @@ class GridCardDetail {
 }
 
 class GridViewInCardSection extends StatelessWidget {
-  const GridViewInCardSection(
-      {Key? key,
-      required this.sectionTitle,
-      required this.gridCardsDetails,
-      this.cardShowAllOnTap})
-      : super(key: key);
+  const GridViewInCardSection({
+    Key? key,
+    required this.sectionTitle,
+    required this.emptySectionText,
+    required this.gridCardsDetails,
+    this.cardShowAllOnTap,
+  }) : super(key: key);
 
+  final String emptySectionText;
   final String sectionTitle;
   final List<GridCardDetail> gridCardsDetails;
   final Function()? cardShowAllOnTap;
@@ -61,25 +63,32 @@ class GridViewInCardSection extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    childAspectRatio: 1,
-                    maxCrossAxisExtent: 200,
-                    mainAxisExtent: 100,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                  ),
-                  itemCount: gridCardsDetails.length <= 4
-                      ? gridCardsDetails.length
-                      : 4,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GridViewCard(
-                      gridCardDetail: gridCardsDetails[index],
-                    );
-                  },
-                ),
+                child: gridCardsDetails.isNotEmpty
+                    ? GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          childAspectRatio: 1,
+                          maxCrossAxisExtent: 200,
+                          mainAxisExtent: 100,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
+                        itemCount: gridCardsDetails.length <= 4
+                            ? gridCardsDetails.length
+                            : 4,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GridViewCard(
+                            gridCardDetail: gridCardsDetails[index],
+                          );
+                        },
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: Text(emptySectionText)),
+                        ],
+                      ),
               ),
               gridCardsDetails.length > 4
                   ? Column(

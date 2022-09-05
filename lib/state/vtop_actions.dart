@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../main.dart';
 import 'connection_state.dart';
 import 'error_state.dart';
 
@@ -143,6 +145,36 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
+  void performSignOutAction({required BuildContext context}) async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        readUserLoginStateProviderValue.updateLoginStatus(
+            loginStatus: LoginResponseStatus.loggedOut);
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+                               ajaxCall('processLogout',null,'page_outline');
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
+    );
+  }
+
   void performSignInAction({required BuildContext context}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
@@ -165,7 +197,6 @@ class VTOPActions extends ChangeNotifier {
         // document.getElementById('captcha').click();
         
         data = "uname="+"$userID"+"&passwd="+`\${encodeURIComponent('$password')}`+"&captchaCheck="+"$captcha";
-          console.log(data);
         ajaxCall('doLogin',data,'page_outline');
                                 ''');
       },
@@ -342,6 +373,8 @@ void _actionHandler({
   required Function() performAction,
   required Function() initialAction,
   required Function() closedConnectionErrorAction,
+  // required Function() otherErrorAction,
+  // required Function() nullDocErrorAction,
 }) async {
   // Perform initial action like setting status to processing.
   initialAction();
@@ -361,7 +394,21 @@ void _actionHandler({
 
             closedConnectionErrorAction();
           } else {
-            // connectionErrorAction();
+            log('net::ERR_CONNECTION_CLOSED');
+
+            // errorSnackBar(
+            //     context: rootScaffoldMessengerKey.currentState!.context,
+            //     error: "sslError -> $sslError");
+            // otherErrorAction();
+            try {
+              throw CustomErrorException(
+                  cause: 'Web page not available. -> $value');
+            } catch (exception, stackTrace) {
+              await Sentry.captureException(
+                exception,
+                stackTrace: stackTrace,
+              );
+            }
           }
         } else if (value.contains(
             "You are logged out due to inactivity for more than 15 minutes")) {
@@ -375,9 +422,18 @@ void _actionHandler({
           performAction();
         }
       } else {
-        // If true means then action can be performed.
+        // If true means then document is null.
 
         log('Document is null.');
+
+        try {
+          throw CustomErrorException(cause: 'Document is null.');
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+          );
+        }
       }
     });
   } else {

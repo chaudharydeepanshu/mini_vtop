@@ -3,7 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
-   <application
+    <!--    android:usesCleartextTraffic="true" required to allow WebView http traffic -->
+    <!--    android:extractNativeLibs="true" refer https://docs.sentry.io/platforms/flutter/upload-debug/#uploading-for-android-ndk -->
+
+    <application
+        android:extractNativeLibs="true"
+        android:usesCleartextTraffic="true"
         android:label="mini_vtop"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

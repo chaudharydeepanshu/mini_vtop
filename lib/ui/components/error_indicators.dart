@@ -142,6 +142,38 @@ class BeforeHomeScreenErrors extends StatelessWidget {
           ErrorRetryButton(),
         ],
       );
+    }
+    if (errorStatus == ErrorStatus.internetOrDnsError) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "DNS Issue!",
+              messageBodyText:
+                  "Looks like a DNS issue. Try disabling the private DNS in your device settings."),
+          ErrorRetryButton(),
+        ],
+      );
+    }
+    if (errorStatus == ErrorStatus.httpTrafficError) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Found HTTP!",
+              messageBodyText:
+                  "VTOP sent HTTP request caught. Retry or wait for an app update."),
+          ErrorRetryButton(),
+        ],
+      );
+    }
+    if (errorStatus == ErrorStatus.nullDocBeforeAction) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Got Null Doc!",
+              messageBodyText: "VTOP sent a null doc. Please try again."),
+          ErrorRetryButton(),
+        ],
+      );
     } else {
       return Column(
         children: const [

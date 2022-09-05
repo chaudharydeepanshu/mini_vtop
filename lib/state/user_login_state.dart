@@ -40,17 +40,17 @@ class UserLoginState extends ChangeNotifier {
   late String _captcha = "";
   String get captcha => _captcha;
 
-  late String _userID = "20BCE10531";
+  late String _userID = "";
   String get userID => _userID;
 
-  late String _password = "Ramjasc4141@";
+  late String _password = "";
   String get password => _password;
 
   Uint8List? _captchaImage;
   Uint8List? get captchaImage => _captchaImage;
 
-  late LoginResponseStatus _loginStatus = LoginResponseStatus.loggedOut;
-  LoginResponseStatus get loginStatus => _loginStatus;
+  late LoginResponseStatus _loginResponseStatus = LoginResponseStatus.loggedOut;
+  LoginResponseStatus get loginResponseStatus => _loginResponseStatus;
 
   late Duration _otpTriggerWait = Duration.zero;
   Duration get otpTriggerWait => _otpTriggerWait;
@@ -98,13 +98,13 @@ class UserLoginState extends ChangeNotifier {
   }
 
   void updateLoginStatus({required LoginResponseStatus loginStatus}) {
-    _loginStatus = loginStatus;
+    _loginResponseStatus = loginStatus;
 
     notifyListeners();
   }
 
   void updateResponseStatus({required LoginResponseStatus loginStatus}) {
-    _loginStatus = loginStatus;
+    _loginResponseStatus = loginStatus;
 
     notifyListeners();
   }

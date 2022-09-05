@@ -98,13 +98,14 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
               ],
             ),
             OutlinedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const QuickGlance(),
-                  ),
-                );
-              },
+              onPressed: null,
+              //     () {
+              //   Navigator.of(context).push(
+              //     MaterialPageRoute(
+              //       builder: (BuildContext context) => const QuickGlance(),
+              //     ),
+              //   );
+              // },
               icon: const Icon(Icons.arrow_forward),
               label: const Text("Quick Glance"),
             ),

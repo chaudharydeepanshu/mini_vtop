@@ -13,7 +13,6 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
 import 'package:mini_vtop/ui/home_screen/home_screen.dart';
-import '../../state/connection_state.dart';
 import '../components/error_indicators.dart';
 import '../components/page_body_indicators.dart';
 import 'components/forgot_user_id_screen.dart';
@@ -62,6 +61,20 @@ class _LoginState extends ConsumerState<Login> {
                 final VTOPPageStatus loginPageStatus = ref.watch(
                     vtopActionsProvider
                         .select((value) => value.loginPageStatus));
+
+                ref.listen(
+                    userLoginStateProvider
+                        .select((value) => value.loginResponseStatus),
+                    (previous, next) {
+                  //Checking if LoginResponse status is loggedIn and its a new status.
+                  if (previous != next &&
+                      next == LoginResponseStatus.loggedIn) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Home()),
+                    );
+                  }
+                });
 
                 //----------- Listener for reloading login page if session gets timed out or WebView gets reloaded -----------
 
@@ -141,7 +154,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
   String password = "";
   String registrationNumber = "";
   String captcha = "";
-  bool autoLogin = true;
+  bool autoLogin = false;
 
   @override
   Widget build(BuildContext context) {
@@ -188,12 +201,13 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
               CheckboxListTile(
                 value: autoLogin,
                 title: const Text("Enable Auto login?"),
-                onChanged: (bool? value) {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  setState(() {
-                    autoLogin = value ?? false;
-                  });
-                },
+                onChanged: null,
+                //     (bool? value) {
+                //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                //   setState(() {
+                //     autoLogin = value ?? false;
+                //   });
+                // },
               ),
               const SizedBox(
                 height: 10,
@@ -244,12 +258,12 @@ class LoginButton extends StatelessWidget {
                 captchaLoading = true;
               }
 
-              LoginResponseStatus loginStatus = ref.watch(
-                  userLoginStateProvider.select((value) => value.loginStatus));
+              LoginResponseStatus loginStatus = ref.watch(userLoginStateProvider
+                  .select((value) => value.loginResponseStatus));
 
               ref.listen(
-                  userLoginStateProvider.select((value) => value.loginStatus),
-                  (previous, next) {
+                  userLoginStateProvider.select(
+                      (value) => value.loginResponseStatus), (previous, next) {
                 if (next == LoginResponseStatus.loggedIn) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.pushReplacement(
@@ -261,7 +275,7 @@ class LoginButton extends StatelessWidget {
                 if (previous != next) {
                   //---------- Showing SnackBar ----------
                   final LoginResponseStatus loginStatus =
-                      ref.read(userLoginStateProvider).loginStatus;
+                      ref.read(userLoginStateProvider).loginResponseStatus;
 
                   showLoginSnackBar(status: loginStatus, context: context);
 
@@ -499,7 +513,7 @@ class LoginFields extends StatelessWidget {
               ),
               ForgotDetailButtons(
                 label: "Forgot Password?",
-                onPressed: () {},
+                onPressed: null,
               ),
               const SizedBox(
                 height: 10,

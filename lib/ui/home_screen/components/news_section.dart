@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/ui/home_screen/components/list_view_in_card_view.dart';
 
-import '../../news_screen/news_screen.dart';
-
 class NewsListScreen extends StatelessWidget {
   const NewsListScreen({Key? key, required this.newsListTilesDetails})
       : super(key: key);
@@ -44,34 +42,35 @@ class NewsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<ListTileDetail> newsListTilesDetails = [
-      ListTileDetail(
-        tileIcon: const Icon(Icons.circle),
-        tileTitle: 'Mid Term Exam Schedule',
-        tileOnTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => NewsScreen(
-                newsDetail: NewsDetail(
-                    title: 'Mid Term Exam Schedule', markdownBody: ''),
-              ),
-            ),
-          );
-        },
-      ),
-      ListTileDetail(
-        tileIcon: const Icon(Icons.circle),
-        tileTitle: 'VIT-B Experiential Learning ',
-        tileOnTap: () {},
-      ),
-      ListTileDetail(
-        tileIcon: const Icon(Icons.circle),
-        tileTitle: 'Whatsapp Group Sheets',
-        tileOnTap: () {},
-      ),
+      // ListTileDetail(
+      //   tileIcon: const Icon(Icons.circle),
+      //   tileTitle: 'Mid Term Exam Schedule',
+      //   tileOnTap: () {
+      //     Navigator.of(context).push(
+      //       MaterialPageRoute(
+      //         builder: (BuildContext context) => NewsScreen(
+      //           newsDetail: NewsDetail(
+      //               title: 'Mid Term Exam Schedule', markdownBody: ''),
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ),
+      // ListTileDetail(
+      //   tileIcon: const Icon(Icons.circle),
+      //   tileTitle: 'VIT-B Experiential Learning ',
+      //   tileOnTap: () {},
+      // ),
+      // ListTileDetail(
+      //   tileIcon: const Icon(Icons.circle),
+      //   tileTitle: 'Whatsapp Group Sheets',
+      //   tileOnTap: () {},
+      // ),
     ];
 
     return ListViewInCardSection(
       sectionTitle: 'News',
+      emptySectionText: 'No news available',
       listTilesDetails: newsListTilesDetails,
       cardShowAllOnTap: () {
         Navigator.of(context).push(

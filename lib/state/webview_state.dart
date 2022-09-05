@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -15,7 +14,10 @@ import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
 import 'package:mini_vtop/utils/captcha_parser.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../main.dart';
+import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 
 class HeadlessWebView extends ChangeNotifier {
@@ -28,9 +30,9 @@ class HeadlessWebView extends ChangeNotifier {
 
   late InAppWebViewGroupOptions _options;
 
-  final String _initialUrl =
-      // "https://self-signed.badssl.com/";
-      "https://vtop.vitbhopal.ac.in/vtop/";
+  final String _initialUrl = "http://182.73.197.23/vtop/";
+  // "https://self-signed.badssl.com/";
+  // "https://vtop.vitbhopal.ac.in/vtop/";
 
   String _url = "";
   String get url => _url;
@@ -108,6 +110,8 @@ class HeadlessWebView extends ChangeNotifier {
             _vtopForgotUserIDSearchAjaxRequest(ajaxRequest: ajaxRequest);
           } else if (ajaxRequest.url.toString() == "forgotLoginID") {
             _vtopForgotUserIDValidateAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() == "processLogout") {
+            _vtopProcessLogoutAjaxRequest(ajaxRequest: ajaxRequest);
           } else {
             log("ajaxRequest.url:- ${ajaxRequest.url.toString()}");
           }
@@ -119,7 +123,8 @@ class HeadlessWebView extends ChangeNotifier {
         _shouldOverrideUrlLoadingHandler(
             controller: controller,
             navigationAction: navigationAction,
-            redirectFromUrl: url);
+            redirectFromUrl: url,
+            initialUrl: _initialUrl);
         return NavigationActionPolicy.ALLOW;
       },
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
@@ -140,6 +145,17 @@ class HeadlessWebView extends ChangeNotifier {
         //   return ServerTrustAuthResponse(
         //       action: ServerTrustAuthResponseAction.PROCEED);
         // }
+        try {
+          throw CustomErrorException(cause: "$sslError");
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+          );
+        }
+        // errorSnackBar(
+        //     context: rootScaffoldMessengerKey.currentState!.context,
+        //     error: "sslError -> $sslError");
         return ServerTrustAuthResponse(
             action: ServerTrustAuthResponseAction.PROCEED);
       },
@@ -161,12 +177,49 @@ class HeadlessWebView extends ChangeNotifier {
         _onLoadStopAction(url: url);
       },
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
-          String message) {
-        log("url: $url, errorCode:$code, message:$message");
+          String message) async {
+        log("onLoadError -> url: $url, errorCode:$code, message:$message");
+        if (message == "net::ERR_NAME_NOT_RESOLVED") {
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.internetOrDnsError);
+        } else {
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.unknownError);
+        }
+        try {
+          throw CustomErrorException(
+              cause:
+                  "onLoadError -> url: $url, errorCode:$code, message:$message");
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+          );
+        }
+        errorSnackBar(
+            context: rootScaffoldMessengerKey.currentState!.context,
+            error:
+                "onLoadError -> url: $url, errorCode:$code, message:$message");
       },
       onLoadHttpError: (InAppWebViewController controller, Uri? url, int code,
-          String message) {
-        log("url: $url, errorCode:$code, message:$message");
+          String message) async {
+        log("onLoadHttpError -> url: $url, errorCode:$code, message:$message");
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.unknownError);
+        try {
+          throw CustomErrorException(
+              cause:
+                  "onLoadHttpError -> url: $url, errorCode:$code, message:$message");
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+          );
+        }
+        errorSnackBar(
+            context: rootScaffoldMessengerKey.currentState!.context,
+            error:
+                "onLoadHttpError -> url: $url, errorCode:$code, message:$message");
       },
     );
 
@@ -211,6 +264,54 @@ class HeadlessWebView extends ChangeNotifier {
     await headlessWebView.run();
   }
 
+  _vtopProcessLogoutAjaxRequest({required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          if (readUserLoginStateProviderValue.loginResponseStatus ==
+              LoginResponseStatus.processing) {
+            log("Accepted ajaxRequest callback as till now no action was taken for logout action.");
+            await headlessWebView.webViewController
+                .evaluateJavascript(
+                    source: "new XMLSerializer().serializeToString(document);")
+                .then((value) async {
+              Document document = parse('$value');
+              if (value.contains("You have been successfully logged out")) {
+                log("User is logged out successfully.");
+                readUserLoginStateProviderValue.updateLoginStatus(
+                    loginStatus: LoginResponseStatus.loggedOut);
+              } else {
+                log("Unknown response");
+                readErrorStatusStateProviderValue.update(
+                    status: ErrorStatus.vtopUnknownResponsesError);
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
+              }
+            });
+          } else {
+            log("Rejected ajaxRequest callback as till now action was already taken for forgotUserID Validate action.");
+          }
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateVTOPStatus(
+              status: VTOPStatus.sessionTimedOut);
+          settingSomeVars();
+          runHeadlessInAppWebView();
+        },
+        ajaxRequestOtherStatusAction: () {
+          log("Error occurred.");
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
+        });
+  }
+
   _vtopForgotUserIDValidateAjaxRequest(
       {required AjaxRequest ajaxRequest}) async {
     _ajaxRequestCommonHandler(
@@ -222,7 +323,7 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
+                .then((value) async {
               Document document = parse('$value');
               if (value.contains("Login ID is :")) {
                 log("User ID found.");
@@ -247,6 +348,14 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -277,7 +386,7 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
+                .then((value) async {
               Document document = parse('$value');
               // log(value);
               if (value.contains(
@@ -299,6 +408,14 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response error");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -331,7 +448,7 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
+                .then((value) async {
               // Document document = parse('$value');
               if (value.contains("V-TOP Forgot UserID")) {
                 log("Forgot UserID page loaded successfully");
@@ -341,6 +458,14 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response error");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -387,6 +512,15 @@ class HeadlessWebView extends ChangeNotifier {
                     bytes: bytes);
                 readUserLoginStateProviderValue.setAutoCaptcha(
                     autoCaptcha: solvedCaptcha);
+              } else {
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -411,17 +545,18 @@ class HeadlessWebView extends ChangeNotifier {
     _ajaxRequestCommonHandler(
         ajaxRequest: ajaxRequest,
         ajaxRequestStatus200Action: () async {
-          if (readUserLoginStateProviderValue.loginStatus ==
+          if (readUserLoginStateProviderValue.loginResponseStatus ==
               LoginResponseStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for login attempt.");
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
+                .then((value) async {
               // Document document = parse('$value');
-              if (value.contains(
-                  "${readUserLoginStateProviderValue.userID}(STUDENT)")) {
+              if (value.contains("(STUDENT)")) {
                 log("User Id ${readUserLoginStateProviderValue.userID} logged in.");
+                Sentry.captureMessage(
+                    "User Id ${readUserLoginStateProviderValue.userID} logged in.");
                 readUserLoginStateProviderValue.updateLoginStatus(
                     loginStatus: LoginResponseStatus.loggedIn);
                 readVTOPActionsProviderValue.updateVTOPStatus(
@@ -447,6 +582,16 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response error.");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
+                readVTOPActionsProviderValue.updateLoginPageStatus(
+                    status: VTOPPageStatus.notProcessing);
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -570,6 +715,15 @@ class HeadlessWebView extends ChangeNotifier {
                     bytes: bytes);
                 readUserLoginStateProviderValue.setAutoCaptcha(
                     autoCaptcha: solvedCaptcha);
+              } else {
+                try {
+                  throw CustomErrorException(cause: value);
+                } catch (exception, stackTrace) {
+                  await Sentry.captureException(
+                    exception,
+                    stackTrace: stackTrace,
+                  );
+                }
               }
             });
           } else {
@@ -594,6 +748,7 @@ class HeadlessWebView extends ChangeNotifier {
 
   _onLoadStopAction({required Uri? url}) async {
     _onLoadStopHandler(
+      initialUrl: _initialUrl,
       url: url,
       headlessWebView: headlessWebView,
       homepageAction: () async {
@@ -639,6 +794,7 @@ _onLoadStopHandler({
   required Function() homepageAction,
   required Function() alreadyLoggedInAction,
   required Function() sessionTimeOutAction,
+  required String initialUrl,
 }) async {
   headlessWebView.webViewController
       .evaluateJavascript(
@@ -652,8 +808,7 @@ _onLoadStopHandler({
         // If true means session timed out.
 
         sessionTimeOutAction();
-      } else if (url.toString() ==
-              "https://vtop.vitbhopal.ac.in/vtop/initialProcess" &&
+      } else if (url.toString() == "${initialUrl}initialProcess" &&
           await headlessWebView.webViewController.getProgress() == 100 &&
           !(await headlessWebView.webViewController.isLoading()) &&
           value != initialVTOPHtml &&
@@ -661,7 +816,7 @@ _onLoadStopHandler({
         // If true means VTOP is loaded.
 
         homepageAction();
-      } else if (url.toString() == "https://vtop.vitbhopal.ac.in/vtop/" &&
+      } else if (url.toString() == initialUrl &&
           await headlessWebView.webViewController.getProgress() == 100 &&
           !(await headlessWebView.webViewController.isLoading()) &&
           value.contains("(STUDENT)")) {
@@ -693,6 +848,15 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 231 encountered");
     ajaxRequestOtherStatusAction();
+    try {
+      throw CustomErrorException(
+          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+    }
   } else if (ajaxRequest.status == 232) {
     // ajaxRequest.status == 232 means the Session Timed out.
     // The ajaxRequest.responseText should contain "You are logged out due to inactivity for more than 15 minutes"
@@ -700,6 +864,15 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 232 encountered");
     ajaxRequestStatus232Action();
+    try {
+      throw CustomErrorException(
+          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+    }
   } else if (ajaxRequest.status == 233) {
     // ajaxRequest.status == 233 executes same operation as ajaxRequest.status == 200.
     // But is still an error request.
@@ -707,27 +880,69 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 233 encountered");
     ajaxRequestOtherStatusAction();
+    try {
+      throw CustomErrorException(
+          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+    }
   } else {
     // Any other ajaxRequest.status executes same operation as ajaxRequest.status == 200.
 
     log("ajaxRequest.status: ${ajaxRequest.status} encountered");
     ajaxRequestOtherStatusAction();
+    try {
+      throw CustomErrorException(
+          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+    }
   }
 }
 
 _shouldOverrideUrlLoadingHandler(
     {required InAppWebViewController controller,
     required NavigationAction navigationAction,
-    required String redirectFromUrl}) {
+    required String redirectFromUrl,
+    required String initialUrl}) {
   String redirectToUrl = navigationAction.request.url.toString();
 
-  if (redirectFromUrl == "https://vtop.vitbhopal.ac.in/vtop/" &&
-      redirectToUrl == "https://vtop.vitbhopal.ac.in/vtop/initialProcess") {
+  if (redirectFromUrl == initialUrl &&
+      redirectToUrl == "${initialUrl}initialProcess") {
     // It means url redirecting from https://vtop.vitbhopal.ac.in/vtop/ to https://vtop.vitbhopal.ac.in/vtop/initialProcess.
     // The VTOP initial url always redirects to this url as it is the homepage.
 
     log("Redirecting from https://vtop.vitbhopal.ac.in/vtop/ to https://vtop.vitbhopal.ac.in/vtop/initialProcess");
   } else {
     log("Redirecting from $redirectFromUrl to $redirectToUrl");
+  }
+}
+
+void errorSnackBar({required BuildContext context, required String error}) {
+  showCustomSnackBar(
+    context: context,
+    contentText: error,
+    backgroundColor: Theme.of(context).colorScheme.errorContainer,
+    duration: const Duration(days: 365),
+    iconData: Icons.warning,
+    iconAndTextColor: Theme.of(context).colorScheme.error,
+  );
+}
+
+class CustomErrorException implements Exception {
+  String cause;
+  CustomErrorException({required this.cause});
+
+  // Implement toString to make it easier to see information
+  // when using the print statement.
+  @override
+  String toString() {
+    return 'CustomErrorException{cause: $cause}';
   }
 }

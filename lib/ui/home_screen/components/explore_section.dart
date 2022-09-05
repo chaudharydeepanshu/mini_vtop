@@ -71,34 +71,38 @@ class ExploreSection extends StatelessWidget {
       GridCardDetail(
         cardIcon: const Icon(Icons.badge),
         cardTitle: 'Attendance',
-        cardOnTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => const Attendance(),
-            ),
-          );
-        },
+        cardOnTap: null,
+        //     () {
+        //   Navigator.of(context).push(
+        //     MaterialPageRoute(
+        //       builder: (BuildContext context) => const Attendance(),
+        //     ),
+        //   );
+        // },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.table_chart),
         cardTitle: 'Time-Table',
-        cardOnTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => const TimeTable(),
-            ),
-          );
-        },
+        cardOnTap: null,
+        //     () {
+        //   Navigator.of(context).push(
+        //     MaterialPageRoute(
+        //       builder: (BuildContext context) => const TimeTable(),
+        //     ),
+        //   );
+        // },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.schedule),
         cardTitle: 'Exam Schedule',
-        cardOnTap: () {},
+        cardOnTap: null,
+        // () {},
       ),
     ];
 
     return GridViewInCardSection(
       sectionTitle: 'Explore',
+      emptySectionText: 'Nothing to explore',
       gridCardsDetails: exploreCardsDetails,
       cardShowAllOnTap: () {
         Navigator.of(context).push(

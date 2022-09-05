@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/state/connection_state.dart';
 import 'package:mini_vtop/state/providers.dart';
@@ -56,7 +55,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
           final UserLoginState readUserLoginStateProviderValue =
               ref.read(userLoginStateProvider);
 
-          if (readUserLoginStateProviderValue.loginStatus ==
+          if (readUserLoginStateProviderValue.loginResponseStatus ==
               LoginResponseStatus.loggedIn) {
             Navigator.pushReplacement(
               context,
