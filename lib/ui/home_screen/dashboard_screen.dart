@@ -8,10 +8,10 @@ import 'package:mini_vtop/ui/home_screen/components/tools_section.dart';
 import '../../state/providers.dart';
 import '../../state/user_login_state.dart';
 import '../../state/vtop_actions.dart';
-import '../login_screen/login.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +27,9 @@ class Home extends StatelessWidget {
                       (value) => value.loginResponseStatus), (previous, next) {
                 //Checking if LoginResponse status is loggedIn and its a new status.
                 if (previous != next && next == LoginResponseStatus.loggedOut) {
-                  Navigator.pushReplacement(
+                  Navigator.pushReplacementNamed(
                     context,
-                    MaterialPageRoute(builder: (context) => const Login()),
+                    route.loginPage,
                   );
                 }
               });

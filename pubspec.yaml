@@ -32,34 +32,50 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # For material you.
   dynamic_color: ^1.5.4
 
-  webview_flutter: ^3.0.4
-
+  # For WebView.
   flutter_inappwebview: ^5.4.3+7
 
-  path_provider: ^2.0.11
-
+  # For state management.
   flutter_riverpod: ^1.0.4
 
+  # For material animations on list and grid.
   animations: ^2.0.4
 
+  # For circular progress gauges. Ex: CGPA indicator.
   syncfusion_flutter_gauges: ^20.2.46
 
+  # For calendar views in app.
   clean_calendar: ^0.4.1
 
+  # For custom animations.
   rive: ^0.9.1
 
+  # For shimmer/loading effect.
   shimmer: ^2.0.0
 
+  # For parsing HTML doc from WebView.
   html: ^0.15.0
 
+  # For cropping captcha image.
   image: ^3.2.0
 
+  # For loading animations.
   flutter_spinkit: ^5.1.0
 
-  sentry_flutter: ^6.9.1
+  # For firebase packages. After installing new firebase package run ```flutterfire configure```.
+  firebase_core: ^1.21.1
 
+  # For logging errors.
+  firebase_crashlytics: ^2.8.9
+
+  # For logging usage and behavior data.
+  firebase_analytics: ^9.3.3
+
+  # For identifying logs user.
+  uuid: ^3.0.6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

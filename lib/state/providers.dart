@@ -1,7 +1,6 @@
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/state/vtop_data_state.dart';
-
 import 'connection_state.dart';
 import 'error_state.dart';
 import 'webview_state.dart';
@@ -22,4 +21,4 @@ final vtopActionsProvider =
 final vtopDataProvider = ChangeNotifierProvider((ref) => VTOPData());
 
 final errorStatusStateProvider =
-    ChangeNotifierProvider((ref) => ErrorStatusState()..init());
+    ChangeNotifierProvider((ref) => ErrorStatusState(ref.read)..init());

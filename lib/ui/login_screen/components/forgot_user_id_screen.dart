@@ -13,14 +13,14 @@ import 'package:mini_vtop/state/vtop_actions.dart';
 import '../../components/error_indicators.dart';
 import '../../components/page_body_indicators.dart';
 
-class ForgotUserID extends ConsumerStatefulWidget {
-  const ForgotUserID({Key? key}) : super(key: key);
+class ForgotUserIDPage extends ConsumerStatefulWidget {
+  const ForgotUserIDPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ForgotUserID> createState() => _ForgotUserIDState();
+  ConsumerState<ForgotUserIDPage> createState() => _ForgotUserIDState();
 }
 
-class _ForgotUserIDState extends ConsumerState<ForgotUserID> {
+class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
   final GlobalKey<FormFieldState> erpIDOrRegNoFormFieldKey =
       GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> emailOTPFormFieldKey =

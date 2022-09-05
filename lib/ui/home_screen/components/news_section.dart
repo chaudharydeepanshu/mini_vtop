@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/ui/home_screen/components/list_view_in_card_view.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class NewsListScreen extends StatelessWidget {
-  const NewsListScreen({Key? key, required this.newsListTilesDetails})
-      : super(key: key);
+class NewsPage extends StatelessWidget {
+  const NewsPage({Key? key, required this.arguments}) : super(key: key);
 
-  final List<ListTileDetail> newsListTilesDetails;
+  final NewsPageArguments arguments;
 
   @override
   Widget build(BuildContext context) {
+    final List<ListTileDetail> newsListTilesDetails =
+        arguments.newsListTilesDetails;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("News"),
@@ -34,6 +37,12 @@ class NewsListScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class NewsPageArguments {
+  final List<ListTileDetail> newsListTilesDetails;
+
+  NewsPageArguments({required this.newsListTilesDetails});
 }
 
 class NewsSection extends StatelessWidget {
@@ -73,12 +82,11 @@ class NewsSection extends StatelessWidget {
       emptySectionText: 'No news available',
       listTilesDetails: newsListTilesDetails,
       cardShowAllOnTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => NewsListScreen(
-              newsListTilesDetails: newsListTilesDetails,
-            ),
-          ),
+        Navigator.pushNamed(
+          context,
+          route.newsPage,
+          arguments:
+              NewsPageArguments(newsListTilesDetails: newsListTilesDetails),
         );
       },
     );

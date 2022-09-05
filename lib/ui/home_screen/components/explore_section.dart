@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/ui/explore_section_screens/academics/academics.dart';
-import 'package:mini_vtop/ui/explore_section_screens/attendance/attendance.dart';
 import 'package:mini_vtop/ui/explore_section_screens/student_profile/student_profile.dart';
-import 'package:mini_vtop/ui/explore_section_screens/time_table/time_table.dart';
 import 'package:mini_vtop/ui/home_screen/components/grid_view_in_card_view.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class ExploreGridScreen extends StatelessWidget {
-  const ExploreGridScreen({Key? key, required this.exploreCardsDetails})
-      : super(key: key);
+class ExplorePage extends StatelessWidget {
+  const ExplorePage({Key? key, required this.arguments}) : super(key: key);
 
-  final List<GridCardDetail> exploreCardsDetails;
+  final ExplorePageArguments arguments;
 
   @override
   Widget build(BuildContext context) {
+    final List<GridCardDetail> exploreCardsDetails =
+        arguments.exploreCardsDetails;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Explore"),
@@ -38,6 +39,12 @@ class ExploreGridScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class ExplorePageArguments {
+  final List<GridCardDetail> exploreCardsDetails;
+
+  ExplorePageArguments({required this.exploreCardsDetails});
 }
 
 class ExploreSection extends StatelessWidget {
@@ -105,12 +112,11 @@ class ExploreSection extends StatelessWidget {
       emptySectionText: 'Nothing to explore',
       gridCardsDetails: exploreCardsDetails,
       cardShowAllOnTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => ExploreGridScreen(
-              exploreCardsDetails: exploreCardsDetails,
-            ),
-          ),
+        Navigator.pushNamed(
+          context,
+          route.explorePage,
+          arguments:
+              ExplorePageArguments(exploreCardsDetails: exploreCardsDetails),
         );
       },
     );

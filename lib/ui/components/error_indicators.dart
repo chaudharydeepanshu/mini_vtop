@@ -143,13 +143,35 @@ class BeforeHomeScreenErrors extends StatelessWidget {
         ],
       );
     }
-    if (errorStatus == ErrorStatus.internetOrDnsError) {
+    if (errorStatus == ErrorStatus.nameNotResolvedError) {
       return Column(
         children: const [
           FullBodyMessage(
-              messageHeadingText: "DNS Issue!",
+              messageHeadingText: "Internet / VTOP Lost!",
               messageBodyText:
-                  "Looks like a DNS issue. Try disabling the private DNS in your device settings."),
+                  "Either you are not connected to internet or the VTOP doesn't exist. Please try again."),
+          ErrorRetryButton(),
+        ],
+      );
+    }
+    if (errorStatus == ErrorStatus.connectionResetError) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Connection Reset!",
+              messageBodyText:
+                  "Looks like the connection was reset. Please try again."),
+          ErrorRetryButton(),
+        ],
+      );
+    }
+    if (errorStatus == ErrorStatus.addressUnreachableError) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "Internet / VTOP Lost!",
+              messageBodyText:
+                  "Either you are not connected to internet or the VTOP doesn't exist. Please try again."),
           ErrorRetryButton(),
         ],
       );
@@ -174,13 +196,23 @@ class BeforeHomeScreenErrors extends StatelessWidget {
           ErrorRetryButton(),
         ],
       );
+    }
+    if (errorStatus == ErrorStatus.webpageNotAvailable) {
+      return Column(
+        children: const [
+          FullBodyMessage(
+              messageHeadingText: "VTOP Unavailable!",
+              messageBodyText: "Unable to access VTOP. Please try again."),
+          ErrorRetryButton(),
+        ],
+      );
     } else {
       return Column(
         children: const [
           FullBodyMessage(
-              messageHeadingText: "Unexpected Error!",
+              messageHeadingText: "Error Detected!",
               messageBodyText:
-                  "Something is wrong but we don't know what & why"),
+                  "Something is wrong but I don't know what. Please try again."),
           ErrorRetryButton(),
         ],
       );

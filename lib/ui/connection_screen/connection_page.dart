@@ -4,22 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/state/connection_state.dart';
 import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/ui/login_screen/login.dart';
 import 'package:rive/rive.dart';
 
 import '../../state/error_state.dart';
 import '../../state/user_login_state.dart';
 import '../components/error_indicators.dart';
-import '../home_screen/home_screen.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class ConnectionScreen extends ConsumerStatefulWidget {
-  const ConnectionScreen({Key? key}) : super(key: key);
+class ConnectionPage extends ConsumerStatefulWidget {
+  const ConnectionPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ConnectionScreen> createState() => _ConnectionScreenState();
+  ConsumerState<ConnectionPage> createState() => _ConnectionScreenState();
 }
 
-class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
+class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
   late Future<bool> initWebViewState;
 
   Future<bool> initWebViewData() async {
@@ -57,14 +56,14 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
 
           if (readUserLoginStateProviderValue.loginResponseStatus ==
               LoginResponseStatus.loggedIn) {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(builder: (context) => const Home()),
+              route.dashboardPage,
             );
           } else {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(builder: (context) => const Login()),
+              route.loginPage,
             );
           }
         });

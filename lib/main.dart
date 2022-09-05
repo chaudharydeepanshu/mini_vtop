@@ -1,23 +1,40 @@
+import 'dart:async';
+
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/ui/connection_screen/connection_screen.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'Theme/app_theme_data.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://20d01220afad4f18a588c096ac580857@o1395082.ingest.sentry.io/6717545';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(const ProviderScope(child: MyApp())),
-  );
+var uuid = const Uuid();
+
+final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.instance;
+final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+final FirebaseAnalyticsObserver observer =
+    FirebaseAnalyticsObserver(analytics: analytics);
+
+void main() async {
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    // The following lines are the same as previously explained in "Handling uncaught errors"
+    FlutterError.onError = crashlytics.recordFlutterFatalError;
+    // Setting user identifiers
+    crashlytics.setUserIdentifier(uuid.v4());
+    analytics.setUserId(id: uuid.v4());
+
+    runApp(const ProviderScope(child: MyApp()));
+  },
+      (error, stack) =>
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -37,8 +54,10 @@ class MyApp extends StatelessWidget {
           theme: AppThemeData.lightThemeData(lightDynamic),
           darkTheme: AppThemeData.darkThemeData(darkDynamic),
           themeMode: ThemeMode.system,
-          home: const ConnectionScreen(),
+          onGenerateRoute: route.controller,
+          initialRoute: route.connectionPage,
           navigatorKey: navigatorKey,
+          navigatorObservers: [observer],
           scaffoldMessengerKey: rootScaffoldMessengerKey,
         );
       },

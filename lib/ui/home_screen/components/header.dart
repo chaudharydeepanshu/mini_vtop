@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mini_vtop/ui/header_section_screen/quick_glance_screen.dart';
 
 import 'package:mini_vtop/state/providers.dart';
 

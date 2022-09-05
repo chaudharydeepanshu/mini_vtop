@@ -12,20 +12,19 @@ import 'package:shimmer/shimmer.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
-import 'package:mini_vtop/ui/home_screen/home_screen.dart';
 import '../components/error_indicators.dart';
 import '../components/page_body_indicators.dart';
-import 'components/forgot_user_id_screen.dart';
 import 'components/upper_case_text_formatter.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class Login extends ConsumerStatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<Login> createState() => _LoginState();
+  ConsumerState<LoginPage> createState() => _LoginState();
 }
 
-class _LoginState extends ConsumerState<Login> {
+class _LoginState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     // // Resetting to clear any previous state
@@ -69,9 +68,9 @@ class _LoginState extends ConsumerState<Login> {
                   //Checking if LoginResponse status is loggedIn and its a new status.
                   if (previous != next &&
                       next == LoginResponseStatus.loggedIn) {
-                    Navigator.pushReplacement(
+                    Navigator.pushReplacementNamed(
                       context,
-                      MaterialPageRoute(builder: (context) => const Home()),
+                      route.dashboardPage,
                     );
                   }
                 });
@@ -173,7 +172,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
         //     onInit: _controlTeddy.onRiveInit,
         //   ),
         // ),
-        SizedBox(
+        const SizedBox(
           width: 150,
           height: 150,
           child: RiveAnimation.asset(
@@ -264,14 +263,14 @@ class LoginButton extends StatelessWidget {
               ref.listen(
                   userLoginStateProvider.select(
                       (value) => value.loginResponseStatus), (previous, next) {
-                if (next == LoginResponseStatus.loggedIn) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Home()),
-                    );
-                  });
-                }
+                // if (next == LoginResponseStatus.loggedIn) {
+                //   WidgetsBinding.instance.addPostFrameCallback((_) {
+                //     Navigator.pushReplacementNamed(
+                //       context,
+                //       route.dashboardPage,
+                //     );
+                //   });
+                // }
                 if (previous != next) {
                   //---------- Showing SnackBar ----------
                   final LoginResponseStatus loginStatus =
@@ -455,11 +454,9 @@ class LoginFields extends StatelessWidget {
               ForgotDetailButtons(
                 label: "Forgot UserID?",
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const ForgotUserID(),
-                    ),
+                    route.forgotUserIDPage,
                   ).then((value) {
                     final HeadlessWebView readHeadlessWebViewProviderValue =
                         ref.read(headlessWebViewProvider);
@@ -511,7 +508,7 @@ class LoginFields extends StatelessWidget {
                   );
                 },
               ),
-              ForgotDetailButtons(
+              const ForgotDetailButtons(
                 label: "Forgot Password?",
                 onPressed: null,
               ),

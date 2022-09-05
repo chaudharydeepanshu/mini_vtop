@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/ui/home_screen/components/grid_view_in_card_view.dart';
+import 'package:mini_vtop/route/route.dart' as route;
 
-class ToolsGridScreen extends StatelessWidget {
-  const ToolsGridScreen({Key? key, required this.toolsCardsDetails})
-      : super(key: key);
+class ToolsPage extends StatelessWidget {
+  const ToolsPage({Key? key, required this.arguments}) : super(key: key);
 
-  final List<GridCardDetail> toolsCardsDetails;
+  final ToolsPageArguments arguments;
 
   @override
   Widget build(BuildContext context) {
+    final List<GridCardDetail> toolsCardsDetails = arguments.toolsCardsDetails;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tools"),
@@ -34,6 +36,12 @@ class ToolsGridScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class ToolsPageArguments {
+  final List<GridCardDetail> toolsCardsDetails;
+
+  ToolsPageArguments({required this.toolsCardsDetails});
 }
 
 class ToolsSection extends StatelessWidget {
@@ -64,12 +72,10 @@ class ToolsSection extends StatelessWidget {
       emptySectionText: 'No tools available',
       gridCardsDetails: toolsCardsDetails,
       cardShowAllOnTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => ToolsGridScreen(
-              toolsCardsDetails: toolsCardsDetails,
-            ),
-          ),
+        Navigator.pushNamed(
+          context,
+          route.toolsPage,
+          arguments: ToolsPageArguments(toolsCardsDetails: toolsCardsDetails),
         );
       },
     );

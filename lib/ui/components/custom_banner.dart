@@ -18,7 +18,7 @@ showBanner({
         padding: const EdgeInsets.all(20),
         content: Text(
           contentText,
-          style: TextStyle().copyWith(
+          style: const TextStyle().copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),

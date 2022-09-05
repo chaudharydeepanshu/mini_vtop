@@ -1,16 +1,24 @@
 import 'dart:developer';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum ErrorStatus {
   // For no errors. If no error continue with other things.
   noError,
 
-  // net::ERR_CONNECTION_CLOSED
+  // net::ERR_CONNECTION_CLOSED Unexpectedly closed the connection.
   connectionClosedError,
 
-  // net::ERR_NAME_NOT_RESOLVED
-  internetOrDnsError,
+  // net::ERR_NAME_NOT_RESOLVED This website doesn't exist
+  nameNotResolvedError,
+
+  // net::ERR_CONNECTION_RESET The connection was reset.
+  connectionResetError,
+
+  // net::ERR_ADDRESS_UNREACHABLE
+  addressUnreachableError,
 
   // net::ERR_CLEARTEXT_NOT_PERMITTED HTTP traffic is not permitted
   httpTrafficError,
@@ -27,6 +35,9 @@ enum ErrorStatus {
   // If WebView provides null document before action request.
   nullDocBeforeAction,
 
+  // If webpage is not available.
+  webpageNotAvailable,
+
   // For any VTOP Page related errors. Like unknown responses.
   vtopUnknownResponsesError,
 
@@ -35,6 +46,10 @@ enum ErrorStatus {
 }
 
 class ErrorStatusState extends ChangeNotifier {
+  ErrorStatusState(this.read);
+
+  final Reader read;
+
   late ErrorStatus _errorStatus;
   ErrorStatus get errorStatus => _errorStatus;
 
@@ -46,6 +61,30 @@ class ErrorStatusState extends ChangeNotifier {
   update({required ErrorStatus status}) {
     _errorStatus = status;
     log("Error Status: $errorStatus");
+    notifyListeners();
+  }
+
+  onLoadErrorHandler({
+    required Uri? url,
+    required int code,
+    required String message,
+  }) async {
+    await FirebaseCrashlytics.instance.recordError(
+        "onLoadError -> url: $url, errorCode:$code, message:$message", null,
+        reason: 'a non-fatal error');
+
+    if (message == "net::ERR_CONNECTION_CLOSED") {
+      update(status: ErrorStatus.connectionClosedError);
+    } else if (message == "net::ERR_NAME_NOT_RESOLVED") {
+      update(status: ErrorStatus.nameNotResolvedError);
+    } else if (message == "net::ERR_CONNECTION_RESET") {
+      update(status: ErrorStatus.connectionResetError);
+    } else if (message == "net::ERR_ADDRESS_UNREACHABLE") {
+      update(status: ErrorStatus.addressUnreachableError);
+    } else {
+      update(status: ErrorStatus.unknownError);
+    }
+
     notifyListeners();
   }
 }

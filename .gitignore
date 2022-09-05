@@ -43,8 +43,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Exclude copyrighted asset from repo
-/assets/images/screens_animated_gifs/Flame_animated_illustrations_by_Icons8
-
-# Exclude secrets
-/lib/auth/secrets.dart
+# Android
+/lib/firebase_options.dart
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+/ios/firebase_app_id_file.json

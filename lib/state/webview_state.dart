@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -14,9 +15,6 @@ import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
 import 'package:mini_vtop/utils/captcha_parser.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
-
-import '../main.dart';
 import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 
@@ -145,14 +143,9 @@ class HeadlessWebView extends ChangeNotifier {
         //   return ServerTrustAuthResponse(
         //       action: ServerTrustAuthResponseAction.PROCEED);
         // }
-        try {
-          throw CustomErrorException(cause: "$sslError");
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
-        }
+        await FirebaseCrashlytics.instance.recordError(
+            "sslError: $sslError", null,
+            reason: 'a non-fatal error');
         // errorSnackBar(
         //     context: rootScaffoldMessengerKey.currentState!.context,
         //     error: "sslError -> $sslError");
@@ -179,47 +172,18 @@ class HeadlessWebView extends ChangeNotifier {
       onLoadError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
         log("onLoadError -> url: $url, errorCode:$code, message:$message");
-        if (message == "net::ERR_NAME_NOT_RESOLVED") {
-          readErrorStatusStateProviderValue.update(
-              status: ErrorStatus.internetOrDnsError);
-        } else {
-          readErrorStatusStateProviderValue.update(
-              status: ErrorStatus.unknownError);
-        }
-        try {
-          throw CustomErrorException(
-              cause:
-                  "onLoadError -> url: $url, errorCode:$code, message:$message");
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
-        }
-        errorSnackBar(
-            context: rootScaffoldMessengerKey.currentState!.context,
-            error:
-                "onLoadError -> url: $url, errorCode:$code, message:$message");
+        readErrorStatusStateProviderValue.onLoadErrorHandler(
+            url: url, code: code, message: message);
       },
       onLoadHttpError: (InAppWebViewController controller, Uri? url, int code,
           String message) async {
         log("onLoadHttpError -> url: $url, errorCode:$code, message:$message");
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.unknownError);
-        try {
-          throw CustomErrorException(
-              cause:
-                  "onLoadHttpError -> url: $url, errorCode:$code, message:$message");
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
-        }
-        errorSnackBar(
-            context: rootScaffoldMessengerKey.currentState!.context,
-            error:
-                "onLoadHttpError -> url: $url, errorCode:$code, message:$message");
+        await FirebaseCrashlytics.instance.recordError(
+            "onLoadHttpError -> url: $url, errorCode:$code, message:$message",
+            null,
+            reason: 'a non-fatal error');
       },
     );
 
@@ -275,7 +239,6 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
-              Document document = parse('$value');
               if (value.contains("You have been successfully logged out")) {
                 log("User is logged out successfully.");
                 readUserLoginStateProviderValue.updateLoginStatus(
@@ -284,14 +247,9 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopProcessLogoutAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -348,14 +306,10 @@ class HeadlessWebView extends ChangeNotifier {
                 log("Unknown response");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopForgotUserIDValidateAjaxRequest",
+                    null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -405,17 +359,12 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
                     status: ForgotUserIDSearchResponseStatus.notFound);
               } else {
-                log("Unknown response error");
+                log("Unknown response error.");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopForgotUserIDSearchAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -455,17 +404,12 @@ class HeadlessWebView extends ChangeNotifier {
                 readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                     status: VTOPPageStatus.loaded);
               } else {
-                log("Unknown response error");
+                log("Unknown response error.");
                 readErrorStatusStateProviderValue.update(
                     status: ErrorStatus.vtopUnknownResponsesError);
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopForgotUserIDAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -513,14 +457,9 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue.setAutoCaptcha(
                     autoCaptcha: solvedCaptcha);
               } else {
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _doRefreshCaptchaAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -555,8 +494,6 @@ class HeadlessWebView extends ChangeNotifier {
               // Document document = parse('$value');
               if (value.contains("(STUDENT)")) {
                 log("User Id ${readUserLoginStateProviderValue.userID} logged in.");
-                Sentry.captureMessage(
-                    "User Id ${readUserLoginStateProviderValue.userID} logged in.");
                 readUserLoginStateProviderValue.updateLoginStatus(
                     loginStatus: LoginResponseStatus.loggedIn);
                 readVTOPActionsProviderValue.updateVTOPStatus(
@@ -584,14 +521,9 @@ class HeadlessWebView extends ChangeNotifier {
                     status: ErrorStatus.vtopUnknownResponsesError);
                 readVTOPActionsProviderValue.updateLoginPageStatus(
                     status: VTOPPageStatus.notProcessing);
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopDoLoginAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -716,14 +648,9 @@ class HeadlessWebView extends ChangeNotifier {
                 readUserLoginStateProviderValue.setAutoCaptcha(
                     autoCaptcha: solvedCaptcha);
               } else {
-                try {
-                  throw CustomErrorException(cause: value);
-                } catch (exception, stackTrace) {
-                  await Sentry.captureException(
-                    exception,
-                    stackTrace: stackTrace,
-                  );
-                }
+                await FirebaseCrashlytics.instance.recordError(
+                    "Unknown response _vtopLoginAjaxRequest", null,
+                    reason: 'a non-fatal error');
               }
             });
           } else {
@@ -837,6 +764,12 @@ _ajaxRequestCommonHandler(
     required Function() ajaxRequestStatus200Action,
     required Function() ajaxRequestStatus232Action,
     required Function() ajaxRequestOtherStatusAction}) async {
+  if (ajaxRequest.status != 200) {
+    await FirebaseCrashlytics.instance.recordError(
+        "_ajaxRequestCommonHandler ajaxRequest.url: ${ajaxRequest.url}, ajaxRequest.status: ${ajaxRequest.status} encountered",
+        null,
+        reason: 'a non-fatal error');
+  }
   if (ajaxRequest.status == 200) {
     // ajaxRequest.status == 200 means a successful operation without any issues.
 
@@ -848,15 +781,6 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 231 encountered");
     ajaxRequestOtherStatusAction();
-    try {
-      throw CustomErrorException(
-          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
-    } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-    }
   } else if (ajaxRequest.status == 232) {
     // ajaxRequest.status == 232 means the Session Timed out.
     // The ajaxRequest.responseText should contain "You are logged out due to inactivity for more than 15 minutes"
@@ -864,15 +788,6 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 232 encountered");
     ajaxRequestStatus232Action();
-    try {
-      throw CustomErrorException(
-          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
-    } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-    }
   } else if (ajaxRequest.status == 233) {
     // ajaxRequest.status == 233 executes same operation as ajaxRequest.status == 200.
     // But is still an error request.
@@ -880,29 +795,11 @@ _ajaxRequestCommonHandler(
 
     log("ajaxRequest.status: 233 encountered");
     ajaxRequestOtherStatusAction();
-    try {
-      throw CustomErrorException(
-          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
-    } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-    }
   } else {
     // Any other ajaxRequest.status executes same operation as ajaxRequest.status == 200.
 
     log("ajaxRequest.status: ${ajaxRequest.status} encountered");
     ajaxRequestOtherStatusAction();
-    try {
-      throw CustomErrorException(
-          cause: "ajaxRequest.status: ${ajaxRequest.status} encountered");
-    } catch (exception, stackTrace) {
-      await Sentry.captureException(
-        exception,
-        stackTrace: stackTrace,
-      );
-    }
   }
 }
 
@@ -935,14 +832,14 @@ void errorSnackBar({required BuildContext context, required String error}) {
   );
 }
 
-class CustomErrorException implements Exception {
-  String cause;
-  CustomErrorException({required this.cause});
-
-  // Implement toString to make it easier to see information
-  // when using the print statement.
-  @override
-  String toString() {
-    return 'CustomErrorException{cause: $cause}';
-  }
-}
+// class CustomErrorException implements Exception {
+//   String cause;
+//   CustomErrorException({required this.cause});
+//
+//   // Implement toString to make it easier to see information
+//   // when using the print statement.
+//   @override
+//   String toString() {
+//     return 'CustomErrorException{cause: $cause}';
+//   }
+// }

@@ -25,8 +25,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+// Add the Google services Gradle plugin
+apply plugin: 'com.google.gms.google-services'
+
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -70,7 +73,7 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.google.android.material:material:1.7.0-beta01'
+    implementation 'com.google.android.material:material:1.8.0-alpha01'
 
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"

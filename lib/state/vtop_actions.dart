@@ -1,14 +1,13 @@
 import 'dart:developer';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/webview_state.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
-import '../main.dart';
 import 'connection_state.dart';
 import 'error_state.dart';
 
@@ -113,6 +112,14 @@ class VTOPActions extends ChangeNotifier {
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
     );
   }
 
@@ -141,6 +148,14 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
       },
     );
   }
@@ -171,6 +186,14 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
       },
     );
   }
@@ -211,6 +234,14 @@ class VTOPActions extends ChangeNotifier {
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
     );
   }
 
@@ -239,6 +270,14 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
       },
     );
   }
@@ -269,6 +308,14 @@ class VTOPActions extends ChangeNotifier {
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
     );
   }
 
@@ -297,6 +344,14 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
       },
     );
   }
@@ -330,6 +385,14 @@ class VTOPActions extends ChangeNotifier {
             status: ErrorStatus.connectionClosedError);
         notifyListeners();
       },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
     );
   }
 
@@ -360,7 +423,14 @@ class VTOPActions extends ChangeNotifier {
       closedConnectionErrorAction: () {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.connectionClosedError);
-        notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
       },
     );
   }
@@ -373,8 +443,8 @@ void _actionHandler({
   required Function() performAction,
   required Function() initialAction,
   required Function() closedConnectionErrorAction,
-  // required Function() otherErrorAction,
-  // required Function() nullDocErrorAction,
+  required Function() otherErrorAction,
+  required Function() nullDocErrorAction,
 }) async {
   // Perform initial action like setting status to processing.
   initialAction();
@@ -394,21 +464,15 @@ void _actionHandler({
 
             closedConnectionErrorAction();
           } else {
-            log('net::ERR_CONNECTION_CLOSED');
+            log('Web page not available.');
 
             // errorSnackBar(
             //     context: rootScaffoldMessengerKey.currentState!.context,
             //     error: "sslError -> $sslError");
             // otherErrorAction();
-            try {
-              throw CustomErrorException(
-                  cause: 'Web page not available. -> $value');
-            } catch (exception, stackTrace) {
-              await Sentry.captureException(
-                exception,
-                stackTrace: stackTrace,
-              );
-            }
+            await FirebaseCrashlytics.instance.recordError(
+                'Web page not available.', null,
+                reason: 'a non-fatal error');
           }
         } else if (value.contains(
             "You are logged out due to inactivity for more than 15 minutes")) {
@@ -426,14 +490,10 @@ void _actionHandler({
 
         log('Document is null.');
 
-        try {
-          throw CustomErrorException(cause: 'Document is null.');
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
-        }
+        nullDocErrorAction();
+        await FirebaseCrashlytics.instance.recordError(
+            'Document is null.', null,
+            reason: 'a non-fatal error');
       }
     });
   } else {
