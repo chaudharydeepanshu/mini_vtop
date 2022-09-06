@@ -6,14 +6,14 @@ import 'package:mini_vtop/state/vtop_actions.dart';
 
 import '../../../state/vtop_data_state.dart';
 
-class StudentProfile extends ConsumerStatefulWidget {
-  const StudentProfile({Key? key}) : super(key: key);
+class StudentProfilePage extends ConsumerStatefulWidget {
+  const StudentProfilePage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<StudentProfile> createState() => _StudentProfileState();
+  ConsumerState<StudentProfilePage> createState() => _StudentProfileState();
 }
 
-class _StudentProfileState extends ConsumerState<StudentProfile> {
+class _StudentProfileState extends ConsumerState<StudentProfilePage> {
   @override
   void initState() {
     final VTOPPageStatus studentProfilePageStatus =

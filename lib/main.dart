@@ -28,8 +28,8 @@ void main() async {
     // The following lines are the same as previously explained in "Handling uncaught errors"
     FlutterError.onError = crashlytics.recordFlutterFatalError;
     // Setting user identifiers
-    crashlytics.setUserIdentifier(uuid.v4());
-    analytics.setUserId(id: uuid.v4());
+    // crashlytics.setUserIdentifier(uuid.v4());
+    // analytics.setUserId(id: uuid.v4());
 
     runApp(const ProviderScope(child: MyApp()));
   },

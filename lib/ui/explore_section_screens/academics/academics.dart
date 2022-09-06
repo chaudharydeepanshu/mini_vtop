@@ -7,14 +7,14 @@ import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/state/vtop_data_state.dart';
 
-class Academics extends ConsumerStatefulWidget {
-  const Academics({Key? key}) : super(key: key);
+class AcademicsPage extends ConsumerStatefulWidget {
+  const AcademicsPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<Academics> createState() => _AcademicsState();
+  ConsumerState<AcademicsPage> createState() => _AcademicsState();
 }
 
-class _AcademicsState extends ConsumerState<Academics> {
+class _AcademicsState extends ConsumerState<AcademicsPage> {
   @override
   void initState() {
     final VTOPPageStatus studentGradeHistoryPageStatus =

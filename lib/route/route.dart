@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../ui/connection_screen/connection_page.dart';
+import '../ui/explore_section_screens/academics/academics.dart';
+import '../ui/explore_section_screens/student_profile/student_profile.dart';
 import '../ui/home_screen/components/explore_section.dart';
 import '../ui/home_screen/components/news_section.dart';
 import '../ui/home_screen/components/tools_section.dart';
@@ -16,30 +18,51 @@ const String forgotUserIDPage = 'forgotUserID';
 const String explorePage = 'explore';
 const String newsPage = 'news';
 const String toolsPage = 'tools';
+const String studentProfilePage = 'StudentProfile';
+const String academicsPage = 'Academics';
 
 // Control our page route flow
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
     case connectionPage:
-      return MaterialPageRoute(builder: (context) => const ConnectionPage());
+      return MaterialPageRoute(
+          builder: (context) => const ConnectionPage(),
+          settings: RouteSettings(name: settings.name));
     case loginPage:
-      return MaterialPageRoute(builder: (context) => const LoginPage());
+      return MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+          settings: RouteSettings(name: settings.name));
     case dashboardPage:
-      return MaterialPageRoute(builder: (context) => const DashboardPage());
+      return MaterialPageRoute(
+          builder: (context) => const DashboardPage(),
+          settings: RouteSettings(name: settings.name));
     case forgotUserIDPage:
-      return MaterialPageRoute(builder: (context) => const ForgotUserIDPage());
+      return MaterialPageRoute(
+          builder: (context) => const ForgotUserIDPage(),
+          settings: RouteSettings(name: settings.name));
     case explorePage:
       return MaterialPageRoute(
           builder: (context) => ExplorePage(
-              arguments: settings.arguments as ExplorePageArguments));
+              arguments: settings.arguments as ExplorePageArguments),
+          settings: RouteSettings(name: settings.name));
     case newsPage:
       return MaterialPageRoute(
           builder: (context) =>
-              NewsPage(arguments: settings.arguments as NewsPageArguments));
+              NewsPage(arguments: settings.arguments as NewsPageArguments),
+          settings: RouteSettings(name: settings.name));
     case toolsPage:
       return MaterialPageRoute(
           builder: (context) =>
-              ToolsPage(arguments: settings.arguments as ToolsPageArguments));
+              ToolsPage(arguments: settings.arguments as ToolsPageArguments),
+          settings: RouteSettings(name: settings.name));
+    case studentProfilePage:
+      return MaterialPageRoute(
+          builder: (context) => const StudentProfilePage(),
+          settings: RouteSettings(name: settings.name));
+    case academicsPage:
+      return MaterialPageRoute(
+          builder: (context) => const AcademicsPage(),
+          settings: RouteSettings(name: settings.name));
 
     default:
       throw ('This route name does not exit');

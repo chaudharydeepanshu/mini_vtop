@@ -57,10 +57,9 @@ class ExploreSection extends StatelessWidget {
         cardIcon: const Icon(Icons.account_circle),
         cardTitle: 'Student Profile',
         cardOnTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => const StudentProfile(),
-            ),
+          Navigator.pushNamed(
+            context,
+            route.studentProfilePage,
           );
         },
       ),
@@ -68,10 +67,9 @@ class ExploreSection extends StatelessWidget {
         cardIcon: const Icon(Icons.school),
         cardTitle: 'Academics',
         cardOnTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => const Academics(),
-            ),
+          Navigator.pushNamed(
+            context,
+            route.academicsPage,
           );
         },
       ),
