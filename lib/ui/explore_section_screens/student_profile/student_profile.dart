@@ -70,7 +70,6 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
                 ? Column(
                     children: const [
                       CachedModeWarning(),
-                      SizedBox(height: 10),
                       Expanded(child: StudentProfileBody()),
                     ],
                   )
@@ -108,13 +107,13 @@ class StudentProfileBody extends StatelessWidget {
               Card(
                   clipBehavior: Clip.antiAlias,
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
+                  // elevation: 0,
+                  // shape: RoundedRectangleBorder(
+                  //   side: BorderSide(
+                  //     color: Theme.of(context).colorScheme.outline,
+                  //   ),
+                  //   borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  // ),
                   child: Column(
                     children: [
                       DetailLine(

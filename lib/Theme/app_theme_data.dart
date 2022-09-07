@@ -26,6 +26,7 @@ class AppThemeData {
       useMaterial3: true,
       colorScheme: colorScheme,
       extensions: [customColors],
+      fontFamily: "LexendDeca",
       // textTheme: _textTheme,
       // Matches manifest.json colors and background color.
       // primaryColor: colorScheme.primary,

@@ -52,13 +52,13 @@ class GridViewInCardSection extends StatelessWidget {
         Card(
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-          ),
+          // elevation: 0,
+          // shape: RoundedRectangleBorder(
+          //   side: BorderSide(
+          //     color: Theme.of(context).colorScheme.outline,
+          //   ),
+          //   borderRadius: const BorderRadius.all(Radius.circular(12)),
+          // ),
           child: Column(
             children: [
               Padding(
@@ -160,6 +160,8 @@ class GridViewCard extends StatelessWidget {
         alignment: AlignmentDirectional.topCenter,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: Container(
@@ -183,7 +185,7 @@ class GridViewCard extends StatelessWidget {
             children: [
               gridCardDetail.cardIcon,
               const SizedBox(
-                height: 10,
+                height: 5,
               ),
               Text(
                 gridCardDetail.cardTitle,

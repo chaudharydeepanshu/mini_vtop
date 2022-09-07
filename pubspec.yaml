@@ -74,7 +74,7 @@ dependencies:
   # For logging usage and behavior data.
   firebase_analytics: ^9.3.3
 
-  # For fetching vtop controlling data.
+  # For fetching VTOP controlling data.
   cloud_firestore: ^3.4.6
 
   # For identifying logs user.
@@ -141,6 +141,18 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
-  #
+  fonts:
+    - family: LexendDeca
+      fonts:
+        - asset: fonts/LexendDeca-Black.ttf
+        - asset: fonts/LexendDeca-Bold.ttf
+        - asset: fonts/LexendDeca-ExtraBold.ttf
+        - asset: fonts/LexendDeca-ExtraLight.ttf
+        - asset: fonts/LexendDeca-Light.ttf
+        - asset: fonts/LexendDeca-Medium.ttf
+        - asset: fonts/LexendDeca-Regular.ttf
+        - asset: fonts/LexendDeca-SemiBold.ttf
+        - asset: fonts/LexendDeca-Thin.ttf
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

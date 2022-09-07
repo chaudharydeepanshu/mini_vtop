@@ -57,7 +57,6 @@ class DashboardPage extends StatelessWidget {
       body: Column(
         children: const [
           CachedModeWarning(supportsRefresh: false),
-          SizedBox(height: 10),
           Expanded(child: DashboardBody()),
         ],
       ),

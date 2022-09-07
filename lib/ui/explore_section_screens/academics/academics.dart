@@ -71,7 +71,6 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
                 ? Column(
                     children: const [
                       CachedModeWarning(),
-                      SizedBox(height: 10),
                       Expanded(child: AcademicsBody()),
                     ],
                   )

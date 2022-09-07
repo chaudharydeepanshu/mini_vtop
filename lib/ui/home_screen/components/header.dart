@@ -10,6 +10,8 @@ import 'package:mini_vtop/models/student_profile_model.dart';
 import 'package:mini_vtop/shared_preferences/preferences.dart';
 import 'package:mini_vtop/state/vtop_data_state.dart';
 
+import '../../header_section_screen/quick_glance_screen.dart';
+
 class HomeHeader extends ConsumerStatefulWidget {
   const HomeHeader({Key? key}) : super(key: key);
 
@@ -38,13 +40,13 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline,
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-      ),
+      // elevation: 0,
+      // shape: RoundedRectangleBorder(
+      //   side: BorderSide(
+      //     color: Theme.of(context).colorScheme.outline,
+      //   ),
+      //   borderRadius: const BorderRadius.all(Radius.circular(12)),
+      // ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -104,14 +106,15 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
               ],
             ),
             OutlinedButton.icon(
-              onPressed: null,
-              //     () {
-              //   Navigator.of(context).push(
-              //     MaterialPageRoute(
-              //       builder: (BuildContext context) => const QuickGlance(),
-              //     ),
-              //   );
-              // },
+              onPressed:
+                  // null,
+                  () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const QuickGlance(),
+                  ),
+                );
+              },
               icon: const Icon(Icons.arrow_forward),
               label: const Text("Quick Glance"),
             ),

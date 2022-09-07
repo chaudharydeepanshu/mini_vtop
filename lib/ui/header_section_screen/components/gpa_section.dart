@@ -25,13 +25,13 @@ class CGPASection extends StatelessWidget {
         Card(
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-          ),
+          // elevation: 0,
+          // shape: RoundedRectangleBorder(
+          //   side: BorderSide(
+          //     color: Theme.of(context).colorScheme.outline,
+          //   ),
+          //   borderRadius: const BorderRadius.all(Radius.circular(12)),
+          // ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
