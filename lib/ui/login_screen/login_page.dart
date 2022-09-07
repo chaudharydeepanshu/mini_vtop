@@ -12,7 +12,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
-import '../components/error_indicators.dart';
 import '../components/page_body_indicators.dart';
 import 'components/upper_case_text_formatter.dart';
 import 'package:mini_vtop/route/route.dart' as route;
@@ -27,12 +26,6 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginState extends ConsumerState<LoginPage> {
   @override
   void initState() {
-    // // Resetting to clear any previous state
-    // ref.read(userLoginStateProvider).updateForgotUserIDSearchStatus(
-    //     status: ForgotUserIDSearchResponseStatus.notSearching);
-    // ref.read(userLoginStateProvider).updateForgotUserIDValidateStatus(
-    //     status: ForgotUserIDValidateResponseStatus.notProcessing);
-
     // Making a click on GoToLogin button.
     final VTOPActions readVTOPActionsProviderValue =
         ref.read(vtopActionsProvider);
@@ -68,10 +61,17 @@ class _LoginState extends ConsumerState<LoginPage> {
                   //Checking if LoginResponse status is loggedIn and its a new status.
                   if (previous != next &&
                       next == LoginResponseStatus.loggedIn) {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      route.dashboardPage,
-                    );
+                    if (Navigator.canPop(context)) {
+                      // If true means login is opened over some kind of page.
+                      // This situation should occur only for session timeouts logins on after login pages.
+                      Navigator.pop(context);
+                    } else {
+                      // If false means login is the initial page and login should open the dashboard.
+                      Navigator.pushReplacementNamed(
+                        context,
+                        route.dashboardPage,
+                      );
+                    }
                   }
                 });
 
@@ -109,7 +109,7 @@ class _LoginState extends ConsumerState<LoginPage> {
                       )
                     : PageBodyIndicators(
                         pageStatus: loginPageStatus,
-                        errorLocation: ErrorLocation.beforeHomeScreen);
+                        location: Location.beforeHomeScreen);
               },
             ),
             onRefresh: () async {

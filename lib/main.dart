@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_vtop/state/providers.dart';
 import 'package:uuid/uuid.dart';
 import 'Theme/app_theme_data.dart';
 import 'package:mini_vtop/route/route.dart' as route;
@@ -22,6 +23,10 @@ final FirebaseAnalyticsObserver observer =
 void main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    await initPackageInfo();
+    await initSharedPreferences();
+
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -65,11 +70,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Todo: Replace connection screen if error occurs with the error connection state and provide a retry option
+// Todo: Save user credential for future logins and provide option to clear them.
+// Todo: Load updating data from firebase.
+// Todo: Look into ajax requests like student record or grade history accepted multiple times.
 // Todo: Load data inside database on 1st run of app.
-// Todo: Implement session time out warning banner and provide option to login inside that. Also continue showing old data with this warning if login fails.
-// Todo: Integrate the above warning with the connection warning and provide an option to reconnect. Also continue showing old data with this warning if connection fails.
-// Todo: If connection fails on app start then provide an option to continue surfing with a warning of no connection. Also provide an option to reconnect in that warning.
 // Todo: make requests every few minutes to increase session time.
 // Todo: Add vit calendar.
 // Todo: Add a resume generator.

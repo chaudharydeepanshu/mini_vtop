@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 
+import '../../../models/student_profile_model.dart';
+import '../../../shared_preferences/preferences.dart';
 import '../../../state/vtop_data_state.dart';
+import '../../components/cached_mode_warning.dart';
+import '../../components/empty_content_indicator.dart';
+import '../../components/page_body_indicators.dart';
 
 class StudentProfilePage extends ConsumerStatefulWidget {
   const StudentProfilePage({Key? key}) : super(key: key);
@@ -43,81 +47,36 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
                 vtopActionsProvider
                     .select((value) => value.studentProfilePageStatus));
 
-            final VTOPData vtopData = ref.watch(vtopDataProvider);
+            final bool enableOfflineMode = ref.watch(
+                vtopActionsProvider.select((value) => value.enableOfflineMode));
 
-            return studentProfilePageStatus == VTOPPageStatus.loaded
-                ? ListView(
-                    children: [
-                      Card(
-                          clipBehavior: Clip.antiAlias,
-                          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(12)),
-                          ),
-                          child: Column(
-                            children: [
-                              DetailLine(
-                                parameter1: 'Name',
-                                parameter2: vtopData.studentProfile.name,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'DOB',
-                                parameter2: vtopData.studentProfile.dob,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'Blood Group',
-                                parameter2: vtopData.studentProfile.bloodGroup,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'Roll No.',
-                                parameter2: vtopData.studentProfile.rollNo,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'Application No.',
-                                parameter2:
-                                    vtopData.studentProfile.applicationNo,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'Program',
-                                parameter2: vtopData.studentProfile.program,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'Branch',
-                                parameter2: vtopData.studentProfile.branch,
-                              ),
-                              const Divider(),
-                              DetailLine(
-                                parameter1: 'School',
-                                parameter2: vtopData.studentProfile.school,
-                              ),
-                            ],
-                          )),
+            if (enableOfflineMode == true) {
+              final Preferences readPreferencesProviderValue =
+                  ref.read(preferencesProvider);
+              String? oldHTMLDoc =
+                  readPreferencesProviderValue.studentProfileHTMLDoc;
+              final VTOPData readVTOPDataProviderValue =
+                  ref.read(vtopDataProvider);
+              if (oldHTMLDoc != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  readVTOPDataProviderValue.setStudentProfile(
+                      studentProfileViewDocument: oldHTMLDoc);
+                });
+              }
+            }
+
+            return studentProfilePageStatus == VTOPPageStatus.loaded ||
+                    enableOfflineMode
+                ? Column(
+                    children: const [
+                      CachedModeWarning(),
+                      SizedBox(height: 10),
+                      Expanded(child: StudentProfileBody()),
                     ],
                   )
-                : studentProfilePageStatus == VTOPPageStatus.processing
-                    ? Center(
-                        child: SpinKitThreeBounce(
-                          size: 24,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          "Error",
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      );
+                : PageBodyIndicators(
+                    pageStatus: studentProfilePageStatus,
+                    location: Location.afterHomeScreen);
           },
         ),
         onRefresh: () async {
@@ -129,6 +88,90 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
               status: VTOPPageStatus.processing);
         },
       ),
+    );
+  }
+}
+
+class StudentProfileBody extends StatelessWidget {
+  const StudentProfileBody({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final StudentProfileModel? studentProfile =
+            ref.watch(vtopDataProvider.select((value) => value.studentProfile));
+
+        if (studentProfile != null) {
+          return ListView(
+            children: [
+              Card(
+                  clipBehavior: Clip.antiAlias,
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Column(
+                    children: [
+                      DetailLine(
+                        parameter1: 'Name',
+                        parameter2: studentProfile.name,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'DOB',
+                        parameter2: studentProfile.dob,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'Blood Group',
+                        parameter2: studentProfile.bloodGroup,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'Roll No.',
+                        parameter2: studentProfile.rollNo,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'Application No.',
+                        parameter2: studentProfile.applicationNo,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'Program',
+                        parameter2: studentProfile.program,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'Branch',
+                        parameter2: studentProfile.branch,
+                      ),
+                      const Divider(),
+                      DetailLine(
+                        parameter1: 'School',
+                        parameter2: studentProfile.school,
+                      ),
+                    ],
+                  )),
+            ],
+          );
+        } else {
+          return LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: const EmptyContentIndicator(),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

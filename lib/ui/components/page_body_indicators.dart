@@ -7,14 +7,17 @@ import 'package:mini_vtop/ui/components/loading_indicator.dart';
 import 'package:mini_vtop/state/connection_state.dart';
 
 import '../../state/error_state.dart';
+import '../../state/user_login_state.dart';
+
+enum Location { beforeHomeScreen, afterHomeScreen }
 
 class PageBodyIndicators extends StatelessWidget {
   const PageBodyIndicators(
-      {Key? key, required this.pageStatus, required this.errorLocation})
+      {Key? key, required this.pageStatus, required this.location})
       : super(key: key);
 
   final VTOPPageStatus pageStatus;
-  final ErrorLocation errorLocation;
+  final Location location;
 
   @override
   Widget build(BuildContext context) {
@@ -33,30 +36,21 @@ class PageBodyIndicators extends StatelessWidget {
         final ErrorStatus errorStatus = ref.watch(
             errorStatusStateProvider.select((value) => value.errorStatus));
 
+        // Watching VTOP status.
+        final LoginResponseStatus loginResponseStatus = ref.watch(
+            userLoginStateProvider
+                .select((value) => value.loginResponseStatus));
+
         if (errorStatus != ErrorStatus.noError) {
           //show connection error window with retry option
-          return ErrorIndicator(
-              errorLocation: errorLocation, errorStatus: errorStatus);
-        } else if (connectionStatus == ConnectionStatus.connecting) {
-          return const LoadingIndicator(
-            loadingBodyText: "App is connecting to VTOP. Please wait",
-            loadingHeadingText: 'Connecting!',
-          );
-        } else if (vtopStatus == VTOPStatus.sessionTimedOut) {
-          return const LoadingIndicator(
-            loadingBodyText: "Session timed out so reconnecting to VTOP",
-            loadingHeadingText: 'Connecting!',
-          );
-        } else if (pageStatus == VTOPPageStatus.processing) {
-          return const LoadingIndicator(
-            loadingBodyText: "Fetching and processing the data",
-            loadingHeadingText: 'Loading Data!',
-          );
+          return ErrorIndicators(location: location, errorStatus: errorStatus);
         } else {
-          return const LoadingIndicator(
-            loadingBodyText: "Unknown Status",
-            loadingHeadingText: 'Unknown Status!',
-          );
+          return LoadingIndicators(
+              location: location,
+              pageStatus: pageStatus,
+              vtopStatus: vtopStatus,
+              connectionStatus: connectionStatus,
+              loginResponseStatus: loginResponseStatus);
         }
       },
     );

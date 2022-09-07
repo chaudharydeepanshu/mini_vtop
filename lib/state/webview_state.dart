@@ -13,7 +13,6 @@ import 'package:mini_vtop/state/connection_state.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
-
 import 'package:mini_vtop/utils/captcha_parser.dart';
 import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
@@ -126,7 +125,7 @@ class HeadlessWebView extends ChangeNotifier {
         return NavigationActionPolicy.ALLOW;
       },
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
-        SslError? sslError = challenge.protectionSpace.sslError;
+        // SslError? sslError = challenge.protectionSpace.sslError;
         // if (sslError != null &&
         //     (sslError.iosError != null || sslError.androidError != null)) {
         //   if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
@@ -136,6 +135,9 @@ class HeadlessWebView extends ChangeNotifier {
         //     log("SSL Error occurred: $sslError.");
         //     readErrorStatusStateProviderValue.update(
         //         status: ErrorStatus.sslError);
+        // await FirebaseCrashlytics.instance.recordError(
+        //     "sslError: $sslError", null,
+        //     reason: 'a non-fatal error');
         //     return ServerTrustAuthResponse(
         //         action: ServerTrustAuthResponseAction.CANCEL);
         //   }
@@ -143,12 +145,6 @@ class HeadlessWebView extends ChangeNotifier {
         //   return ServerTrustAuthResponse(
         //       action: ServerTrustAuthResponseAction.PROCEED);
         // }
-        await FirebaseCrashlytics.instance.recordError(
-            "sslError: $sslError", null,
-            reason: 'a non-fatal error');
-        // errorSnackBar(
-        //     context: rootScaffoldMessengerKey.currentState!.context,
-        //     error: "sslError -> $sslError");
         return ServerTrustAuthResponse(
             action: ServerTrustAuthResponseAction.PROCEED);
       },
@@ -193,6 +189,8 @@ class HeadlessWebView extends ChangeNotifier {
   settingSomeVars({
     LoginResponseStatus? loginStatus,
     VTOPPageStatus? loginPageStatus,
+    VTOPPageStatus? studentProfilePageStatus,
+    VTOPPageStatus? studentGradeHistoryPageStatus,
     ForgotUserIDSearchResponseStatus? forgotUserIDSearchStatus,
     ForgotUserIDValidateResponseStatus? forgotUserIDValidateStatus,
   }) {
@@ -200,6 +198,10 @@ class HeadlessWebView extends ChangeNotifier {
         loginStatus: loginStatus ?? LoginResponseStatus.loggedOut);
     readVTOPActionsProviderValue.updateLoginPageStatus(
         status: loginPageStatus ?? VTOPPageStatus.notProcessing);
+    readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+        status: studentProfilePageStatus ?? VTOPPageStatus.notProcessing);
+    readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
+        status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
     readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
         status: forgotUserIDSearchStatus ??
             ForgotUserIDSearchResponseStatus.notSearching);
@@ -556,9 +558,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              Document document = parse('$value');
               read(vtopDataProvider)
-                  .setStudentProfile(studentProfileViewDocument: document);
+                  .setStudentProfile(studentProfileViewDocument: value);
 
               readVTOPActionsProviderValue.updateStudentProfilePageStatus(
                   status: VTOPPageStatus.loaded);
@@ -593,9 +594,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              Document document = parse('$value');
               read(vtopDataProvider)
-                  .setStudentAcademics(studentGradeHistoryDocument: document);
+                  .setStudentAcademics(studentGradeHistoryDocument: value);
               readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
                   status: VTOPPageStatus.loaded);
             });

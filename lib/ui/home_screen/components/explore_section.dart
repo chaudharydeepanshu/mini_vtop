@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/explore_section_screens/academics/academics.dart';
-import 'package:mini_vtop/ui/explore_section_screens/student_profile/student_profile.dart';
 import 'package:mini_vtop/ui/home_screen/components/grid_view_in_card_view.dart';
 import 'package:mini_vtop/route/route.dart' as route;
 
@@ -88,14 +86,12 @@ class ExploreSection extends StatelessWidget {
       GridCardDetail(
         cardIcon: const Icon(Icons.table_chart),
         cardTitle: 'Time-Table',
-        cardOnTap: null,
-        //     () {
-        //   Navigator.of(context).push(
-        //     MaterialPageRoute(
-        //       builder: (BuildContext context) => const TimeTable(),
-        //     ),
-        //   );
-        // },
+        cardOnTap: () {
+          Navigator.pushNamed(
+            context,
+            route.timeTablePage,
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.schedule),

@@ -6,7 +6,9 @@ import 'package:mini_vtop/state/providers.dart';
 
 import 'package:mini_vtop/state/vtop_actions.dart';
 
-import '../../../state/vtop_data_state.dart';
+import 'package:mini_vtop/models/student_profile_model.dart';
+import 'package:mini_vtop/shared_preferences/preferences.dart';
+import 'package:mini_vtop/state/vtop_data_state.dart';
 
 class HomeHeader extends ConsumerStatefulWidget {
   const HomeHeader({Key? key}) : super(key: key);
@@ -58,7 +60,23 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                         vtopActionsProvider
                             .select((value) => value.studentProfilePageStatus));
 
-                    final VTOPData vtopData = ref.watch(vtopDataProvider);
+                    final bool enableOfflineMode = ref.watch(vtopActionsProvider
+                        .select((value) => value.enableOfflineMode));
+
+                    if (enableOfflineMode == true) {
+                      final Preferences readPreferencesProviderValue =
+                          ref.read(preferencesProvider);
+                      String? oldHTMLDoc =
+                          readPreferencesProviderValue.studentProfileHTMLDoc;
+                      final VTOPData readVTOPDataProviderValue =
+                          ref.read(vtopDataProvider);
+                      if (oldHTMLDoc != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          readVTOPDataProviderValue.setStudentProfile(
+                              studentProfileViewDocument: oldHTMLDoc);
+                        });
+                      }
+                    }
 
                     return Row(
                       children: [
@@ -66,23 +84,12 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
                           "Hello, ",
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        studentProfilePageStatus == VTOPPageStatus.loaded
-                            ? Text(
-                                vtopData.studentProfile.firstName,
-                                style: Theme.of(context).textTheme.titleMedium,
+                        studentProfilePageStatus == VTOPPageStatus.processing
+                            ? SpinKitThreeBounce(
+                                size: 24,
+                                color: Theme.of(context).colorScheme.onSurface,
                               )
-                            : studentProfilePageStatus ==
-                                    VTOPPageStatus.processing
-                                ? SpinKitThreeBounce(
-                                    size: 24,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  )
-                                : Text(
-                                    "Error",
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
+                            : const UserName(),
                       ],
                     );
                   },
@@ -111,6 +118,32 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UserName extends StatelessWidget {
+  const UserName({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final StudentProfileModel? studentProfile =
+            ref.watch(vtopDataProvider.select((value) => value.studentProfile));
+
+        if (studentProfile != null) {
+          return Text(
+            studentProfile.firstName,
+            style: Theme.of(context).textTheme.titleMedium,
+          );
+        } else {
+          return Text(
+            "Anonymous",
+            style: Theme.of(context).textTheme.titleMedium,
+          );
+        }
+      },
     );
   }
 }

@@ -33,6 +33,8 @@ class VTOPActions extends ChangeNotifier {
 
   final Reader read;
 
+  bool enableOfflineMode = false;
+
   // Keeps track of VTOP main pages status.
   VTOPStatus _vtopStatus = VTOPStatus.sessionTimedOut;
   VTOPStatus get vtopStatus => _vtopStatus;
@@ -61,6 +63,11 @@ class VTOPActions extends ChangeNotifier {
 
   late final ErrorStatusState readErrorStatusStateProviderValue =
       read(errorStatusStateProvider);
+
+  void updateOfflineModeStatus({required bool mode}) {
+    enableOfflineMode = mode;
+    notifyListeners();
+  }
 
   void updateVTOPStatus({required VTOPStatus status}) {
     _vtopStatus = status;
@@ -120,6 +127,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 
@@ -157,6 +165,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 
@@ -194,6 +203,9 @@ class VTOPActions extends ChangeNotifier {
       nullDocErrorAction: () {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        //Todo: test this scenario.
       },
     );
   }
@@ -242,6 +254,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 
@@ -278,6 +291,11 @@ class VTOPActions extends ChangeNotifier {
       nullDocErrorAction: () {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
       },
     );
   }
@@ -316,6 +334,11 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
     );
   }
 
@@ -353,6 +376,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 
@@ -393,6 +417,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 
@@ -432,6 +457,7 @@ class VTOPActions extends ChangeNotifier {
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.nullDocBeforeAction);
       },
+      notLoggedInScreenAction: () {},
     );
   }
 }
@@ -445,6 +471,7 @@ void _actionHandler({
   required Function() closedConnectionErrorAction,
   required Function() otherErrorAction,
   required Function() nullDocErrorAction,
+  required Function() notLoggedInScreenAction,
 }) async {
   // Perform initial action like setting status to processing.
   initialAction();
@@ -484,6 +511,13 @@ void _actionHandler({
 
           log('Performing action.');
           performAction();
+        }
+
+        if (!value.contains("(STUDENT)")) {
+          // If true means then action can't be performed as this screen doesn't looks like logged in screen.
+          log('Maybe the session is active but the user is probably not logged in.');
+
+          notLoggedInScreenAction();
         }
       } else {
         // If true means then document is null.

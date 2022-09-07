@@ -10,6 +10,8 @@ import '../../state/user_login_state.dart';
 import '../../state/vtop_actions.dart';
 import 'package:mini_vtop/route/route.dart' as route;
 
+import '../components/cached_mode_warning.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -52,29 +54,44 @@ class DashboardPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: Column(
         children: const [
-          SizedBox(
-            height: 16,
-          ),
-          HomeHeader(),
-          SizedBox(
-            height: 16,
-          ),
-          ExploreSection(),
-          SizedBox(
-            height: 16,
-          ),
-          ToolsSection(),
-          SizedBox(
-            height: 16,
-          ),
-          NewsSection(),
-          SizedBox(
-            height: 16,
-          ),
+          CachedModeWarning(supportsRefresh: false),
+          SizedBox(height: 10),
+          Expanded(child: DashboardBody()),
         ],
       ),
+    );
+  }
+}
+
+class DashboardBody extends StatelessWidget {
+  const DashboardBody({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: const [
+        SizedBox(
+          height: 16,
+        ),
+        HomeHeader(),
+        SizedBox(
+          height: 16,
+        ),
+        ExploreSection(),
+        SizedBox(
+          height: 16,
+        ),
+        ToolsSection(),
+        SizedBox(
+          height: 16,
+        ),
+        NewsSection(),
+        SizedBox(
+          height: 16,
+        ),
+      ],
     );
   }
 }

@@ -17,13 +17,13 @@ enum ErrorStatus {
   // net::ERR_CONNECTION_RESET The connection was reset.
   connectionResetError,
 
-  // net::ERR_ADDRESS_UNREACHABLE
+  // net::ERR_ADDRESS_UNREACHABLE is entered address in not reachable
   addressUnreachableError,
 
   // net::ERR_CLEARTEXT_NOT_PERMITTED HTTP traffic is not permitted
   httpTrafficError,
 
-  // For no internet error.
+  // net::ERR_INTERNET_DISCONNECTED For no internet error.
   noInternetError,
 
   // For unknown errors.
@@ -43,6 +43,9 @@ enum ErrorStatus {
 
   // For VTOP SSL related errors.
   sslError,
+
+  // For html parsing related errors.
+  docParsingError,
 }
 
 class ErrorStatusState extends ChangeNotifier {
@@ -81,6 +84,8 @@ class ErrorStatusState extends ChangeNotifier {
       update(status: ErrorStatus.connectionResetError);
     } else if (message == "net::ERR_ADDRESS_UNREACHABLE") {
       update(status: ErrorStatus.addressUnreachableError);
+    } else if (message == "net::ERR_INTERNET_DISCONNECTED") {
+      update(status: ErrorStatus.noInternetError);
     } else {
       update(status: ErrorStatus.unknownError);
     }

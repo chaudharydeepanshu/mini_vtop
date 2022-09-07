@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mini_vtop/ui/header_section_screen/components/gpa_section.dart';
 
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
 import 'package:mini_vtop/state/vtop_data_state.dart';
+import 'package:mini_vtop/ui/components/page_body_indicators.dart';
+
+import '../../../models/student_academics_model.dart';
+import '../../../shared_preferences/preferences.dart';
+import '../../components/cached_mode_warning.dart';
+import '../../components/empty_content_indicator.dart';
 
 class AcademicsPage extends ConsumerStatefulWidget {
   const AcademicsPage({Key? key}) : super(key: key);
@@ -36,37 +41,89 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
         title: const Text("Academics"),
         centerTitle: true,
       ),
-      body: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          final VTOPPageStatus studentGradeHistoryPageStatus = ref.watch(
-              vtopActionsProvider
-                  .select((value) => value.studentGradeHistoryPageStatus));
+      body: RefreshIndicator(
+        child: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final VTOPPageStatus studentGradeHistoryPageStatus = ref.watch(
+                vtopActionsProvider
+                    .select((value) => value.studentGradeHistoryPageStatus));
 
-          final VTOPData vtopData = ref.watch(vtopDataProvider);
+            final bool enableOfflineMode = ref.watch(
+                vtopActionsProvider.select((value) => value.enableOfflineMode));
 
-          return studentGradeHistoryPageStatus == VTOPPageStatus.loaded
-              ? ListView(
-                  children: [
-                    CGPASection(
-                      currentGPA: vtopData.studentAcademics.cgpa,
-                    ),
-                  ],
-                )
-              : studentGradeHistoryPageStatus == VTOPPageStatus.processing
-                  ? Center(
-                      child: SpinKitThreeBounce(
-                        size: 24,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    )
-                  : Center(
-                      child: Text(
-                        "Error",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    );
+            if (enableOfflineMode == true) {
+              final Preferences readPreferencesProviderValue =
+                  ref.read(preferencesProvider);
+              String? oldHTMLDoc =
+                  readPreferencesProviderValue.academicsHTMLDoc;
+              final VTOPData readVTOPDataProviderValue =
+                  ref.read(vtopDataProvider);
+              if (oldHTMLDoc != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  readVTOPDataProviderValue.setStudentAcademics(
+                      studentGradeHistoryDocument: oldHTMLDoc);
+                });
+              }
+            }
+
+            return studentGradeHistoryPageStatus == VTOPPageStatus.loaded ||
+                    enableOfflineMode
+                ? Column(
+                    children: const [
+                      CachedModeWarning(),
+                      SizedBox(height: 10),
+                      Expanded(child: AcademicsBody()),
+                    ],
+                  )
+                : PageBodyIndicators(
+                    pageStatus: studentGradeHistoryPageStatus,
+                    location: Location.afterHomeScreen);
+          },
+        ),
+        onRefresh: () async {
+          final VTOPActions readVTOPActionsProviderValue =
+              ref.read(vtopActionsProvider);
+          readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
+          readVTOPActionsProviderValue.studentGradeHistoryAction(
+              context: context);
+          readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+              status: VTOPPageStatus.processing);
         },
       ),
+    );
+  }
+}
+
+class AcademicsBody extends StatelessWidget {
+  const AcademicsBody({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final StudentAcademicsModel? studentAcademics = ref
+            .watch(vtopDataProvider.select((value) => value.studentAcademics));
+
+        if (studentAcademics != null) {
+          return ListView(
+            children: [
+              CGPASection(
+                currentGPA: studentAcademics.cgpa,
+              ),
+            ],
+          );
+        } else {
+          return LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: const EmptyContentIndicator(),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

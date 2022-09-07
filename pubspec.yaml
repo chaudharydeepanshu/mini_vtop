@@ -45,7 +45,7 @@ dependencies:
   animations: ^2.0.4
 
   # For circular progress gauges. Ex: CGPA indicator.
-  syncfusion_flutter_gauges: ^20.2.46
+  syncfusion_flutter_gauges: ^20.2.48
 
   # For calendar views in app.
   clean_calendar: ^0.4.1
@@ -74,8 +74,17 @@ dependencies:
   # For logging usage and behavior data.
   firebase_analytics: ^9.3.3
 
+  # For fetching vtop controlling data.
+  cloud_firestore: ^3.4.6
+
   # For identifying logs user.
   uuid: ^3.0.6
+
+  # For storing user preferences, app themeMode, app version, VTOP loaded HTML docs and firebase controller vars.
+  shared_preferences: ^2.0.15
+
+  # For getting app package information.
+  package_info_plus: ^1.4.3+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

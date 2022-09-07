@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../ui/connection_screen/connection_page.dart';
 import '../ui/explore_section_screens/academics/academics.dart';
 import '../ui/explore_section_screens/student_profile/student_profile.dart';
+import '../ui/explore_section_screens/time_table/time_table.dart';
 import '../ui/home_screen/components/explore_section.dart';
 import '../ui/home_screen/components/news_section.dart';
 import '../ui/home_screen/components/tools_section.dart';
@@ -10,16 +11,19 @@ import '../ui/home_screen/dashboard_screen.dart';
 import '../ui/login_screen/components/forgot_user_id_screen.dart';
 import '../ui/login_screen/login_page.dart';
 
+// Note: When using path "/" in routes then the initial route will always have to be "/".
+
 // Route Names
-const String connectionPage = 'connection';
-const String loginPage = 'login';
-const String dashboardPage = 'dashboard';
-const String forgotUserIDPage = 'forgotUserID';
-const String explorePage = 'explore';
-const String newsPage = 'news';
-const String toolsPage = 'tools';
-const String studentProfilePage = 'StudentProfile';
-const String academicsPage = 'Academics';
+const String connectionPage = '/';
+const String loginPage = '/login';
+const String dashboardPage = '/dashboard';
+const String forgotUserIDPage = '/login/forgotUserID';
+const String explorePage = '/dashboard/explore';
+const String newsPage = '/dashboard/news';
+const String toolsPage = '/dashboard/tools';
+const String studentProfilePage = '/dashboard/StudentProfile';
+const String academicsPage = '/dashboard/Academics';
+const String timeTablePage = '/dashboard/timeTable';
 
 // Control our page route flow
 Route<dynamic> controller(RouteSettings settings) {
@@ -63,9 +67,13 @@ Route<dynamic> controller(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => const AcademicsPage(),
           settings: RouteSettings(name: settings.name));
+    case timeTablePage:
+      return MaterialPageRoute(
+          builder: (context) => const TimeTablePage(),
+          settings: RouteSettings(name: settings.name));
 
     default:
-      throw ('This route name does not exit');
+      throw ('This route name does not exist');
   }
 }
 

@@ -9,8 +9,6 @@ import 'package:mini_vtop/ui/login_screen/components/upper_case_text_formatter.d
 
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
-
-import '../../components/error_indicators.dart';
 import '../../components/page_body_indicators.dart';
 
 class ForgotUserIDPage extends ConsumerStatefulWidget {
@@ -150,7 +148,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
                       )
                     : PageBodyIndicators(
                         pageStatus: forgotUserIDPageStatus,
-                        errorLocation: ErrorLocation.beforeHomeScreen);
+                        location: Location.beforeHomeScreen);
               },
             ),
             onRefresh: () async {

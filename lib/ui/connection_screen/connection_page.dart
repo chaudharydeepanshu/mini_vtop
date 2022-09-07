@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_vtop/state/connection_state.dart';
 import 'package:mini_vtop/state/providers.dart';
+import 'package:mini_vtop/ui/components/full_body_message.dart';
 import 'package:rive/rive.dart';
 
 import '../../state/error_state.dart';
@@ -25,6 +26,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
     Stopwatch stopwatch = Stopwatch()..start();
     ref.read(headlessWebViewProvider);
     log('initWebViewData Executed in ${stopwatch.elapsed}');
+    ref.read(vtopControllerStateProvider);
     return true;
   }
 
@@ -132,6 +134,17 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
         //   _errorInput?.value = true;
         // }
 
+        // ref.listen<bool>(
+        //     vtopActionsProvider.select((value) => value.enableOfflineMode),
+        //     (bool? previous, bool next) {
+        //   if (next == true) {
+        //     Navigator.pushReplacementNamed(
+        //       context,
+        //       route.dashboardPage,
+        //     );
+        //   }
+        // });
+
         ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
             (ConnectionStatusState? previous, ConnectionStatusState next) {
           if (next.connectionStatus == ConnectionStatus.connecting) {
@@ -157,22 +170,52 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: RiveAnimation.asset(
-                      'assets/rive/connections_state_machine.riv',
-                      fit: BoxFit.contain,
-                      onInit: onRiveInit,
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        const Spacer(),
+                        SizedBox(
+                          width: 150,
+                          height: 150,
+                          child: RiveAnimation.asset(
+                            'assets/rive/connections_state_machine.riv',
+                            fit: BoxFit.contain,
+                            onInit: onRiveInit,
+                          ),
+                        ),
+                        ConnectionScreenStates(
+                            connectionStatus: connectionStatus,
+                            errorStatus: errorStatus),
+                      ],
                     ),
-                    // Rive(
-                    //   artboard: _riveArtboard!,
-                    //   fit: BoxFit.contain,
-                    // ),
                   ),
-                  ConnectionScreenStates(
-                      connectionStatus: connectionStatus,
-                      errorStatus: errorStatus),
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        const Spacer(),
+                        Card(
+                          elevation: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "If app doesn't work and its urgent then try the official VTOP as it could be an app specific issue.",
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

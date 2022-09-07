@@ -2,8 +2,8 @@ import 'package:clean_calendar/clean_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:mini_vtop/ui/components/linear_completion_meter.dart';
 
-class TimeTable extends StatelessWidget {
-  const TimeTable({Key? key}) : super(key: key);
+class TimeTablePage extends StatelessWidget {
+  const TimeTablePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
