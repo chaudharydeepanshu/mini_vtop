@@ -24,6 +24,7 @@ void main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    await initHive();
     await initPackageInfo();
     await initSharedPreferences();
 

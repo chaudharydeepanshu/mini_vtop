@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:hive_flutter/adapters.dart';
 import 'package:mini_vtop/state/package_info_state.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
@@ -10,9 +13,15 @@ import 'connection_state.dart';
 import 'error_state.dart';
 import 'webview_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 late final PackageInfo packageInfo;
 late final SharedPreferences sharedPreferencesInstance;
+
+Future<void> initHive() async {
+  Directory directory = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(directory.path);
+}
 
 Future<void> initPackageInfo() async {
   packageInfo = await PackageInfo.fromPlatform();
@@ -32,7 +41,7 @@ final vtopControllerStateProvider =
     ChangeNotifierProvider((ref) => VTOPControllerState()..init());
 
 final userLoginStateProvider =
-    ChangeNotifierProvider((ref) => UserLoginState());
+    ChangeNotifierProvider((ref) => UserLoginState()..init());
 
 final headlessWebViewProvider =
     ChangeNotifierProvider((ref) => HeadlessWebView(ref.read)..init());

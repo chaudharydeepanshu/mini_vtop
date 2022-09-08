@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 
+import '../db/hive/hive_data_repository.dart';
+
 enum LoginResponseStatus {
   loggedOut,
   processing,
@@ -34,6 +36,12 @@ enum ForgotUserIDValidateResponseStatus {
 }
 
 class UserLoginState extends ChangeNotifier {
+  bool _shouldSaveCredentials = true;
+  bool get shouldSaveCredentials => _shouldSaveCredentials;
+
+  late bool _isCredentialsFound = false;
+  bool get isCredentialsFound => _isCredentialsFound;
+
   late String _autoCaptcha = "";
   String get autoCaptcha => _autoCaptcha;
 
@@ -71,6 +79,25 @@ class UserLoginState extends ChangeNotifier {
   late String _emailOTP = "";
   String get emailOTP => _emailOTP;
 
+  init() async {
+    _userID = await HiveDataRepository().getVTOPCredentialsBoxUserID();
+    _password = await HiveDataRepository().getVTOPCredentialsBoxPassword();
+
+    if (_userID != "" && _password != "") {
+      _isCredentialsFound = true;
+    }
+  }
+
+  void updateIsCredentialsFoundStatus({required bool status}) {
+    _isCredentialsFound = status;
+    notifyListeners();
+  }
+
+  void updateShouldSaveCredentialsStatus({required bool status}) {
+    _shouldSaveCredentials = status;
+    notifyListeners();
+  }
+
   void setAutoCaptcha({required String autoCaptcha}) {
     _autoCaptcha = autoCaptcha;
     _captcha = autoCaptcha;
@@ -100,6 +127,11 @@ class UserLoginState extends ChangeNotifier {
   void updateLoginStatus({required LoginResponseStatus loginStatus}) {
     _loginResponseStatus = loginStatus;
 
+    if (loginStatus == LoginResponseStatus.loggedIn && shouldSaveCredentials) {
+      HiveDataRepository()
+          .updateVTOPCredentialsBox(userID: userID, password: password);
+      updateIsCredentialsFoundStatus(status: true);
+    }
     notifyListeners();
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mini_vtop/state/user_login_state.dart';
 import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
 import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
-import 'package:mini_vtop/ui/login_screen/components/upper_case_text_formatter.dart';
 
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/vtop_actions.dart';
@@ -201,8 +200,8 @@ class ForgotUserIDScreenBody extends StatelessWidget {
                   prefixIcon: const Icon(Icons.badge),
                   helperText: 'Ex:- 20BCEXXXXX',
                   labelText: 'ERP ID / Reg. No.',
+                  textCapitalization: TextCapitalization.characters,
                   inputFormatters: [
-                    UpperCaseTextFormatter(),
                     FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
                   ],
                   validator: (String? value) {
@@ -257,8 +256,8 @@ class ForgotUserIDScreenBody extends StatelessWidget {
                   // helperText: 'Ex:- 20BCEXXXXX',
                   prefixIcon: const Icon(Icons.pin),
                   labelText: 'Email OTP',
+                  textCapitalization: TextCapitalization.characters,
                   inputFormatters: [
-                    UpperCaseTextFormatter(),
                     FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
                   ],
                   validator: (String? value) {
@@ -595,7 +594,8 @@ class TextInput extends StatefulWidget {
       required this.readOnly,
       this.prefixIcon,
       this.preFilledValue,
-      this.fieldKey})
+      this.fieldKey,
+      this.textCapitalization})
       : super(key: key);
 
   final String labelText;
@@ -608,6 +608,7 @@ class TextInput extends StatefulWidget {
   final bool? enabled;
   final bool readOnly;
   final Widget? prefixIcon;
+  final TextCapitalization? textCapitalization;
 
   final ValueChanged<String>? onTextChanged;
   // final String? hint;
@@ -693,6 +694,7 @@ class _TextInputState extends State<TextInput> {
       autocorrect: widget.autocorrect,
       enabled: widget.enabled,
       readOnly: widget.readOnly,
+      textCapitalization: widget.textCapitalization,
     );
   }
 }

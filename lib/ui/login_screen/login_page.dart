@@ -12,8 +12,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:mini_vtop/state/providers.dart';
 import 'package:mini_vtop/state/webview_state.dart';
 import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
+import '../../db/hive/hive_data_repository.dart';
 import '../components/page_body_indicators.dart';
-import 'components/upper_case_text_formatter.dart';
 import 'package:mini_vtop/route/route.dart' as route;
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -197,17 +197,18 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
               const SizedBox(
                 height: 10,
               ),
-              CheckboxListTile(
-                value: autoLogin,
-                title: const Text("Enable Auto login?"),
-                onChanged: null,
-                //     (bool? value) {
-                //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                //   setState(() {
-                //     autoLogin = value ?? false;
-                //   });
-                // },
-              ),
+              // CheckboxListTile(
+              //   value: autoLogin,
+              //   title: const Text("Enable Auto login?"),
+              //   onChanged: null,
+              //   //     (bool? value) {
+              //   //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              //   //   setState(() {
+              //   //     autoLogin = value ?? false;
+              //   //   });
+              //   // },
+              // ),
+              const SaveCredentialsListTile(),
               const SizedBox(
                 height: 10,
               ),
@@ -227,6 +228,37 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SaveCredentialsListTile extends StatelessWidget {
+  const SaveCredentialsListTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        bool shouldSaveCredentials = ref.watch(userLoginStateProvider
+            .select((value) => value.shouldSaveCredentials));
+
+        bool isCredentialsFound = ref.watch(
+            userLoginStateProvider.select((value) => value.isCredentialsFound));
+
+        return !isCredentialsFound
+            ? CheckboxListTile(
+                value: shouldSaveCredentials,
+                title: const Text("Save Credentials locally?"),
+                onChanged: (bool? value) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ref
+                      .read(userLoginStateProvider)
+                      .updateShouldSaveCredentialsStatus(
+                          status: value ?? false);
+                },
+              )
+            : const SizedBox();
+      },
     );
   }
 }
@@ -391,6 +423,217 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showLoginSnackBar(
   );
 }
 
+class EmailPasswordFields extends StatelessWidget {
+  const EmailPasswordFields({Key? key, required this.controlTeddy})
+      : super(key: key);
+
+  final ControlTeddy controlTeddy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            String userID = ref.read(userLoginStateProvider).userID;
+
+            return TrackingTextInput(
+              preFilledValue: userID,
+              prefixIcon: const Icon(Icons.badge),
+              helperText: 'Ex:- 20BCEXXXXX',
+              labelText: 'UserID',
+              textCapitalization: TextCapitalization.characters,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+              ],
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter UserID';
+                }
+                return null;
+              },
+              autoValidateMode: AutovalidateMode.onUserInteraction,
+              isObscured: false,
+              enableSuggestions: true,
+              autocorrect: false,
+              enabled: true,
+              readOnly: false,
+              onCaretMoved: (
+                  {Offset? globalCaretPosition, Size? textFieldSize}) {
+                controlTeddy.lookAt(
+                    textFieldSize: textFieldSize, caret: globalCaretPosition);
+              },
+              onTextChanged: (String value) {
+                ref.read(userLoginStateProvider).setUserID(userID: value);
+                // print(value);
+              },
+            );
+          },
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            return ForgotDetailButtons(
+              label: "Forgot UserID?",
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  route.forgotUserIDPage,
+                ).then((value) {
+                  final HeadlessWebView readHeadlessWebViewProviderValue =
+                      ref.read(headlessWebViewProvider);
+                  final VTOPActions readVTOPActionsProviderValue =
+                      ref.read(vtopActionsProvider);
+                  readVTOPActionsProviderValue.updateVTOPStatus(
+                      status: VTOPStatus.sessionTimedOut);
+                  readHeadlessWebViewProviderValue.settingSomeVars();
+                  readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+                });
+              },
+            );
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            String password = ref.read(userLoginStateProvider).password;
+
+            return TrackingTextInput(
+              preFilledValue: password,
+              prefixIcon: const Icon(Icons.password),
+              helperText: 'Ex:- password123',
+              labelText: 'VTOP Password',
+              inputFormatters: const [],
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter VTOP password';
+                }
+                return null;
+              },
+              autoValidateMode: AutovalidateMode.onUserInteraction,
+              isObscured: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              enabled: true,
+              readOnly: false,
+              onCaretMoved: (
+                  {Offset? globalCaretPosition, Size? textFieldSize}) {
+                controlTeddy.coverEyes(cover: globalCaretPosition != null);
+                controlTeddy.lookAt(textFieldSize: textFieldSize, caret: null);
+              },
+              onTextChanged: (String value) {
+                controlTeddy.password = value;
+                ref.read(userLoginStateProvider).setPassword(password: value);
+              },
+            );
+          },
+        ),
+        const ForgotDetailButtons(
+          label: "Forgot Password?",
+          onPressed: null,
+        ),
+      ],
+    );
+  }
+}
+
+class FakeEmailPasswordFields extends StatelessWidget {
+  const FakeEmailPasswordFields({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        Column(
+          children: [
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                String userID = ref.read(userLoginStateProvider).userID;
+
+                return TrackingTextInput(
+                  preFilledValue: userID,
+                  prefixIcon: const Icon(Icons.badge),
+                  labelText: 'UserID',
+                  textCapitalization: TextCapitalization.characters,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
+                  ],
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter UserID';
+                    }
+                    return null;
+                  },
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  isObscured: false,
+                  enableSuggestions: true,
+                  autocorrect: false,
+                  enabled: false,
+                  readOnly: true,
+                );
+              },
+            ),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                String password = ref.read(userLoginStateProvider).password;
+
+                return TrackingTextInput(
+                  preFilledValue: password,
+                  prefixIcon: const Icon(Icons.password),
+                  labelText: 'VTOP Password',
+                  inputFormatters: const [],
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter VTOP password';
+                    }
+                    return null;
+                  },
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
+                  enableObscuredSuffixIcon: false,
+                  isObscured: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  enabled: false,
+                  readOnly: true,
+                );
+              },
+            ),
+          ],
+        ),
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  // Foreground color
+                  // ignore: deprecated_member_use
+                  onPrimary: Theme.of(context).colorScheme.onSecondaryContainer,
+                  // Background color
+                  // ignore: deprecated_member_use
+                  primary: Theme.of(context).colorScheme.secondaryContainer,
+                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                onPressed: () {
+                  HiveDataRepository().clearVTOPCredentialsBox();
+                  ref.read(userLoginStateProvider).setUserID(userID: "");
+                  ref.read(userLoginStateProvider).setPassword(password: "");
+                  ref
+                      .read(userLoginStateProvider)
+                      .updateIsCredentialsFoundStatus(status: false);
+                },
+                label: const Text('Clear'),
+                icon: const Icon(Icons.clear),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class LoginFields extends StatelessWidget {
   const LoginFields(
       {Key? key, required this.controlTeddy, required this.formKey})
@@ -407,111 +650,16 @@ class LoginFields extends StatelessWidget {
         String autoCaptcha = ref
             .watch(userLoginStateProvider.select((value) => value.autoCaptcha));
 
-        String userID = ref.read(userLoginStateProvider).userID;
-
-        String password = ref.read(userLoginStateProvider).password;
+        final bool isCredentialsFound = ref.watch(
+            userLoginStateProvider.select((value) => value.isCredentialsFound));
 
         return Form(
           key: formKey,
           child: Column(
             children: [
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return TrackingTextInput(
-                    preFilledValue: userID,
-                    prefixIcon: const Icon(Icons.badge),
-                    helperText: 'Ex:- 20BCEXXXXX',
-                    labelText: 'UserID',
-                    inputFormatters: [
-                      UpperCaseTextFormatter(),
-                      FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
-                    ],
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter UserID';
-                      }
-                      return null;
-                    },
-                    autoValidateMode: AutovalidateMode.onUserInteraction,
-                    isObscured: false,
-                    enableSuggestions: true,
-                    autocorrect: false,
-                    enabled: true,
-                    readOnly: false,
-                    onCaretMoved: (
-                        {Offset? globalCaretPosition, Size? textFieldSize}) {
-                      controlTeddy.lookAt(
-                          textFieldSize: textFieldSize,
-                          caret: globalCaretPosition);
-                    },
-                    onTextChanged: (String value) {
-                      ref.read(userLoginStateProvider).setUserID(userID: value);
-                      // print(value);
-                    },
-                  );
-                },
-              ),
-              ForgotDetailButtons(
-                label: "Forgot UserID?",
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    route.forgotUserIDPage,
-                  ).then((value) {
-                    final HeadlessWebView readHeadlessWebViewProviderValue =
-                        ref.read(headlessWebViewProvider);
-                    final VTOPActions readVTOPActionsProviderValue =
-                        ref.read(vtopActionsProvider);
-                    readVTOPActionsProviderValue.updateVTOPStatus(
-                        status: VTOPStatus.sessionTimedOut);
-                    readHeadlessWebViewProviderValue.settingSomeVars();
-                    readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return TrackingTextInput(
-                    preFilledValue: password,
-                    prefixIcon: const Icon(Icons.password),
-                    helperText: 'Ex:- password123',
-                    labelText: 'VTOP Password',
-                    inputFormatters: const [],
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter VTOP password';
-                      }
-                      return null;
-                    },
-                    autoValidateMode: AutovalidateMode.onUserInteraction,
-                    isObscured: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    enabled: true,
-                    readOnly: false,
-                    onCaretMoved: (
-                        {Offset? globalCaretPosition, Size? textFieldSize}) {
-                      controlTeddy.coverEyes(
-                          cover: globalCaretPosition != null);
-                      controlTeddy.lookAt(
-                          textFieldSize: textFieldSize, caret: null);
-                    },
-                    onTextChanged: (String value) {
-                      controlTeddy.password = value;
-                      ref
-                          .read(userLoginStateProvider)
-                          .setPassword(password: value);
-                    },
-                  );
-                },
-              ),
-              const ForgotDetailButtons(
-                label: "Forgot Password?",
-                onPressed: null,
-              ),
+              isCredentialsFound
+                  ? const FakeEmailPasswordFields()
+                  : EmailPasswordFields(controlTeddy: controlTeddy),
               const SizedBox(
                 height: 10,
               ),
@@ -523,8 +671,8 @@ class LoginFields extends StatelessWidget {
                 prefixIcon: const Icon(Icons.smart_toy),
                 helperText: '🤖🤖🤖',
                 labelText: 'Captcha',
+                textCapitalization: TextCapitalization.characters,
                 inputFormatters: [
-                  UpperCaseTextFormatter(),
                   FilteringTextInputFormatter.allow(RegExp("[0-9A-Z]")),
                 ],
                 validator: (String? value) {

@@ -21,7 +21,9 @@ class TrackingTextInput extends StatefulWidget {
       this.enabled,
       required this.readOnly,
       this.prefixIcon,
-      this.preFilledValue})
+      this.preFilledValue,
+      this.textCapitalization,
+      this.enableObscuredSuffixIcon = true})
       : super(key: key);
 
   final String labelText;
@@ -41,6 +43,8 @@ class TrackingTextInput extends StatefulWidget {
   // final String? label;
   final bool isObscured;
   final String? preFilledValue;
+  final TextCapitalization? textCapitalization;
+  final bool enableObscuredSuffixIcon;
 
   @override
   State<TrackingTextInput> createState() => _TrackingTextInputState();
@@ -128,7 +132,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
       inputFormatters: widget.inputFormatters,
       autoValidateMode: widget.autoValidateMode,
       prefixIcon: widget.prefixIcon,
-      suffixIcon: widget.isObscured
+      suffixIcon: widget.isObscured && widget.enableObscuredSuffixIcon
           ? IconButton(
               icon: Icon(
                 isObscured ? Icons.visibility : Icons.visibility_off,
@@ -145,6 +149,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
       autocorrect: widget.autocorrect,
       enabled: widget.enabled,
       readOnly: widget.readOnly,
+      textCapitalization: widget.textCapitalization,
     );
   }
 }
@@ -156,7 +161,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.labelText,
     required this.controller,
     this.focusNode,
-    required this.helperText,
+    this.helperText,
     required this.validator,
     required this.inputFormatters,
     required this.autoValidateMode,
@@ -167,6 +172,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.autocorrect,
     required this.enabled,
     required this.readOnly,
+    this.textCapitalization,
   }) : super(key: key);
 
   final GlobalKey<State<StatefulWidget>>? fieldKey;
@@ -184,6 +190,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool autocorrect;
   final bool? enabled;
   final bool readOnly;
+  final TextCapitalization? textCapitalization;
 
   @override
   Widget build(BuildContext context) {
@@ -194,13 +201,9 @@ class CustomTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         filled: true,
         labelText: labelText,
-        disabledBorder: enabled!
+        disabledBorder: (enabled != null ? !enabled! : false)
             ? null
-            : const UnderlineInputBorder(
-                // borderSide:
-                //     const BorderSide(color: Colors.transparent, width: 2.0),
-                // borderRadius: BorderRadius.circular(0),
-                ),
+            : const UnderlineInputBorder(),
         // isDense: true,
         helperText: helperText,
         // enabledBorder: const UnderlineInputBorder(),
@@ -218,6 +221,7 @@ class CustomTextFormField extends StatelessWidget {
       autocorrect: autocorrect,
       autovalidateMode: autoValidateMode,
       validator: validator,
+      textCapitalization: textCapitalization ?? TextCapitalization.none,
       inputFormatters: inputFormatters,
     );
   }
