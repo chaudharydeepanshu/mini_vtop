@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/components/linear_completion_meter.dart';
+import 'package:minivtop/ui/components/linear_completion_meter.dart';
 
 class Attendance extends StatelessWidget {
   const Attendance({Key? key}) : super(key: key);

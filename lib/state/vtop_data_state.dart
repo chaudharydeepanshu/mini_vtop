@@ -4,12 +4,12 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
-import 'package:mini_vtop/models/student_profile_model.dart';
+import 'package:minivtop/models/student_profile_model.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:mini_vtop/state/package_info_state.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/utils/string_cap_extension.dart';
-import 'package:mini_vtop/models/student_academics_model.dart';
+import 'package:minivtop/state/package_info_state.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/utils/string_cap_extension.dart';
+import 'package:minivtop/models/student_academics_model.dart';
 
 import '../shared_preferences/preferences.dart';
 import 'error_state.dart';
@@ -17,7 +17,6 @@ import 'error_state.dart';
 class VTOPData extends ChangeNotifier {
   VTOPData(this.read);
   final Reader read;
-
 
   StudentProfileModel? _studentProfile;
   StudentProfileModel? get studentProfile => _studentProfile;

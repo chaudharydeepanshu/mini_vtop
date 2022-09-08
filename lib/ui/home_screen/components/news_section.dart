@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/home_screen/components/list_view_in_card_view.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/ui/home_screen/components/list_view_in_card_view.dart';
+import 'package:minivtop/route/route.dart' as route;
 
 class NewsPage extends StatelessWidget {
   const NewsPage({Key? key, required this.arguments}) : super(key: key);

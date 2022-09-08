@@ -4,9 +4,9 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/user_login_state.dart';
-import 'package:mini_vtop/state/webview_state.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/state/webview_state.dart';
 
 import 'connection_state.dart';
 import 'error_state.dart';

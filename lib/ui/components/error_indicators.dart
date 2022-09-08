@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/state/error_state.dart';
-import 'package:mini_vtop/ui/components/error_retry_button.dart';
-import 'package:mini_vtop/ui/components/full_body_message.dart';
-import 'package:mini_vtop/ui/components/page_body_indicators.dart';
+import 'package:minivtop/state/error_state.dart';
+import 'package:minivtop/ui/components/error_retry_button.dart';
+import 'package:minivtop/ui/components/full_body_message.dart';
+import 'package:minivtop/ui/components/page_body_indicators.dart';
 import 'package:rive/rive.dart';
 import 'loading_indicator.dart';
 

@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:hive_flutter/adapters.dart';
-import 'package:mini_vtop/state/package_info_state.dart';
-import 'package:mini_vtop/state/user_login_state.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
-import 'package:mini_vtop/state/vtop_controller_state.dart';
-import 'package:mini_vtop/state/vtop_data_state.dart';
+import 'package:minivtop/state/package_info_state.dart';
+import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/state/vtop_controller_state.dart';
+import 'package:minivtop/state/vtop_data_state.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../shared_preferences/preferences.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/providers.dart';
+import 'package:minivtop/state/providers.dart';
 
 class CachedModeWarning extends StatelessWidget {
   const CachedModeWarning({Key? key, this.supportsRefresh = true})

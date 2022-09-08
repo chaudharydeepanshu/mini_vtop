@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'package:mini_vtop/state/providers.dart';
+import 'package:minivtop/state/providers.dart';
 
-import 'package:mini_vtop/state/vtop_actions.dart';
+import 'package:minivtop/state/vtop_actions.dart';
 
-import 'package:mini_vtop/models/student_profile_model.dart';
-import 'package:mini_vtop/shared_preferences/preferences.dart';
-import 'package:mini_vtop/state/vtop_data_state.dart';
+import 'package:minivtop/models/student_profile_model.dart';
+import 'package:minivtop/shared_preferences/preferences.dart';
+import 'package:minivtop/state/vtop_data_state.dart';
 
 import '../../header_section_screen/quick_glance_screen.dart';
 

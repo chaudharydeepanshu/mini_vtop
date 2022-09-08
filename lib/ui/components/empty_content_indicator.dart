@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/components/full_body_message.dart';
+import 'package:minivtop/ui/components/full_body_message.dart';
 import 'package:rive/rive.dart';
 
 class EmptyContentIndicator extends StatelessWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
-import 'package:mini_vtop/ui/components/error_indicators.dart';
-import 'package:mini_vtop/ui/components/loading_indicator.dart';
-import 'package:mini_vtop/state/connection_state.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/ui/components/error_indicators.dart';
+import 'package:minivtop/ui/components/loading_indicator.dart';
+import 'package:minivtop/state/connection_state.dart';
 
 import '../../state/error_state.dart';
 import '../../state/user_login_state.dart';

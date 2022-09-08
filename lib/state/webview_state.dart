@@ -9,11 +9,11 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import 'package:mini_vtop/state/connection_state.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/user_login_state.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
-import 'package:mini_vtop/utils/captcha_parser.dart';
+import 'package:minivtop/state/connection_state.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/utils/captcha_parser.dart';
 import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 

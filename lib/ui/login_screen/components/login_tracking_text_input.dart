@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mini_vtop/ui/login_screen/components/textfield_caret_management.dart';
+import 'package:minivtop/ui/login_screen/components/textfield_caret_management.dart';
 
 class TrackingTextInput extends StatefulWidget {
   const TrackingTextInput(

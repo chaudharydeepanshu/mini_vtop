@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/ui/home_screen/components/explore_section.dart';
-import 'package:mini_vtop/ui/home_screen/components/header.dart';
-import 'package:mini_vtop/ui/home_screen/components/news_section.dart';
-import 'package:mini_vtop/ui/home_screen/components/tools_section.dart';
+import 'package:minivtop/ui/home_screen/components/explore_section.dart';
+import 'package:minivtop/ui/home_screen/components/header.dart';
+import 'package:minivtop/ui/home_screen/components/news_section.dart';
+import 'package:minivtop/ui/home_screen/components/tools_section.dart';
 
 import '../../state/providers.dart';
 import '../../state/user_login_state.dart';
 import '../../state/vtop_actions.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/route/route.dart' as route;
 
 import '../components/cached_mode_warning.dart';
 

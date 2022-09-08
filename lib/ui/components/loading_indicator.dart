@@ -2,16 +2,16 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
-import 'package:mini_vtop/ui/components/error_retry_button.dart';
-import 'package:mini_vtop/ui/components/full_body_message.dart';
-import 'package:mini_vtop/ui/components/page_body_indicators.dart';
+import 'package:minivtop/ui/components/custom_snack_bar.dart';
+import 'package:minivtop/ui/components/error_retry_button.dart';
+import 'package:minivtop/ui/components/full_body_message.dart';
+import 'package:minivtop/ui/components/page_body_indicators.dart';
 import 'package:rive/rive.dart';
 import '../../state/connection_state.dart';
 import '../../state/providers.dart';
 import '../../state/user_login_state.dart';
 import '../../state/vtop_actions.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/route/route.dart' as route;
 
 class LoadingIndicators extends StatelessWidget {
   const LoadingIndicators(

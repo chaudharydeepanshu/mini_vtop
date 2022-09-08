@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/vtop_actions.dart';
 
 import '../../../models/student_profile_model.dart';
 import '../../../shared_preferences/preferences.dart';

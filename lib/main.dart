@@ -5,10 +5,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/providers.dart';
+import 'package:minivtop/state/providers.dart';
 import 'package:uuid/uuid.dart';
 import 'Theme/app_theme_data.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/route/route.dart' as route;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as imglib;
 
-import 'package:mini_vtop/utils/vit_captcha_characters_bitmaps.dart';
+import 'package:minivtop/utils/vit_captcha_characters_bitmaps.dart';
 
 class CropImageParam {
   final List<int> input;

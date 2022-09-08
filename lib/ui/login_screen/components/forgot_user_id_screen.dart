@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mini_vtop/state/user_login_state.dart';
-import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
-import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
+import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/ui/components/custom_snack_bar.dart';
+import 'package:minivtop/ui/login_screen/components/login_tracking_text_input.dart';
 
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/vtop_actions.dart';
 import '../../components/page_body_indicators.dart';
 
 class ForgotUserIDPage extends ConsumerStatefulWidget {

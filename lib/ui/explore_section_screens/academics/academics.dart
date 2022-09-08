@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/ui/header_section_screen/components/gpa_section.dart';
+import 'package:minivtop/ui/header_section_screen/components/gpa_section.dart';
 
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
-import 'package:mini_vtop/state/vtop_data_state.dart';
-import 'package:mini_vtop/ui/components/page_body_indicators.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/state/vtop_data_state.dart';
+import 'package:minivtop/ui/components/page_body_indicators.dart';
 
 import '../../../models/student_academics_model.dart';
 import '../../../shared_preferences/preferences.dart';

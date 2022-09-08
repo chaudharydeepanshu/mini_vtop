@@ -1,6 +1,6 @@
 import 'package:clean_calendar/clean_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:mini_vtop/ui/components/linear_completion_meter.dart';
+import 'package:minivtop/ui/components/linear_completion_meter.dart';
 
 class TimeTablePage extends StatelessWidget {
   const TimeTablePage({Key? key}) : super(key: key);

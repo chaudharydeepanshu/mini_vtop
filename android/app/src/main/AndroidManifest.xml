@@ -1,15 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.deepanshuchaudhary.android.apps.minivtop.mini_vtop">
+    package="com.deepanshuchaudhary.apps.minivtop">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!--    android:usesCleartextTraffic="true" required to allow WebView http traffic -->
     <!--    android:extractNativeLibs="true" refer https://docs.sentry.io/platforms/flutter/upload-debug/#uploading-for-android-ndk -->
 
-    <application
+   <application
         android:extractNativeLibs="true"
         android:usesCleartextTraffic="true"
-        android:label="mini_vtop"
+        android:label="minivtop"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

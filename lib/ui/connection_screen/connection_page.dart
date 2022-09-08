@@ -2,15 +2,15 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_vtop/state/connection_state.dart';
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/ui/components/full_body_message.dart';
+import 'package:minivtop/state/connection_state.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/ui/components/full_body_message.dart';
 import 'package:rive/rive.dart';
 
 import '../../state/error_state.dart';
 import '../../state/user_login_state.dart';
 import '../components/error_indicators.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/route/route.dart' as route;
 
 class ConnectionPage extends ConsumerStatefulWidget {
   const ConnectionPage({Key? key}) : super(key: key);

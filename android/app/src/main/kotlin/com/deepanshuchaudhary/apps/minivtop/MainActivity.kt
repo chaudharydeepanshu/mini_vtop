@@ -1,4 +1,4 @@
-package com.deepanshuchaudhary.android.apps.minivtop.mini_vtop
+package com.deepanshuchaudhary.apps.minivtop
 
 import io.flutter.embedding.android.FlutterActivity
 

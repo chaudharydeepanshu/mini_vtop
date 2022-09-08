@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mini_vtop/state/user_login_state.dart';
-import 'package:mini_vtop/state/vtop_actions.dart';
-import 'package:mini_vtop/ui/login_screen/components/control_teddy.dart';
-import 'package:mini_vtop/ui/login_screen/components/login_tracking_text_input.dart';
+import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/ui/login_screen/components/control_teddy.dart';
+import 'package:minivtop/ui/login_screen/components/login_tracking_text_input.dart';
 import 'package:rive/rive.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:mini_vtop/state/providers.dart';
-import 'package:mini_vtop/state/webview_state.dart';
-import 'package:mini_vtop/ui/components/custom_snack_bar.dart';
+import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/webview_state.dart';
+import 'package:minivtop/ui/components/custom_snack_bar.dart';
 import '../../db/hive/hive_data_repository.dart';
 import '../components/page_body_indicators.dart';
-import 'package:mini_vtop/route/route.dart' as route;
+import 'package:minivtop/route/route.dart' as route;
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
