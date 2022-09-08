@@ -93,6 +93,9 @@ dependencies:
   # For providing path for device directory to hive.
   path_provider: ^2.0.11
 
+  # For splash screen.
+  flutter_native_splash: ^2.2.9
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
@@ -125,6 +128,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/rive/
+    - assets/splash_icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

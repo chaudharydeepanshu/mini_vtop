@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:uuid/uuid.dart';
@@ -22,8 +23,8 @@ final FirebaseAnalyticsObserver observer =
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
     await initHive();
     await initPackageInfo();
     await initSharedPreferences();
@@ -31,7 +32,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    // The following lines are the same as previously explained in "Handling uncaught errors"
+
+    // whenever your initialization is completed, remove the splash screen:
+    FlutterNativeSplash.remove();
+
     FlutterError.onError = crashlytics.recordFlutterFatalError;
     // Setting user identifiers
     // crashlytics.setUserIdentifier(uuid.v4());
