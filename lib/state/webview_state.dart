@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -60,8 +61,9 @@ class HeadlessWebView extends ChangeNotifier {
           useShouldInterceptFetchRequest: true,
         ),
         android: AndroidInAppWebViewOptions(
-            // useHybridComposition: true,
-            ),
+          safeBrowsingEnabled: true,
+          // useHybridComposition: true,
+        ),
         ios: IOSInAppWebViewOptions());
 
     _headlessWebView = HeadlessInAppWebView(
@@ -124,29 +126,30 @@ class HeadlessWebView extends ChangeNotifier {
             initialUrl: _initialUrl);
         return NavigationActionPolicy.ALLOW;
       },
-      onReceivedServerTrustAuthRequest: (controller, challenge) async {
-        // SslError? sslError = challenge.protectionSpace.sslError;
-        // if (sslError != null &&
-        //     (sslError.iosError != null || sslError.androidError != null)) {
-        //   if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
-        //     return ServerTrustAuthResponse(
-        //         action: ServerTrustAuthResponseAction.PROCEED);
-        //   } else {
-        //     log("SSL Error occurred: $sslError.");
-        //     readErrorStatusStateProviderValue.update(
-        //         status: ErrorStatus.sslError);
-        // await FirebaseCrashlytics.instance.recordError(
-        //     "sslError: $sslError", null,
-        //     reason: 'a non-fatal error');
-        //     return ServerTrustAuthResponse(
-        //         action: ServerTrustAuthResponseAction.CANCEL);
-        //   }
-        // } else {
-        //   return ServerTrustAuthResponse(
-        //       action: ServerTrustAuthResponseAction.PROCEED);
-        // }
-        return ServerTrustAuthResponse(
-            action: ServerTrustAuthResponseAction.PROCEED);
+      onReceivedServerTrustAuthRequest: (InAppWebViewController controller,
+          URLAuthenticationChallenge challenge) async {
+        SslError? sslError = challenge.protectionSpace.sslError;
+        if (sslError != null &&
+            (sslError.iosError != null || sslError.androidError != null)) {
+          if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
+            return ServerTrustAuthResponse(
+                action: ServerTrustAuthResponseAction.PROCEED);
+          } else {
+            log("SSL Error occurred: $sslError.");
+            readErrorStatusStateProviderValue.update(
+                status: ErrorStatus.sslError);
+            await FirebaseCrashlytics.instance.recordError(
+                "sslError: $sslError", null,
+                reason: 'a non-fatal error');
+            return ServerTrustAuthResponse(
+                action: ServerTrustAuthResponseAction.CANCEL);
+          }
+        } else {
+          return ServerTrustAuthResponse(
+              action: ServerTrustAuthResponseAction.PROCEED);
+        }
+        // return ServerTrustAuthResponse(
+        //     action: ServerTrustAuthResponseAction.PROCEED);
       },
       shouldInterceptFetchRequest:
           (InAppWebViewController controller, FetchRequest fetchRequest) async {

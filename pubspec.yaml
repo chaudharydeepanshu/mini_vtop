@@ -96,6 +96,9 @@ dependencies:
   # For splash screen.
   flutter_native_splash: ^2.2.9
 
+  # For launching links in app ex: privacy policy and terms and conditions.
+  url_launcher: ^6.1.5
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5

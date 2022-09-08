@@ -15,6 +15,7 @@ import 'package:minivtop/ui/components/custom_snack_bar.dart';
 import '../../db/hive/hive_data_repository.dart';
 import '../components/page_body_indicators.dart';
 import 'package:minivtop/route/route.dart' as route;
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -219,12 +220,84 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
-                "By logging in, you accept our Terms and Conditions and Privacy Policy",
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
+              const UserAgreementText(),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UserAgreementText extends StatelessWidget {
+  const UserAgreementText({Key? key}) : super(key: key);
+
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(uri)) {
+      throw 'Could not launch $uri';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: 'By logging in, you accept our ',
+              style: Theme.of(context).textTheme.bodySmall,
+              children: <InlineSpan>[
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      minimumSize: const Size(0, 0),
+                      textStyle: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    onPressed: () {
+                      _launchUrl(
+                          "https://deepanshuchaudhary.com/mini-vtop/terms-and-conditions");
+                    },
+                    child: const Text("Terms and Conditions"),
+                  ),
+                ),
+                const TextSpan(
+                  text: ' and ',
+                ),
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      minimumSize: const Size(0, 0),
+                      textStyle: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    onPressed: () {
+                      _launchUrl(
+                          "https://deepanshuchaudhary.com/mini-vtop/privacy-policy");
+                    },
+                    child: const Text("Privacy Policy"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
