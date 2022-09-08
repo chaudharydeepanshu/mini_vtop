@@ -4,11 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!--    android:usesCleartextTraffic="true" required to allow WebView http traffic -->
-    <!--    android:extractNativeLibs="true" refer https://docs.sentry.io/platforms/flutter/upload-debug/#uploading-for-android-ndk -->
+    <!--    android:extractNativeLibs="true" refer https://docs.sentry.io/platforms/flutter/upload-debug/#uploading-for-android-ndk or use android:networkSecurityConfig="@xml/network_security_config" refer https://stackoverflow.com/questions/55951088/google-play-pre-launch-reports-security-vulnerability-which-says-cleartext-traff-->
 
    <application
         android:extractNativeLibs="true"
-        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:label="Mini VTOP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
