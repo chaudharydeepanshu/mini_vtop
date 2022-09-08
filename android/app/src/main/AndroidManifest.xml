@@ -9,7 +9,7 @@
    <application
         android:extractNativeLibs="true"
         android:usesCleartextTraffic="true"
-        android:label="minivtop"
+        android:label="Mini VTOP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
