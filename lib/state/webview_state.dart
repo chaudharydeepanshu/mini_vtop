@@ -15,6 +15,7 @@ import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
 import 'package:minivtop/utils/captcha_parser.dart';
+import 'package:minivtop/utils/url_check.dart';
 import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 
@@ -28,9 +29,10 @@ class HeadlessWebView extends ChangeNotifier {
 
   late InAppWebViewGroupOptions _options;
 
-  final String _initialUrl = "http://182.73.197.23/vtop/";
-  // "https://self-signed.badssl.com/";
-  // "https://vtop.vitbhopal.ac.in/vtop/";
+  final String _initialUrl =
+      // "http://182.73.197.23/vtop/";
+      // "https://self-signed.badssl.com/";
+      "https://vtop.vitbhopal.ac.in/vtop/";
 
   String _url = "";
   String get url => _url;
@@ -62,6 +64,7 @@ class HeadlessWebView extends ChangeNotifier {
         ),
         android: AndroidInAppWebViewOptions(
           safeBrowsingEnabled: true,
+          mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_NEVER_ALLOW,
           // useHybridComposition: true,
         ),
         ios: IOSInAppWebViewOptions());
@@ -69,7 +72,7 @@ class HeadlessWebView extends ChangeNotifier {
     _headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(url: Uri.parse(_initialUrl)),
       initialOptions: _options,
-      onWebViewCreated: (InAppWebViewController controller) {
+      onWebViewCreated: (InAppWebViewController controller) async {
         _url = _initialUrl;
         log('HeadlessInAppWebView created!');
       },
@@ -129,20 +132,30 @@ class HeadlessWebView extends ChangeNotifier {
       onReceivedServerTrustAuthRequest: (InAppWebViewController controller,
           URLAuthenticationChallenge challenge) async {
         SslError? sslError = challenge.protectionSpace.sslError;
+        SslCertificate? sslCertificate =
+            challenge.protectionSpace.sslCertificate;
+        bool isSecure = UrlCheck.urlIsSecure((await controller.getUrl())!) &&
+            sslCertificate != null;
+        // log("sslCertificate: ${sslCertificate.toString()}");
         if (sslError != null &&
             (sslError.iosError != null || sslError.androidError != null)) {
           if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
             return ServerTrustAuthResponse(
                 action: ServerTrustAuthResponseAction.PROCEED);
           } else {
-            log("SSL Error occurred: $sslError.");
-            readErrorStatusStateProviderValue.update(
-                status: ErrorStatus.sslError);
-            await FirebaseCrashlytics.instance.recordError(
-                "sslError: $sslError", null,
-                reason: 'a non-fatal error');
-            return ServerTrustAuthResponse(
-                action: ServerTrustAuthResponseAction.CANCEL);
+            if (isSecure) {
+              return ServerTrustAuthResponse(
+                  action: ServerTrustAuthResponseAction.PROCEED);
+            } else {
+              log("SSL Error occurred: $sslError.");
+              readErrorStatusStateProviderValue.update(
+                  status: ErrorStatus.sslError);
+              await FirebaseCrashlytics.instance.recordError(
+                  "sslError: $sslError", null,
+                  reason: 'a non-fatal error');
+              return ServerTrustAuthResponse(
+                  action: ServerTrustAuthResponseAction.CANCEL);
+            }
           }
         } else {
           return ServerTrustAuthResponse(
