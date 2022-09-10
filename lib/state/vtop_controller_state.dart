@@ -12,20 +12,20 @@ class VTOPControllerState extends ChangeNotifier {
   FirebaseDataRepository service = FirebaseDataRepository();
 
   init() {
-    service
-        .getControlDocStream()
-        .listen((DocumentSnapshot<VTOPControllerModel> documentSnapshot) {
-      VTOPControllerModel? _vtopController = documentSnapshot.data();
-
-      // print(firestoreInfo);
-      //
-      // setState(() {
-      //   money = firestoreInfo['earnings'];
-      // });
-      notifyListeners();
-    }).onError((e) {
-      // _vtopController = ;
-      log(e.toString());
-    });
+    // service
+    //     .getControlDocStream()
+    //     .listen((DocumentSnapshot<VTOPControllerModel> documentSnapshot) {
+    //   VTOPControllerModel? _vtopController = documentSnapshot.data();
+    //
+    //   // print(firestoreInfo);
+    //   //
+    //   // setState(() {
+    //   //   money = firestoreInfo['earnings'];
+    //   // });
+    //   notifyListeners();
+    // }).onError((e) {
+    //   // _vtopController = ;
+    //   log(e.toString());
+    // });
   }
 }
