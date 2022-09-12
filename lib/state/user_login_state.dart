@@ -127,7 +127,11 @@ class UserLoginState extends ChangeNotifier {
   void updateLoginStatus({required LoginResponseStatus loginStatus}) {
     _loginResponseStatus = loginStatus;
 
-    if (loginStatus == LoginResponseStatus.loggedIn && shouldSaveCredentials) {
+    notifyListeners();
+  }
+
+  void addCredentialsToDB() {
+    if (shouldSaveCredentials) {
       HiveDataRepository()
           .updateVTOPCredentialsBox(userID: userID, password: password);
       updateIsCredentialsFoundStatus(status: true);

@@ -645,6 +645,40 @@ class VTOPActions extends ChangeNotifier {
       notLoggedInScreenAction: () {},
     );
   }
+
+  void emptyAjaxAction() async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      headlessWebView: headlessWebView,
+      initialAction: () {},
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+                            \$.ajax({});
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {},
+    );
+  }
 }
 
 void _actionHandler({

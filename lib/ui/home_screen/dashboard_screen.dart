@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minivtop/ui/components/drawer.dart';
 import 'package:minivtop/ui/home_screen/components/explore_section.dart';
 import 'package:minivtop/ui/home_screen/components/header.dart';
 import 'package:minivtop/ui/home_screen/components/news_section.dart';
@@ -18,6 +19,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text("Student Portal"),
         centerTitle: true,

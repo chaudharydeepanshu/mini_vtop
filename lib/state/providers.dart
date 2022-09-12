@@ -9,6 +9,7 @@ import 'package:minivtop/state/vtop_data_state.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../shared_preferences/preferences.dart';
+import 'app_theme_state.dart';
 import 'connection_state.dart';
 import 'error_state.dart';
 import 'webview_state.dart';
@@ -36,6 +37,9 @@ final packageInfoCalcProvider =
 
 final preferencesProvider = ChangeNotifierProvider(
     (ref) => Preferences(ref.read)..init(sharedPreferencesInstance));
+
+final appThemeStateProvider =
+    ChangeNotifierProvider((ref) => AppThemeState(ref.read)..init());
 
 final vtopControllerStateProvider =
     ChangeNotifierProvider((ref) => VTOPControllerState(ref.read)..init());

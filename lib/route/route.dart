@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minivtop/ui/drawer_screens/about_page.dart';
 import 'package:minivtop/ui/explore_section_screens/attendance/attendance.dart';
 
 import '../ui/connection_screen/connection_page.dart';
@@ -19,6 +20,7 @@ import '../ui/login_screen/login_page.dart';
 const String connectionPage = '/';
 const String loginPage = '/login';
 const String dashboardPage = '/dashboard';
+const String aboutPage = '/about';
 const String forgotUserIDPage = '/login/forgotUserID';
 const String explorePage = '/dashboard/explore';
 const String newsPage = '/dashboard/news';
@@ -43,6 +45,10 @@ Route<dynamic> controller(RouteSettings settings) {
     case dashboardPage:
       return MaterialPageRoute(
           builder: (context) => const DashboardPage(),
+          settings: RouteSettings(name: settings.name));
+    case aboutPage:
+      return MaterialPageRoute(
+          builder: (context) => const AboutPage(),
           settings: RouteSettings(name: settings.name));
     case forgotUserIDPage:
       return MaterialPageRoute(

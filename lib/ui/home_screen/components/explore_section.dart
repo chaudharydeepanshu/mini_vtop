@@ -97,6 +97,12 @@ class ExploreSection extends StatelessWidget {
         cardOnTap: null,
         // () {},
       ),
+      GridCardDetail(
+        cardIcon: const Icon(Icons.calendar_month),
+        cardTitle: 'Calendar',
+        cardOnTap: null,
+        // () {},
+      ),
     ];
 
     return GridViewInCardSection(

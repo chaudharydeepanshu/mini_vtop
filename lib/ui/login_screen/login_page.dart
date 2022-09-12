@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:minivtop/constants.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/ui/components/drawer.dart';
+import 'package:minivtop/ui/components/link_button.dart';
 import 'package:minivtop/ui/login_screen/components/control_teddy.dart';
 import 'package:minivtop/ui/login_screen/components/login_tracking_text_input.dart';
 import 'package:rive/rive.dart';
@@ -149,9 +152,6 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
     super.dispose();
   }
 
-  String password = "";
-  String registrationNumber = "";
-  String captcha = "";
   bool autoLogin = false;
 
   @override
@@ -230,14 +230,6 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
 class UserAgreementText extends StatelessWidget {
   const UserAgreementText({Key? key}) : super(key: key);
 
-  Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-
-    if (!await launchUrl(uri)) {
-      throw 'Could not launch $uri';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -252,23 +244,9 @@ class UserAgreementText extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.baseline,
                   baseline: TextBaseline.alphabetic,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      minimumSize: const Size(0, 0),
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    onPressed: () {
-                      _launchUrl(
-                          "https://deepanshuchaudhary.com/mini-vtop/terms-and-conditions");
-                    },
-                    child: const Text("Terms and Conditions"),
-                  ),
+                  child: LinkButton(
+                      urlLabel: "Terms and Conditions",
+                      url: termsAndConditionsUrl),
                 ),
                 const TextSpan(
                   text: ' and ',
@@ -276,23 +254,8 @@ class UserAgreementText extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.baseline,
                   baseline: TextBaseline.alphabetic,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      minimumSize: const Size(0, 0),
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    onPressed: () {
-                      _launchUrl(
-                          "https://deepanshuchaudhary.com/mini-vtop/privacy-policy");
-                    },
-                    child: const Text("Privacy Policy"),
-                  ),
+                  child: LinkButton(
+                      urlLabel: "Privacy Policy", url: privacyPolicyUrl),
                 ),
               ],
             ),

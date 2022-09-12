@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -49,8 +50,11 @@ class HeadlessWebView extends ChangeNotifier {
   late final ErrorStatusState readErrorStatusStateProviderValue =
       read(errorStatusStateProvider);
 
+  Timer? timer;
+
   @override
   void dispose() {
+    timer?.cancel();
     headlessWebView.dispose();
     super.dispose();
   }
@@ -75,6 +79,11 @@ class HeadlessWebView extends ChangeNotifier {
       onWebViewCreated: (InAppWebViewController controller) async {
         _url = _initialUrl;
         log('HeadlessInAppWebView created!');
+
+        timer = Timer.periodic(const Duration(minutes: 10), (Timer t) {
+          log(DateTime.now().toString());
+          readVTOPActionsProviderValue.emptyAjaxAction();
+        });
       },
       onConsoleMessage:
           (InAppWebViewController controller, ConsoleMessage consoleMessage) {
@@ -229,6 +238,8 @@ class HeadlessWebView extends ChangeNotifier {
         status: studentProfilePageStatus ?? VTOPPageStatus.notProcessing);
     readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
         status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
+    readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
+        status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
     readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
         status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
     readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
@@ -249,6 +260,7 @@ class HeadlessWebView extends ChangeNotifier {
 
   runHeadlessInAppWebView() async {
     try {
+      timer?.cancel();
       await headlessWebView.dispose();
     } on Exception catch (exception) {
       log(exception.toString());
@@ -529,6 +541,7 @@ class HeadlessWebView extends ChangeNotifier {
                     loginStatus: LoginResponseStatus.loggedIn);
                 readVTOPActionsProviderValue.updateVTOPStatus(
                     status: VTOPStatus.sessionActive);
+                readUserLoginStateProviderValue.addCredentialsToDB();
               } else if (value.contains("User Id Not available")) {
                 log("User Id ${readUserLoginStateProviderValue.userID} is not available.");
                 readUserLoginStateProviderValue.updateLoginStatus(

@@ -58,17 +58,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Mini VTOP',
-          theme: AppThemeData.lightThemeData(lightDynamic),
-          darkTheme: AppThemeData.darkThemeData(darkDynamic),
-          themeMode: ThemeMode.system,
-          onGenerateRoute: route.controller,
-          initialRoute: route.connectionPage,
-          navigatorKey: navigatorKey,
-          navigatorObservers: [observer],
-          scaffoldMessengerKey: rootScaffoldMessengerKey,
+        return Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            ref
+                .read(appThemeStateProvider)
+                .init(lightDynamic: lightDynamic, darkDynamic: darkDynamic);
+            ThemeMode themeMode = ref.watch(
+                appThemeStateProvider.select((value) => value.themeMode));
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Mini VTOP',
+              theme: AppThemeData.lightThemeData(lightDynamic),
+              darkTheme: AppThemeData.darkThemeData(darkDynamic),
+              themeMode: themeMode,
+              onGenerateRoute: route.controller,
+              initialRoute: route.connectionPage,
+              navigatorKey: navigatorKey,
+              navigatorObservers: [observer],
+              scaffoldMessengerKey: rootScaffoldMessengerKey,
+            );
+          },
         );
       },
     );

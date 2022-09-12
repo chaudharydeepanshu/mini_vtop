@@ -83,8 +83,8 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
           final VTOPActions readVTOPActionsProviderValue =
               ref.read(vtopActionsProvider);
           readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
-          readVTOPActionsProviderValue.studentTimeTableAction();
-          readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
+          readVTOPActionsProviderValue.studentAttendanceAction();
+          readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
               status: VTOPPageStatus.processing);
         },
       ),
