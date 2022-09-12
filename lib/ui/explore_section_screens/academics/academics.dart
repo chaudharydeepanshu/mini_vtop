@@ -28,7 +28,7 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
     if (studentGradeHistoryPageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.studentGradeHistoryAction(context: context);
+      readVTOPActionsProviderValue.studentGradeHistoryAction();
     }
 
     super.initState();
@@ -83,8 +83,7 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
           final VTOPActions readVTOPActionsProviderValue =
               ref.read(vtopActionsProvider);
           readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
-          readVTOPActionsProviderValue.studentGradeHistoryAction(
-              context: context);
+          readVTOPActionsProviderValue.studentGradeHistoryAction();
           readVTOPActionsProviderValue.updateStudentProfilePageStatus(
               status: VTOPPageStatus.processing);
         },

@@ -36,7 +36,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
     // Making a click on ForgotUserID button.
     final VTOPActions readVTOPActionsProviderValue =
         ref.read(vtopActionsProvider);
-    readVTOPActionsProviderValue.forgotUserIDAction(context: context);
+    readVTOPActionsProviderValue.forgotUserIDAction();
 
     super.initState();
   }
@@ -72,8 +72,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
                     // If true then opening the login page.
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
-                    readVTOPActionsProviderValue.openLoginPageAction(
-                        context: context);
+                    readVTOPActionsProviderValue.openLoginPageAction();
                   }
                   //Checking if login page status is loaded and its a new status.
                   else if (next == VTOPStatus.studentLoginPage &&
@@ -81,8 +80,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
                     // If true then making a click on ForgotUserID button and setting page status to processing.
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
-                    readVTOPActionsProviderValue.forgotUserIDAction(
-                        context: context);
+                    readVTOPActionsProviderValue.forgotUserIDAction();
                     readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                         status: VTOPPageStatus.processing);
                   }
@@ -153,7 +151,7 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
             onRefresh: () async {
               final VTOPActions readVTOPActionsProviderValue =
                   ref.read(vtopActionsProvider);
-              readVTOPActionsProviderValue.forgotUserIDAction(context: context);
+              readVTOPActionsProviderValue.forgotUserIDAction();
               readVTOPActionsProviderValue.updateForgotUserIDPageStatus(
                   status: VTOPPageStatus.processing);
             },
@@ -385,8 +383,7 @@ class ForgotUserIDSearchButton extends StatelessWidget {
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
 
-                    readVTOPActionsProviderValue.forgotUserIDSearchAction(
-                        context: context);
+                    readVTOPActionsProviderValue.forgotUserIDSearchAction();
                   }
                 },
                 child: Center(
@@ -466,7 +463,7 @@ class ForgotUserIDValidateButton extends StatelessWidget {
                               ref.read(vtopActionsProvider);
 
                           readVTOPActionsProviderValue
-                              .forgotUserIDValidateAction(context: context);
+                              .forgotUserIDValidateAction();
                         }
                       }
                     : null,

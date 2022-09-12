@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VTOPControllerModel {
-  String? semesterSubId;
+  String semesterSubId;
 
   VTOPControllerModel({
-    this.semesterSubId,
+    required this.semesterSubId,
   });
 
   factory VTOPControllerModel.fromFirestore(
@@ -19,7 +19,19 @@ class VTOPControllerModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (semesterSubId != null) "semesterSubId": semesterSubId,
+      "semesterSubId": semesterSubId,
+    };
+  }
+
+  factory VTOPControllerModel.fromJson(Map<String, dynamic> parsedJson) {
+    return VTOPControllerModel(
+      semesterSubId: parsedJson['semesterSubId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "semesterSubId": semesterSubId,
     };
   }
 

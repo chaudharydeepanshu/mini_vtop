@@ -86,13 +86,12 @@ class ExploreSection extends StatelessWidget {
       GridCardDetail(
         cardIcon: const Icon(Icons.table_chart),
         cardTitle: 'Time-Table',
-        cardOnTap: null,
-        //     () {
-        //   Navigator.pushNamed(
-        //     context,
-        //     route.timeTablePage,
-        //   );
-        // },
+        cardOnTap: () {
+          Navigator.pushNamed(
+            context,
+            route.timeTablePage,
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.schedule),

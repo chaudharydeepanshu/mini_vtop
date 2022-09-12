@@ -21,37 +21,8 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Student Portal"),
         centerTitle: true,
-        actions: [
-          Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              ref.listen(
-                  userLoginStateProvider.select(
-                      (value) => value.loginResponseStatus), (previous, next) {
-                //Checking if LoginResponse status is loggedIn and its a new status.
-                if (previous != next && next == LoginResponseStatus.loggedOut) {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    route.loginPage,
-                  );
-                }
-              });
-
-              return IconButton(
-                icon: const Icon(Icons.logout),
-                tooltip: 'Logout',
-                onPressed: () {
-                  ref.read(userLoginStateProvider).updateLoginStatus(
-                      loginStatus: LoginResponseStatus.processing);
-
-                  final VTOPActions readVTOPActionsProviderValue =
-                      ref.read(vtopActionsProvider);
-
-                  readVTOPActionsProviderValue.performSignOutAction(
-                      context: context);
-                },
-              );
-            },
-          ),
+        actions: const [
+          LogoutButton(),
         ],
       ),
       body: Column(
@@ -60,6 +31,50 @@ class DashboardPage extends StatelessWidget {
           Expanded(child: DashboardBody()),
         ],
       ),
+    );
+  }
+}
+
+class LogoutButton extends StatelessWidget {
+  const LogoutButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    bool logoutAttempted = false;
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        ref.listen(
+            userLoginStateProvider.select((value) => value.loginResponseStatus),
+            (previous, next) {
+          //Checking if LoginResponse status is loggedIn and its a new status.
+          if (previous != next &&
+              next == LoginResponseStatus.loggedOut &&
+              logoutAttempted) {
+            Navigator.pushReplacementNamed(
+              context,
+              route.loginPage,
+            );
+            logoutAttempted = false;
+          }
+        });
+
+        return IconButton(
+          icon: const Icon(Icons.logout),
+          tooltip: 'Logout',
+          onPressed: () {
+            logoutAttempted = true;
+
+            ref
+                .read(userLoginStateProvider)
+                .updateLoginStatus(loginStatus: LoginResponseStatus.processing);
+
+            final VTOPActions readVTOPActionsProviderValue =
+                ref.read(vtopActionsProvider);
+
+            readVTOPActionsProviderValue.performSignOutAction();
+          },
+        );
+      },
     );
   }
 }

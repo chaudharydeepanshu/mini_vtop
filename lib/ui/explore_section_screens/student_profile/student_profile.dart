@@ -26,8 +26,7 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
     if (studentProfilePageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.studentProfileAllViewAction(
-          context: context);
+      readVTOPActionsProviderValue.studentProfileAllViewAction();
     }
 
     super.initState();
@@ -81,8 +80,7 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
         onRefresh: () async {
           final VTOPActions readVTOPActionsProviderValue =
               ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.studentProfileAllViewAction(
-              context: context);
+          readVTOPActionsProviderValue.studentProfileAllViewAction();
           readVTOPActionsProviderValue.updateStudentProfilePageStatus(
               status: VTOPPageStatus.processing);
         },

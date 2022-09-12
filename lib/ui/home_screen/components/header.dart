@@ -28,8 +28,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
     if (studentProfilePageStatus != VTOPPageStatus.loaded) {
       final VTOPActions readVTOPActionsProviderValue =
           ref.read(vtopActionsProvider);
-      readVTOPActionsProviderValue.studentProfileAllViewAction(
-          context: context);
+      readVTOPActionsProviderValue.studentProfileAllViewAction();
     }
 
     super.initState();

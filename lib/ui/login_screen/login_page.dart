@@ -30,7 +30,7 @@ class _LoginState extends ConsumerState<LoginPage> {
     // Making a click on GoToLogin button.
     final VTOPActions readVTOPActionsProviderValue =
         ref.read(vtopActionsProvider);
-    readVTOPActionsProviderValue.openLoginPageAction(context: context);
+    readVTOPActionsProviderValue.openLoginPageAction();
     super.initState();
   }
 
@@ -95,8 +95,7 @@ class _LoginState extends ConsumerState<LoginPage> {
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
                     // Opening login page.
-                    readVTOPActionsProviderValue.openLoginPageAction(
-                        context: context);
+                    readVTOPActionsProviderValue.openLoginPageAction();
                     readVTOPActionsProviderValue.updateLoginPageStatus(
                         status: VTOPPageStatus.processing);
                   }
@@ -116,8 +115,7 @@ class _LoginState extends ConsumerState<LoginPage> {
             onRefresh: () async {
               final VTOPActions readVTOPActionsProviderValue =
                   ref.read(vtopActionsProvider);
-              readVTOPActionsProviderValue.openLoginPageAction(
-                  context: context);
+              readVTOPActionsProviderValue.openLoginPageAction();
               readVTOPActionsProviderValue.updateLoginPageStatus(
                   status: VTOPPageStatus.processing);
             },
@@ -394,8 +392,7 @@ class LoginButton extends StatelessWidget {
                     // Because when status changes to processing the captcha will get refreshed before login causing failure.
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
-                    readVTOPActionsProviderValue.performCaptchaRefreshAction(
-                        context: context);
+                    readVTOPActionsProviderValue.performCaptchaRefreshAction();
                     // --------------------
                   }
                 }
@@ -418,8 +415,7 @@ class LoginButton extends StatelessWidget {
                           final VTOPActions readVTOPActionsProviderValue =
                               ref.read(vtopActionsProvider);
 
-                          readVTOPActionsProviderValue.performSignInAction(
-                              context: context);
+                          readVTOPActionsProviderValue.performSignInAction();
                         }
                       }
                     : null,
@@ -863,8 +859,7 @@ class CaptchaIconButton extends StatelessWidget {
                     final VTOPActions readVTOPActionsProviderValue =
                         ref.read(vtopActionsProvider);
 
-                    readVTOPActionsProviderValue.performCaptchaRefreshAction(
-                        context: context);
+                    readVTOPActionsProviderValue.performCaptchaRefreshAction();
 
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   }

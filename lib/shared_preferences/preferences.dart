@@ -34,6 +34,13 @@ class Preferences extends ChangeNotifier {
     }
   }
 
+  persistVTOPController(String vtopController) =>
+      sharedPreferences.setString('vtopController', vtopController);
+
+  String get vtopController =>
+      sharedPreferences.getString('vtopController') ??
+      '{"semesterSubId":"BL2022231"}';
+
   persistAppVersion(String version) =>
       sharedPreferences.setString('appVersion', version);
 
@@ -59,4 +66,10 @@ class Preferences extends ChangeNotifier {
 
   String? get academicsHTMLDoc =>
       sharedPreferences.getString('academicsHTMLDoc');
+
+  persistTimeTableHTMLDoc(String doc) =>
+      sharedPreferences.setString('timeTableHTMLDoc', doc);
+
+  String? get timeTableHTMLDoc =>
+      sharedPreferences.getString('timeTableHTMLDoc');
 }

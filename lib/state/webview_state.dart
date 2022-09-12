@@ -105,6 +105,11 @@ class HeadlessWebView extends ChangeNotifier {
           } else if (ajaxRequest.url.toString() ==
               "examinations/examGradeView/StudentGradeHistory") {
             _vtopStudentGradeHistoryAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() ==
+              "academics/common/StudentTimeTable") {
+            _vtopStudentTimeTableAjaxRequest(ajaxRequest: ajaxRequest);
+          } else if (ajaxRequest.url.toString() == "processViewTimeTable") {
+            _vtopStudentTimeTableViewAjaxRequest(ajaxRequest: ajaxRequest);
           } else if (ajaxRequest.url.toString() == "forgotUserID") {
             _vtopForgotUserIDAjaxRequest(ajaxRequest: ajaxRequest);
           } else if (ajaxRequest.url.toString() ==
@@ -217,6 +222,8 @@ class HeadlessWebView extends ChangeNotifier {
     readVTOPActionsProviderValue.updateStudentProfilePageStatus(
         status: studentProfilePageStatus ?? VTOPPageStatus.notProcessing);
     readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
+        status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
+    readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
         status: studentGradeHistoryPageStatus ?? VTOPPageStatus.notProcessing);
     readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
         status: forgotUserIDSearchStatus ??
@@ -617,6 +624,73 @@ class HeadlessWebView extends ChangeNotifier {
             });
           } else {
             log("Rejected ajaxRequest callback as till now action was already taken for loaded GradeHistory.");
+          }
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateVTOPStatus(
+              status: VTOPStatus.sessionTimedOut);
+          settingSomeVars();
+          runHeadlessInAppWebView();
+        },
+        ajaxRequestOtherStatusAction: () {
+          log("Error occurred.");
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
+        });
+  }
+
+  _vtopStudentTimeTableAjaxRequest({required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          if (readVTOPActionsProviderValue.studentTimeTablePageStatus ==
+              VTOPPageStatus.processing) {
+            log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
+            await headlessWebView.webViewController
+                .evaluateJavascript(
+                    source: "new XMLSerializer().serializeToString(document);")
+                .then((value) {
+              readVTOPActionsProviderValue.studentTimeTableViewAction();
+            });
+          } else {
+            log("Rejected ajaxRequest callback as till now action was already taken for loaded TimeTable page.");
+          }
+        },
+        ajaxRequestStatus232Action: () {
+          log("Session timed out.");
+          readVTOPActionsProviderValue.updateVTOPStatus(
+              status: VTOPStatus.sessionTimedOut);
+          settingSomeVars();
+          runHeadlessInAppWebView();
+        },
+        ajaxRequestOtherStatusAction: () {
+          log("Error occurred.");
+          readErrorStatusStateProviderValue.update(
+              status: ErrorStatus.vtopError);
+        });
+  }
+
+  _vtopStudentTimeTableViewAjaxRequest(
+      {required AjaxRequest ajaxRequest}) async {
+    _ajaxRequestCommonHandler(
+        ajaxRequest: ajaxRequest,
+        ajaxRequestStatus200Action: () async {
+          if (readVTOPActionsProviderValue.studentTimeTablePageStatus ==
+              VTOPPageStatus.processing) {
+            log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
+            await headlessWebView.webViewController
+                .evaluateJavascript(
+                    source: "new XMLSerializer().serializeToString(document);")
+                .then((value) {
+              read(vtopDataProvider)
+                  .setStudentTimeTable(studentTimeTableDocument: value);
+
+              readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
+                  status: VTOPPageStatus.loaded);
+            });
+          } else {
+            log("Rejected ajaxRequest callback as till now action was already taken for loaded TimeTable page.");
           }
         },
         ajaxRequestStatus232Action: () {

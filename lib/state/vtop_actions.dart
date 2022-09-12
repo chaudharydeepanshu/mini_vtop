@@ -6,8 +6,10 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/user_login_state.dart';
+import 'package:minivtop/state/vtop_controller_state.dart';
 import 'package:minivtop/state/webview_state.dart';
 
+import '../models/vtop_contoller_model.dart';
 import 'connection_state.dart';
 import 'error_state.dart';
 
@@ -49,6 +51,9 @@ class VTOPActions extends ChangeNotifier {
   VTOPPageStatus get studentGradeHistoryPageStatus =>
       _studentGradeHistoryPageStatus;
 
+  VTOPPageStatus _studentTimeTablePageStatus = VTOPPageStatus.notProcessing;
+  VTOPPageStatus get studentTimeTablePageStatus => _studentTimeTablePageStatus;
+
   VTOPPageStatus _forgotUserIDPageStatus = VTOPPageStatus.notProcessing;
   VTOPPageStatus get forgotUserIDPageStatus => _forgotUserIDPageStatus;
 
@@ -63,6 +68,9 @@ class VTOPActions extends ChangeNotifier {
 
   late final ErrorStatusState readErrorStatusStateProviderValue =
       read(errorStatusStateProvider);
+
+  late final VTOPControllerState readVTOPControllerStateProviderValue =
+      read(vtopControllerStateProvider);
 
   void updateOfflineModeStatus({required bool mode}) {
     enableOfflineMode = mode;
@@ -89,17 +97,21 @@ class VTOPActions extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateStudentTimeTablePageStatus({required VTOPPageStatus status}) {
+    _studentTimeTablePageStatus = status;
+    notifyListeners();
+  }
+
   void updateForgotUserIDPageStatus({required VTOPPageStatus status}) {
     _forgotUserIDPageStatus = status;
     notifyListeners();
   }
 
-  void openLoginPageAction({required BuildContext context}) async {
+  void openLoginPageAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         _loginPageStatus = VTOPPageStatus.processing;
@@ -131,12 +143,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void performCaptchaRefreshAction({required BuildContext context}) async {
+  void performCaptchaRefreshAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
@@ -169,12 +180,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void performSignOutAction({required BuildContext context}) async {
+  void performSignOutAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         readUserLoginStateProviderValue.updateLoginStatus(
@@ -210,12 +220,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void performSignInAction({required BuildContext context}) async {
+  void performSignInAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         readUserLoginStateProviderValue.updateLoginStatus(
@@ -258,12 +267,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void studentProfileAllViewAction({required BuildContext context}) async {
+  void studentProfileAllViewAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentProfilePageStatus = VTOPPageStatus.processing;
@@ -300,12 +308,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void studentGradeHistoryAction({required BuildContext context}) async {
+  void studentGradeHistoryAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentGradeHistoryPageStatus = VTOPPageStatus.processing;
@@ -342,12 +349,97 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void forgotUserIDAction({required BuildContext context}) async {
+  void studentTimeTableAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentTimeTablePageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+                               document.getElementById("ACD0034").click();
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+
+  void studentTimeTableViewAction() async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentTimeTablePageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        VTOPControllerModel vtopController =
+            readVTOPControllerStateProviderValue.vtopController;
+        String semesterSubId = vtopController.semesterSubId;
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        document.getElementById("semesterSubId").value = "$semesterSubId";
+                               processViewTimeTable("$semesterSubId");
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+
+  void forgotUserIDAction() async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
       headlessWebView: headlessWebView,
       initialAction: () {
         _forgotUserIDPageStatus = VTOPPageStatus.processing;
@@ -380,12 +472,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void forgotUserIDSearchAction({required BuildContext context}) async {
+  void forgotUserIDSearchAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         readUserLoginStateProviderValue.updateForgotUserIDSearchStatus(
@@ -421,12 +512,11 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void forgotUserIDValidateAction({required BuildContext context}) async {
+  void forgotUserIDValidateAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
     _actionHandler(
-      context: context,
       headlessWebView: headlessWebView,
       initialAction: () {
         readUserLoginStateProviderValue.updateForgotUserIDValidateStatus(
@@ -463,7 +553,6 @@ class VTOPActions extends ChangeNotifier {
 }
 
 void _actionHandler({
-  required BuildContext context,
   required HeadlessInAppWebView headlessWebView,
   required Function() sessionTimeOutAction,
   required Function() performAction,

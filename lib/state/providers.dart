@@ -38,7 +38,7 @@ final preferencesProvider = ChangeNotifierProvider(
     (ref) => Preferences(ref.read)..init(sharedPreferencesInstance));
 
 final vtopControllerStateProvider =
-    ChangeNotifierProvider((ref) => VTOPControllerState()..init());
+    ChangeNotifierProvider((ref) => VTOPControllerState(ref.read)..init());
 
 final userLoginStateProvider =
     ChangeNotifierProvider((ref) => UserLoginState()..init());
