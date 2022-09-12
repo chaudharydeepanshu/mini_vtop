@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:minivtop/ui/explore_section_screens/attendance/attendance.dart';
 
 import '../ui/connection_screen/connection_page.dart';
 import '../ui/explore_section_screens/academics/academics.dart';
 import '../ui/explore_section_screens/student_profile/student_profile.dart';
 import '../ui/explore_section_screens/time_table/time_table.dart';
+import '../ui/header_section_screen/quick_glance_screen.dart';
 import '../ui/home_screen/components/explore_section.dart';
 import '../ui/home_screen/components/news_section.dart';
 import '../ui/home_screen/components/tools_section.dart';
@@ -21,8 +23,10 @@ const String forgotUserIDPage = '/login/forgotUserID';
 const String explorePage = '/dashboard/explore';
 const String newsPage = '/dashboard/news';
 const String toolsPage = '/dashboard/tools';
+const String quickGlancePage = '/dashboard/quickGlance';
 const String studentProfilePage = '/dashboard/StudentProfile';
 const String academicsPage = '/dashboard/Academics';
+const String attendancePage = '/dashboard/Attendance';
 const String timeTablePage = '/dashboard/timeTable';
 
 // Control our page route flow
@@ -59,9 +63,17 @@ Route<dynamic> controller(RouteSettings settings) {
           builder: (context) =>
               ToolsPage(arguments: settings.arguments as ToolsPageArguments),
           settings: RouteSettings(name: settings.name));
+    case quickGlancePage:
+      return MaterialPageRoute(
+          builder: (context) => const QuickGlancePage(),
+          settings: RouteSettings(name: settings.name));
     case studentProfilePage:
       return MaterialPageRoute(
           builder: (context) => const StudentProfilePage(),
+          settings: RouteSettings(name: settings.name));
+    case attendancePage:
+      return MaterialPageRoute(
+          builder: (context) => const AttendancePage(),
           settings: RouteSettings(name: settings.name));
     case academicsPage:
       return MaterialPageRoute(

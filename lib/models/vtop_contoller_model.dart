@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VTOPControllerModel {
-  String semesterSubId;
+  String timeTableID;
+  String attendanceID;
 
   VTOPControllerModel({
-    required this.semesterSubId,
+    required this.timeTableID,
+    required this.attendanceID,
   });
 
   factory VTOPControllerModel.fromFirestore(
@@ -13,30 +15,35 @@ class VTOPControllerModel {
   ) {
     final data = snapshot.data();
     return VTOPControllerModel(
-      semesterSubId: data?['semesterSubId'],
+      timeTableID: data?['timeTableID'],
+      attendanceID: data?['attendanceID'],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      "semesterSubId": semesterSubId,
+      "timeTableID": timeTableID,
+      "attendanceID": attendanceID,
     };
   }
 
   factory VTOPControllerModel.fromJson(Map<String, dynamic> parsedJson) {
     return VTOPControllerModel(
-      semesterSubId: parsedJson['semesterSubId'],
+      timeTableID: parsedJson['timeTableID'],
+      attendanceID: parsedJson['attendanceID'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "semesterSubId": semesterSubId,
+      "timeTableID": timeTableID,
+      "attendanceID": attendanceID,
     };
   }
 
   // Implement toString to make it easier to see information
   // when using the print statement.
   @override
-  String toString() => 'VTOPControllerModel{semesterSubId: $semesterSubId}';
+  String toString() =>
+      'VTOPControllerModel{timeTableID: $timeTableID, attendanceID: $attendanceID}';
 }

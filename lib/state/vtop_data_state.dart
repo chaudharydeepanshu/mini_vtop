@@ -11,6 +11,7 @@ import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/utils/string_cap_extension.dart';
 import 'package:minivtop/models/student_academics_model.dart';
 
+import '../models/student_attendance_model.dart';
 import '../models/student_timetable_model.dart';
 import '../shared_preferences/preferences.dart';
 import 'error_state.dart';
@@ -24,6 +25,9 @@ class VTOPData extends ChangeNotifier {
 
   StudentAcademicsModel? _studentAcademics;
   StudentAcademicsModel? get studentAcademics => _studentAcademics;
+
+  StudentAttendanceModel? _studentAttendance;
+  StudentAttendanceModel? get studentAttendance => _studentAttendance;
 
   StudentTimeTableModel? _studentTimeTable;
   StudentTimeTableModel? get studentTimeTable => _studentTimeTable;
@@ -171,6 +175,134 @@ class VTOPData extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setStudentAttendance(
+      {required String studentAttendanceDocument}) async {
+    try {
+      dom.Document parseDocument = parse(studentAttendanceDocument);
+
+      dom.Element? attendanceTableBody =
+          parseDocument.getElementById("getStudentDetails");
+
+      if (attendanceTableBody != null) {
+        // Check for data availability
+        //----------------------Attendance Table-----------------//
+        dom.Element? subjectAttendanceTableBody = parseDocument
+            .getElementById("getStudentDetails")
+            ?.querySelectorAll("table")[0];
+        List<dom.Element>? attendanceTableRows =
+            subjectAttendanceTableBody?.getElementsByTagName("tr");
+        List<List<String>> attendanceTableData = [];
+        if (attendanceTableRows != null) {
+          List<List<String>> tableData = [];
+          for (int i = 0; i < attendanceTableRows.length; i++) {
+            List<dom.Element> tableRowColumns =
+                attendanceTableRows[i].getElementsByTagName("td");
+            List<String> tableRowData = [];
+            for (int j = 0; j < tableRowColumns.length; j++) {
+              String rowData = tableRowColumns[j]
+                  .text
+                  .replaceAll(RegExp('\\s+'), ' ')
+                  .trim();
+              tableRowData.add(rowData);
+            }
+            tableData.add(tableRowData);
+          }
+          // log(tableData.toString());
+          // Sample tableData looks like this
+          /*
+            []
+            ['1', 'CSE2004', 'Theory Of Computation And Compiler Design', 'Lecture and Tutorial Hours Only', 'B21+B22+B23', '100416 RAMESH SAHA SCSE', ' Manual', '25-Jun-2022 16:10', '26-Jun-2022', '18', '27', '67', '-', 'View']
+            ['2', 'CSE3011', 'Python Programming', 'Lecture and Practical Hours Only', 'A11+A12', '100405 SIDDHARTH SINGH CHOUHAN SCSE', ' Manual', '25-Jun-2022 16:07', '26-Jun-2022', '8', '14', '58', '-', 'View']
+            ['3', 'DSN2096', 'Engineering Design', 'Lecture and Tutorial Hours Only', 'D13', 'RSH02 RESEARCH SCHOLAR 02 SCSE', ' Manual', '25-Jun-2022 16:03', '26-Jun-2022', '7', '7', '100', '-', 'View']
+            ['4', 'HUM2001', 'Behavioural Science', 'Lecture and Tutorial Hours Only', 'C11+C12', 'NF1014 Rajeev Aggrawal VITBS', ' Manual', '25-Jun-2022 16:03', '26-Jun-2022', '14', '14', '100', '-', 'View']
+            ['5', 'MAT2002', 'Discrete Mathematics And Graph Theory', 'Lecture and Tutorial Hours Only', 'D21+D22+D23', '100077 AJAY KUMAR BHURJEE SASL', ' Manual', '25-Jun-2022 16:12', '26-Jun-2022', '19', '28', '68', '-', 'View']
+            ['6', 'MEE1007', 'Engineering Graphics', 'Practical Hours Only', 'C23', 'RSH24 NITISH KUMAR SMEC', ' Manual', '25-Jun-2022 16:13', '26-Jun-2022', '7', '10', '70', '-', 'View']
+            ['7', 'MGT2003', 'Technology Entrepreneurship', 'Lecture and Tutorial Hours Only', 'B11+B12', '100390 PRASAD BEGDE VITBS', ' Manual', '25-Jun-2022 16:39', '26-Jun-2022', '12', '13', '93', '-', 'View']
+            ['8', 'SST2002', 'Soft Skills for Engineers - II', 'Practical Hours Only', 'E11', '100014 ANITA YADAV SASL', ' Manual', '25-Jun-2022 16:44', '26-Jun-2022', '6', '8', '75', '-', 'View']
+            ['Total Number Of Credits: 24']
+        */
+          //Sanitizing
+          tableData
+            ..removeAt(0)
+            ..removeLast();
+          attendanceTableData = tableData;
+        }
+        //----------------------Attendance Table-----------------//
+        //----------------------Creating Attendance Model-----------------//
+        // log(attendanceTableData.toString());
+        List<SubjectAttendanceDetailModel> subjectsAttendanceDetails = [];
+        for (int i = 0; i < attendanceTableData.length; i++) {
+          String facultyCodeAndName = attendanceTableData[i][5];
+          List<String> list = facultyCodeAndName.split(" ");
+          String subjectCode = attendanceTableData[i][1];
+          String subjectName = attendanceTableData[i][2];
+          String subjectType = attendanceTableData[i][3];
+          String subjectSlot = attendanceTableData[i][4];
+          String facultyCode = list[0];
+          list.removeAt(0);
+          String facultyName = list.join(" ");
+          int attendedClasses = int.parse(attendanceTableData[i][9]);
+          int totalClasses = int.parse(attendanceTableData[i][10]);
+          double percentOfAttendance = double.parse(attendanceTableData[i][11]);
+          SubjectAttendanceDetailModel subjectAttendanceDetail =
+              SubjectAttendanceDetailModel(
+                  subjectName: subjectName,
+                  subjectCode: subjectCode,
+                  subjectType: subjectType,
+                  subjectSlot: subjectSlot,
+                  facultyCode: facultyCode,
+                  facultyName: facultyName,
+                  attendedClasses: attendedClasses,
+                  totalClasses: totalClasses,
+                  percentOfAttendance: percentOfAttendance);
+          subjectsAttendanceDetails.add(subjectAttendanceDetail);
+        }
+        _studentAttendance = StudentAttendanceModel(
+            subjectsAttendanceDetails: subjectsAttendanceDetails);
+
+        readPreferencesProviderValue
+            .persistAttendanceHTMLDoc(studentAttendanceDocument);
+      } else {
+        dom.Element? subjectAttendanceTableBody = parseDocument
+            .getElementById("getStudentDetails")
+            ?.querySelectorAll("table")[0];
+        List<dom.Element>? attendanceTableRows =
+            subjectAttendanceTableBody?.getElementsByTagName("tr");
+        if (attendanceTableRows != null) {
+          if (attendanceTableRows.length == 2) {
+            _studentAttendance =
+                StudentAttendanceModel(subjectsAttendanceDetails: []);
+          } else {
+            _studentAttendance = null;
+          }
+        } else {
+          _studentAttendance = null;
+        }
+      }
+      // log("AttendanceModel: ${_studentAttendance.toString()}");
+      //----------------------Creating Attendance Model-----------------//
+    } on Exception catch (exception) {
+      log(exception.toString());
+
+      readErrorStatusStateProviderValue.update(
+          status: ErrorStatus.docParsingError);
+      await FirebaseCrashlytics.instance.recordError(
+          "setStudentAttendance parsing exception: ${exception.toString()}",
+          null,
+          reason: 'a non-fatal error');
+    } catch (error) {
+      log(error.toString());
+
+      readErrorStatusStateProviderValue.update(
+          status: ErrorStatus.docParsingError);
+      await FirebaseCrashlytics.instance.recordError(
+          "setStudentAttendance parsing error: ${error.toString()}", null,
+          reason: 'a non-fatal error');
+    }
+
+    notifyListeners();
+  }
+
   Future<void> setStudentTimeTable(
       {required String studentTimeTableDocument}) async {
     try {
@@ -287,12 +419,6 @@ class VTOPData extends ChangeNotifier {
               facultyName: facultyName,
               classVenue: classVenue);
           subjectsDetails.add(subjectDetail);
-          // int subjectIndexForBook = subjects.indexWhere((element) =>
-          //     element.books
-          //         .firstWhereOrNull((e) => e.bookName == result.bookName) !=
-          //     null);
-          // timeTableData
-          //     .where((element) => element.where((e) => e.contains("other")));
         }
         List<TimeTableClassDetailModel> timeTableClassesDetails = [];
         for (int i = 2; i < timeTableData.length; i++) {

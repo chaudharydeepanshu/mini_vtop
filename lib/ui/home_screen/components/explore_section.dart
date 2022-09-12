@@ -74,14 +74,12 @@ class ExploreSection extends StatelessWidget {
       GridCardDetail(
         cardIcon: const Icon(Icons.badge),
         cardTitle: 'Attendance',
-        cardOnTap: null,
-        //     () {
-        //   Navigator.of(context).push(
-        //     MaterialPageRoute(
-        //       builder: (BuildContext context) => const Attendance(),
-        //     ),
-        //   );
-        // },
+        cardOnTap: () {
+          Navigator.pushNamed(
+            context,
+            route.attendancePage,
+          );
+        },
       ),
       GridCardDetail(
         cardIcon: const Icon(Icons.table_chart),

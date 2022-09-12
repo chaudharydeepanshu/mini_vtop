@@ -51,6 +51,10 @@ class VTOPActions extends ChangeNotifier {
   VTOPPageStatus get studentGradeHistoryPageStatus =>
       _studentGradeHistoryPageStatus;
 
+  VTOPPageStatus _studentAttendancePageStatus = VTOPPageStatus.notProcessing;
+  VTOPPageStatus get studentAttendancePageStatus =>
+      _studentAttendancePageStatus;
+
   VTOPPageStatus _studentTimeTablePageStatus = VTOPPageStatus.notProcessing;
   VTOPPageStatus get studentTimeTablePageStatus => _studentTimeTablePageStatus;
 
@@ -94,6 +98,11 @@ class VTOPActions extends ChangeNotifier {
 
   void updateStudentGradeHistoryPageStatus({required VTOPPageStatus status}) {
     _studentGradeHistoryPageStatus = status;
+    notifyListeners();
+  }
+
+  void updateStudentAttendancePageStatus({required VTOPPageStatus status}) {
+    _studentAttendancePageStatus = status;
     notifyListeners();
   }
 
@@ -349,6 +358,92 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
+  void studentAttendanceAction() async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentAttendancePageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+                               document.getElementById("ACD0042").click();
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+
+  void studentAttendanceViewAction() async {
+    HeadlessInAppWebView headlessWebView =
+        readHeadlessWebViewProviderValue.headlessWebView;
+
+    _actionHandler(
+      headlessWebView: headlessWebView,
+      initialAction: () {
+        _studentAttendancePageStatus = VTOPPageStatus.processing;
+      },
+      performAction: () async {
+        VTOPControllerModel vtopController =
+            readVTOPControllerStateProviderValue.vtopController;
+        String semesterSubId = vtopController.timeTableID;
+        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        document.getElementById("semesterSubId").value = "$semesterSubId";
+                               processStudentAttendance();
+                                ''');
+      },
+      sessionTimeOutAction: () {
+        _vtopStatus = VTOPStatus.sessionTimedOut;
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+      closedConnectionErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.connectionClosedError);
+        notifyListeners();
+      },
+      otherErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.webpageNotAvailable);
+      },
+      nullDocErrorAction: () {
+        readErrorStatusStateProviderValue.update(
+            status: ErrorStatus.nullDocBeforeAction);
+      },
+      notLoggedInScreenAction: () {
+        readHeadlessWebViewProviderValue.settingSomeVars();
+        readHeadlessWebViewProviderValue.runHeadlessInAppWebView();
+        notifyListeners();
+      },
+    );
+  }
+
   void studentTimeTableAction() async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
@@ -402,7 +497,7 @@ class VTOPActions extends ChangeNotifier {
       performAction: () async {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
-        String semesterSubId = vtopController.semesterSubId;
+        String semesterSubId = vtopController.timeTableID;
         await headlessWebView.webViewController.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processViewTimeTable("$semesterSubId");

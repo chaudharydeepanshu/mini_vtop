@@ -10,7 +10,7 @@ import 'package:minivtop/models/student_profile_model.dart';
 import 'package:minivtop/shared_preferences/preferences.dart';
 import 'package:minivtop/state/vtop_data_state.dart';
 
-import '../../header_section_screen/quick_glance_screen.dart';
+import 'package:minivtop/route/route.dart' as route;
 
 class HomeHeader extends ConsumerStatefulWidget {
   const HomeHeader({Key? key}) : super(key: key);
@@ -105,13 +105,10 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
               ],
             ),
             OutlinedButton.icon(
-              onPressed:
-                  // null,
-                  () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const QuickGlance(),
-                  ),
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  route.quickGlancePage,
                 );
               },
               icon: const Icon(Icons.arrow_forward),

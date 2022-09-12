@@ -12,6 +12,7 @@ import '../../../state/vtop_data_state.dart';
 import '../../components/cached_mode_warning.dart';
 import '../../components/empty_content_indicator.dart';
 import '../../components/page_body_indicators.dart';
+import '../components/info_line.dart';
 
 class TimeTablePage extends ConsumerStatefulWidget {
   const TimeTablePage({Key? key}) : super(key: key);
@@ -274,6 +275,8 @@ class _TimeTableCardState extends State<TimeTableCard> {
       child: ExpansionTile(
         trailing: null,
         tilePadding: EdgeInsets.zero,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        expandedAlignment: Alignment.topLeft,
         onExpansionChanged: (bool value) {
           setState(() {
             isExpanded = value;
@@ -337,8 +340,6 @@ class _TimeTableCardState extends State<TimeTableCard> {
             ],
           ),
         ),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        expandedAlignment: Alignment.topLeft,
         children: <Widget>[
           const Divider(
               // height: 0,
@@ -347,47 +348,12 @@ class _TimeTableCardState extends State<TimeTableCard> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                SubjectInfoLine(detailName: "Sub. Code", detail: subjectCode),
-                SubjectInfoLine(detailName: "Class Type", detail: subjectType),
-                SubjectInfoLine(detailName: "Class No.", detail: classNumber),
-                SubjectInfoLine(detailName: "Slot", detail: subjectSlot),
-                SubjectInfoLine(detailName: "Faculty", detail: facultyName),
+                InfoLine(detailName: "Sub. Code", detail: subjectCode),
+                InfoLine(detailName: "Class Type", detail: subjectType),
+                InfoLine(detailName: "Class No.", detail: classNumber),
+                InfoLine(detailName: "Slot", detail: subjectSlot),
+                InfoLine(detailName: "Faculty", detail: facultyName),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SubjectInfoLine extends StatelessWidget {
-  const SubjectInfoLine(
-      {Key? key, required this.detailName, required this.detail})
-      : super(key: key);
-
-  final String detailName;
-  final String detail;
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              detailName,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-          const VerticalDivider(),
-          Expanded(
-            flex: 10,
-            child: Text(
-              detail,
-              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
         ],
