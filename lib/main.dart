@@ -84,10 +84,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Todo: Save user credential for future logins and provide option to clear them.
-// Todo: Load updating data from firebase.
+// Todo: Force update from firebase or play store data.
 // Todo: Look into ajax requests like student record or grade history accepted multiple times.
 // Todo: Load data inside database on 1st run of app.
-// Todo: make requests every few minutes to increase session time.
 // Todo: Add vit calendar.
 // Todo: Add a resume generator.
