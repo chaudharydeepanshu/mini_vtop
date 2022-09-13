@@ -161,6 +161,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     final int totalClasses = widget.subjectAttendanceDetail.totalClasses;
     final double percentOfAttendance =
         widget.subjectAttendanceDetail.percentOfAttendance;
+    // (attendedClasses / totalClasses) * 100;
 
     return Card(
       clipBehavior: Clip.antiAlias,

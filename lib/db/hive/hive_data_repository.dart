@@ -44,7 +44,6 @@ class HiveDataRepository {
   Future<String> getVTOPCredentialsBoxUserID() async {
     await openVTOPCredentialsBox();
 
-    print(await credentialsBox.get('userID'));
     return await credentialsBox.get('userID') ?? "";
   }
 

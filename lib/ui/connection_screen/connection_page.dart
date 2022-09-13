@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/connection_state.dart';
@@ -23,93 +21,62 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
   late Future<bool> initWebViewState;
 
   Future<bool> initWebViewData() async {
-    Stopwatch stopwatch = Stopwatch()..start();
     ref.read(headlessWebViewProvider);
-    log('initWebViewData Executed in ${stopwatch.elapsed}');
     ref.read(vtopControllerStateProvider);
     return true;
   }
 
-  /// Tracks if the animation is playing by whether controller is running.
-  // bool get isPlaying => controller?.isActive ?? false;
-
-  // Artboard? _riveArtboard;
-  // StateMachineController? controller;
   SMIInput<bool>? _connectingInput;
   SMIInput<bool>? _connectedInput;
   SMIInput<bool>? _errorInput;
 
+  StateMachineController? stateMachineController;
+
   void onRiveInit(Artboard artboard) {
-    final controller =
+    stateMachineController =
         StateMachineController.fromArtboard(artboard, 'State Machine');
-    // if (controller != null) {
-    artboard.addController(controller!);
-    _connectingInput = controller.findInput('Connecting');
-    _connectedInput = controller.findInput('Connected');
-    _errorInput = controller.findInput('Error');
-    controller.isActiveChanged.addListener(() {
-      final ConnectionStatusState connectionStatusState =
-          ref.read(connectionStatusStateProvider);
-      if (connectionStatusState.connectionStatus ==
-          ConnectionStatus.connected) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final UserLoginState readUserLoginStateProviderValue =
-              ref.read(userLoginStateProvider);
+    StateMachineController? controller = stateMachineController;
+    if (controller != null) {
+      artboard.addController(controller);
+      _connectingInput = controller.findInput('Connecting');
+      _connectedInput = controller.findInput('Connected');
+      _errorInput = controller.findInput('Error');
+      controller.isActiveChanged.addListener(() {
+        final ConnectionStatusState connectionStatusState =
+            ref.read(connectionStatusStateProvider);
+        if (connectionStatusState.connectionStatus ==
+            ConnectionStatus.connected) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final UserLoginState readUserLoginStateProviderValue =
+                ref.read(userLoginStateProvider);
 
-          if (readUserLoginStateProviderValue.loginResponseStatus ==
-              LoginResponseStatus.loggedIn) {
-            Navigator.pushReplacementNamed(
-              context,
-              route.dashboardPage,
-            );
-          } else {
-            Navigator.pushReplacementNamed(
-              context,
-              route.loginPage,
-            );
-          }
-        });
-      }
-    });
-    // }
+            if (readUserLoginStateProviderValue.loginResponseStatus ==
+                LoginResponseStatus.loggedIn) {
+              Navigator.pushReplacementNamed(
+                context,
+                route.dashboardPage,
+              );
+            } else {
+              Navigator.pushReplacementNamed(
+                context,
+                route.loginPage,
+              );
+            }
+          });
+        }
+      });
+    }
   }
-
-  // loadAnimationFile() {
-  //   // Load the animation file from the bundle, note that you could also
-  //   // download this. The RiveFile just expects a list of bytes.
-  //   rootBundle.load('assets/rive/connection_state_machine.riv').then(
-  //     (data) async {
-  //       // Load the RiveFile from the binary data.
-  //       final file = RiveFile.import(data);
-  //
-  //       // The artboard is the root of the animation and gets drawn in the
-  //       // Rive widget.
-  //       final artboard = file.mainArtboard;
-  //       var controller =
-  //           StateMachineController.fromArtboard(artboard, 'State Machine 1');
-  //       if (controller != null) {
-  //         artboard.addController(controller);
-  //
-  //
-  //
-  //         _connectingInput?.value = true;
-  //       }
-  //       setState(() => _riveArtboard = artboard);
-  //     },
-  //   );
-  // }
 
   @override
   void initState() {
     super.initState();
     initWebViewState = initWebViewData();
-
-    // loadAnimationFile();
   }
 
   @override
   void dispose() {
-    // controller?.dispose();
+    stateMachineController?.dispose();
     super.dispose();
   }
 
@@ -123,27 +90,6 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
         final ConnectionStatus connectionStatus = ref.watch(
             connectionStatusStateProvider
                 .select((value) => value.connectionStatus));
-
-        // if (connectionStatus == ConnectionStatus.connecting) {
-        //   _connectingInput?.value = true;
-        // } else if (connectionStatus == ConnectionStatus.connected) {
-        //   _connectedInput?.value = true;
-        // }
-        //
-        // if (errorStatus != ErrorStatus.noError) {
-        //   _errorInput?.value = true;
-        // }
-
-        // ref.listen<bool>(
-        //     vtopActionsProvider.select((value) => value.enableOfflineMode),
-        //     (bool? previous, bool next) {
-        //   if (next == true) {
-        //     Navigator.pushReplacementNamed(
-        //       context,
-        //       route.dashboardPage,
-        //     );
-        //   }
-        // });
 
         ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
             (ConnectionStatusState? previous, ConnectionStatusState next) {

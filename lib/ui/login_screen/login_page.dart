@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:minivtop/constants.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
-import 'package:minivtop/ui/components/drawer.dart';
 import 'package:minivtop/ui/components/link_button.dart';
 import 'package:minivtop/ui/login_screen/components/control_teddy.dart';
 import 'package:minivtop/ui/login_screen/components/login_tracking_text_input.dart';
@@ -18,7 +17,6 @@ import 'package:minivtop/ui/components/custom_snack_bar.dart';
 import '../../db/hive/hive_data_repository.dart';
 import '../components/page_body_indicators.dart';
 import 'package:minivtop/route/route.dart' as route;
-import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

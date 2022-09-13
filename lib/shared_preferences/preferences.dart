@@ -52,7 +52,7 @@ class Preferences extends ChangeNotifier {
   ThemeMode get themeMode => ThemeMode.values.firstWhere(
         (element) =>
             element.toString() == sharedPreferences.getString('themeMode'),
-        orElse: () => ThemeMode.light,
+        orElse: () => ThemeMode.system,
       );
 
   persistStudentProfileHTMLDoc(String doc) =>

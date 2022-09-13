@@ -1,5 +1,5 @@
 name: minivtop
-description: Mini VTOP is a flutter project which uses the power of Webview to create a user-friendly unofficial app for the VIT Bhopal University website.
+description: Mini VTOP is an unofficial VIT Bhopal University VTOP website app that uses the power of WebView to create a user-friendly app.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.6.0+2
+version: 0.7.0+3
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -45,7 +45,7 @@ dependencies:
   animations: ^2.0.4
 
   # For circular progress gauges. Ex: CGPA indicator.
-  syncfusion_flutter_gauges: ^20.2.48
+  syncfusion_flutter_gauges: ^20.2.49
 
   # For calendar views in app.
   clean_calendar: ^0.4.1
