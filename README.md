@@ -1,26 +1,47 @@
 # Project repository for Mini VTOP app
 
-[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e)
+[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg)
 
-**Note: Only the "V2" branch will be developed and maintained moving forward. The Mini VTOP "V1" branch is no longer supported due to numerous problems. Efficiency and maintainability are the goals for "V2".**
+**Note: "V2" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
 
-## Mini VTOP
+## Introduction
 
-Mini VTOP is a flutter project which uses the power of webview to create a user friendly unofficial app of VIT Bhopal University website. This app sends ajax requests and intercepts ajax requests of the university website to perform, manipulate and display different user interactions. This app includes two type of experiences:-
-1. Mini VTOP - This default option provides few specific actions and data to user in user-friendly way and in general it provides most accessed fuctions of university website.
-2. Full VTOP - This option provides access to whole website and in general this can be used if the user instantly wants access to full website without re-entering the credentials.
+Mini VTOP is an unofficial VIT Bhopal University VTOP website app that uses the power of WebView to create a user-friendly app.
 
-These two modes can be inter-switched instantly using the app drawer "VTOP Mode" option.
+## 🔒Is it safe?
 
-Mini VTOP also auto fills the captcha on login screen for instant login.
+It is just as secure as the official VTOP of VIT Bhopal. This app is internally making requests to VTOP on the user's behalf and then displays the response it receives. Additionally, it is open source, meaning the full source code is accessible online to anyone (see about section in the app).
 
-Please be informed of these points:-
-1. This project is created only for educational purpose and my personal use.
-2. This project has no direct or indirect connections or affilations with VIT (Vellore Institute of Technology).
-3. The project developer, copyright owner and contributors cannot be held liable or responsible for any kind of damage from this project.
+To do that it uses WebView which allows apps to display content from the web directly inside an application just like a browser.
 
-App videos and images:-
+## 🥱How is this app any better than the Official VTOP Website / Client?
 
-https://user-images.githubusercontent.com/85361211/164713981-52dd4e7b-f05d-493c-be81-845ff6ce73ca.mp4
+With the help of this app, users will be able to complete particular activities quickly and easily. This is what the app aims to achieve because in today's society we expect everything we use on a regular basis to be mobile-friendly and user-friendly. Behind the UI wall, this app hides a variety of issues and errors that are encountered in the VTOP.
 
-<img src= "https://user-images.githubusercontent.com/85361211/159277406-bd5d0037-6b03-4d27-b1fe-2071d1c8596c.png" width="300"><img src= "https://user-images.githubusercontent.com/85361211/159278228-eddcd503-4645-421e-8c7f-3523d387604a.png" width="300"><img src= "https://user-images.githubusercontent.com/85361211/159278434-8da8f934-2d46-4d13-a861-2bf80a1a7aa7.png" width="300"><img src= "https://user-images.githubusercontent.com/85361211/159468786-3ed99a3e-a1b2-4dd0-b436-d8b9c329a1a3.png" width="300"><img src= "https://user-images.githubusercontent.com/85361211/159278851-74c7b869-ee4c-45be-807e-43f3a0eb9399.png" width="300"><img src= "https://user-images.githubusercontent.com/85361211/159278895-b6080958-68dd-4d8b-8e0d-821244231d13.png" width="300">
+Note: It only ports a few elements of Official VTOP, hence the moniker "mini VTOP," and it was not designed to, and will never be able to, replace Official VTOP.
+
+## 🎯What it can do?
+
+- User can login with one tap after the initial login.
+- Shows the schedule in an intuitive way, for instance, it displays the current class as well as the classes that will be held on a particular day.
+- Quickly displays attendance and CGPA.
+- Offline mode for records that have previously been viewed. Useful if VTOP or the internet is down.
+- Several additional features, such as the VIT calendar, full academic records, test schedule viewers, etc., will soon be introduced.
+
+Please give the project a star if you liked the app or idea.
+
+## Screenshots:-
+
+|  |  |  |
+| --------------- | --------------- | --------------- |
+| <img src="https://user-images.githubusercontent.com/85361211/190183731-bcab9d03-76c9-4400-9349-f82c7ea607f2.png" height="600"> | <img src="https://user-images.githubusercontent.com/85361211/190183743-c2fc5f36-3a6b-4f74-94fd-627547e04ec2.png" height="600"> | <img src="https://user-images.githubusercontent.com/85361211/190183747-895ab0b3-20ae-4d45-827c-94ffe45c3bd8.png" height="600"> |
+| <img src="https://user-images.githubusercontent.com/85361211/190183752-9cf463fa-1f45-4230-94c2-b55af1e1a48a.png" height="600"> | <img src="https://user-images.githubusercontent.com/85361211/190183757-0a31324d-71fa-4792-bfcc-bf981b19bb44.png" height="600"> | <img src="https://user-images.githubusercontent.com/85361211/190183759-53ba95b1-5c4e-4dc5-8321-ee6fca68122c.png" height="600"> |
+
+## 🤔Why I spent time creating something like this?
+
+I've been creating apps for quite some time and have picked up a lot of knowledge in the process. This was one of the projects I developed for the VIT exhibition in order to understand how to turn a website into an app without needing special access to the website and to show others how this is possible. That application is already out of date and deprecated. Since it was a sample and I didn't know much at the time, it had many defects and errors, but I must admit that I grew really accustomed to using that app in my daily life for VTOP-related chores. But, the fact that it wasn't hosted on the Google Play store worried others who wanted to utilize it. So, later on, when I had some free time, I started over and rewrote the app using everything I know, and it turned out far better than the first one. And I have to admit that this process taught me a lot of new things.
+
+Also please be informed of these points:-
+- This project is created with an aim to learn more about WebViews.
+- This project has no direct or indirect connections or affilations with VIT (Vellore Institute of Technology).
+- The project developer, copyright owner and contributors cannot be held liable or responsible for any kind of damage from this project.
