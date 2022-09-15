@@ -2,7 +2,7 @@
 
 [![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg)
 
-**Note: "V2" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
+**Note: "Master" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
 
 # Table of Contents
 > - [1. Introduction](#introduction)
