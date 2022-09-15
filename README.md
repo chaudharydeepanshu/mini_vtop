@@ -4,23 +4,35 @@
 
 **Note: "V2" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
 
+# Table of Contents
+> - [1. Introduction](#introduction)
+> - [2. General Queries](#general-queries)
+>   * [🔒Is it safe?](#is-it-safe)
+>   * [🥱How is this app any better than the Official VTOP Website / Client?](#how-is-this-app-any-better-than-the-official-vtop-website--client)
+>   * [🎯What it can do?](#what-it-can-do)
+> - [3. Screenshots](#screenshots-)
+> - [4. 🤔Why I spent time creating something like this?](#why-i-spent-time-creating-something-like-this)
+> - [5. MIT License](#mit-license)
+
 ## Introduction
 
 Mini VTOP is an unofficial VIT Bhopal University VTOP website app that uses the power of WebView to create a user-friendly app.
 
-## 🔒Is it safe?
+## General Queries
+
+### 🔒Is it safe?
 
 It is just as secure as the official VTOP of VIT Bhopal. This app is internally making requests to VTOP on the user's behalf and then displays the response it receives. Additionally, it is open source, meaning the full source code is accessible online to anyone (see about section in the app).
 
 To do that it uses WebView which allows apps to display content from the web directly inside an application just like a browser.
 
-## 🥱How is this app any better than the Official VTOP Website / Client?
+### 🥱How is this app any better than the Official VTOP Website / Client?
 
 With the help of this app, users will be able to complete particular activities quickly and easily. This is what the app aims to achieve because in today's society we expect everything we use on a regular basis to be mobile-friendly and user-friendly. Behind the UI wall, this app hides a variety of issues and errors that are encountered in the VTOP.
 
 Note: It only ports a few elements of Official VTOP, hence the moniker "mini VTOP," and it was not designed to, and will never be able to, replace Official VTOP.
 
-## 🎯What it can do?
+### 🎯What it can do?
 
 - User can login with one tap after the initial login.
 - Shows the schedule in an intuitive way, for instance, it displays the current class as well as the classes that will be held on a particular day.
@@ -45,3 +57,13 @@ Also please be informed of these points:-
 - This project is created with an aim to learn more about WebViews.
 - This project has no direct or indirect connections or affilations with VIT (Vellore Institute of Technology).
 - The project developer, copyright owner and contributors cannot be held liable or responsible for any kind of damage from this project.
+
+# MIT License
+
+Copyright (c) 2022 Deepanshu Chaudhary
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
