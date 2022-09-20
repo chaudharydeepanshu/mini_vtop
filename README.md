@@ -1,6 +1,8 @@
 # Project repository for Mini VTOP app
 
-[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg)
+[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg) 
+
+<a href='https://play.google.com/store/apps/details?id=com.deepanshuchaudhary.apps.minivtop&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='300px'/></a>
 
 **Note: "Master" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
 
