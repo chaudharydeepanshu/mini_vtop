@@ -21,9 +21,9 @@ import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 
 class HeadlessWebView extends ChangeNotifier {
-  HeadlessWebView(this.read);
+  HeadlessWebView(this.ref);
 
-  final Reader read;
+  final Ref ref;
 
   late HeadlessInAppWebView _headlessWebView;
   HeadlessInAppWebView get headlessWebView => _headlessWebView;
@@ -39,16 +39,16 @@ class HeadlessWebView extends ChangeNotifier {
   String get url => _url;
 
   late final UserLoginState readUserLoginStateProviderValue =
-      read(userLoginStateProvider);
+      ref.read(userLoginStateProvider);
 
   late final ConnectionStatusState readConnectionStatusStateProviderValue =
-      read(connectionStatusStateProvider);
+      ref.read(connectionStatusStateProvider);
 
   late final VTOPActions readVTOPActionsProviderValue =
-      read(vtopActionsProvider);
+      ref.read(vtopActionsProvider);
 
   late final ErrorStatusState readErrorStatusStateProviderValue =
-      read(errorStatusStateProvider);
+      ref.read(errorStatusStateProvider);
 
   Timer? timer;
 
@@ -600,7 +600,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              read(vtopDataProvider)
+              ref
+                  .read(vtopDataProvider)
                   .setStudentProfile(studentProfileViewDocument: value);
 
               readVTOPActionsProviderValue.updateStudentProfilePageStatus(
@@ -636,7 +637,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              read(vtopDataProvider)
+              ref
+                  .read(vtopDataProvider)
                   .setStudentAcademics(studentGradeHistoryDocument: value);
               readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
                   status: VTOPPageStatus.loaded);
@@ -702,7 +704,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              read(vtopDataProvider)
+              ref
+                  .read(vtopDataProvider)
                   .setStudentAttendance(studentAttendanceDocument: value);
 
               readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
@@ -769,7 +772,8 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
-              read(vtopDataProvider)
+              ref
+                  .read(vtopDataProvider)
                   .setStudentTimeTable(studentTimeTableDocument: value);
 
               readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(

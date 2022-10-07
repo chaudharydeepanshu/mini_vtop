@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 
-import '../Theme/app_theme_data.dart';
 import '../shared_preferences/preferences.dart';
+import 'package:minivtop/ui/theme/app_theme_data.dart';
 
 class AppThemeState extends ChangeNotifier {
-  AppThemeState(this.read);
+  AppThemeState(this.ref);
 
-  final Reader read;
+  final Ref ref;
 
   late ThemeData _lightThemeData;
   ThemeData get lightThemeData => _lightThemeData;
@@ -20,7 +20,7 @@ class AppThemeState extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
 
   late final Preferences readPreferencesProviderValue =
-      read(preferencesProvider);
+      ref.read(preferencesProvider);
 
   init({ColorScheme? lightDynamic, ColorScheme? darkDynamic}) {
     _lightThemeData = AppThemeData.lightThemeData(lightDynamic);

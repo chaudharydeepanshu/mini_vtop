@@ -36,27 +36,26 @@ final packageInfoCalcProvider =
     ChangeNotifierProvider((ref) => PackageInfoCalc()..init(packageInfo));
 
 final preferencesProvider = ChangeNotifierProvider(
-    (ref) => Preferences(ref.read)..init(sharedPreferencesInstance));
+    (ref) => Preferences(ref)..init(sharedPreferencesInstance));
 
 final appThemeStateProvider =
-    ChangeNotifierProvider((ref) => AppThemeState(ref.read)..init());
+    ChangeNotifierProvider((ref) => AppThemeState(ref)..init());
 
 final vtopControllerStateProvider =
-    ChangeNotifierProvider((ref) => VTOPControllerState(ref.read)..init());
+    ChangeNotifierProvider((ref) => VTOPControllerState(ref)..init());
 
 final userLoginStateProvider =
     ChangeNotifierProvider((ref) => UserLoginState()..init());
 
 final headlessWebViewProvider =
-    ChangeNotifierProvider((ref) => HeadlessWebView(ref.read)..init());
+    ChangeNotifierProvider((ref) => HeadlessWebView(ref)..init());
 
 final connectionStatusStateProvider =
     ChangeNotifierProvider((ref) => ConnectionStatusState()..init());
 
-final vtopActionsProvider =
-    ChangeNotifierProvider((ref) => VTOPActions(ref.read));
+final vtopActionsProvider = ChangeNotifierProvider((ref) => VTOPActions(ref));
 
-final vtopDataProvider = ChangeNotifierProvider((ref) => VTOPData(ref.read));
+final vtopDataProvider = ChangeNotifierProvider((ref) => VTOPData(ref));
 
 final errorStatusStateProvider =
-    ChangeNotifierProvider((ref) => ErrorStatusState(ref.read)..init());
+    ChangeNotifierProvider((ref) => ErrorStatusState(ref)..init());

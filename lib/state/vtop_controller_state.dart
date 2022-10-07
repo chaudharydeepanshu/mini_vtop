@@ -10,8 +10,8 @@ import '../models/vtop_contoller_model.dart';
 import '../shared_preferences/preferences.dart';
 
 class VTOPControllerState extends ChangeNotifier {
-  VTOPControllerState(this.read);
-  final Reader read;
+  VTOPControllerState(this.ref);
+  final Ref ref;
 
   late VTOPControllerModel _vtopController;
   VTOPControllerModel get vtopController => _vtopController;
@@ -19,7 +19,7 @@ class VTOPControllerState extends ChangeNotifier {
   FirebaseDataRepository service = FirebaseDataRepository();
 
   late final Preferences readPreferencesProviderValue =
-      read(preferencesProvider);
+      ref.read(preferencesProvider);
 
   init() {
     service

@@ -31,9 +31,9 @@ enum VTOPPageStatus {
 }
 
 class VTOPActions extends ChangeNotifier {
-  VTOPActions(this.read);
+  VTOPActions(this.ref);
 
-  final Reader read;
+  final Ref ref;
 
   bool enableOfflineMode = false;
 
@@ -62,19 +62,19 @@ class VTOPActions extends ChangeNotifier {
   VTOPPageStatus get forgotUserIDPageStatus => _forgotUserIDPageStatus;
 
   late final HeadlessWebView readHeadlessWebViewProviderValue =
-      read(headlessWebViewProvider);
+      ref.read(headlessWebViewProvider);
 
   late final UserLoginState readUserLoginStateProviderValue =
-      read(userLoginStateProvider);
+      ref.read(userLoginStateProvider);
 
   late final ConnectionStatusState readConnectionStatusStateProviderValue =
-      read(connectionStatusStateProvider);
+      ref.read(connectionStatusStateProvider);
 
   late final ErrorStatusState readErrorStatusStateProviderValue =
-      read(errorStatusStateProvider);
+      ref.read(errorStatusStateProvider);
 
   late final VTOPControllerState readVTOPControllerStateProviderValue =
-      read(vtopControllerStateProvider);
+      ref.read(vtopControllerStateProvider);
 
   void updateOfflineModeStatus({required bool mode}) {
     enableOfflineMode = mode;

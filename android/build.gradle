@@ -8,11 +8,11 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        
-        // Add the dependency for the Google services Gradle plugin
-        classpath 'com.google.gms:google-services:4.3.13'
 
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+        // Add the dependency for the Google services Gradle plugin
+        classpath 'com.google.gms:google-services:4.3.14'
+
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
     }
 }
 

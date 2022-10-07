@@ -8,14 +8,14 @@ import '../state/package_info_state.dart';
 import '../state/providers.dart';
 
 class Preferences extends ChangeNotifier {
-  Preferences(this.read);
-  final Reader read;
+  Preferences(this.ref);
+  final Ref ref;
 
   late SharedPreferences _sharedPreferences;
   SharedPreferences get sharedPreferences => _sharedPreferences;
 
   late final PackageInfoCalc readPackageInfoCalcProviderValue =
-      read(packageInfoCalcProvider);
+      ref.read(packageInfoCalcProvider);
 
   init(SharedPreferences sharedPreferencesInstance) async {
     _sharedPreferences = sharedPreferencesInstance;

@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/ui/theme/app_theme_data.dart';
 import 'package:uuid/uuid.dart';
-import 'Theme/app_theme_data.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 import 'package:firebase_core/firebase_core.dart';

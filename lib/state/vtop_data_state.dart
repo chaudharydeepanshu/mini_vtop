@@ -17,8 +17,8 @@ import '../shared_preferences/preferences.dart';
 import 'error_state.dart';
 
 class VTOPData extends ChangeNotifier {
-  VTOPData(this.read);
-  final Reader read;
+  VTOPData(this.ref);
+  final Ref ref;
 
   StudentProfileModel? _studentProfile;
   StudentProfileModel? get studentProfile => _studentProfile;
@@ -33,13 +33,13 @@ class VTOPData extends ChangeNotifier {
   StudentTimeTableModel? get studentTimeTable => _studentTimeTable;
 
   late final Preferences readPreferencesProviderValue =
-      read(preferencesProvider);
+      ref.read(preferencesProvider);
 
   late final PackageInfoCalc readPackageInfoCalcProviderValue =
-      read(packageInfoCalcProvider);
+      ref.read(packageInfoCalcProvider);
 
   late final ErrorStatusState readErrorStatusStateProviderValue =
-      read(errorStatusStateProvider);
+      ref.read(errorStatusStateProvider);
 
   Future<void> setStudentProfile(
       {required String studentProfileViewDocument}) async {

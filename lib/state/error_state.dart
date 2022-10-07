@@ -49,9 +49,9 @@ enum ErrorStatus {
 }
 
 class ErrorStatusState extends ChangeNotifier {
-  ErrorStatusState(this.read);
+  ErrorStatusState(this.ref);
 
-  final Reader read;
+  final Ref ref;
 
   late ErrorStatus _errorStatus;
   ErrorStatus get errorStatus => _errorStatus;
