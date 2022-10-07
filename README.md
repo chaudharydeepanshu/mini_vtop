@@ -1,6 +1,8 @@
 # Project repository for Mini VTOP app
 
-[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg)
+[![wakatime](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e.svg)](https://wakatime.com/badge/user/83f3b15d-49de-4c01-b8de-bbc132f11be1/project/362db10a-c68a-42e5-9623-30a319bd510e) ![Branch_V1_(Deprecated)-235_hrs_52_mins-007ec6](https://user-images.githubusercontent.com/85361211/190181607-badd97fb-d908-4733-9822-5bb24077d05f.svg) 
+
+<a href='https://play.google.com/store/apps/details?id=com.deepanshuchaudhary.apps.minivtop&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='300px'/></a>
 
 **Note: "Master" branch will be developed and maintained moving forward. It was rewritten from scratch due to the shortcomings in "V1".**
 
@@ -44,10 +46,7 @@ Please give the project a star if you liked the app or idea.
 
 ## Screenshots:-
 
-|  |  |  |
-| --------------- | --------------- | --------------- |
-| <img src="https://user-images.githubusercontent.com/85361211/190183731-bcab9d03-76c9-4400-9349-f82c7ea607f2.png" height="500"> | <img src="https://user-images.githubusercontent.com/85361211/190183743-c2fc5f36-3a6b-4f74-94fd-627547e04ec2.png" height="500"> | <img src="https://user-images.githubusercontent.com/85361211/190183747-895ab0b3-20ae-4d45-827c-94ffe45c3bd8.png" height="500"> |
-| <img src="https://user-images.githubusercontent.com/85361211/190183752-9cf463fa-1f45-4230-94c2-b55af1e1a48a.png" height="500"> | <img src="https://user-images.githubusercontent.com/85361211/190183757-0a31324d-71fa-4792-bfcc-bf981b19bb44.png" height="500"> | <img src="https://user-images.githubusercontent.com/85361211/190183759-53ba95b1-5c4e-4dc5-8321-ee6fca68122c.png" height="500"> |
+<img src="https://user-images.githubusercontent.com/85361211/190183731-bcab9d03-76c9-4400-9349-f82c7ea607f2.png" width="30%"></img> <img src="https://user-images.githubusercontent.com/85361211/190183743-c2fc5f36-3a6b-4f74-94fd-627547e04ec2.png" width="30%"></img> <img src="https://user-images.githubusercontent.com/85361211/190183747-895ab0b3-20ae-4d45-827c-94ffe45c3bd8.png" width="30%"></img> <img src="https://user-images.githubusercontent.com/85361211/190183752-9cf463fa-1f45-4230-94c2-b55af1e1a48a.png" width="30%"></img> <img src="https://user-images.githubusercontent.com/85361211/190183757-0a31324d-71fa-4792-bfcc-bf981b19bb44.png" width="30%"></img> <img src="https://user-images.githubusercontent.com/85361211/190183759-53ba95b1-5c4e-4dc5-8321-ee6fca68122c.png" width="30%"></img>
 
 ## 🤔Why I spent time creating something like this?
 
