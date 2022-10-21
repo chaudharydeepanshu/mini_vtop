@@ -420,7 +420,7 @@ class VTOPActions extends ChangeNotifier {
       performAction: () async {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
-        String semesterSubId = vtopController.timeTableID;
+        String semesterSubId = vtopController.attendanceID;
         await headlessWebView.webViewController.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processStudentAttendance();

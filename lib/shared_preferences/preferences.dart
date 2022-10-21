@@ -39,7 +39,7 @@ class Preferences extends ChangeNotifier {
 
   String get vtopController =>
       sharedPreferences.getString('vtopController') ??
-      '{"attendanceID":"BL2022231", "timeTableID":"BL2022231"}';
+      '{"attendanceID":"BL2022234", "timeTableID":"BL2022234"}';
 
   persistAppVersion(String version) =>
       sharedPreferences.setString('appVersion', version);

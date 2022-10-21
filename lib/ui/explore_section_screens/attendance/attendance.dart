@@ -36,10 +36,9 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
     super.initState();
   }
 
-
   refreshData(WidgetRef ref) {
     final VTOPActions readVTOPActionsProviderValue =
-    ref.read(vtopActionsProvider);
+        ref.read(vtopActionsProvider);
     readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
     readVTOPActionsProviderValue.studentAttendanceAction();
     readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
@@ -79,13 +78,13 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
             }
 
             ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
-                    (ConnectionStatusState? previous, ConnectionStatusState next) {
-                  if (next.connectionStatus == ConnectionStatus.connected &&
-                      ref.read(userLoginStateProvider).loginResponseStatus ==
-                          LoginResponseStatus.loggedIn) {
-                    refreshData(ref);
-                  }
-                });
+                (ConnectionStatusState? previous, ConnectionStatusState next) {
+              if (next.connectionStatus == ConnectionStatus.connected &&
+                  ref.read(userLoginStateProvider).loginResponseStatus ==
+                      LoginResponseStatus.loggedIn) {
+                refreshData(ref);
+              }
+            });
 
             return studentAttendancePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
@@ -117,7 +116,6 @@ class AttendanceBody extends StatelessWidget {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final StudentAttendanceModel? studentAttendance = ref
             .watch(vtopDataProvider.select((value) => value.studentAttendance));
-
         if (studentAttendance != null) {
           final List<SubjectAttendanceDetailModel> subjectsAttendanceDetails =
               studentAttendance.subjectsAttendanceDetails;
