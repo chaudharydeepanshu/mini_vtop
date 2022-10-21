@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.7.0+3
+version: 0.8.1+5
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -36,7 +36,7 @@ dependencies:
   dynamic_color: ^1.5.4
 
   # For WebView.
-  flutter_inappwebview: ^5.4.4+3
+  flutter_inappwebview: ^5.5.0+5
 
   # For state management.
   flutter_riverpod: ^2.0.2
@@ -45,7 +45,7 @@ dependencies:
   animations: ^2.0.7
 
   # For circular progress gauges. Ex: CGPA indicator.
-  syncfusion_flutter_gauges: ^20.3.48
+  syncfusion_flutter_gauges: ^20.3.50
 
   # For calendar views in app.
   clean_calendar: ^0.6.2
@@ -57,25 +57,25 @@ dependencies:
   shimmer: ^2.0.0
 
   # For parsing HTML doc from WebView.
-  html: ^0.15.0
+  html: ^0.15.1
 
   # For cropping captcha image.
-  image: ^3.2.0
+  image: ^3.2.2
 
   # For loading animations.
   flutter_spinkit: ^5.1.0
 
   # For firebase packages. After installing new firebase package run ```flutterfire configure```.
-  firebase_core: ^1.24.0
+  firebase_core: ^2.1.0
 
   # For logging errors.
-  firebase_crashlytics: ^2.8.13
+  firebase_crashlytics: ^3.0.2
 
   # For logging usage and behavior data.
-  firebase_analytics: ^9.3.8
+  firebase_analytics: ^10.0.2
 
   # For fetching VTOP controlling data.
-  cloud_firestore: ^3.5.1
+  cloud_firestore: ^4.0.2
 
   # For identifying logs user.
   uuid: ^3.0.6
@@ -84,7 +84,7 @@ dependencies:
   shared_preferences: ^2.0.15
 
   # For getting app package information.
-  package_info_plus: ^1.4.3+1
+  package_info_plus: ^3.0.1
 
   # For storing userID and password.
   hive: ^2.2.3
@@ -94,7 +94,7 @@ dependencies:
   path_provider: ^2.0.11
 
   # For splash screen.
-  flutter_native_splash: ^2.2.10+1
+  flutter_native_splash: ^2.2.11
 
   # For launching links in app ex: privacy policy and terms and conditions.
   url_launcher: ^6.1.6

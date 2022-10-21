@@ -4,7 +4,9 @@ import 'package:minivtop/models/student_attendance_model.dart';
 import 'package:minivtop/ui/components/linear_completion_meter.dart';
 
 import '../../../shared_preferences/preferences.dart';
+import '../../../state/connection_state.dart';
 import '../../../state/providers.dart';
+import '../../../state/user_login_state.dart';
 import '../../../state/vtop_actions.dart';
 import '../../../state/vtop_data_state.dart';
 import '../../components/cached_mode_warning.dart';
@@ -32,6 +34,16 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
     }
 
     super.initState();
+  }
+
+
+  refreshData(WidgetRef ref) {
+    final VTOPActions readVTOPActionsProviderValue =
+    ref.read(vtopActionsProvider);
+    readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
+    readVTOPActionsProviderValue.studentAttendanceAction();
+    readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
+        status: VTOPPageStatus.processing);
   }
 
   @override
@@ -66,6 +78,15 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
               }
             }
 
+            ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
+                    (ConnectionStatusState? previous, ConnectionStatusState next) {
+                  if (next.connectionStatus == ConnectionStatus.connected &&
+                      ref.read(userLoginStateProvider).loginResponseStatus ==
+                          LoginResponseStatus.loggedIn) {
+                    refreshData(ref);
+                  }
+                });
+
             return studentAttendancePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
                 ? Column(
@@ -80,12 +101,7 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
           },
         ),
         onRefresh: () async {
-          final VTOPActions readVTOPActionsProviderValue =
-              ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
-          readVTOPActionsProviderValue.studentAttendanceAction();
-          readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
-              status: VTOPPageStatus.processing);
+          refreshData(ref);
         },
       ),
     );

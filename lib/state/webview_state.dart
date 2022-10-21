@@ -599,13 +599,14 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
-              ref
+                .then((value) async {
+              bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
                   .setStudentProfile(studentProfileViewDocument: value);
-
-              readVTOPActionsProviderValue.updateStudentProfilePageStatus(
-                  status: VTOPPageStatus.loaded);
+              if (pageLoadedSuccessfully == true) {
+                readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+                    status: VTOPPageStatus.loaded);
+              }
             });
           } else {
             log("Rejected ajaxRequest callback as till now action was already taken for loaded StudentProfileAllView.");
@@ -636,12 +637,15 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
-              ref
+                .then((value) async {
+              bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
                   .setStudentAcademics(studentGradeHistoryDocument: value);
-              readVTOPActionsProviderValue.updateStudentGradeHistoryPageStatus(
-                  status: VTOPPageStatus.loaded);
+              if (pageLoadedSuccessfully == true) {
+                readVTOPActionsProviderValue
+                    .updateStudentGradeHistoryPageStatus(
+                        status: VTOPPageStatus.loaded);
+              }
             });
           } else {
             log("Rejected ajaxRequest callback as till now action was already taken for loaded GradeHistory.");
@@ -703,13 +707,14 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
-              ref
+                .then((value) async {
+              bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
                   .setStudentAttendance(studentAttendanceDocument: value);
-
-              readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
-                  status: VTOPPageStatus.loaded);
+              if (pageLoadedSuccessfully == true) {
+                readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
+                    status: VTOPPageStatus.loaded);
+              }
             });
           } else {
             log("Rejected ajaxRequest callback as till now action was already taken for loaded TimeTable page.");
@@ -771,13 +776,14 @@ class HeadlessWebView extends ChangeNotifier {
             await headlessWebView.webViewController
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
-                .then((value) {
-              ref
+                .then((value) async {
+              bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
                   .setStudentTimeTable(studentTimeTableDocument: value);
-
-              readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
-                  status: VTOPPageStatus.loaded);
+              if (pageLoadedSuccessfully == true) {
+                readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
+                    status: VTOPPageStatus.loaded);
+              }
             });
           } else {
             log("Rejected ajaxRequest callback as till now action was already taken for loaded TimeTable page.");

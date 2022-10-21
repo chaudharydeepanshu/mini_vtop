@@ -8,6 +8,8 @@ import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/vtop_actions.dart';
 
 import '../../../shared_preferences/preferences.dart';
+import '../../../state/connection_state.dart';
+import '../../../state/user_login_state.dart';
 import '../../../state/vtop_data_state.dart';
 import '../../components/cached_mode_warning.dart';
 import '../../components/empty_content_indicator.dart';
@@ -34,6 +36,15 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
     }
 
     super.initState();
+  }
+
+  refreshData(WidgetRef ref) {
+    final VTOPActions readVTOPActionsProviderValue =
+        ref.read(vtopActionsProvider);
+    readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
+    readVTOPActionsProviderValue.studentTimeTableAction();
+    readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
+        status: VTOPPageStatus.processing);
   }
 
   @override
@@ -68,6 +79,15 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
               }
             }
 
+            ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
+                (ConnectionStatusState? previous, ConnectionStatusState next) {
+              if (next.connectionStatus == ConnectionStatus.connected &&
+                  ref.read(userLoginStateProvider).loginResponseStatus ==
+                      LoginResponseStatus.loggedIn) {
+                refreshData(ref);
+              }
+            });
+
             return studentTimeTablePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
                 ? Column(
@@ -82,12 +102,7 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
           },
         ),
         onRefresh: () async {
-          final VTOPActions readVTOPActionsProviderValue =
-              ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
-          readVTOPActionsProviderValue.studentTimeTableAction();
-          readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
-              status: VTOPPageStatus.processing);
+          refreshData(ref);
         },
       ),
     );

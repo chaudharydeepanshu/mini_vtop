@@ -9,6 +9,8 @@ import 'package:minivtop/ui/components/page_body_indicators.dart';
 
 import '../../../models/student_academics_model.dart';
 import '../../../shared_preferences/preferences.dart';
+import '../../../state/connection_state.dart';
+import '../../../state/user_login_state.dart';
 import '../../components/cached_mode_warning.dart';
 import '../../components/empty_content_indicator.dart';
 
@@ -32,6 +34,15 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
     }
 
     super.initState();
+  }
+
+  refreshData(WidgetRef ref) {
+    final VTOPActions readVTOPActionsProviderValue =
+        ref.read(vtopActionsProvider);
+    readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
+    readVTOPActionsProviderValue.studentGradeHistoryAction();
+    readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+        status: VTOPPageStatus.processing);
   }
 
   @override
@@ -66,6 +77,15 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
               }
             }
 
+            ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
+                (ConnectionStatusState? previous, ConnectionStatusState next) {
+              if (next.connectionStatus == ConnectionStatus.connected &&
+                  ref.read(userLoginStateProvider).loginResponseStatus ==
+                      LoginResponseStatus.loggedIn) {
+                refreshData(ref);
+              }
+            });
+
             return studentGradeHistoryPageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
                 ? Column(
@@ -80,12 +100,7 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
           },
         ),
         onRefresh: () async {
-          final VTOPActions readVTOPActionsProviderValue =
-              ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.updateOfflineModeStatus(mode: false);
-          readVTOPActionsProviderValue.studentGradeHistoryAction();
-          readVTOPActionsProviderValue.updateStudentProfilePageStatus(
-              status: VTOPPageStatus.processing);
+          refreshData(ref);
         },
       ),
     );

@@ -284,6 +284,9 @@ class VTOPActions extends ChangeNotifier {
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentProfilePageStatus = VTOPPageStatus.processing;
+        WidgetsBinding.instance.addPostFrameCallback((_) =>
+            readErrorStatusStateProviderValue.update(
+                status: ErrorStatus.noError));
       },
       performAction: () async {
         await headlessWebView.webViewController.evaluateJavascript(source: '''
@@ -325,6 +328,9 @@ class VTOPActions extends ChangeNotifier {
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentGradeHistoryPageStatus = VTOPPageStatus.processing;
+        WidgetsBinding.instance.addPostFrameCallback((_) =>
+            readErrorStatusStateProviderValue.update(
+                status: ErrorStatus.noError));
       },
       performAction: () async {
         await headlessWebView.webViewController.evaluateJavascript(source: '''
@@ -366,6 +372,9 @@ class VTOPActions extends ChangeNotifier {
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentAttendancePageStatus = VTOPPageStatus.processing;
+        WidgetsBinding.instance.addPostFrameCallback((_) =>
+            readErrorStatusStateProviderValue.update(
+                status: ErrorStatus.noError));
       },
       performAction: () async {
         await headlessWebView.webViewController.evaluateJavascript(source: '''
@@ -452,6 +461,9 @@ class VTOPActions extends ChangeNotifier {
       headlessWebView: headlessWebView,
       initialAction: () {
         _studentTimeTablePageStatus = VTOPPageStatus.processing;
+        WidgetsBinding.instance.addPostFrameCallback((_) =>
+            readErrorStatusStateProviderValue.update(
+                status: ErrorStatus.noError));
       },
       performAction: () async {
         await headlessWebView.webViewController.evaluateJavascript(source: '''

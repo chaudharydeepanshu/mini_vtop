@@ -5,6 +5,8 @@ import 'package:minivtop/state/vtop_actions.dart';
 
 import '../../../models/student_profile_model.dart';
 import '../../../shared_preferences/preferences.dart';
+import '../../../state/connection_state.dart';
+import '../../../state/user_login_state.dart';
 import '../../../state/vtop_data_state.dart';
 import '../../components/cached_mode_warning.dart';
 import '../../components/empty_content_indicator.dart';
@@ -30,6 +32,14 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
     }
 
     super.initState();
+  }
+
+  refreshData(WidgetRef ref) {
+    final VTOPActions readVTOPActionsProviderValue =
+        ref.read(vtopActionsProvider);
+    readVTOPActionsProviderValue.studentProfileAllViewAction();
+    readVTOPActionsProviderValue.updateStudentProfilePageStatus(
+        status: VTOPPageStatus.processing);
   }
 
   @override
@@ -64,6 +74,15 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
               }
             }
 
+            ref.listen<ConnectionStatusState>(connectionStatusStateProvider,
+                (ConnectionStatusState? previous, ConnectionStatusState next) {
+              if (next.connectionStatus == ConnectionStatus.connected &&
+                  ref.read(userLoginStateProvider).loginResponseStatus ==
+                      LoginResponseStatus.loggedIn) {
+                refreshData(ref);
+              }
+            });
+
             return studentProfilePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
                 ? Column(
@@ -78,11 +97,7 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
           },
         ),
         onRefresh: () async {
-          final VTOPActions readVTOPActionsProviderValue =
-              ref.read(vtopActionsProvider);
-          readVTOPActionsProviderValue.studentProfileAllViewAction();
-          readVTOPActionsProviderValue.updateStudentProfilePageStatus(
-              status: VTOPPageStatus.processing);
+          refreshData(ref);
         },
       ),
     );

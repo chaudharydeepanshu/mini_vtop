@@ -41,7 +41,7 @@ class VTOPData extends ChangeNotifier {
   late final ErrorStatusState readErrorStatusStateProviderValue =
       ref.read(errorStatusStateProvider);
 
-  Future<void> setStudentProfile(
+  Future<bool> setStudentProfile(
       {required String studentProfileViewDocument}) async {
     try {
       dom.Document parseDocument = parse(studentProfileViewDocument);
@@ -101,6 +101,8 @@ class VTOPData extends ChangeNotifier {
 
       readPreferencesProviderValue
           .persistStudentProfileHTMLDoc(studentProfileViewDocument);
+      notifyListeners();
+      return true;
     } on Exception catch (exception) {
       log(exception.toString());
 
@@ -109,6 +111,8 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentProfile parsing exception: ${exception.toString()}", null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     } catch (error) {
       log(error.toString());
 
@@ -117,12 +121,12 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentProfile parsing error: ${error.toString()}", null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
   }
 
-  Future<void> setStudentAcademics(
+  Future<bool> setStudentAcademics(
       {required String studentGradeHistoryDocument}) async {
     try {
       dom.Document parseDocument = parse(studentGradeHistoryDocument);
@@ -153,6 +157,8 @@ class VTOPData extends ChangeNotifier {
       } else {
         _studentAcademics = null;
       }
+      notifyListeners();
+      return true;
     } on Exception catch (exception) {
       log(exception.toString());
 
@@ -162,6 +168,8 @@ class VTOPData extends ChangeNotifier {
           "setStudentAcademics parsing exception: ${exception.toString()}",
           null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     } catch (error) {
       log(error.toString());
 
@@ -170,12 +178,12 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentAcademics parsing error: ${error.toString()}", null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
   }
 
-  Future<void> setStudentAttendance(
+  Future<bool> setStudentAttendance(
       {required String studentAttendanceDocument}) async {
     try {
       dom.Document parseDocument = parse(studentAttendanceDocument);
@@ -281,6 +289,8 @@ class VTOPData extends ChangeNotifier {
       }
       // log("AttendanceModel: ${_studentAttendance.toString()}");
       //----------------------Creating Attendance Model-----------------//
+      notifyListeners();
+      return true;
     } on Exception catch (exception) {
       log(exception.toString());
 
@@ -290,6 +300,8 @@ class VTOPData extends ChangeNotifier {
           "setStudentAttendance parsing exception: ${exception.toString()}",
           null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     } catch (error) {
       log(error.toString());
 
@@ -298,12 +310,12 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentAttendance parsing error: ${error.toString()}", null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
   }
 
-  Future<void> setStudentTimeTable(
+  Future<bool> setStudentTimeTable(
       {required String studentTimeTableDocument}) async {
     try {
       dom.Document parseDocument = parse(studentTimeTableDocument);
@@ -446,24 +458,24 @@ class VTOPData extends ChangeNotifier {
               timeTableClassesDetails.add(timeTableClass);
             }
           }
-          String subjectCodeAndName = subjectsTableData[i][2];
-          List<String> list = subjectCodeAndName.split(" - ");
-          String subjectCode = list[0];
-          String subjectName = list[1];
-          String subjectType = list[2];
-          String classNumber = subjectsTableData[i][5];
-          String subjectSlot = subjectsTableData[i][7];
-          String classVenue = subjectsTableData[i][8];
-          String facultyName = subjectsTableData[i][9];
-          SubjectDetailModel subjectDetail = SubjectDetailModel(
-              subjectName: subjectName,
-              subjectCode: subjectCode,
-              subjectType: subjectType,
-              classNumber: classNumber,
-              subjectSlot: subjectSlot,
-              facultyName: facultyName,
-              classVenue: classVenue);
-          subjectsDetails.add(subjectDetail);
+          // String subjectCodeAndName = subjectsTableData[i][2];
+          // List<String> list = subjectCodeAndName.split(" - ");
+          // String subjectCode = list[0];
+          // String subjectName = list[1];
+          // String subjectType = list[2];
+          // String classNumber = subjectsTableData[i][5];
+          // String subjectSlot = subjectsTableData[i][7];
+          // String classVenue = subjectsTableData[i][8];
+          // String facultyName = subjectsTableData[i][9];
+          // SubjectDetailModel subjectDetail = SubjectDetailModel(
+          //     subjectName: subjectName,
+          //     subjectCode: subjectCode,
+          //     subjectType: subjectType,
+          //     classNumber: classNumber,
+          //     subjectSlot: subjectSlot,
+          //     facultyName: facultyName,
+          //     classVenue: classVenue);
+          // subjectsDetails.add(subjectDetail);
         }
         _studentTimeTable = StudentTimeTableModel(
             timeTableClassesDetails: timeTableClassesDetails,
@@ -487,6 +499,8 @@ class VTOPData extends ChangeNotifier {
       }
       // log("TimeTableModel: ${_studentTimeTable.toString()}");
       //----------------------Creating Time Table Model-----------------//
+      notifyListeners();
+      return true;
     } on Exception catch (exception) {
       log(exception.toString());
 
@@ -496,6 +510,8 @@ class VTOPData extends ChangeNotifier {
           "setStudentTimeTable parsing exception: ${exception.toString()}",
           null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     } catch (error) {
       log(error.toString());
 
@@ -504,8 +520,8 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentTimeTable parsing error: ${error.toString()}", null,
           reason: 'a non-fatal error');
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
   }
 }
