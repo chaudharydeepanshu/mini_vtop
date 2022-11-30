@@ -39,7 +39,7 @@ final preferencesProvider = ChangeNotifierProvider(
     (ref) => Preferences(ref)..init(sharedPreferencesInstance));
 
 final appThemeStateProvider =
-    ChangeNotifierProvider((ref) => AppThemeState(ref)..init());
+    ChangeNotifierProvider((ref) => AppThemeState(ref)..initTheme());
 
 final vtopControllerStateProvider =
     ChangeNotifierProvider((ref) => VTOPControllerState(ref)..init());

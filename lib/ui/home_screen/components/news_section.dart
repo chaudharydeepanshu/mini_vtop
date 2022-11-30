@@ -17,23 +17,21 @@ class NewsPage extends StatelessWidget {
         title: const Text("News"),
         centerTitle: true,
       ),
-      body: Padding(
+      body: ListView.separated(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: newsListTilesDetails.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListViewTile(
-              listTileDetail: newsListTilesDetails[index],
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return const Divider(
-              color: Colors.transparent,
-            );
-          },
-        ),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: newsListTilesDetails.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListViewTile(
+            listTileDetail: newsListTilesDetails[index],
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider(
+            color: Colors.transparent,
+          );
+        },
       ),
     );
   }

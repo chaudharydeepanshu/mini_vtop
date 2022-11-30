@@ -17,23 +17,21 @@ class ExplorePage extends StatelessWidget {
         title: const Text("Explore"),
         centerTitle: true,
       ),
-      body: Padding(
+      body: GridView.builder(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            childAspectRatio: 1,
-            maxCrossAxisExtent: 200,
-            mainAxisExtent: 100,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
-          itemCount: exploreCardsDetails.length,
-          itemBuilder: (BuildContext context, int index) {
-            return GridViewCard(
-              gridCardDetail: exploreCardsDetails[index],
-            );
-          },
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          childAspectRatio: 1,
+          maxCrossAxisExtent: 200,
+          mainAxisExtent: 100,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
         ),
+        itemCount: exploreCardsDetails.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GridViewCard(
+            gridCardDetail: exploreCardsDetails[index],
+          );
+        },
       ),
     );
   }

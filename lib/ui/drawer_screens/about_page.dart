@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:minivtop/constants.dart';
 import 'package:minivtop/ui/components/link_button.dart';
 import 'package:minivtop/ui/components/url_launcher.dart';
-
-import '../components/drawer.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -10,7 +9,6 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text("About"),
         centerTitle: true,
@@ -126,11 +124,10 @@ class AppBadges extends StatelessWidget {
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: LinkButton(
-                  urlLabel: "Show Source Code",
-                  url: "https://github.com/chaudharydeepanshu/mini_vtop"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:
+                  LinkButton(urlLabel: "Show Source Code", url: sourceCodeUrl),
             ),
           ],
         ),
@@ -171,14 +168,12 @@ class AppAuthor extends StatelessWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                LinkButton(
-                    urlLabel: "LinkedIn",
-                    url: "https://www.linkedin.com/in/chaudhary-deepanshu/"),
+              children: [
+                LinkButton(urlLabel: "LinkedIn", url: authorLinkedInUrl),
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   children: [
@@ -187,34 +182,26 @@ class AppAuthor extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondaryContainer,
-                      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    FilledButton.tonal(
                       onPressed: () {
-                        urlLauncher("https://github.com/chaudharydeepanshu");
+                        urlLauncher(authorGithubUrl);
                       },
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/github_3d_icon.png',
-                            height: 40,
-                            width: 40,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 8.0, left: 8.0, right: 8.0),
-                            child: Text('Github Profile'),
-                          ),
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/github_3d_icon.png',
+                              height: 30,
+                              width: 30,
+                            ),
+                            const Text('Github Profile'),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 16),
                 Column(
                   children: [
                     Text(
@@ -222,30 +209,22 @@ class AppAuthor extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondaryContainer,
-                      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                    FilledButton.tonal(
                       onPressed: () {
-                        urlLauncher(
-                            "https://github.com/chaudharydeepanshu/mini_vtop");
+                        urlLauncher(sourceCodeUrl);
                       },
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/github_3d_icon.png',
-                            height: 40,
-                            width: 40,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 8.0, left: 8.0, right: 8.0),
-                            child: Text('Github Project'),
-                          ),
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/github_3d_icon.png',
+                              height: 30,
+                              width: 30,
+                            ),
+                            const Text('Github Project'),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -301,7 +280,6 @@ class AppContributions extends StatelessWidget {
                     urlLabel: "Github", url: "https://github.com/ManasSaini03"),
               ],
             ),
-            const Divider(),
           ],
         ),
       ),

@@ -153,11 +153,23 @@ class _TimeTableBodyState extends State<TimeTableBody> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: CleanCalendar(
+                    leadingTrailingDatesProperties: DatesProperties(
+                        datesDecoration: DatesDecoration(
+                            datesBackgroundColor: Colors.transparent,
+                            datesTextColor:
+                                Theme.of(context).colorScheme.onSurface,
+                            datesTextStyle: const TextStyle(),
+                            datesBorderColor: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.5),
+                            datesBorderRadius: 12),
+                        disable: false),
                     datePickerCalendarView: DatePickerCalendarView.weekView,
                     selectedDates: [
                       selectedDateTime,
                     ],
-                    dateSelectionMode: DatePickerSelectionMode.single,
+                    dateSelectionMode: DatePickerSelectionMode.singleOrMultiple,
                     onSelectedDates: (List<DateTime> selectedDates) {
                       // Called every time dates are selected or deselected.
                       setState(() {

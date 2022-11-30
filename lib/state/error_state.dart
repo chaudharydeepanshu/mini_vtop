@@ -69,7 +69,7 @@ class ErrorStatusState extends ChangeNotifier {
 
   onLoadErrorHandler({
     required Uri? url,
-    required int code,
+    required int? code,
     required String message,
   }) async {
     await FirebaseCrashlytics.instance.recordError(

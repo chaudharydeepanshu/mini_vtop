@@ -16,23 +16,21 @@ class ToolsPage extends StatelessWidget {
         title: const Text("Tools"),
         centerTitle: true,
       ),
-      body: Padding(
+      body: GridView.builder(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            childAspectRatio: 1,
-            maxCrossAxisExtent: 200,
-            mainAxisExtent: 100,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
-          itemCount: toolsCardsDetails.length,
-          itemBuilder: (BuildContext context, int index) {
-            return GridViewCard(
-              gridCardDetail: toolsCardsDetails[index],
-            );
-          },
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          childAspectRatio: 1,
+          maxCrossAxisExtent: 200,
+          mainAxisExtent: 100,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
         ),
+        itemCount: toolsCardsDetails.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GridViewCard(
+            gridCardDetail: toolsCardsDetails[index],
+          );
+        },
       ),
     );
   }

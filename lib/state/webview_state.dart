@@ -28,7 +28,7 @@ class HeadlessWebView extends ChangeNotifier {
   late HeadlessInAppWebView _headlessWebView;
   HeadlessInAppWebView get headlessWebView => _headlessWebView;
 
-  late InAppWebViewGroupOptions _options;
+  late InAppWebViewSettings _options;
 
   final String _initialUrl =
       // "http://182.73.197.23/vtop/";
@@ -60,22 +60,18 @@ class HeadlessWebView extends ChangeNotifier {
   }
 
   init() async {
-    _options = InAppWebViewGroupOptions(
-        crossPlatform: InAppWebViewOptions(
-          useShouldOverrideUrlLoading: true,
-          useShouldInterceptAjaxRequest: true,
-          useShouldInterceptFetchRequest: true,
-        ),
-        android: AndroidInAppWebViewOptions(
-          safeBrowsingEnabled: true,
-          mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_NEVER_ALLOW,
-          // useHybridComposition: true,
-        ),
-        ios: IOSInAppWebViewOptions());
+    _options = InAppWebViewSettings(
+      useShouldOverrideUrlLoading: true,
+      useShouldInterceptAjaxRequest: true,
+      useShouldInterceptFetchRequest: true,
+      safeBrowsingEnabled: true,
+      mixedContentMode: MixedContentMode.MIXED_CONTENT_NEVER_ALLOW,
+      // useHybridComposition: true,
+    );
 
     _headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest: URLRequest(url: Uri.parse(_initialUrl)),
-      initialOptions: _options,
+      initialUrlRequest: URLRequest(url: WebUri(_initialUrl)),
+      initialSettings: _options,
       onWebViewCreated: (InAppWebViewController controller) async {
         _url = _initialUrl;
         log('HeadlessInAppWebView created!');
@@ -158,8 +154,8 @@ class HeadlessWebView extends ChangeNotifier {
             sslCertificate != null;
         // log("sslCertificate: ${sslCertificate.toString()}");
         if (sslError != null &&
-            (sslError.iosError != null || sslError.androidError != null)) {
-          if (Platform.isIOS && sslError.iosError == IOSSslError.UNSPECIFIED) {
+            (sslError.code != null || sslError.code != null)) {
+          if (Platform.isIOS && sslError.code == SslErrorType.UNSPECIFIED) {
             return ServerTrustAuthResponse(
                 action: ServerTrustAuthResponseAction.PROCEED);
           } else {
@@ -201,19 +197,23 @@ class HeadlessWebView extends ChangeNotifier {
         _url = url?.toString() ?? '';
         _onLoadStopAction(url: url);
       },
-      onLoadError: (InAppWebViewController controller, Uri? url, int code,
-          String message) async {
-        log("onLoadError -> url: $url, errorCode:$code, message:$message");
+      onReceivedError: (InAppWebViewController controller,
+          WebResourceRequest webResourceRequest,
+          WebResourceError webResourceError) async {
+        log("onReceivedError -> url: ${webResourceRequest.url}, errorCode:${webResourceError.type.toNativeValue()}, message:${webResourceError.description}");
         readErrorStatusStateProviderValue.onLoadErrorHandler(
-            url: url, code: code, message: message);
+            url: webResourceRequest.url,
+            code: webResourceError.type.toNativeValue(),
+            message: webResourceError.description);
       },
-      onLoadHttpError: (InAppWebViewController controller, Uri? url, int code,
-          String message) async {
-        log("onLoadHttpError -> url: $url, errorCode:$code, message:$message");
+      onReceivedHttpError: (InAppWebViewController controller,
+          WebResourceRequest webResourceRequest,
+          WebResourceResponse webResourceResponse) async {
+        log("onReceivedHttpError -> url: ${webResourceRequest.url}, errorCode:${webResourceResponse.statusCode}, message:${webResourceResponse.reasonPhrase}");
         readErrorStatusStateProviderValue.update(
             status: ErrorStatus.unknownError);
         await FirebaseCrashlytics.instance.recordError(
-            "onLoadHttpError -> url: $url, errorCode:$code, message:$message",
+            "onReceivedHttpError -> url: ${webResourceRequest.url}, errorCode:${webResourceResponse.statusCode}, message:${webResourceResponse.reasonPhrase}",
             null,
             reason: 'a non-fatal error');
       },

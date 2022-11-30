@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../state/package_info_state.dart';
-import '../state/providers.dart';
+import 'package:minivtop/state/package_info_state.dart';
+import 'package:minivtop/state/providers.dart';
+
+String themeModePerfKey = "themeMode";
+String userThemeSeedColorValuePerfKey = "userThemeSeedColorValue";
+String dynamicThemeStatusPerfKey = "dynamicThemeStatus";
 
 class Preferences extends ChangeNotifier {
   Preferences(this.ref);
@@ -47,13 +51,27 @@ class Preferences extends ChangeNotifier {
   String? get appVersion => sharedPreferences.getString('appVersion');
 
   persistThemeMode(ThemeMode mode) =>
-      sharedPreferences.setString('themeMode', mode.toString());
+      sharedPreferences.setString(themeModePerfKey, mode.toString());
 
   ThemeMode get themeMode => ThemeMode.values.firstWhere(
         (element) =>
-            element.toString() == sharedPreferences.getString('themeMode'),
-        orElse: () => ThemeMode.system,
+            element.toString() == sharedPreferences.getString(themeModePerfKey),
+        orElse: () => ThemeMode.light,
       );
+
+  persistUserThemeSeedColorValue(int userThemeSeedColorValue) =>
+      sharedPreferences.setInt(
+          userThemeSeedColorValuePerfKey, userThemeSeedColorValue);
+
+  int get userThemeSeedColorValue =>
+      sharedPreferences.getInt(userThemeSeedColorValuePerfKey) ??
+      const Color(0xFFA93054).value;
+
+  persistDynamicThemeStatus(bool dynamicThemeStatus) =>
+      sharedPreferences.setBool(dynamicThemeStatusPerfKey, dynamicThemeStatus);
+
+  bool get dynamicThemeStatus =>
+      sharedPreferences.getBool(dynamicThemeStatusPerfKey) ?? true;
 
   persistStudentProfileHTMLDoc(String doc) =>
       sharedPreferences.setString('studentProfileHTMLDoc', doc);
