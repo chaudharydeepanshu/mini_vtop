@@ -2,16 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minivtop/route/route.dart' as route;
 import 'package:minivtop/ui/components/custom_snack_bar.dart';
 import 'package:minivtop/ui/components/error_retry_button.dart';
 import 'package:minivtop/ui/components/full_body_message.dart';
 import 'package:minivtop/ui/components/page_body_indicators.dart';
 import 'package:rive/rive.dart';
+
 import '../../state/connection_state.dart';
 import '../../state/providers.dart';
 import '../../state/user_login_state.dart';
 import '../../state/vtop_actions.dart';
-import 'package:minivtop/route/route.dart' as route;
 
 class LoadingIndicators extends StatelessWidget {
   const LoadingIndicators(
@@ -37,7 +38,7 @@ class LoadingIndicators extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
+          Flexible(
             flex: 2,
             child: Column(
               children: [
@@ -64,7 +65,7 @@ class LoadingIndicators extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          Flexible(
             flex: 1,
             child: Column(
               children: [

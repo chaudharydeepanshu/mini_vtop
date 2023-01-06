@@ -1,15 +1,21 @@
+import 'package:minivtop/models/student_timetable_model.dart';
+
 class StudentAttendanceModel {
+  final List<SemesterModel> semesterDropDownDetails;
   final List<SubjectAttendanceDetailModel> subjectsAttendanceDetails;
+  final String attendanceHTMLDoc;
 
   StudentAttendanceModel({
+    required this.semesterDropDownDetails,
     required this.subjectsAttendanceDetails,
+    required this.attendanceHTMLDoc,
   });
 
   // Implement toString to make it easier to see information
   // when using the print statement.
   @override
   String toString() {
-    return 'StudentAttendanceModel{subjectsAttendanceDetails: $subjectsAttendanceDetails}';
+    return 'StudentAttendanceModel{semesterDropDownDetails: $semesterDropDownDetails, subjectsAttendanceDetails: $subjectsAttendanceDetails, attendanceHTMLDoc: $attendanceHTMLDoc}';
   }
 }
 

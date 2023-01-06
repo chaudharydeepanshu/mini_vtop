@@ -2,10 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:minivtop/state/package_info_state.dart';
 import 'package:minivtop/state/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String themeModePerfKey = "themeMode";
 String userThemeSeedColorValuePerfKey = "userThemeSeedColorValue";
@@ -43,7 +42,7 @@ class Preferences extends ChangeNotifier {
 
   String get vtopController =>
       sharedPreferences.getString('vtopController') ??
-      '{"attendanceID":"BL2022234", "timeTableID":"BL2022234"}';
+      '{"attendanceID":"BL2022233", "timeTableID":"BL2022233"}';
 
   persistAppVersion(String version) =>
       sharedPreferences.setString('appVersion', version);

@@ -9,14 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:minivtop/state/connection_state.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
 import 'package:minivtop/utils/captcha_parser.dart';
 import 'package:minivtop/utils/url_check.dart';
+
 import '../ui/components/custom_snack_bar.dart';
 import 'error_state.dart';
 
@@ -708,9 +709,16 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
+              String selectedSemesterCode =
+                  await headlessWebView.webViewController.evaluateJavascript(
+                      source:
+                          "document.getElementById('semesterSubId').value;");
+
               bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
-                  .setStudentAttendance(studentAttendanceDocument: value);
+                  .setStudentAttendance(
+                      studentAttendanceDocument: value,
+                      selectedSemesterCode: selectedSemesterCode);
               if (pageLoadedSuccessfully == true) {
                 readVTOPActionsProviderValue.updateStudentAttendancePageStatus(
                     status: VTOPPageStatus.loaded);
@@ -777,9 +785,16 @@ class HeadlessWebView extends ChangeNotifier {
                 .evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
+              String selectedSemesterCode =
+                  await headlessWebView.webViewController.evaluateJavascript(
+                      source:
+                          "document.getElementById('semesterSubId').value;");
+
               bool pageLoadedSuccessfully = await ref
                   .read(vtopDataProvider)
-                  .setStudentTimeTable(studentTimeTableDocument: value);
+                  .setStudentTimeTable(
+                      studentTimeTableDocument: value,
+                      selectedSemesterCode: selectedSemesterCode);
               if (pageLoadedSuccessfully == true) {
                 readVTOPActionsProviderValue.updateStudentTimeTablePageStatus(
                     status: VTOPPageStatus.loaded);

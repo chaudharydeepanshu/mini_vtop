@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart';
-import 'package:minivtop/models/student_profile_model.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart';
+import 'package:minivtop/models/student_academics_model.dart';
+import 'package:minivtop/models/student_profile_model.dart';
+import 'package:minivtop/models/vtop_contoller_model.dart';
 import 'package:minivtop/state/package_info_state.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/utils/string_cap_extension.dart';
-import 'package:minivtop/models/student_academics_model.dart';
 
 import '../models/student_attendance_model.dart';
 import '../models/student_timetable_model.dart';
@@ -184,12 +186,49 @@ class VTOPData extends ChangeNotifier {
   }
 
   Future<bool> setStudentAttendance(
-      {required String studentAttendanceDocument}) async {
+      {required String studentAttendanceDocument,
+      String selectedSemesterCode = ""}) async {
     try {
       dom.Document parseDocument = parse(studentAttendanceDocument);
 
       dom.Element? attendanceTableBody =
           parseDocument.getElementById("getStudentDetails");
+
+      List<dom.Element>? semestersDropDownData =
+          parseDocument.getElementById('semesterSubId')?.children;
+
+      List<SemesterModel> semesterDropDownDetails = [];
+
+      if (semestersDropDownData != null) {
+        for (int i = 0; i < semestersDropDownData.length; i++) {
+          if (semestersDropDownData[i].text.replaceAll(RegExp('\\s+'), ' ') !=
+                  "-- Choose Semester --" ||
+              semestersDropDownData[i]
+                      .attributes["value"]
+                      .toString()
+                      .replaceAll(RegExp('\\s+'), ' ') !=
+                  "") {
+            String semesterName = toTitleCaseBeforeSemesterWord(
+                semestersDropDownData[i].text.replaceAll(RegExp('\\s+'), ' '));
+            String semesterCode = semestersDropDownData[i]
+                .attributes["value"]
+                .toString()
+                .replaceAll(RegExp('\\s+'), ' ');
+
+            bool isSelected = selectedSemesterCode == semesterCode;
+
+            SemesterModel semesterDropDownDetail = SemesterModel(
+              semesterName: semesterName,
+              semesterCode: semesterCode,
+              isSelected: isSelected,
+            );
+
+            semesterDropDownDetails.add(semesterDropDownDetail);
+          }
+        }
+      } else {
+        throw "Semester dropdown data is null";
+      }
 
       if (attendanceTableBody != null) {
         // Check for data availability
@@ -266,10 +305,17 @@ class VTOPData extends ChangeNotifier {
           subjectsAttendanceDetails.add(subjectAttendanceDetail);
         }
         _studentAttendance = StudentAttendanceModel(
-            subjectsAttendanceDetails: subjectsAttendanceDetails);
+            semesterDropDownDetails: semesterDropDownDetails,
+            subjectsAttendanceDetails: subjectsAttendanceDetails,
+            attendanceHTMLDoc: studentAttendanceDocument);
 
-        readPreferencesProviderValue
-            .persistAttendanceHTMLDoc(studentAttendanceDocument);
+        if (VTOPControllerModel.fromJson(
+                    jsonDecode(readPreferencesProviderValue.vtopController))
+                .attendanceID ==
+            selectedSemesterCode) {
+          readPreferencesProviderValue
+              .persistAttendanceHTMLDoc(studentAttendanceDocument);
+        }
       } else {
         dom.Element? subjectAttendanceTableBody = parseDocument
             .getElementById("getStudentDetails")
@@ -278,8 +324,10 @@ class VTOPData extends ChangeNotifier {
             subjectAttendanceTableBody?.getElementsByTagName("tr");
         if (attendanceTableRows != null) {
           if (attendanceTableRows.length == 2) {
-            _studentAttendance =
-                StudentAttendanceModel(subjectsAttendanceDetails: []);
+            _studentAttendance = StudentAttendanceModel(
+                semesterDropDownDetails: semesterDropDownDetails,
+                subjectsAttendanceDetails: [],
+                attendanceHTMLDoc: studentAttendanceDocument);
           } else {
             _studentAttendance = null;
           }
@@ -289,7 +337,9 @@ class VTOPData extends ChangeNotifier {
       }
       // log("AttendanceModel: ${_studentAttendance.toString()}");
       //----------------------Creating Attendance Model-----------------//
+
       notifyListeners();
+
       return true;
     } on Exception catch (exception) {
       log(exception.toString());
@@ -300,7 +350,9 @@ class VTOPData extends ChangeNotifier {
           "setStudentAttendance parsing exception: ${exception.toString()}",
           null,
           reason: 'a non-fatal error');
+
       notifyListeners();
+
       return false;
     } catch (error) {
       log(error.toString());
@@ -310,15 +362,54 @@ class VTOPData extends ChangeNotifier {
       await FirebaseCrashlytics.instance.recordError(
           "setStudentAttendance parsing error: ${error.toString()}", null,
           reason: 'a non-fatal error');
+
       notifyListeners();
+
       return false;
     }
   }
 
   Future<bool> setStudentTimeTable(
-      {required String studentTimeTableDocument}) async {
+      {required String studentTimeTableDocument,
+      String selectedSemesterCode = ""}) async {
     try {
       dom.Document parseDocument = parse(studentTimeTableDocument);
+
+      List<dom.Element>? semestersDropDownData =
+          parseDocument.getElementById('semesterSubId')?.children;
+
+      List<SemesterModel> semesterDropDownDetails = [];
+
+      if (semestersDropDownData != null) {
+        for (int i = 0; i < semestersDropDownData.length; i++) {
+          if (semestersDropDownData[i].text.replaceAll(RegExp('\\s+'), ' ') !=
+                  "-- Choose Semester --" ||
+              semestersDropDownData[i]
+                      .attributes["value"]
+                      .toString()
+                      .replaceAll(RegExp('\\s+'), ' ') !=
+                  "") {
+            String semesterName = toTitleCaseBeforeSemesterWord(
+                semestersDropDownData[i].text.replaceAll(RegExp('\\s+'), ' '));
+            String semesterCode = semestersDropDownData[i]
+                .attributes["value"]
+                .toString()
+                .replaceAll(RegExp('\\s+'), ' ');
+
+            bool isSelected = selectedSemesterCode == semesterCode;
+
+            SemesterModel semesterDropDownDetail = SemesterModel(
+              semesterName: semesterName,
+              semesterCode: semesterCode,
+              isSelected: isSelected,
+            );
+
+            semesterDropDownDetails.add(semesterDropDownDetail);
+          }
+        }
+      } else {
+        throw "Semester dropdown data is null";
+      }
 
       dom.Element? timeTableBody =
           parseDocument.getElementById("timeTableStyle");
@@ -478,18 +569,29 @@ class VTOPData extends ChangeNotifier {
           // subjectsDetails.add(subjectDetail);
         }
         _studentTimeTable = StudentTimeTableModel(
+            timeTableHTMLDoc: studentTimeTableDocument,
+            semesterDropDownDetails: semesterDropDownDetails,
             timeTableClassesDetails: timeTableClassesDetails,
             subjectsDetails: subjectsDetails);
 
-        readPreferencesProviderValue
-            .persistTimeTableHTMLDoc(studentTimeTableDocument);
+        if (VTOPControllerModel.fromJson(
+                    jsonDecode(readPreferencesProviderValue.vtopController))
+                .timeTableID ==
+            selectedSemesterCode) {
+          readPreferencesProviderValue
+              .persistTimeTableHTMLDoc(studentTimeTableDocument);
+        }
       } else {
         dom.Element? studentDetailsListBody =
             parseDocument.getElementById("getStudentDetails");
         if (studentDetailsListBody != null) {
           if (studentDetailsListBody.children[0].text == "No Record(s) Found") {
             _studentTimeTable = StudentTimeTableModel(
-                timeTableClassesDetails: [], subjectsDetails: []);
+              timeTableHTMLDoc: studentTimeTableDocument,
+              semesterDropDownDetails: semesterDropDownDetails,
+              timeTableClassesDetails: [],
+              subjectsDetails: [],
+            );
           } else {
             _studentTimeTable = null;
           }

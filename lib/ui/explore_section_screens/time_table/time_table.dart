@@ -1,11 +1,12 @@
 import 'package:clean_calendar/clean_calendar.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/models/student_timetable_model.dart';
-import 'package:minivtop/ui/components/linear_completion_meter.dart';
-
 import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/vtop_actions.dart';
+import 'package:minivtop/state/vtop_controller_state.dart';
+import 'package:minivtop/ui/components/linear_completion_meter.dart';
 
 import '../../../shared_preferences/preferences.dart';
 import '../../../state/connection_state.dart';
@@ -29,10 +30,44 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
     final VTOPPageStatus studentTimeTablePageStatus =
         ref.read(vtopActionsProvider).studentTimeTablePageStatus;
 
+    final VTOPActions readVTOPActionsProviderValue =
+        ref.read(vtopActionsProvider);
+
     if (studentTimeTablePageStatus != VTOPPageStatus.loaded) {
-      final VTOPActions readVTOPActionsProviderValue =
-          ref.read(vtopActionsProvider);
       readVTOPActionsProviderValue.studentTimeTableAction();
+    } else {
+      final VTOPData readVTOPDataProviderValue = ref.read(vtopDataProvider);
+
+      final StudentTimeTableModel? studentTimeTable =
+          ref.read(vtopDataProvider.select((value) => value.studentTimeTable));
+
+      final List<SemesterModel>? semesterDropDownDetails =
+          studentTimeTable?.semesterDropDownDetails;
+
+      String? selectedSemesterCode = semesterDropDownDetails
+          ?.firstWhereOrNull((element) => element.isSelected)
+          ?.semesterCode;
+
+      final VTOPControllerState readVTOPControllerStateProviderValue =
+          ref.read(vtopControllerStateProvider);
+
+      String defaultSemesterCode =
+          readVTOPControllerStateProviderValue.vtopController.timeTableID;
+
+      final Preferences readPreferencesProviderValue =
+          ref.read(preferencesProvider);
+
+      String? timeTableHTMLDoc = readPreferencesProviderValue.timeTableHTMLDoc;
+
+      if (selectedSemesterCode != null &&
+          selectedSemesterCode != defaultSemesterCode &&
+          timeTableHTMLDoc != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await readVTOPDataProviderValue.setStudentTimeTable(
+              studentTimeTableDocument: timeTableHTMLDoc,
+              selectedSemesterCode: defaultSemesterCode);
+        });
+      }
     }
 
     super.initState();
@@ -134,11 +169,31 @@ class _TimeTableBodyState extends State<TimeTableBody> {
         final StudentTimeTableModel? studentTimeTable = ref
             .watch(vtopDataProvider.select((value) => value.studentTimeTable));
 
+        final bool enableOfflineMode = ref.watch(
+            vtopActionsProvider.select((value) => value.enableOfflineMode));
+
         if (studentTimeTable != null) {
+          final String timeTableHTMLDoc = studentTimeTable.timeTableHTMLDoc;
+
+          final List<SemesterModel> semesterDropDownDetails =
+              studentTimeTable.semesterDropDownDetails;
           final List<TimeTableClassDetailModel> timeTableClassesDetails =
               studentTimeTable.timeTableClassesDetails;
           final List<SubjectDetailModel> subjectsDetails =
               studentTimeTable.subjectsDetails;
+
+          String? selectedSemesterCode = semesterDropDownDetails
+              .firstWhereOrNull((element) => element.isSelected)
+              ?.semesterCode;
+
+          final VTOPControllerState watchVTOPControllerStateProviderValue =
+              ref.watch(vtopControllerStateProvider);
+
+          String defaultTimeTableSemesterCode =
+              watchVTOPControllerStateProviderValue.vtopController.timeTableID;
+
+          String defaultAttendanceSemesterCode =
+              watchVTOPControllerStateProviderValue.vtopController.attendanceID;
 
           int selectedWeekDay = selectedDateTime.weekday;
           final List<TimeTableClassDetailModel>
@@ -148,6 +203,150 @@ class _TimeTableBodyState extends State<TimeTableBody> {
 
           return Column(
             children: [
+              selectedSemesterCode != null && enableOfflineMode == false
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onLongPress: () {
+                              final Preferences readPreferencesProviderValue =
+                                  ref.read(preferencesProvider);
+                              readPreferencesProviderValue.persistVTOPController(
+                                  '{"attendanceID":"$defaultAttendanceSemesterCode", "timeTableID":"$selectedSemesterCode"}');
+                              watchVTOPControllerStateProviderValue.init();
+                              readPreferencesProviderValue
+                                  .persistTimeTableHTMLDoc(timeTableHTMLDoc);
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Selected semester set as default!'),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Semester - ",
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Expanded(
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    menuMaxHeight: 500,
+                                    items: List.generate(
+                                        semesterDropDownDetails.length,
+                                        (index) {
+                                      bool isSelected = selectedSemesterCode ==
+                                          semesterDropDownDetails[index]
+                                              .semesterCode;
+                                      bool isDefault =
+                                          defaultTimeTableSemesterCode ==
+                                              semesterDropDownDetails[index]
+                                                  .semesterCode;
+
+                                      return DropdownMenuItem(
+                                        value: semesterDropDownDetails[index]
+                                            .semesterCode,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                semesterDropDownDetails[index]
+                                                    .semesterName,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelMedium
+                                                    ?.copyWith(
+                                                        decoration: isSelected
+                                                            ? TextDecoration
+                                                                .underline
+                                                            : null,
+                                                        color: isSelected
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                            : null),
+                                              ),
+                                            ),
+                                            isDefault
+                                                ? Chip(
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    labelPadding:
+                                                        EdgeInsets.zero,
+                                                    visualDensity:
+                                                        VisualDensity.compact,
+                                                    label: Text(
+                                                      "Default",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelSmall,
+                                                    ),
+                                                  )
+                                                : const SizedBox(),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                                    value: selectedSemesterCode,
+                                    onChanged: (String? value) {
+                                      if (semesterDropDownDetails
+                                              .firstWhere((element) =>
+                                                  element.isSelected)
+                                              .semesterCode !=
+                                          value) {
+                                        final VTOPActions
+                                            readVTOPActionsProviderValue =
+                                            ref.read(vtopActionsProvider);
+                                        readVTOPActionsProviderValue
+                                            .studentTimeTableViewAction(
+                                                timeTableID: value);
+                                      }
+                                    },
+                                    selectedItemBuilder:
+                                        (BuildContext context) {
+                                      return List.generate(
+                                          semesterDropDownDetails.length,
+                                          (index) {
+                                        return DropdownMenuItem(
+                                          value: semesterDropDownDetails[index]
+                                              .semesterCode,
+                                          child: Text(
+                                            semesterDropDownDetails[index]
+                                                .semesterName,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge
+                                                ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        );
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Long press on selector to set selected semester as default",
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                          ),
+                          const Divider(),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
               Ink(
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 child: Padding(

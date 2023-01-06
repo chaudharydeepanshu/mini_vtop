@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 
 class StudentTimeTableModel {
+  final List<SemesterModel> semesterDropDownDetails;
   final List<TimeTableClassDetailModel> timeTableClassesDetails;
   final List<SubjectDetailModel> subjectsDetails;
+  final String timeTableHTMLDoc;
 
   StudentTimeTableModel({
+    required this.semesterDropDownDetails,
     required this.timeTableClassesDetails,
     required this.subjectsDetails,
+    required this.timeTableHTMLDoc,
   });
 
   // Implement toString to make it easier to see information
   // when using the print statement.
   @override
   String toString() {
-    return 'StudentTimeTableModel{timeTableClassesDetails: $timeTableClassesDetails, subjectsDetails: $subjectsDetails}';
+    return 'StudentTimeTableModel{semesterDropDownDetails: $semesterDropDownDetails, timeTableClassesDetails: $timeTableClassesDetails, subjectsDetails: $subjectsDetails, timeTableHTMLDoc: $timeTableHTMLDoc}';
+  }
+}
+
+class SemesterModel {
+  final String semesterName;
+  final String semesterCode;
+  final bool isSelected;
+
+  SemesterModel({
+    required this.semesterName,
+    required this.semesterCode,
+    required this.isSelected,
+  });
+
+  // Implement toString to make it easier to see information
+  // when using the print statement.
+  @override
+  String toString() {
+    return 'SemesterModel{semesterName: $semesterName, semesterCode: $semesterCode, isSelected: $isSelected}';
   }
 }
 

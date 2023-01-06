@@ -1,11 +1,11 @@
 import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as imglib;
-
 import 'package:minivtop/utils/vit_captcha_characters_bitmaps.dart';
 
 class CropImageParam {
-  final List<int> input;
+  final Uint8List input;
   CropImageParam(this.input);
 }
 
@@ -27,12 +27,9 @@ String compareBitmapsIsolate(CompareBitmapsParam param) {
   return matchedBitmaps;
 }
 
-List<Uint8List> splitImage(List<int> input) {
+List<Uint8List> splitImage(Uint8List input) {
   // convert image to image from image package
-  imglib.Image image = imglib.decodeImage(input)!;
-
-  // log(image.getBytes().length.toString());
-  // log(image.getBytes().toString());
+  imglib.Image image = imglib.decodePng(input)!;
 
   int x = 0, y = 12;
   int width = (image.width / 6).floor();
@@ -42,49 +39,31 @@ List<Uint8List> splitImage(List<int> input) {
   // Also starting y from 12 because its the vertex and it start from 0 so 0..to..12..is 13.
   int height = (image.height - 13).floor();
 
-  // print("height: $height");
-
   // split image to parts
   List<imglib.Image> parts = <imglib.Image>[];
 
   for (int j = 0; j < 6; j++) {
-    parts.add(imglib.copyCrop(image, x, y, width, height));
+    parts.add(imglib.copyCrop(image, x: x, y: y, width: width, height: height));
     x += width;
   }
 
   // convert image from image package to Image Widget to display
   List<Uint8List> output = <Uint8List>[];
   for (var img in parts) {
-    // refer https://www.nofuss.co.za/programming/dart_png_to_binary_text_format.html
-    int bpp = 4;
+    // refer https://web.archive.org/web/20230105084440/https://www.nofuss.co.za/programming/dart_png_to_binary_text_format.html
     Uint8List pixels = imglib.grayscale(img).getBytes();
+    int bpp = pixels.length ~/ 960;
     List<int> singleBitBytes = [];
     for (int i = 0; i < pixels.length; i += bpp) {
-      if ((i / bpp) % width == 0) {
-        // sink.write("\n");
-      }
+      if ((i / bpp) % width == 0) {}
       singleBitBytes
           .add((pixels[i] + pixels[i + 1] + pixels[i + 2] > 0) ? 1 : 0);
-      // sink.write();
     }
 
-    output.add(singleBitBytes.asUint8List());
-    // log(img.getBytes().length.toString());
-    // log(img.getBytes().toString());
+    output.add(Uint8List.fromList(singleBitBytes));
   }
 
   return output;
-}
-
-/// Converts a `List<int>` to a [Uint8List].
-///
-/// Attempts to cast to a [Uint8List] first to avoid creating an unnecessary
-/// copy.
-extension AsUint8List on List<int> {
-  Uint8List asUint8List() {
-    final self = this; // Local variable to allow automatic type promotion.
-    return (self is Uint8List) ? self : Uint8List.fromList(this);
-  }
 }
 
 /// Comparing all 6 parts of image with every bitmap to get most accurate character
@@ -119,7 +98,6 @@ String compareImageBytes({required List<Uint8List> imagesBytesList}) {
         captchaCharactersBytes.keys.elementAt(indexForLargestCount).toString();
     charactersMatched.add(mostProbableChar);
   }
-  // print(charactersMatched);
   return charactersMatched.join("");
 }
 

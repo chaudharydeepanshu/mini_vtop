@@ -408,7 +408,7 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void studentAttendanceViewAction() async {
+  void studentAttendanceViewAction({String? attendanceID}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
@@ -420,7 +420,7 @@ class VTOPActions extends ChangeNotifier {
       performAction: () async {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
-        String semesterSubId = vtopController.attendanceID;
+        String semesterSubId = attendanceID ?? vtopController.attendanceID;
         await headlessWebView.webViewController.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processStudentAttendance();
@@ -497,7 +497,7 @@ class VTOPActions extends ChangeNotifier {
     );
   }
 
-  void studentTimeTableViewAction() async {
+  void studentTimeTableViewAction({String? timeTableID}) async {
     HeadlessInAppWebView headlessWebView =
         readHeadlessWebViewProviderValue.headlessWebView;
 
@@ -509,7 +509,7 @@ class VTOPActions extends ChangeNotifier {
       performAction: () async {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
-        String semesterSubId = vtopController.timeTableID;
+        String semesterSubId = timeTableID ?? vtopController.timeTableID;
         await headlessWebView.webViewController.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processViewTimeTable("$semesterSubId");

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:minivtop/ui/header_section_screen/components/gpa_section.dart';
-
+import 'package:minivtop/models/student_academics_model.dart';
+import 'package:minivtop/shared_preferences/preferences.dart';
+import 'package:minivtop/state/connection_state.dart';
 import 'package:minivtop/state/providers.dart';
+import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
 import 'package:minivtop/state/vtop_data_state.dart';
+import 'package:minivtop/ui/components/cached_mode_warning.dart';
+import 'package:minivtop/ui/components/empty_content_indicator.dart';
 import 'package:minivtop/ui/components/page_body_indicators.dart';
-
-import '../../../models/student_academics_model.dart';
-import '../../../shared_preferences/preferences.dart';
-import '../../../state/connection_state.dart';
-import '../../../state/user_login_state.dart';
-import '../../components/cached_mode_warning.dart';
-import '../../components/empty_content_indicator.dart';
+import 'package:minivtop/ui/header_section_screen/components/gpa_section.dart';
 
 class AcademicsPage extends ConsumerStatefulWidget {
   const AcademicsPage({Key? key}) : super(key: key);

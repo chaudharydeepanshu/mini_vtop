@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
+
 import '../db/firebase/firebase_data_repository.dart';
 import '../models/vtop_contoller_model.dart';
 import '../shared_preferences/preferences.dart';
@@ -21,6 +22,8 @@ class VTOPControllerState extends ChangeNotifier {
   late final Preferences readPreferencesProviderValue =
       ref.read(preferencesProvider);
 
+  bool useFirebaseDataForSemId = false;
+
   init() {
     service
         .getControlDocStream()
@@ -31,9 +34,13 @@ class VTOPControllerState extends ChangeNotifier {
         String vtopControllerAsString =
             jsonEncode(VTOPControllerModel.fromJson(_vtopController.toJson()));
 
-        readPreferencesProviderValue
-            .persistVTOPController(vtopControllerAsString);
-        // print(vtopControllerAsString);
+        if (useFirebaseDataForSemId) {
+          readPreferencesProviderValue
+              .persistVTOPController(vtopControllerAsString);
+        } else {
+          _vtopController = VTOPControllerModel.fromJson(
+              jsonDecode(readPreferencesProviderValue.vtopController));
+        }
         notifyListeners();
       } on Exception catch (exception) {
         _vtopController = VTOPControllerModel.fromJson(
