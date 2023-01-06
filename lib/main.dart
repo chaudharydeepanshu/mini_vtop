@@ -2,24 +2,25 @@ import 'dart:async';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minivtop/route/route.dart' as route;
+import 'package:minivtop/shared_preferences/preferences.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:uuid/uuid.dart';
-import 'package:minivtop/route/route.dart' as route;
 
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 var uuid = Uuid();
 
-final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.instance;
-final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-final FirebaseAnalyticsObserver observer =
-    FirebaseAnalyticsObserver(analytics: analytics);
+final FirebaseCrashlytics crashlyticsInstance = FirebaseCrashlytics.instance;
+final FirebaseAnalytics analyticsInstance = FirebaseAnalytics.instance;
+final FirebaseAnalyticsObserver analyticsObserver =
+    FirebaseAnalyticsObserver(analytics: analyticsInstance);
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -34,15 +35,27 @@ void main() async {
     );
 
     if (kDebugMode) {
-      // Force disable Crashlytics collection while doing every day development.
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-      await FirebaseAnalytics.instance.setUserId(id: 'debugModeId');
+      // Disable Crashlytics collection while doing every day development.
+      await crashlyticsInstance.setCrashlyticsCollectionEnabled(false);
+      await analyticsInstance.setAnalyticsCollectionEnabled(false);
+      await analyticsInstance.setUserId(id: 'debugModeId');
+    } else {
+      // Enable Crashlytics collection based on user preference in production.
+      await crashlyticsInstance.setCrashlyticsCollectionEnabled(
+        Preferences.crashlyticsCollectionStatus,
+      );
+      await analyticsInstance.setAnalyticsCollectionEnabled(
+        Preferences.analyticsCollectionStatus,
+      );
+      await analyticsInstance.setUserId(id: 'prodModeId');
     }
 
-    // whenever your initialization is completed, remove the splash screen:
+    // This captures errors reported by the Flutter framework.
+    FlutterError.onError = crashlyticsInstance.recordFlutterFatalError;
+
+    // To remove the splash screen once everything is initialized.
     FlutterNativeSplash.remove();
 
-    FlutterError.onError = crashlytics.recordFlutterFatalError;
     // Setting user identifiers
     // crashlytics.setUserIdentifier(uuid.v4());
     // analytics.setUserId(id: uuid.v4());
@@ -104,7 +117,7 @@ class App extends StatelessWidget {
           onGenerateRoute: route.controller,
           initialRoute: route.connectionPage,
           navigatorKey: navigatorKey,
-          navigatorObservers: [observer],
+          navigatorObservers: [analyticsObserver],
           scaffoldMessengerKey: rootScaffoldMessengerKey,
         );
       },

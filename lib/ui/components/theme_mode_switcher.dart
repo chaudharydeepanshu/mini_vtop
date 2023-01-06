@@ -12,10 +12,10 @@ class ThemeModeSwitcher extends StatelessWidget {
         ThemeMode themeMode =
             ref.watch(appThemeStateProvider.select((value) => value.themeMode));
         String buttonText = themeMode == ThemeMode.light
-            ? "Light"
+            ? "Light Theme Mode"
             : themeMode == ThemeMode.dark
-                ? "Dark"
-                : "System";
+                ? "Dark Theme Mode"
+                : "Auto/System Theme Mode";
         IconData iconData = themeMode == ThemeMode.light
             ? Icons.light_mode
             : themeMode == ThemeMode.dark

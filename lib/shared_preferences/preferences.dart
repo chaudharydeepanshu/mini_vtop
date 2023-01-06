@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minivtop/main.dart';
 import 'package:minivtop/state/package_info_state.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 String themeModePerfKey = "themeMode";
 String userThemeSeedColorValuePerfKey = "userThemeSeedColorValue";
 String dynamicThemeStatusPerfKey = "dynamicThemeStatus";
+String crashlyticsCollectionStatusPerfKey = 'crashlyticsCollectionStatus';
+String analyticsCollectionStatusPerfKey = 'analyticsCollectionStatus';
 
 class Preferences extends ChangeNotifier {
   Preferences(this.ref);
@@ -71,6 +74,42 @@ class Preferences extends ChangeNotifier {
 
   bool get dynamicThemeStatus =>
       sharedPreferences.getBool(dynamicThemeStatusPerfKey) ?? true;
+
+  /// For persisting crashlytics collection status in SharedPreferences.
+  static Future<bool> persistCrashlyticsCollectionStatus(
+    final bool crashlyticsCollectionStatus,
+  ) async {
+    await crashlyticsInstance.setCrashlyticsCollectionEnabled(
+      crashlyticsCollectionStatus,
+    );
+    return sharedPreferencesInstance.setBool(
+      crashlyticsCollectionStatusPerfKey,
+      crashlyticsCollectionStatus,
+    );
+  }
+
+  /// For getting crashlytics collection status from SharedPreferences.
+  static bool get crashlyticsCollectionStatus =>
+      sharedPreferencesInstance.getBool(crashlyticsCollectionStatusPerfKey) ??
+      true;
+
+  /// For persisting analytics collection status in SharedPreferences.
+  static Future<bool> persistAnalyticsCollectionStatus(
+    final bool analyticsCollectionStatus,
+  ) async {
+    await analyticsInstance.setAnalyticsCollectionEnabled(
+      analyticsCollectionStatus,
+    );
+    return sharedPreferencesInstance.setBool(
+      analyticsCollectionStatusPerfKey,
+      analyticsCollectionStatus,
+    );
+  }
+
+  /// For getting analytics collection status from SharedPreferences.
+  static bool get analyticsCollectionStatus =>
+      sharedPreferencesInstance.getBool(analyticsCollectionStatusPerfKey) ??
+      true;
 
   persistStudentProfileHTMLDoc(String doc) =>
       sharedPreferences.setString('studentProfileHTMLDoc', doc);
