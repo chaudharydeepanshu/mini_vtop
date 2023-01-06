@@ -4,6 +4,7 @@ import 'package:minivtop/ui/components/error_retry_button.dart';
 import 'package:minivtop/ui/components/full_body_message.dart';
 import 'package:minivtop/ui/components/page_body_indicators.dart';
 import 'package:rive/rive.dart';
+
 import 'loading_indicator.dart';
 
 class ErrorIndicators extends StatelessWidget {
@@ -27,12 +28,14 @@ class ErrorIndicators extends StatelessWidget {
             child: Column(
               children: [
                 const Spacer(),
-                const SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: RiveAnimation.asset(
-                    'assets/rive/flame_and_spark.riv',
-                    fit: BoxFit.contain,
+                const Flexible(
+                  child: SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: RiveAnimation.asset(
+                      'assets/rive/flame_and_spark.riv',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 location == Location.beforeHomeScreen

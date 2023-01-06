@@ -43,12 +43,14 @@ class LoadingIndicators extends StatelessWidget {
             child: Column(
               children: [
                 const Spacer(),
-                const SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: RiveAnimation.asset(
-                    'assets/rive/flame_loader.riv',
-                    fit: BoxFit.contain,
+                const Flexible(
+                  child: SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: RiveAnimation.asset(
+                      'assets/rive/flame_loader.riv',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 location == Location.beforeHomeScreen
