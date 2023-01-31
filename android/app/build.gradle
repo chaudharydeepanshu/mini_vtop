@@ -78,15 +78,22 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+
+
+            ndk {
+                debugSymbolLevel 'FULL'
+
+                // By default, the app bundle contains your Dart code and the Flutter
+                // runtime compiled for armeabi-v7a (ARM 32-bit), arm64-v8a (ARM 64-bit), and x86-64 (x86 64-bit).
+                // For reference see https://docs.flutter.dev/deployment/android#build-an-app-bundle.
+                // But without these filters in case of some 3rd party plugins supporting x86 it will generates x86 folder
+                // marking the app compatible with x86 even when its not, this will lead to crash on x86 devices.
+                // For more info see https://github.com/flutter/flutter/issues/73943#issuecomment-979741146.
+                abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
+            }
         }
     }
 
-//    buildTypes {
-//        release {
-//            // Signing with the debug keys for now, so `flutter run --release` works.
-//            signingConfig signingConfigs.debug
-//        }
-//    }
 }
 
 flutter {
