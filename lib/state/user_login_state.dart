@@ -3,8 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-
-import '../db/hive/hive_data_repository.dart';
+import 'package:minivtop/db/flutter_secure_storage/secure_storage_repository.dart';
 
 enum LoginResponseStatus {
   loggedOut,
@@ -80,8 +79,9 @@ class UserLoginState extends ChangeNotifier {
   String get emailOTP => _emailOTP;
 
   init() async {
-    _userID = await HiveDataRepository().getVTOPCredentialsBoxUserID();
-    _password = await HiveDataRepository().getVTOPCredentialsBoxPassword();
+    _userID = await SecureStorageRepository().getVTOPCredentialsUserID();
+    _password =
+        await SecureStorageRepository().getVTOPCredentialsUserPassword();
 
     if (_userID != "" && _password != "") {
       _isCredentialsFound = true;
@@ -132,8 +132,8 @@ class UserLoginState extends ChangeNotifier {
 
   void addCredentialsToDB() {
     if (shouldSaveCredentials) {
-      HiveDataRepository()
-          .updateVTOPCredentialsBox(userID: userID, password: password);
+      SecureStorageRepository()
+          .updateVTOPCredentials(userID: userID, userPassword: password);
       updateIsCredentialsFoundStatus(status: true);
     }
     notifyListeners();

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:hive_flutter/adapters.dart';
 import 'package:minivtop/state/package_info_state.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
@@ -14,15 +11,9 @@ import 'connection_state.dart';
 import 'error_state.dart';
 import 'webview_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 
 late final PackageInfo packageInfo;
 late final SharedPreferences sharedPreferencesInstance;
-
-Future<void> initHive() async {
-  Directory directory = await getApplicationDocumentsDirectory();
-  await Hive.initFlutter(directory.path);
-}
 
 Future<void> initPackageInfo() async {
   packageInfo = await PackageInfo.fromPlatform();

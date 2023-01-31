@@ -26,7 +26,6 @@ void main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-    await initHive();
     await initPackageInfo();
     await initSharedPreferences();
 

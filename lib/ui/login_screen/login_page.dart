@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:minivtop/constants.dart';
+import 'package:minivtop/db/flutter_secure_storage/secure_storage_repository.dart';
 import 'package:minivtop/state/user_login_state.dart';
 import 'package:minivtop/state/vtop_actions.dart';
 import 'package:minivtop/ui/components/link_button.dart';
@@ -14,7 +15,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/webview_state.dart';
 import 'package:minivtop/ui/components/custom_snack_bar.dart';
-import '../../db/hive/hive_data_repository.dart';
 import '../components/page_body_indicators.dart';
 import 'package:minivtop/route/route.dart' as route;
 
@@ -646,7 +646,7 @@ class FakeEmailPasswordFields extends StatelessWidget {
                   primary: Theme.of(context).colorScheme.secondaryContainer,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
-                  HiveDataRepository().clearVTOPCredentialsBox();
+                  SecureStorageRepository().clearVTOPCredentials();
                   ref.read(userLoginStateProvider).setUserID(userID: "");
                   ref.read(userLoginStateProvider).setPassword(password: "");
                   ref
