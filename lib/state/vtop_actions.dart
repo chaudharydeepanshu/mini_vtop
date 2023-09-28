@@ -127,7 +127,7 @@ class VTOPActions extends ChangeNotifier {
       },
       performAction: () async {
         await headlessWebView.webViewController
-            .evaluateJavascript(source: "openPage();");
+            ?.evaluateJavascript(source: "openPage();");
       },
       sessionTimeOutAction: () {
         _vtopStatus = VTOPStatus.sessionTimedOut;
@@ -162,7 +162,7 @@ class VTOPActions extends ChangeNotifier {
         readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                doRefreshCaptcha();
                                 ''');
       },
@@ -200,7 +200,7 @@ class VTOPActions extends ChangeNotifier {
             loginStatus: LoginResponseStatus.loggedOut);
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                ajaxCall('processLogout',null,'page_outline');
                                 ''');
       },
@@ -243,7 +243,7 @@ class VTOPActions extends ChangeNotifier {
         String userID = readUserLoginStateProviderValue.userID;
         String password = readUserLoginStateProviderValue.password;
         String captcha = readUserLoginStateProviderValue.captcha;
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
         // document.getElementById('uname').value = '$userID';
         // document.getElementById('passwd').value = '$password';
         // document.getElementById('captchaCheck').value = '$captcha';
@@ -289,7 +289,7 @@ class VTOPActions extends ChangeNotifier {
                 status: ErrorStatus.noError));
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                document.getElementById("STA002").click();
                                 ''');
       },
@@ -333,7 +333,7 @@ class VTOPActions extends ChangeNotifier {
                 status: ErrorStatus.noError));
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                document.getElementById("EXM0023").click();
                                 ''');
       },
@@ -377,7 +377,7 @@ class VTOPActions extends ChangeNotifier {
                 status: ErrorStatus.noError));
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                document.getElementById("ACD0042").click();
                                 ''');
       },
@@ -421,7 +421,7 @@ class VTOPActions extends ChangeNotifier {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
         String semesterSubId = attendanceID ?? vtopController.attendanceID;
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processStudentAttendance();
                                 ''');
@@ -466,7 +466,7 @@ class VTOPActions extends ChangeNotifier {
                 status: ErrorStatus.noError));
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                document.getElementById("ACD0034").click();
                                 ''');
       },
@@ -510,7 +510,7 @@ class VTOPActions extends ChangeNotifier {
         VTOPControllerModel vtopController =
             readVTOPControllerStateProviderValue.vtopController;
         String semesterSubId = timeTableID ?? vtopController.timeTableID;
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
         document.getElementById("semesterSubId").value = "$semesterSubId";
                                processViewTimeTable("$semesterSubId");
                                 ''');
@@ -552,7 +552,7 @@ class VTOPActions extends ChangeNotifier {
         _forgotUserIDPageStatus = VTOPPageStatus.processing;
       },
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                                forgotUserID();
                                 ''');
       },
@@ -591,7 +591,7 @@ class VTOPActions extends ChangeNotifier {
       },
       performAction: () async {
         String erpIDOrRegNo = readUserLoginStateProviderValue.erpIDOrRegNo;
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
             document.getElementById("userId").value = '$erpIDOrRegNo';
          document.getElementById("btnSubmit").click();
                                 ''');
@@ -631,7 +631,7 @@ class VTOPActions extends ChangeNotifier {
       },
       performAction: () async {
         String emailOTP = readUserLoginStateProviderValue.emailOTP;
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
             document.getElementById("otp").value = '$emailOTP';
          document.getElementById("btnValidate").click();
                                 ''');
@@ -666,7 +666,7 @@ class VTOPActions extends ChangeNotifier {
       headlessWebView: headlessWebView,
       initialAction: () {},
       performAction: () async {
-        await headlessWebView.webViewController.evaluateJavascript(source: '''
+        await headlessWebView.webViewController?.evaluateJavascript(source: '''
                             \$.ajax({});
                                 ''');
       },
@@ -710,7 +710,7 @@ void _actionHandler({
     // If true means then headless WebView is running.
 
     await headlessWebView.webViewController
-        .evaluateJavascript(
+        ?.evaluateJavascript(
             source: "new XMLSerializer().serializeToString(document);")
         .then((value) async {
       if (value != null) {

@@ -280,7 +280,7 @@ class HeadlessWebView extends ChangeNotifier {
               LoginResponseStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for logout action.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               if (value.contains("You have been successfully logged out")) {
@@ -323,7 +323,7 @@ class HeadlessWebView extends ChangeNotifier {
               ForgotUserIDValidateResponseStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for forgotUserID Validate action.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               Document document = parse('$value');
@@ -382,7 +382,7 @@ class HeadlessWebView extends ChangeNotifier {
               ForgotUserIDSearchResponseStatus.searching) {
             log("Accepted ajaxRequest callback as till now no action was taken for forgotUserID Search action.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               Document document = parse('$value');
@@ -439,7 +439,7 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded ForgotUserID page.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               // Document document = parse('$value');
@@ -482,7 +482,7 @@ class HeadlessWebView extends ChangeNotifier {
             log("Accepted ajaxRequest callback as till now no action was taken for captcha refresh.");
             readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               Document document = parse('${ajaxRequest.responseText}');
@@ -532,7 +532,7 @@ class HeadlessWebView extends ChangeNotifier {
               LoginResponseStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for login attempt.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               // Document document = parse('$value');
@@ -598,7 +598,7 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded StudentProfileAllView.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               bool pageLoadedSuccessfully = await ref
@@ -636,7 +636,7 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded GradeHistory.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               bool pageLoadedSuccessfully = await ref
@@ -674,7 +674,7 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
               readVTOPActionsProviderValue.studentAttendanceViewAction();
@@ -706,11 +706,11 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               String selectedSemesterCode =
-                  await headlessWebView.webViewController.evaluateJavascript(
+                  await headlessWebView.webViewController?.evaluateJavascript(
                       source:
                           "document.getElementById('semesterSubId').value;");
 
@@ -750,7 +750,7 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) {
               readVTOPActionsProviderValue.studentTimeTableViewAction();
@@ -782,11 +782,11 @@ class HeadlessWebView extends ChangeNotifier {
               VTOPPageStatus.processing) {
             log("Accepted ajaxRequest callback as till now no action was taken for loaded TimeTable page.");
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               String selectedSemesterCode =
-                  await headlessWebView.webViewController.evaluateJavascript(
+                  await headlessWebView.webViewController?.evaluateJavascript(
                       source:
                           "document.getElementById('semesterSubId').value;");
 
@@ -831,7 +831,7 @@ class HeadlessWebView extends ChangeNotifier {
                 status: VTOPStatus.studentLoginPage);
             readUserLoginStateProviderValue.updateCaptchaImage(bytes: null);
             await headlessWebView.webViewController
-                .evaluateJavascript(
+                ?.evaluateJavascript(
                     source: "new XMLSerializer().serializeToString(document);")
                 .then((value) async {
               Document document = parse('${ajaxRequest.responseText}');
@@ -925,7 +925,7 @@ _onLoadStopHandler({
   required String initialUrl,
 }) async {
   headlessWebView.webViewController
-      .evaluateJavascript(
+      ?.evaluateJavascript(
           source: "new XMLSerializer().serializeToString(document);")
       .then((value) async {
     String initialVTOPHtml =
@@ -937,16 +937,18 @@ _onLoadStopHandler({
 
         sessionTimeOutAction();
       } else if (url.toString() == "${initialUrl}initialProcess" &&
-          await headlessWebView.webViewController.getProgress() == 100 &&
-          !(await headlessWebView.webViewController.isLoading()) &&
+          await headlessWebView.webViewController?.getProgress() == 100 &&
+          !(headlessWebView.webViewController != null &&
+              await headlessWebView.webViewController!.isLoading()) &&
           value != initialVTOPHtml &&
           value.contains("V-TOP for Employee and Students")) {
         // If true means VTOP is loaded.
 
         homepageAction();
       } else if (url.toString() == initialUrl &&
-          await headlessWebView.webViewController.getProgress() == 100 &&
-          !(await headlessWebView.webViewController.isLoading()) &&
+          await headlessWebView.webViewController?.getProgress() == 100 &&
+          !(headlessWebView.webViewController != null &&
+              await headlessWebView.webViewController!.isLoading()) &&
           value.contains("(STUDENT)")) {
         // If true means VTOP is already logged in and homepage is loaded.
 
