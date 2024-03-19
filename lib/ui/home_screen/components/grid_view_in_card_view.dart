@@ -22,12 +22,12 @@ class GridCardDetail {
 
 class GridViewInCardSection extends StatelessWidget {
   const GridViewInCardSection({
-    Key? key,
+    super.key,
     required this.sectionTitle,
     required this.emptySectionText,
     required this.gridCardsDetails,
     this.cardShowAllOnTap,
-  }) : super(key: key);
+  });
 
   final String emptySectionText;
   final String sectionTitle;
@@ -142,8 +142,7 @@ class GridViewInCardSection extends StatelessWidget {
 }
 
 class GridViewCard extends StatelessWidget {
-  const GridViewCard({Key? key, required this.gridCardDetail})
-      : super(key: key);
+  const GridViewCard({super.key, required this.gridCardDetail});
 
   final GridCardDetail gridCardDetail;
 

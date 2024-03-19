@@ -14,7 +14,7 @@ import 'package:minivtop/route/route.dart' as route;
 import '../components/cached_mode_warning.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +27,8 @@ class DashboardPage extends StatelessWidget {
           LogoutButton(),
         ],
       ),
-      body: Column(
-        children: const [
+      body: const Column(
+        children: [
           CachedModeWarning(supportsRefresh: false),
           Expanded(child: DashboardBody()),
         ],
@@ -38,7 +38,7 @@ class DashboardPage extends StatelessWidget {
 }
 
 class LogoutButton extends StatelessWidget {
-  const LogoutButton({Key? key}) : super(key: key);
+  const LogoutButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +82,7 @@ class LogoutButton extends StatelessWidget {
 }
 
 class DashboardBody extends StatelessWidget {
-  const DashboardBody({Key? key}) : super(key: key);
+  const DashboardBody({super.key});
 
   @override
   Widget build(BuildContext context) {

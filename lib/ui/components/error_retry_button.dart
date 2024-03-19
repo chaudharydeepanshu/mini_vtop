@@ -4,7 +4,7 @@ import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/state/webview_state.dart';
 
 class ErrorRetryButton extends StatelessWidget {
-  const ErrorRetryButton({Key? key}) : super(key: key);
+  const ErrorRetryButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +15,8 @@ class ErrorRetryButton extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  // Foreground color
-                  // ignore: deprecated_member_use
-                  onPrimary: Theme.of(context).colorScheme.onPrimary,
-                  // Background color
-                  // ignore: deprecated_member_use
-                  primary: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
                   final HeadlessWebView readHeadlessWebViewProviderValue =

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 
 class ThemeModeSwitcher extends StatelessWidget {
-  const ThemeModeSwitcher({Key? key}) : super(key: key);
+  const ThemeModeSwitcher({super.key});
 
   @override
   Widget build(BuildContext context) {

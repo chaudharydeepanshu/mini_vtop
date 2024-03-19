@@ -11,7 +11,7 @@ import '../components/error_indicators.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 class ConnectionPage extends ConsumerStatefulWidget {
-  const ConnectionPage({Key? key}) : super(key: key);
+  const ConnectionPage({super.key});
 
   @override
   ConsumerState<ConnectionPage> createState() => _ConnectionScreenState();
@@ -174,8 +174,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionPage> {
 
 class ConnectionScreenStates extends StatelessWidget {
   const ConnectionScreenStates(
-      {Key? key, required this.connectionStatus, required this.errorStatus})
-      : super(key: key);
+      {super.key, required this.connectionStatus, required this.errorStatus});
 
   final ConnectionStatus connectionStatus;
 

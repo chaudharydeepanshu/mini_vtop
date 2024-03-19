@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class LinearCompletionMeter extends StatefulWidget {
   const LinearCompletionMeter(
-      {Key? key,
+      {super.key,
       required this.progressInPercent,
-      required this.showProgressLabel})
-      : super(key: key);
+      required this.showProgressLabel});
 
   final double progressInPercent;
   final bool showProgressLabel;

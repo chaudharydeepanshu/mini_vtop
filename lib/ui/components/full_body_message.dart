@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class FullBodyMessage extends StatelessWidget {
   const FullBodyMessage(
-      {Key? key,
+      {super.key,
       required this.messageHeadingText,
-      required this.messageBodyText})
-      : super(key: key);
+      required this.messageBodyText});
 
   final String messageHeadingText;
   final String messageBodyText;

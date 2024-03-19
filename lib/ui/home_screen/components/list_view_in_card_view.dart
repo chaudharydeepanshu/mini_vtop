@@ -21,12 +21,12 @@ class ListTileDetail {
 
 class ListViewInCardSection extends StatelessWidget {
   const ListViewInCardSection({
-    Key? key,
+    super.key,
     required this.sectionTitle,
     required this.emptySectionText,
     required this.listTilesDetails,
     this.cardShowAllOnTap,
-  }) : super(key: key);
+  });
 
   final String emptySectionText;
   final String sectionTitle;
@@ -120,8 +120,7 @@ class ListViewInCardSection extends StatelessWidget {
 }
 
 class ListViewTile extends StatelessWidget {
-  const ListViewTile({Key? key, required this.listTileDetail})
-      : super(key: key);
+  const ListViewTile({super.key, required this.listTileDetail});
 
   final ListTileDetail listTileDetail;
 

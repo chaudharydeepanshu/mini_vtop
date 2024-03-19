@@ -5,7 +5,7 @@ import 'package:minivtop/state/providers.dart';
 import 'package:minivtop/ui/components/color_picker.dart';
 
 class ThemeChooserWidget extends StatelessWidget {
-  const ThemeChooserWidget({Key? key}) : super(key: key);
+  const ThemeChooserWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

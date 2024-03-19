@@ -16,13 +16,12 @@ import '../../state/vtop_actions.dart';
 
 class LoadingIndicators extends StatelessWidget {
   const LoadingIndicators(
-      {Key? key,
+      {super.key,
       required this.location,
       required this.pageStatus,
       required this.vtopStatus,
       required this.connectionStatus,
-      required this.loginResponseStatus})
-      : super(key: key);
+      required this.loginResponseStatus});
 
   final Location location;
   final VTOPPageStatus pageStatus;
@@ -100,12 +99,11 @@ class LoadingIndicators extends StatelessWidget {
 
 class BeforeHomeScreenLoaders extends StatelessWidget {
   const BeforeHomeScreenLoaders(
-      {Key? key,
+      {super.key,
       required this.pageStatus,
       required this.vtopStatus,
       required this.connectionStatus,
-      required this.loginResponseStatus})
-      : super(key: key);
+      required this.loginResponseStatus});
 
   final VTOPPageStatus pageStatus;
   final VTOPStatus vtopStatus;
@@ -115,8 +113,8 @@ class BeforeHomeScreenLoaders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (connectionStatus == ConnectionStatus.connecting) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Connecting!",
               messageBodyText: "App is connecting to VTOP. Please wait"),
@@ -124,8 +122,8 @@ class BeforeHomeScreenLoaders extends StatelessWidget {
       );
     }
     if (vtopStatus == VTOPStatus.sessionTimedOut) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Reconnecting!",
               messageBodyText:
@@ -134,16 +132,16 @@ class BeforeHomeScreenLoaders extends StatelessWidget {
       );
     }
     if (pageStatus == VTOPPageStatus.processing) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Loading Data!",
               messageBodyText: "Fetching and processing the data. Please wait"),
         ],
       );
     } else {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Unknown Status!",
               messageBodyText: "Unknown Status."),
@@ -156,12 +154,11 @@ class BeforeHomeScreenLoaders extends StatelessWidget {
 
 class AfterHomeScreenLoaders extends StatelessWidget {
   const AfterHomeScreenLoaders(
-      {Key? key,
+      {super.key,
       required this.pageStatus,
       required this.vtopStatus,
       required this.connectionStatus,
-      required this.loginResponseStatus})
-      : super(key: key);
+      required this.loginResponseStatus});
 
   final VTOPPageStatus pageStatus;
   final VTOPStatus vtopStatus;
@@ -171,8 +168,8 @@ class AfterHomeScreenLoaders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (connectionStatus == ConnectionStatus.connecting) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Connecting!",
               messageBodyText: "App is connecting to VTOP. Please wait"),
@@ -180,8 +177,8 @@ class AfterHomeScreenLoaders extends StatelessWidget {
       );
     }
     if (vtopStatus == VTOPStatus.sessionTimedOut) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Reconnecting!",
               messageBodyText:
@@ -190,8 +187,8 @@ class AfterHomeScreenLoaders extends StatelessWidget {
       );
     }
     if (pageStatus == VTOPPageStatus.processing) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Loading Data!",
               messageBodyText: "Fetching and processing the data. Please wait"),
@@ -200,8 +197,8 @@ class AfterHomeScreenLoaders extends StatelessWidget {
     }
     if (loginResponseStatus == LoginResponseStatus.loggedOut &&
         vtopStatus == VTOPStatus.homepage) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "You Logged Out!",
               messageBodyText:
@@ -211,8 +208,8 @@ class AfterHomeScreenLoaders extends StatelessWidget {
         ],
       );
     } else {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Unknown Status!",
               messageBodyText: "Unknown Status."),
@@ -224,7 +221,7 @@ class AfterHomeScreenLoaders extends StatelessWidget {
 }
 
 class AfterHomeScreenLoginButton extends StatelessWidget {
-  const AfterHomeScreenLoginButton({Key? key}) : super(key: key);
+  const AfterHomeScreenLoginButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -237,10 +234,8 @@ class AfterHomeScreenLoginButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   // Foreground color
                   // ignore: deprecated_member_use
-                  onPrimary: Theme.of(context).colorScheme.onPrimary,
-                  // Background color
-                  // ignore: deprecated_member_use
-                  primary: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
@@ -263,7 +258,7 @@ class AfterHomeScreenLoginButton extends StatelessWidget {
 }
 
 class OldDataButton extends StatelessWidget {
-  const OldDataButton({Key? key}) : super(key: key);
+  const OldDataButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -276,10 +271,8 @@ class OldDataButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   // Foreground color
                   // ignore: deprecated_member_use
-                  onPrimary: Theme.of(context).colorScheme.onPrimary,
-                  // Background color
-                  // ignore: deprecated_member_use
-                  primary: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
                   final VTOPActions readVTOPActionsProviderValue =

@@ -19,7 +19,7 @@ import '../components/page_body_indicators.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   ConsumerState<LoginPage> createState() => _LoginState();
@@ -128,7 +128,7 @@ class _LoginState extends ConsumerState<LoginPage> {
 }
 
 class TeddyLoginScreen extends StatefulWidget {
-  const TeddyLoginScreen({Key? key}) : super(key: key);
+  const TeddyLoginScreen({super.key});
 
   @override
   State<TeddyLoginScreen> createState() => _TeddyLoginScreenState();
@@ -226,7 +226,7 @@ class _TeddyLoginScreenState extends State<TeddyLoginScreen> {
 }
 
 class UserAgreementText extends StatelessWidget {
-  const UserAgreementText({Key? key}) : super(key: key);
+  const UserAgreementText({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -265,7 +265,7 @@ class UserAgreementText extends StatelessWidget {
 }
 
 class SaveCredentialsListTile extends StatelessWidget {
-  const SaveCredentialsListTile({Key? key}) : super(key: key);
+  const SaveCredentialsListTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -297,8 +297,7 @@ class SaveCredentialsListTile extends StatelessWidget {
 
 class LoginButton extends StatelessWidget {
   const LoginButton(
-      {Key? key, required this.controlTeddy, required this.formKey})
-      : super(key: key);
+      {super.key, required this.controlTeddy, required this.formKey});
 
   final ControlTeddy controlTeddy;
 
@@ -454,8 +453,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showLoginSnackBar(
 }
 
 class EmailPasswordFields extends StatelessWidget {
-  const EmailPasswordFields({Key? key, required this.controlTeddy})
-      : super(key: key);
+  const EmailPasswordFields({super.key, required this.controlTeddy});
 
   final ControlTeddy controlTeddy;
 
@@ -569,7 +567,7 @@ class EmailPasswordFields extends StatelessWidget {
 }
 
 class FakeEmailPasswordFields extends StatelessWidget {
-  const FakeEmailPasswordFields({Key? key}) : super(key: key);
+  const FakeEmailPasswordFields({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -638,12 +636,10 @@ class FakeEmailPasswordFields extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  // Foreground color
-                  // ignore: deprecated_member_use
-                  onPrimary: Theme.of(context).colorScheme.onSecondaryContainer,
-                  // Background color
-                  // ignore: deprecated_member_use
-                  primary: Theme.of(context).colorScheme.secondaryContainer,
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
                 ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: () {
                   SecureStorageRepository().clearVTOPCredentials();
@@ -666,8 +662,7 @@ class FakeEmailPasswordFields extends StatelessWidget {
 
 class LoginFields extends StatelessWidget {
   const LoginFields(
-      {Key? key, required this.controlTeddy, required this.formKey})
-      : super(key: key);
+      {super.key, required this.controlTeddy, required this.formKey});
 
   final ControlTeddy controlTeddy;
 
@@ -737,8 +732,7 @@ class LoginFields extends StatelessWidget {
 }
 
 class ForgotDetailButtons extends StatelessWidget {
-  const ForgotDetailButtons({Key? key, this.onPressed, required this.label})
-      : super(key: key);
+  const ForgotDetailButtons({super.key, this.onPressed, required this.label});
 
   final void Function()? onPressed;
   final String label;
@@ -780,13 +774,13 @@ class ForgotDetailButtons extends StatelessWidget {
 }
 
 class CaptchaSection extends StatelessWidget {
-  const CaptchaSection({Key? key}) : super(key: key);
+  const CaptchaSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         CaptchaImage(),
         SizedBox(
           width: 10,
@@ -798,7 +792,7 @@ class CaptchaSection extends StatelessWidget {
 }
 
 class CaptchaIconButton extends StatelessWidget {
-  const CaptchaIconButton({Key? key}) : super(key: key);
+  const CaptchaIconButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -832,7 +826,7 @@ class CaptchaIconButton extends StatelessWidget {
 }
 
 class CaptchaImage extends StatelessWidget {
-  const CaptchaImage({Key? key}) : super(key: key);
+  const CaptchaImage({super.key});
 
   @override
   Widget build(BuildContext context) {

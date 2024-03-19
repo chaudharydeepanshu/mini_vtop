@@ -3,7 +3,7 @@ import 'package:minivtop/ui/home_screen/components/grid_view_in_card_view.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 class ToolsPage extends StatelessWidget {
-  const ToolsPage({Key? key, required this.arguments}) : super(key: key);
+  const ToolsPage({super.key, required this.arguments});
 
   final ToolsPageArguments arguments;
 
@@ -43,7 +43,7 @@ class ToolsPageArguments {
 }
 
 class ToolsSection extends StatelessWidget {
-  const ToolsSection({Key? key}) : super(key: key);
+  const ToolsSection({super.key});
 
   @override
   Widget build(BuildContext context) {

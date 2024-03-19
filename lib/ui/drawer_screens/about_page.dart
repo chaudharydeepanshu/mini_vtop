@@ -4,7 +4,7 @@ import 'package:minivtop/ui/components/link_button.dart';
 import 'package:minivtop/ui/components/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class AboutPage extends StatelessWidget {
 }
 
 class AppDescription extends StatelessWidget {
-  const AppDescription({Key? key}) : super(key: key);
+  const AppDescription({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class AppDescription extends StatelessWidget {
 }
 
 class AppBadges extends StatelessWidget {
-  const AppBadges({Key? key}) : super(key: key);
+  const AppBadges({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +137,7 @@ class AppBadges extends StatelessWidget {
 }
 
 class AppAuthor extends StatelessWidget {
-  const AppAuthor({Key? key}) : super(key: key);
+  const AppAuthor({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +239,7 @@ class AppAuthor extends StatelessWidget {
 }
 
 class AppContributions extends StatelessWidget {
-  const AppContributions({Key? key}) : super(key: key);
+  const AppContributions({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -273,9 +273,9 @@ class AppContributions extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 LinkButton(
                     urlLabel: "Github", url: "https://github.com/ManasSaini03"),
               ],
@@ -288,7 +288,7 @@ class AppContributions extends StatelessWidget {
 }
 
 class Credits extends StatelessWidget {
-  const Credits({Key? key}) : super(key: key);
+  const Credits({super.key});
 
   @override
   Widget build(BuildContext context) {

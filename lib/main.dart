@@ -15,7 +15,7 @@ import 'package:uuid/uuid.dart';
 
 import 'firebase_options.dart';
 
-var uuid = Uuid();
+var uuid = const Uuid();
 
 final FirebaseCrashlytics crashlyticsInstance = FirebaseCrashlytics.instance;
 final FirebaseAnalytics analyticsInstance = FirebaseAnalytics.instance;
@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {

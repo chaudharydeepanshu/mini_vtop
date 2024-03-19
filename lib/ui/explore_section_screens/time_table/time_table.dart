@@ -18,7 +18,7 @@ import '../../components/page_body_indicators.dart';
 import '../components/info_line.dart';
 
 class TimeTablePage extends ConsumerStatefulWidget {
-  const TimeTablePage({Key? key}) : super(key: key);
+  const TimeTablePage({super.key});
 
   @override
   ConsumerState<TimeTablePage> createState() => _TimeTablePageState();
@@ -125,8 +125,8 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
 
             return studentTimeTablePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
-                ? Column(
-                    children: const [
+                ? const Column(
+                    children: [
                       CachedModeWarning(),
                       Expanded(child: TimeTableBody()),
                     ],
@@ -145,7 +145,7 @@ class _TimeTablePageState extends ConsumerState<TimeTablePage> {
 }
 
 class TimeTableBody extends StatefulWidget {
-  const TimeTableBody({Key? key}) : super(key: key);
+  const TimeTableBody({super.key});
 
   @override
   State<TimeTableBody> createState() => _TimeTableBodyState();
@@ -430,12 +430,11 @@ class _TimeTableBodyState extends State<TimeTableBody> {
 
 class TimeTableCard extends StatefulWidget {
   const TimeTableCard(
-      {Key? key,
+      {super.key,
       required this.timeTableClassDetail,
       required this.subjectDetail,
       required this.currentDateTime,
-      required this.selectedDateTime})
-      : super(key: key);
+      required this.selectedDateTime});
 
   final TimeTableClassDetailModel timeTableClassDetail;
   final SubjectDetailModel subjectDetail;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class InfoLine extends StatelessWidget {
-  const InfoLine({Key? key, required this.detailName, required this.detail})
-      : super(key: key);
+  const InfoLine({super.key, required this.detailName, required this.detail});
 
   final String detailName;
   final String detail;

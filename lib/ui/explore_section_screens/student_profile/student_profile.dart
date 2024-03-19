@@ -13,7 +13,7 @@ import '../../components/empty_content_indicator.dart';
 import '../../components/page_body_indicators.dart';
 
 class StudentProfilePage extends ConsumerStatefulWidget {
-  const StudentProfilePage({Key? key}) : super(key: key);
+  const StudentProfilePage({super.key});
 
   @override
   ConsumerState<StudentProfilePage> createState() => _StudentProfileState();
@@ -85,8 +85,8 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
 
             return studentProfilePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
-                ? Column(
-                    children: const [
+                ? const Column(
+                    children: [
                       CachedModeWarning(),
                       Expanded(child: StudentProfileBody()),
                     ],
@@ -105,7 +105,7 @@ class _StudentProfileState extends ConsumerState<StudentProfilePage> {
 }
 
 class StudentProfileBody extends StatelessWidget {
-  const StudentProfileBody({Key? key}) : super(key: key);
+  const StudentProfileBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -190,8 +190,7 @@ class StudentProfileBody extends StatelessWidget {
 
 class DetailLine extends StatelessWidget {
   const DetailLine(
-      {Key? key, required this.parameter1, required this.parameter2})
-      : super(key: key);
+      {super.key, required this.parameter1, required this.parameter2});
 
   final String parameter1;
   final String parameter2;

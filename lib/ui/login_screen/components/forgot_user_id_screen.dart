@@ -11,7 +11,7 @@ import 'package:minivtop/state/vtop_actions.dart';
 import '../../components/page_body_indicators.dart';
 
 class ForgotUserIDPage extends ConsumerStatefulWidget {
-  const ForgotUserIDPage({Key? key}) : super(key: key);
+  const ForgotUserIDPage({super.key});
 
   @override
   ConsumerState<ForgotUserIDPage> createState() => _ForgotUserIDState();
@@ -164,13 +164,12 @@ class _ForgotUserIDState extends ConsumerState<ForgotUserIDPage> {
 
 class ForgotUserIDScreenBody extends StatelessWidget {
   const ForgotUserIDScreenBody(
-      {Key? key,
+      {super.key,
       required this.forgotUserIDSearchStatus,
       required this.erpIDOrRegNoFormFieldKey,
       required this.emailOTPFormFieldKey,
       required this.onErpIDOrRegNoChanged,
-      required this.onEmailOTPChanged})
-      : super(key: key);
+      required this.onEmailOTPChanged});
 
   final ForgotUserIDSearchResponseStatus forgotUserIDSearchStatus;
 
@@ -331,8 +330,7 @@ Future<void> userIDDialog(
 }
 
 class ForgotUserIDSearchButton extends StatelessWidget {
-  const ForgotUserIDSearchButton({Key? key, required this.formFieldKey})
-      : super(key: key);
+  const ForgotUserIDSearchButton({super.key, required this.formFieldKey});
 
   final GlobalKey<FormFieldState> formFieldKey;
 
@@ -405,8 +403,7 @@ class ForgotUserIDSearchButton extends StatelessWidget {
 }
 
 class ForgotUserIDValidateButton extends StatelessWidget {
-  const ForgotUserIDValidateButton({Key? key, required this.formFieldKey})
-      : super(key: key);
+  const ForgotUserIDValidateButton({super.key, required this.formFieldKey});
 
   final GlobalKey<FormFieldState> formFieldKey;
 
@@ -575,7 +572,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
 
 class TextInput extends StatefulWidget {
   const TextInput(
-      {Key? key,
+      {super.key,
       this.onTextChanged,
       // this.hint,
       // this.label,
@@ -592,8 +589,7 @@ class TextInput extends StatefulWidget {
       this.prefixIcon,
       this.preFilledValue,
       this.fieldKey,
-      this.textCapitalization})
-      : super(key: key);
+      this.textCapitalization});
 
   final String labelText;
   final String? helperText;

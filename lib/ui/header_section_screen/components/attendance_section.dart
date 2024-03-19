@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minivtop/ui/components/linear_completion_meter.dart';
 
 class AttendanceSection extends StatelessWidget {
-  const AttendanceSection({Key? key}) : super(key: key);
+  const AttendanceSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +61,9 @@ class AttendanceSection extends StatelessWidget {
 
 class AttendanceForSubject extends StatelessWidget {
   const AttendanceForSubject(
-      {Key? key,
+      {super.key,
       required this.subjectName,
-      required this.subjectAttendanceInPercent})
-      : super(key: key);
+      required this.subjectAttendanceInPercent});
 
   final String subjectName;
   final double subjectAttendanceInPercent;

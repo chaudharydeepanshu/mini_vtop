@@ -18,7 +18,7 @@ class NewsDetail {
 }
 
 class NewsScreen extends StatelessWidget {
-  const NewsScreen({Key? key, required this.newsDetail}) : super(key: key);
+  const NewsScreen({super.key, required this.newsDetail});
 
   final NewsDetail newsDetail;
 

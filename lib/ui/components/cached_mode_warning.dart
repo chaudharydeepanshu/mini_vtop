@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 
 class CachedModeWarning extends StatelessWidget {
-  const CachedModeWarning({Key? key, this.supportsRefresh = true})
-      : super(key: key);
+  const CachedModeWarning({super.key, this.supportsRefresh = true});
 
   final bool supportsRefresh;
 

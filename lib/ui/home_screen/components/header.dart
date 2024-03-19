@@ -13,7 +13,7 @@ import 'package:minivtop/state/vtop_data_state.dart';
 // import 'package:minivtop/route/route.dart' as route;
 
 class HomeHeader extends ConsumerStatefulWidget {
-  const HomeHeader({Key? key}) : super(key: key);
+  const HomeHeader({super.key});
 
   @override
   ConsumerState<HomeHeader> createState() => _HomeHeaderState();
@@ -122,7 +122,7 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
 }
 
 class UserName extends StatelessWidget {
-  const UserName({Key? key}) : super(key: key);
+  const UserName({super.key});
 
   @override
   Widget build(BuildContext context) {

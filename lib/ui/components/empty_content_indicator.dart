@@ -3,7 +3,7 @@ import 'package:minivtop/ui/components/full_body_message.dart';
 import 'package:rive/rive.dart';
 
 class EmptyContentIndicator extends StatelessWidget {
-  const EmptyContentIndicator({Key? key}) : super(key: key);
+  const EmptyContentIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +29,8 @@ class EmptyContentIndicator extends StatelessWidget {
                     ),
                   ),
                 ),
-                Column(
-                  children: const [
+                const Column(
+                  children: [
                     FullBodyMessage(
                         messageHeadingText: "No Content!",
                         messageBodyText:

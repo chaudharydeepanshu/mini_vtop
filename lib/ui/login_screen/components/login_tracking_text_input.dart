@@ -5,7 +5,7 @@ import 'package:minivtop/ui/login_screen/components/textfield_caret_management.d
 
 class TrackingTextInput extends StatefulWidget {
   const TrackingTextInput(
-      {Key? key,
+      {super.key,
       this.onCaretMoved,
       this.onTextChanged,
       // this.hint,
@@ -23,8 +23,7 @@ class TrackingTextInput extends StatefulWidget {
       this.prefixIcon,
       this.preFilledValue,
       this.textCapitalization,
-      this.enableObscuredSuffixIcon = true})
-      : super(key: key);
+      this.enableObscuredSuffixIcon = true});
 
   final String labelText;
   final String? helperText;
@@ -156,7 +155,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
-    Key? key,
+    super.key,
     this.fieldKey,
     required this.labelText,
     required this.controller,
@@ -173,7 +172,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.enabled,
     required this.readOnly,
     this.textCapitalization,
-  }) : super(key: key);
+  });
 
   final GlobalKey<State<StatefulWidget>>? fieldKey;
   final String labelText;

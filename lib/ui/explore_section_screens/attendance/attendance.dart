@@ -18,7 +18,7 @@ import '../../components/page_body_indicators.dart';
 import '../components/info_line.dart';
 
 class AttendancePage extends ConsumerStatefulWidget {
-  const AttendancePage({Key? key}) : super(key: key);
+  const AttendancePage({super.key});
 
   @override
   ConsumerState<AttendancePage> createState() => _AttendancePageState();
@@ -126,8 +126,8 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
 
             return studentAttendancePageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
-                ? Column(
-                    children: const [
+                ? const Column(
+                    children: [
                       CachedModeWarning(),
                       Expanded(child: AttendanceBody()),
                     ],
@@ -146,7 +146,7 @@ class _AttendancePageState extends ConsumerState<AttendancePage> {
 }
 
 class AttendanceBody extends StatelessWidget {
-  const AttendanceBody({Key? key}) : super(key: key);
+  const AttendanceBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -362,8 +362,7 @@ class AttendanceBody extends StatelessWidget {
 }
 
 class AttendanceCard extends StatefulWidget {
-  const AttendanceCard({Key? key, required this.subjectAttendanceDetail})
-      : super(key: key);
+  const AttendanceCard({super.key, required this.subjectAttendanceDetail});
 
   final SubjectAttendanceDetailModel subjectAttendanceDetail;
 
@@ -417,8 +416,8 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 subjectName,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Expanded(flex: 5, child: Divider()),
                   Expanded(flex: 5, child: SizedBox()),
                 ],

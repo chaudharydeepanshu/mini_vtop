@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minivtop/state/providers.dart';
 
 class DynamicThemeSwitchTile extends StatelessWidget {
-  const DynamicThemeSwitchTile({Key? key}) : super(key: key);
+  const DynamicThemeSwitchTile({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:minivtop/shared_preferences/preferences.dart';
 import 'package:minivtop/state/providers.dart';
 
 class ResetAppThemeSettings extends StatelessWidget {
-  const ResetAppThemeSettings({Key? key}) : super(key: key);
+  const ResetAppThemeSettings({super.key});
 
   @override
   Widget build(BuildContext context) {

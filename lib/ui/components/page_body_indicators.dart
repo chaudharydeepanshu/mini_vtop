@@ -13,8 +13,7 @@ enum Location { beforeHomeScreen, afterHomeScreen }
 
 class PageBodyIndicators extends StatelessWidget {
   const PageBodyIndicators(
-      {Key? key, required this.pageStatus, required this.location})
-      : super(key: key);
+      {super.key, required this.pageStatus, required this.location});
 
   final VTOPPageStatus pageStatus;
   final Location location;

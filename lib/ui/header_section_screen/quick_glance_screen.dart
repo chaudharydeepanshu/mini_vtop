@@ -3,7 +3,7 @@ import 'package:minivtop/ui/header_section_screen/components/attendance_section.
 import 'package:minivtop/ui/header_section_screen/components/gpa_section.dart';
 
 class QuickGlancePage extends StatelessWidget {
-  const QuickGlancePage({Key? key}) : super(key: key);
+  const QuickGlancePage({super.key});
 
   @override
   Widget build(BuildContext context) {

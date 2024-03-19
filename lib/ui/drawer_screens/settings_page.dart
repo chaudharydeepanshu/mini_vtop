@@ -6,7 +6,7 @@ import 'package:minivtop/ui/components/theme_chooser_widget.dart';
 import 'package:minivtop/ui/components/theme_mode_switcher.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

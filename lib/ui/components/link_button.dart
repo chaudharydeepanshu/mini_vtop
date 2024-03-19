@@ -3,8 +3,7 @@ import 'package:minivtop/ui/components/url_launcher.dart';
 
 class LinkButton extends StatelessWidget {
   const LinkButton(
-      {Key? key, required this.urlLabel, required this.url, this.urlIcon})
-      : super(key: key);
+      {super.key, required this.urlLabel, required this.url, this.urlIcon});
 
   final String urlLabel;
   final IconData? urlIcon;

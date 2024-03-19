@@ -3,7 +3,7 @@ import 'package:minivtop/ui/home_screen/components/grid_view_in_card_view.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 class ExplorePage extends StatelessWidget {
-  const ExplorePage({Key? key, required this.arguments}) : super(key: key);
+  const ExplorePage({super.key, required this.arguments});
 
   final ExplorePageArguments arguments;
 
@@ -44,7 +44,7 @@ class ExplorePageArguments {
 }
 
 class ExploreSection extends StatelessWidget {
-  const ExploreSection({Key? key}) : super(key: key);
+  const ExploreSection({super.key});
 
   @override
   Widget build(BuildContext context) {

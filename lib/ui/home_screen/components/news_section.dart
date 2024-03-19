@@ -3,7 +3,7 @@ import 'package:minivtop/ui/home_screen/components/list_view_in_card_view.dart';
 import 'package:minivtop/route/route.dart' as route;
 
 class NewsPage extends StatelessWidget {
-  const NewsPage({Key? key, required this.arguments}) : super(key: key);
+  const NewsPage({super.key, required this.arguments});
 
   final NewsPageArguments arguments;
 
@@ -44,7 +44,7 @@ class NewsPageArguments {
 }
 
 class NewsSection extends StatelessWidget {
-  const NewsSection({Key? key}) : super(key: key);
+  const NewsSection({super.key});
 
   @override
   Widget build(BuildContext context) {

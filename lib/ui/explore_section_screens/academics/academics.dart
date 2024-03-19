@@ -13,7 +13,7 @@ import 'package:minivtop/ui/components/page_body_indicators.dart';
 import 'package:minivtop/ui/header_section_screen/components/gpa_section.dart';
 
 class AcademicsPage extends ConsumerStatefulWidget {
-  const AcademicsPage({Key? key}) : super(key: key);
+  const AcademicsPage({super.key});
 
   @override
   ConsumerState<AcademicsPage> createState() => _AcademicsState();
@@ -86,8 +86,8 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
 
             return studentGradeHistoryPageStatus == VTOPPageStatus.loaded ||
                     enableOfflineMode
-                ? Column(
-                    children: const [
+                ? const Column(
+                    children: [
                       CachedModeWarning(),
                       Expanded(child: AcademicsBody()),
                     ],
@@ -106,7 +106,7 @@ class _AcademicsState extends ConsumerState<AcademicsPage> {
 }
 
 class AcademicsBody extends StatelessWidget {
-  const AcademicsBody({Key? key}) : super(key: key);
+  const AcademicsBody({super.key});
 
   @override
   Widget build(BuildContext context) {

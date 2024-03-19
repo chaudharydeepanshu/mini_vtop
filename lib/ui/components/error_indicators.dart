@@ -9,8 +9,7 @@ import 'loading_indicator.dart';
 
 class ErrorIndicators extends StatelessWidget {
   const ErrorIndicators(
-      {Key? key, required this.location, required this.errorStatus})
-      : super(key: key);
+      {super.key, required this.location, required this.errorStatus});
 
   final Location location;
   final ErrorStatus errorStatus;
@@ -76,16 +75,15 @@ class ErrorIndicators extends StatelessWidget {
 }
 
 class BeforeHomeScreenErrors extends StatelessWidget {
-  const BeforeHomeScreenErrors({Key? key, required this.errorStatus})
-      : super(key: key);
+  const BeforeHomeScreenErrors({super.key, required this.errorStatus});
 
   final ErrorStatus errorStatus;
 
   @override
   Widget build(BuildContext context) {
     if (errorStatus == ErrorStatus.connectionClosedError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Ohh...SH*T!",
               messageBodyText: "App connection with VTOP got closed"),
@@ -95,8 +93,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.noInternetError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "No Internet!",
               messageBodyText: "Looks like someone has stolen your router"),
@@ -106,8 +104,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.sslError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Woah! SSL Issue.",
               messageBodyText:
@@ -118,8 +116,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.vtopError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Aw, Snap!",
               messageBodyText: "Something is wrong with VTOP"),
@@ -129,8 +127,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.vtopUnknownResponsesError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Gibberish Response!",
               messageBodyText: "VTOP sent an unknown response"),
@@ -140,8 +138,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.nameNotResolvedError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Internet / VTOP Lost!",
               messageBodyText:
@@ -152,8 +150,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.connectionResetError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Connection Reset!",
               messageBodyText:
@@ -164,8 +162,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.addressUnreachableError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Internet / VTOP Lost!",
               messageBodyText:
@@ -176,8 +174,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.httpTrafficError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Found HTTP!",
               messageBodyText:
@@ -188,8 +186,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.nullDocBeforeAction) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Got Null Doc!",
               messageBodyText: "VTOP sent a null doc. Please try again."),
@@ -199,8 +197,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.webpageNotAvailable) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "VTOP Unavailable!",
               messageBodyText: "Unable to access VTOP. Please try again."),
@@ -210,8 +208,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.docParsingError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Parsing Error!",
               messageBodyText:
@@ -221,8 +219,8 @@ class BeforeHomeScreenErrors extends StatelessWidget {
         ],
       );
     } else {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Error Detected!",
               messageBodyText:
@@ -236,16 +234,15 @@ class BeforeHomeScreenErrors extends StatelessWidget {
 }
 
 class AfterHomeScreenErrors extends StatelessWidget {
-  const AfterHomeScreenErrors({Key? key, required this.errorStatus})
-      : super(key: key);
+  const AfterHomeScreenErrors({super.key, required this.errorStatus});
 
   final ErrorStatus errorStatus;
 
   @override
   Widget build(BuildContext context) {
     if (errorStatus == ErrorStatus.connectionClosedError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Ohh...SH*T!",
               messageBodyText: "App connection with VTOP got closed"),
@@ -255,8 +252,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.noInternetError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "No Internet!",
               messageBodyText: "Looks like someone has stolen your router"),
@@ -266,8 +263,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.sslError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Woah! SSL Issue.",
               messageBodyText:
@@ -278,8 +275,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.vtopError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Aw, Snap!",
               messageBodyText: "Something is wrong with VTOP"),
@@ -289,8 +286,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.vtopUnknownResponsesError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Gibberish Response!",
               messageBodyText: "VTOP sent an unknown response"),
@@ -300,8 +297,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.nameNotResolvedError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Internet / VTOP Lost!",
               messageBodyText:
@@ -312,8 +309,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.connectionResetError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Connection Reset!",
               messageBodyText:
@@ -324,8 +321,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.addressUnreachableError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Internet / VTOP Lost!",
               messageBodyText:
@@ -336,8 +333,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.httpTrafficError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Found HTTP!",
               messageBodyText:
@@ -348,8 +345,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.nullDocBeforeAction) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Got Null Doc!",
               messageBodyText: "VTOP sent a null doc. Please try again."),
@@ -359,8 +356,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.webpageNotAvailable) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "VTOP Unavailable!",
               messageBodyText: "Unable to access VTOP. Please try again."),
@@ -370,8 +367,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
       );
     }
     if (errorStatus == ErrorStatus.docParsingError) {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Parsing Error!",
               messageBodyText:
@@ -381,8 +378,8 @@ class AfterHomeScreenErrors extends StatelessWidget {
         ],
       );
     } else {
-      return Column(
-        children: const [
+      return const Column(
+        children: [
           FullBodyMessage(
               messageHeadingText: "Error Detected!",
               messageBodyText:

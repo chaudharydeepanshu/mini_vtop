@@ -5,7 +5,7 @@ import 'package:minivtop/shared_preferences/preferences.dart';
 /// [SwitchListTile] for enabling or disabling crashlytics data collection.
 class CrashlyticsSwitchTile extends StatefulWidget {
   /// Defining [CrashlyticsSwitchTile] constructor.
-  const CrashlyticsSwitchTile({Key? key}) : super(key: key);
+  const CrashlyticsSwitchTile({super.key});
 
   @override
   State<CrashlyticsSwitchTile> createState() => _CrashlyticsSwitchTileState();
@@ -43,7 +43,7 @@ class _CrashlyticsSwitchTileState extends State<CrashlyticsSwitchTile> {
 /// [SwitchListTile] for enabling or disabling analytics data collection.
 class AnalyticsSwitchTile extends StatefulWidget {
   /// Defining [AnalyticsSwitchTile] constructor.
-  const AnalyticsSwitchTile({Key? key}) : super(key: key);
+  const AnalyticsSwitchTile({super.key});
 
   @override
   State<AnalyticsSwitchTile> createState() => _AnalyticsSwitchTileState();
